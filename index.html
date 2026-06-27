@@ -278,7 +278,7 @@ const Store = {
   set(k,v){ if(this._ok()){ localStorage.setItem(k,JSON.stringify(v)); } else { this.mem[k]=v; } }
 };
 function getResults(){ return Store.get("ican_results")||[]; }
-function getCodes(){ return Store.get("ican_codes")||CONFIG.classCodes.slice(); }
+function getCodes(){ const stored=Store.get("ican_codes")||[]; return Array.from(new Set([...(CONFIG.classCodes||[]), ...stored])); }
 function saveResult(r){ const a=getResults(); a.push(r); Store.set("ican_results",a); cloudSave(r); }
 function getStudents(){ return Store.get("ican_students")||{}; }
 function setStudent(id,o){ const s=getStudents(); s[id]=Object.assign(s[id]||{},o); Store.set("ican_students",s); }
