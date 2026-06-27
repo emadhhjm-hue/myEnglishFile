@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 :root{
   --ink:#15183A; --ink-2:#232a5c; --paper:#FBFAF6; --card:#FFFFFF;
@@ -164,6 +165,39 @@ table.data tr:nth-child(even){background:#fff}
 .tabs button{border:1.5px solid var(--line); background:#fff; border-radius:50px; padding:8px 16px; font-size:.85rem; color:var(--muted)}
 .tabs button.on{background:var(--coral); color:#fff; border-color:var(--coral)}
 @media (prefers-reduced-motion: reduce){*{transition:none !important; scroll-behavior:auto}}
+/* ---- writing course ---- */
+.lvl-tabs{display:flex; gap:8px; flex-wrap:wrap; margin:18px 0}
+.lvl-tabs button{border:1.5px solid var(--line); background:#fff; border-radius:12px; padding:12px 18px; font-weight:600; color:var(--muted)}
+.lvl-tabs button.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+.unit{border:1px solid var(--line); border-radius:14px; background:#fff; margin-bottom:14px; overflow:hidden}
+.unit h3{font-family:"Lexend"; font-size:1.05rem; padding:16px 18px; margin:0; background:var(--mist); color:var(--ink)}
+.unit .lesson-row{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:14px 18px; border-top:1px solid var(--line)}
+.unit .lesson-row .t{font-weight:500; color:var(--ink)}
+.unit .lesson-row .ty{font-size:.78rem; color:var(--muted)}
+.progress{height:8px; background:var(--mist); border-radius:50px; overflow:hidden; margin:6px 0 0}
+.progress span{display:block; height:100%; background:var(--teal); border-radius:50px}
+.teach{background:#fff; border:1px solid var(--line); border-left:4px solid var(--teal); border-radius:10px; padding:16px 18px; margin:14px 0}
+.teach ul{margin:8px 0 0; padding-left:20px} .teach li{margin-bottom:6px}
+.fb-band{display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:8px; font-weight:700; color:#fff; font-family:"Fraunces"}
+.b4{background:var(--teal)} .b3{background:#3DA35D} .b2{background:#E0A100} .b1{background:var(--coral)}
+.fb-row{display:flex; gap:12px; padding:12px 0; border-bottom:1px dashed var(--line); align-items:flex-start}
+.fb-row .body b{color:var(--ink)} .fb-row .body{font-size:.9rem}
+.vocab-card{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:14px; border:1px solid var(--line); border-radius:12px; background:#fff; margin-bottom:10px}
+.vocab-card .w{font-weight:600; color:var(--ink); font-size:1.05rem}
+.vocab-card .s{font-size:.85rem; color:var(--muted); font-style:italic}
+.rec-dot{display:inline-block; width:10px; height:10px; border-radius:50%; background:var(--coral); margin-right:6px; animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.badge-done{background:rgba(15,169,139,.15); color:var(--teal-dk); font-weight:600; font-size:.78rem; padding:4px 10px; border-radius:50px}
+.vocab-mini{border:1.5px dashed var(--teal); border-radius:12px; padding:16px; background:rgba(15,169,139,.05); margin:18px 0}
+.mcq-slot{border:1px solid var(--line); border-radius:10px; padding:12px; margin-bottom:10px; background:#fff}
+.mcq-slot .opt-row{display:flex; gap:6px; flex-wrap:wrap; margin:6px 0}
+.mcq-slot .opt-row input{flex:1; min-width:130px}
+.ed-field{margin-bottom:10px}
+.ed-field label{display:block; font-size:.8rem; color:var(--muted); margin-bottom:4px; font-weight:500}
+.ed-field input,.ed-field select,.ed-field textarea{width:100%; padding:9px 11px; border:1.5px solid var(--line); border-radius:9px; font-family:inherit; font-size:.95rem; color:var(--ink); background:#fff}
+.ed-grid{display:grid; gap:10px}
+@media(min-width:680px){ .ed-grid.two{grid-template-columns:1fr 1fr} }
+.tool-check{display:flex; gap:8px; align-items:flex-start; padding:8px 10px; border:1px solid var(--line); border-radius:8px; margin-bottom:6px; font-size:.85rem}
 </style>
 </head>
 <body>
@@ -697,6 +731,415 @@ const SPEAKING = [
 ];
 
 /* =========================================================================
+   WRITING COURSE  (RWD · the Writing strand) — Levels → 3 Units → Lessons
+   Each lesson: teaching, a prompt, a model answer, a rubric for instant feedback.
+   ========================================================================= */
+const WCOURSE = {
+  beginner:{ label:"Beginner", tag:"Getting started", blurb:"Find your ideas, write clear sentences, and build your first solid paragraphs.", units:[
+    {id:"u1", title:"Unit 1 · Introduction to writing", lessons:[
+      {id:"b11", title:"Free writing & brainstorming", type:"Idea generation", rubricKey:"freewrite", minWords:50,
+       teach:["<b>Free writing</b> means writing without stopping and without worrying about mistakes — just to find ideas.",
+              "<b>Brainstorm</b> first: make a quick list, a mind-map, or answer the 5 W's (Who? What? Where? When? Why?).",
+              "Don't edit yet. Quantity now, quality later. You can always cut.",
+              "Tip: set a 5-minute timer and keep your pen moving the whole time."],
+       prompt:"Brainstorm, then free-write for five minutes about: <b>“A place that makes me happy.”</b> Don't stop to fix anything — just keep going.",
+       model:"<p><i>Brainstorm:</i> grandma's kitchen — smell of bread — warm — yellow walls — Friday mornings — tea — laughing.</p><p><i>Free-write:</i> The place that makes me happy is my grandmother's kitchen. It always smells of fresh bread and cardamom tea. The walls are a soft yellow that feels like sunshine even on grey days. On Friday mornings everyone gathers there and talks over each other and laughs. I feel safe there, like nothing bad can reach me…</p>"},
+      {id:"b12", title:"Sentences that work", type:"Sentence skills", rubricKey:"sentence", minWords:35,
+       teach:["A complete sentence has a <b>subject</b> and a <b>verb</b> and expresses a full idea.",
+              "Start every sentence with a <b>capital letter</b> and end it with a <b>full stop, question mark, or exclamation mark</b>.",
+              "Keep one clear idea per sentence at this stage.",
+              "Read your sentence aloud — if you run out of breath or it feels unfinished, fix it."],
+       prompt:"Write <b>five clear sentences</b> about what you did yesterday. Make sure each is a complete sentence with correct capitals and punctuation.",
+       model:"<p>Yesterday I woke up early for school. My friend and I revised for our science test at lunch. After class, I played football in the park. In the evening, I helped my mother cook dinner. I felt tired but happy when I went to bed.</p>"}
+    ]},
+    {id:"u2", title:"Unit 2 · Paragraph writing skills", lessons:[
+      {id:"b21", title:"Topic sentence & controlling idea", type:"Paragraph", rubricKey:"paragraph", minWords:40,
+       teach:["A <b>topic sentence</b> usually opens a paragraph. It has two parts:",
+              "• the <b>topic</b> (what the paragraph is about) and • the <b>controlling idea</b> (the point you'll make about it).",
+              "Example: <i>“Street food in my city <u>is the best way to understand its culture</u>.”</i> — topic = street food; controlling idea = understanding culture.",
+              "Everything else in the paragraph must support that controlling idea."],
+       prompt:"Write <b>one paragraph</b> (about 5 sentences) beginning with a clear topic sentence about: <b>a hobby you enjoy</b>. Underline your controlling idea.",
+       model:"<p>Drawing is the hobby that helps me relax after a stressful day. When I open my sketchbook, my worries seem to fade. I usually draw faces, because capturing an expression is a satisfying challenge. Even when a drawing goes wrong, I learn something for the next one. For me, a pencil and paper are the cheapest kind of peace.</p>"},
+      {id:"b22", title:"Building a full paragraph", type:"Paragraph", rubricKey:"paragraph", minWords:60,
+       teach:["A strong paragraph has three parts: <b>topic sentence → supporting details → closing sentence</b>.",
+              "Supporting details = reasons, examples, or explanations.",
+              "Use <b>linking words</b> to connect ideas: <i>for example, also, in addition, however, finally</i>.",
+              "End with a closing sentence that wraps up your point (don't just stop)."],
+       prompt:"Write a complete paragraph: <b>“Why I like my favourite food.”</b> Use a topic sentence, at least three supporting details with linking words, and a closing sentence.",
+       model:"<p>Biryani is my favourite food because it brings my whole family together. For example, my mother only makes it for special occasions, so the smell alone makes everyone excited. In addition, every plate is different — some bites are spicy, others sweet with raisins. We also argue happily about who gets the crispy rice at the bottom. Finally, eating biryani is never just a meal; it is a celebration on a plate.</p>"}
+    ]},
+    {id:"u3", title:"Unit 3 · Stretch: real-world writing", lessons:[
+      {id:"b31", title:"Writing an informal message", type:"Informal email / message", rubricKey:"email", minWords:45,
+       teach:["Informal writing is for friends and family — it can be warm and relaxed.",
+              "Still keep a shape: a <b>greeting</b> (Hi…/Hey…), a clear <b>message</b>, and a friendly <b>sign-off</b> (See you!/Take care).",
+              "Be clear about what you want the reader to know or do.",
+              "Contractions (I'm, can't, we'll) are fine in informal writing."],
+       prompt:"Write a short message to a friend <b>inviting them to your birthday</b>. Include when, where, and one detail that makes it sound fun.",
+       model:"<p>Hi Layla,</p><p>I'm having a small birthday party this Friday at 6 p.m. at my house. There'll be pizza, music, and a ridiculous amount of cake — bring your dance moves! Let me know if you can make it.</p><p>See you soon,<br>Emad</p>"}
+    ]}
+  ]},
+  intermediate:{ label:"Intermediate", tag:"Standard", blurb:"Plan with purpose, write tightly structured paragraphs, and handle real genres like opinion essays and formal emails.", units:[
+    {id:"u1", title:"Unit 1 · Introduction to writing", lessons:[
+      {id:"i11", title:"From brainstorm to plan", type:"Planning", rubricKey:"freewrite", minWords:60,
+       teach:["Good writing is planned, not just poured out. Turn a brainstorm into a <b>plan</b>.",
+              "Decide your <b>main message</b> in one sentence (your working thesis).",
+              "Choose your best 2–3 points and put them in a logical order.",
+              "Note one example or piece of evidence for each point before you draft."],
+       prompt:"Plan a short essay on: <b>“Should phones be allowed in schools?”</b> Write your main message, then 2–3 points, each with an example you would use.",
+       model:"<p><b>Main message:</b> Phones should be allowed in schools but only under clear rules.</p><p><b>Point 1 – Learning:</b> phones give instant access to dictionaries and research (e.g. looking up a word in seconds).</p><p><b>Point 2 – Distraction:</b> notifications pull focus (e.g. a buzz mid-lesson breaks concentration).</p><p><b>Point 3 – Compromise:</b> 'phone zones' or lesson-time lockers balance both.</p>"}
+    ]},
+    {id:"u2", title:"Unit 2 · Paragraph writing skills", lessons:[
+      {id:"i21", title:"Strong paragraphs with PEEL", type:"Paragraph", rubricKey:"paragraph", minWords:80,
+       teach:["<b>PEEL</b> builds a tight paragraph: <b>P</b>oint · <b>E</b>vidence · <b>E</b>xplain · <b>L</b>ink.",
+              "<b>Point</b> = your topic sentence (claim).",
+              "<b>Evidence</b> = an example, fact, or quotation that proves it.",
+              "<b>Explain</b> = say <i>why</i> the evidence proves your point. <b>Link</b> = connect back to your point or forward to the next."],
+       prompt:"Write one PEEL paragraph arguing: <b>“Reading for pleasure improves writing.”</b> Label each PEEL part in [brackets].",
+       model:"<p>Reading for pleasure quietly improves a person's own writing. [P] Studies of teenage readers show that those who read for fun use a wider vocabulary in their essays. [E] This happens because readers absorb sentence patterns and word choices without even trying. [Ex] In short, every book is a free writing lesson disguised as entertainment. [L]</p>"}
+    ]},
+    {id:"u3", title:"Unit 3 · Genres & register", lessons:[
+      {id:"i31", title:"Writing an opinion essay", type:"Essay · opinion", rubricKey:"opinion", minWords:180,
+       teach:["An opinion essay states <b>your view</b> and defends it.",
+              "Structure: <b>Introduction</b> (hook + clear opinion) → <b>Body</b> paragraphs (one reason each, with support) → <b>Conclusion</b> (restate, leave a thought).",
+              "Signal your stance: <i>I believe…, In my view…, … should…</i>",
+              "Stay focused — every paragraph must serve your opinion."],
+       prompt:"Write an opinion essay (about 200 words): <b>“The best thing about being a teenager today.”</b> Use an introduction, two body paragraphs, and a conclusion.",
+       model:"<p>In my view, the best thing about being a teenager today is access — the power to learn almost anything, instantly.</p><p>First, knowledge is no longer locked away. A curious teenager can learn coding, a language, or guitar from free videos, something impossible a generation ago. This freedom turns curiosity into real skill.</p><p>Secondly, we can find our people. Whatever your passion, an online community exists where you belong, which matters enormously when school can feel narrow.</p><p>Of course, access brings noise and pressure too. But used wisely, it means today's teenagers can shape who they become more freely than ever before. That, to me, is a remarkable gift.</p>"},
+      {id:"i32", title:"Formal vs informal — a formal email", type:"Email · formal", rubricKey:"email", minWords:80,
+       teach:["<b>Register</b> = how formal your language is. Match it to your reader.",
+              "Formal: full words (cannot, I would like), polite phrasing, a clear subject, a proper sign-off (Yours sincerely / Kind regards).",
+              "Informal: contractions, slang, emojis — fine for friends, not for a principal or an editor.",
+              "A formal email: greeting → purpose → details/request → polite close → sign-off + name."],
+       prompt:"Write a <b>formal email to your school principal</b> requesting permission to start a student book club. Be polite, clear, and properly structured.",
+       model:"<p>Dear Mr Hassan,</p><p>I am writing to request your permission to start a student book club at our school. I believe a weekly club would encourage reading for pleasure and give students a friendly space to share ideas.</p><p>We would need only a classroom for one lunchtime a week, and I would be glad to organise it with a supervising teacher. I would welcome the chance to discuss this further at your convenience.</p><p>Thank you for considering my request.</p><p>Kind regards,<br>Emad Al-…</p>"}
+    ]}
+  ]},
+  advanced:{ label:"Advanced", tag:"Proficient", blurb:"Develop nuanced ideas, integrate evidence, and master the argumentative, informational, and instructional genres.", units:[
+    {id:"u1", title:"Unit 1 · Sophisticated thinking", lessons:[
+      {id:"a11", title:"Developing a nuanced thesis", type:"Planning", rubricKey:"freewrite", minWords:70,
+       teach:["A strong thesis is <b>arguable</b> and <b>precise</b> — not an obvious fact.",
+              "Weak: <i>“Social media is popular.”</i>  Strong: <i>“Social media widens our connections while narrowing our attention.”</i>",
+              "Test it: could a reasonable person disagree? If not, sharpen it.",
+              "Anticipate the <b>counterargument</b> while planning — it makes your thesis stronger."],
+       prompt:"Write a nuanced thesis statement on <b>artificial intelligence in education</b>, then note the strongest objection to it and how you'd answer.",
+       model:"<p><b>Thesis:</b> AI tutors can personalise learning, but they risk replacing the human relationships that make education meaningful.</p><p><b>Objection:</b> AI is simply a tool — teachers stay in control.</p><p><b>Response:</b> True, yet tools shape habits; if students turn to AI before thinking, the skill of struggling productively may quietly erode.</p>"}
+    ]},
+    {id:"u2", title:"Unit 2 · Advanced paragraphs", lessons:[
+      {id:"a21", title:"Analytical paragraphs & evidence", type:"Paragraph · analytical", rubricKey:"paragraph", minWords:90,
+       teach:["Analysis explains <b>how</b> and <b>why</b>, not just <b>what</b>.",
+              "Embed evidence smoothly: <i>As the data shows…, The writer's phrase “…” suggests…</i>",
+              "After every piece of evidence, ask <b>“So what?”</b> and answer it.",
+              "Avoid simply describing or summarising — interpret."],
+       prompt:"Write an analytical paragraph about <b>why a particular advertisement (or song) is persuasive</b>. Quote or describe one detail and analyse its effect.",
+       model:"<p>The advert's power lies in what it withholds rather than what it shows. The screen stays black for three full seconds while a child's voice asks, “Will you remember me?” By denying us an image, the advertisers force the audience to supply their own memories, making the emotion feel personal rather than sold. The product appears only at the very end — by then, we have already done the advert's persuasive work ourselves.</p>"}
+    ]},
+    {id:"u3", title:"Unit 3 · Mastering genres", lessons:[
+      {id:"a31", title:"The argumentative essay", type:"Essay · argumentative", rubricKey:"argumentative", minWords:250,
+       teach:["Argumentative writing makes a <b>claim</b> and defends it with <b>evidence</b> and <b>reasoning</b>.",
+              "Crucially, it includes a <b>counterargument</b> and a <b>rebuttal</b> — name the opposing view, then answer it.",
+              "Structure: intro + thesis → arguments with evidence → counterargument + rebuttal → conclusion.",
+              "Stay measured: strong arguments persuade; insults don't."],
+       prompt:"Write an argumentative essay (about 250–300 words): <b>“Should fast fashion be banned?”</b> Include at least one counterargument and your rebuttal.",
+       model:"<p>Fast fashion offers cheap, trendy clothes — but its true cost is paid by the planet and by garment workers. It should be heavily restricted, if not banned.</p><p>The environmental case is overwhelming. The industry is among the world's largest polluters, and the rivers near textile factories often run the colour of the season's trend. Cheap clothes are designed to be discarded, filling landfills within months.</p><p>Some argue that banning fast fashion would harm the workers who depend on it for income. This concern is real and serious. However, the answer is not to defend an exploitative system but to replace it with fairer, better-paid manufacturing — protecting both people and the environment, rather than sacrificing one for the other.</p><p>Convenience cannot keep outweighing consequence. If we are willing to pay a little more and buy a little less, we can dress ourselves without undressing the planet.</p>"},
+      {id:"a32", title:"Informational / explanatory writing", type:"Essay · informational", rubricKey:"informational", minWords:200,
+       teach:["Informational writing <b>explains</b> a topic clearly and <b>objectively</b> — it informs, it doesn't argue.",
+              "Keep a neutral tone: avoid <i>I think</i>; let facts lead.",
+              "Define key terms, use examples, and group related ideas into paragraphs.",
+              "A good test: could a reader learn the topic from your text alone?"],
+       prompt:"Write an informational piece (about 200 words) explaining <b>how a chosen technology works</b> (e.g. how solar panels generate electricity).",
+       model:"<p>Solar panels turn sunlight directly into electricity through a process called the photovoltaic effect.</p><p>Each panel is made of many small cells, usually built from silicon. When sunlight strikes a cell, its energy knocks electrons loose from the silicon atoms. Because the cell is designed with a positive and a negative layer, these freed electrons are pushed to flow in one direction, creating an electric current.</p><p>This current is direct current (DC), but homes use alternating current (AC). A device called an inverter converts the electricity so it can power appliances. Any electricity that is not used immediately can be stored in batteries or sent back to the grid.</p><p>Because their fuel — sunlight — is free and renewable, solar panels have become a key technology in the shift away from fossil fuels.</p>"},
+      {id:"a33", title:"Instructional (how-to) writing", type:"Instructional", rubricKey:"instructional", minWords:120,
+       teach:["Instructional writing tells the reader <b>how to do something</b>, step by step.",
+              "Use <b>sequence words</b> (first, next, then, after that, finally) and clear <b>imperative verbs</b> (mix, fold, press).",
+              "One action per step; warn about common mistakes.",
+              "Know your reader — assume nothing they wouldn't already know."],
+       prompt:"Write a clear how-to guide (about 120 words): <b>teach a beginner one skill you have</b> (a recipe, a phone setting, a sports move). Number your steps.",
+       model:"<p><b>How to make a perfect cup of mint tea</b></p><p>First, boil fresh water and warm your teapot by swirling a little hot water inside, then pour it out. Next, add one spoon of green tea and a generous handful of fresh mint to the pot. After that, pour in the boiling water and let it steep for three minutes — no longer, or it turns bitter. Then add sugar to taste and stir gently. Finally, pour from a height into small glasses; this adds a light foam on top. Serve immediately, while it is fragrant and hot.</p>"}
+    ]}
+  ]}
+};
+
+/* ---- Rubrics + heuristic feedback engine (works on static hosting, no API) ---- */
+const TRANSITIONS=["however","therefore","for example","for instance","in addition","also","moreover","furthermore","finally","firstly","secondly","first","next","then","because","although","as a result","on the other hand","in conclusion","such as","while"];
+const SUBORD=["because","although","while","since","whereas","which","that","who","when","if","though","as"];
+const STANCE=["i believe","in my view","in my opinion","i think","should","must","ought to","i feel"];
+const EVIDENCE=["for example","for instance","such as","according to","research","study","studies","statistics","evidence","data","percent","%"];
+const COUNTER=["however","on the other hand","some argue","critics","opponents","while it is true","admittedly","others believe","it could be argued","nevertheless"];
+const SEQUENCE=["first","firstly","second","secondly","next","then","after that","finally","lastly","step"];
+const MISSPELL={"alot":"a lot","definately":"definitely","seperate":"separate","recieve":"receive","occured":"occurred","untill":"until","wich":"which","becuase":"because","enviroment":"environment","goverment":"government","beleive":"believe","thier":"their","tommorow":"tomorrow","arguement":"argument","neccessary":"necessary","accomodate":"accommodate","wierd":"weird","embarass":"embarrass","existance":"existence","independant":"independent"};
+
+function metrics(text){
+  const raw=(text||"").trim();
+  const words=raw?raw.split(/\s+/).filter(Boolean):[];
+  const sentences=raw.split(/[.!?]+/).map(s=>s.trim()).filter(Boolean);
+  const lens=sentences.map(s=>s.split(/\s+/).filter(Boolean).length);
+  const paras=raw.split(/\n\s*\n/).map(p=>p.trim()).filter(Boolean);
+  const lower=raw.toLowerCase();
+  const cnt=a=>a.filter(w=>lower.includes(w)).length;
+  const lw=lower.replace(/[^a-z'\s]/g,' ').split(/\s+/).filter(Boolean);
+  const miss=[...new Set(lw.filter(w=>MISSPELL[w]))];
+  return { raw, wc:words.length, sc:sentences.length, lens,
+    variety: lens.length>1?(Math.max(...lens)-Math.min(...lens)):0,
+    paras:paras.length, transitions:cnt(TRANSITIONS), subordinators:cnt(SUBORD),
+    stance:cnt(STANCE), evidence:cnt(EVIDENCE)+(/\d/.test(raw)?1:0), counter:cnt(COUNTER),
+    sequence:cnt(SEQUENCE), hasGreeting:/^(dear|hi|hello|hey)\b/i.test(raw),
+    hasSignoff:/(regards|sincerely|best wishes|yours|take care|see you|thank you|cheers)\b[\s,!.]*\S*\s*$/i.test(raw),
+    miss, lowerStarts: sentences.filter(s=>/^[a-z]/.test(s)).length, endsWell:/[.!?]["']?\s*$/.test(raw) };
+}
+const C = {
+  ideas:m=>({band:m.wc>40?4:m.wc>20?3:m.wc>8?2:1, note:m.wc>40?"Plenty of ideas — good fluency.":"Keep your ideas flowing — write more freely without stopping to edit."}),
+  length:min=>m=>{const b=m.wc>=min?4:m.wc>=min*.75?3:m.wc>=min*.5?2:1; return {band:b, note:b>=4?`On target (${m.wc} words).`:`Aim for about ${min} words — you have ${m.wc}.`};},
+  topic:m=>{const f=m.lens[0]||0; const ok=f>=5&&!/^\s*(what|why|how|when|where|do|does|is|are)\b/i.test(m.raw); const b=ok?4:f>=4?3:f>0?2:1; return {band:b, note:b>=4?"Clear opening that names topic and main idea.":"Open with one sentence stating your topic AND the point you'll make."};},
+  support:m=>{const b=m.sc>=4?4:m.sc>=3?3:m.sc>=2?2:1; return {band:b, note:b>=3?"Good supporting detail.":"Add 2–3 sentences of detail, examples or reasons."};},
+  transitions:m=>{const b=m.transitions>=3?4:m.transitions>=2?3:m.transitions>=1?2:1; return {band:b, note:b>=3?"Ideas are well linked.":"Use linking words: for example, however, also, finally."};},
+  variety:m=>{const b=(m.subordinators>=2&&m.variety>=4)?4:(m.subordinators>=1||m.variety>=3)?3:m.sc>=2?2:1; return {band:b, note:b>=3?"Good sentence variety.":"Mix short and longer sentences; use because/although/which."};},
+  structure:m=>{const b=m.paras>=3?4:m.paras>=2?3:m.sc>=4?2:1; return {band:b, note:b>=3?"Clear paragraphing.":"Organise into paragraphs: introduction, body, conclusion (leave a blank line between)."};},
+  stance:m=>{const b=m.stance>=2?4:m.stance>=1?3:1; return {band:b, note:b>=3?"Your position is clear.":"State your view clearly (I believe…, … should…)."};},
+  evidence:m=>{const b=m.evidence>=2?4:m.evidence>=1?3:1; return {band:b, note:b>=3?"You back up points with examples/evidence.":"Support each point with an example, reason or fact."};},
+  counter:m=>{const b=m.counter>=1?4:2; return {band:b, note:b>=4?"You address an opposing view — strong.":"Name the opposing view, then answer it (however…, some argue…)."};},
+  sequence:m=>{const b=m.sequence>=3?4:m.sequence>=2?3:m.sequence>=1?2:1; return {band:b, note:b>=3?"Clear step-by-step order.":"Use sequence words: first, next, then, finally."};},
+  objective:m=>{const b=m.stance===0?4:m.stance<=1?3:2; return {band:b, note:b>=3?"Suitably neutral, informative tone.":"Keep it factual — avoid 'I think' in informational writing."};},
+  greeting:m=>{const b=(m.hasGreeting&&m.hasSignoff)?4:(m.hasGreeting||m.hasSignoff)?3:1; return {band:b, note:b>=4?"Proper greeting and sign-off.":"Open with a greeting (Dear…/Hi…) and close with a sign-off."};},
+  accuracy:m=>{const issues=m.miss.length+m.lowerStarts+(m.endsWell?0:1); const b=issues===0?4:issues<=1?3:issues<=3?2:1; let n=b>=4?"Clean and accurate.":""; if(m.miss.length)n+=` Check spelling: ${m.miss.slice(0,4).join(', ')}.`; if(m.lowerStarts)n+=" Begin each sentence with a capital letter."; if(!m.endsWell)n+=" Finish with a full stop."; return {band:b, note:(n||"Proofread once more for small slips.").trim()};}
+};
+const RUBRICS = {
+  freewrite:{label:"Free-writing / planning", criteria:[["Idea generation",C.ideas],["Flow & quantity",C.length(50)],["Focus on the topic",C.topic]]},
+  sentence:{label:"Sentence skills", criteria:[["Complete sentences",C.support],["Clarity & quantity",C.length(35)],["Accuracy (capitals & full stops)",C.accuracy]]},
+  paragraph:{label:"Paragraph", criteria:[["Topic sentence & controlling idea",C.topic],["Supporting detail",C.support],["Cohesion & transitions",C.transitions],["Sentence variety",C.variety],["Accuracy",C.accuracy]]},
+  email:{label:"Email / message", criteria:[["Greeting & sign-off",C.greeting],["Purpose & clarity",C.support],["Register & flow",C.variety],["Accuracy",C.accuracy]]},
+  opinion:{label:"Opinion essay", criteria:[["Clear stance",C.stance],["Reasons & support",C.evidence],["Structure",C.structure],["Cohesion",C.transitions],["Accuracy",C.accuracy]]},
+  argumentative:{label:"Argumentative essay", criteria:[["Clear claim",C.stance],["Evidence & reasoning",C.evidence],["Counterargument & rebuttal",C.counter],["Structure",C.structure],["Accuracy",C.accuracy]]},
+  informational:{label:"Informational essay", criteria:[["Objective tone",C.objective],["Detail & examples",C.evidence],["Structure",C.structure],["Cohesion",C.transitions],["Accuracy",C.accuracy]]},
+  instructional:{label:"Instructional writing", criteria:[["Clear sequence",C.sequence],["Complete, clear steps",C.support],["Reader-friendly linking",C.transitions],["Accuracy",C.accuracy]]}
+};
+function wcFeedback(text, lesson){
+  const m=metrics(text);
+  const rub=RUBRICS[lesson.rubricKey]||RUBRICS.paragraph;
+  const rows=rub.criteria.map(([c,fn])=>{ const r=fn(m,lesson); return {c, band:r.band, note:r.note}; });
+  const avg=rows.reduce((a,r)=>a+r.band,0)/rows.length;
+  return {m, rub, rows, avg, pct:Math.round(avg/4*100), bandSum:rows.reduce((a,r)=>a+r.band,0), max:rows.length*4};
+}
+function wcUnits(levelKey){
+  const built=WCOURSE[levelKey].units;
+  const custom=mergedCustom('writing').filter(w=>w.level===levelKey);
+  return custom.length ? built.concat([{id:"uT", title:"Unit · Teacher-added lessons", lessons:custom}]) : built;
+}
+function findLesson(id){
+  for(const lk of Object.keys(WCOURSE)){ const lv=WCOURSE[lk];
+    for(const u of wcUnits(lk)){ const ls=u.lessons.find(x=>x.id===id); if(ls) return {levelKey:lk, level:lv, unit:u, lesson:ls}; } }
+  return null;
+}
+function wcLessonCount(){ let n=0; Object.keys(WCOURSE).forEach(k=>wcUnits(k).forEach(u=>n+=u.lessons.length)); return n; }
+let WC_LEVEL="beginner";
+
+/* =========================================================================
+   READING COURSE  (RWD · the Reading strand)
+   All comprehension = MCQ with instant scoring. Plus self-check written
+   questions that reveal a model answer + justification so the student
+   self-grades. Each lesson ends with a design challenge (the RWD bridge).
+   ========================================================================= */
+const RCOURSE = {
+  beginner:{ label:"Beginner", tag:"Getting started", blurb:"Short, real-world texts. Read for meaning, then check yourself.", units:[
+    {id:"u1", title:"Unit 1 · Informal & everyday texts", lessons:[
+      {id:"rb1", title:"My week without a phone", field:"Digital wellbeing", register:"Informal", type:"Blog post",
+       text:`<p><i>From Maya's blog</i></p><p>Last week my family tried a challenge: seven days without our phones. I thought I would be bored to death. Day one was the worst — my hand kept reaching for a phone that wasn't there!</p><p>But something strange happened. I started noticing things again: the taste of breakfast, my little brother's terrible jokes, the way the sky turns pink in the evening. I read two whole books. I slept better. By day five, I didn't even miss it.</p><p>I'm back on my phone now, but I've kept one rule: no screens after nine o'clock. Funny how giving something up can hand something back.</p>`,
+       mcqs:[
+         {q:"What was the family's challenge?", options:["No television for a week","Seven days without phones","Reading two books","Sleeping early"], answer:1, exp:"They went seven days without their phones."},
+         {q:"How did Maya feel on day one?", options:["Relaxed","It was the worst","Excited","Angry"], answer:1, exp:"She says day one was the worst — she kept reaching for her phone."},
+         {q:"Which good change did she NOT mention?", options:["Sleeping better","Reading two books","Getting fitter","Noticing small things"], answer:2, exp:"She mentions sleep, reading and noticing things — not fitness."},
+         {q:"What rule did she keep afterwards?", options:["No phone at meals","No screens after nine","Only one book a week","No phone at school"], answer:1, exp:"She kept the 'no screens after nine o'clock' rule."}
+       ],
+       selfcheck:[
+         {q:"In your own words, what does Maya mean by 'giving something up can hand something back'?", model:"A possible answer tours around this idea: by giving up her phone, she <i>gained</i> other things — better sleep, real moments, two books. Justify it from the last paragraph, where she lists what she got back. (Inference + justification.)"},
+         {q:"Is this text formal or informal? Give one clue from the text.", model:"Informal. Clues include the first-person 'I', casual phrases like 'bored to death', and exclamation marks — it reads like a personal blog, not a report."}
+       ],
+       design:"Design an infographic poster: '5 healthy screen-time habits for teenagers.'", designId:"d_climate"}
+    ]},
+    {id:"u2", title:"Unit 2 · Formal & informational texts", lessons:[
+      {id:"rb2", title:"Why bees matter", field:"Science · environment", register:"Formal", type:"Information text",
+       text:`<p>Bees are small, but our food depends on them. When a bee visits a flower to drink nectar, yellow dust called pollen sticks to its body. As the bee flies to the next flower, some pollen rubs off. This is called <b>pollination</b>, and it helps plants make seeds and fruit.</p><p>About one in three bites of the food we eat exists because of pollinators like bees. Apples, strawberries, almonds and many vegetables need them. Sadly, bee numbers are falling because of pollution, disease and the loss of wild flowers.</p><p>People can help in simple ways: planting flowers, avoiding harmful sprays, and leaving wild corners in gardens for bees to feed.</p>`,
+       mcqs:[
+         {q:"What is pollination?", options:["Bees drinking nectar","Pollen moving between flowers, helping plants make seeds","Flowers opening in spring","Bees building hives"], answer:1, exp:"Pollen moves from flower to flower, helping plants make seeds and fruit."},
+         {q:"About how much of our food depends on pollinators?", options:["One in ten bites","One in three bites","All of it","None"], answer:1, exp:"The text says about one in three bites."},
+         {q:"Which is NOT given as a reason bees are declining?", options:["Pollution","Disease","Loss of wild flowers","Too much rain"], answer:3, exp:"Rain is not mentioned; pollution, disease and flower loss are."},
+         {q:"One way people can help is to…", options:["Plant flowers","Keep more pets","Build roads","Use more spray"], answer:0, exp:"Planting flowers (and avoiding sprays, leaving wild corners) helps."}
+       ],
+       selfcheck:[
+         {q:"Why does the writer say 'our food depends on them'? Justify with the text.", model:"A possible answer tours around: bees pollinate the plants that make much of our food. Justify from paragraph 2, which states about one in three bites exists because of pollinators and lists apples, strawberries, almonds."},
+         {q:"Is this text formal or informal? Give one clue.", model:"Formal / informational. Clues: a neutral third-person tone, facts and a technical term ('pollination'), and no personal opinion or slang."}
+       ],
+       design:"Create a labelled pollination or life-cycle diagram, or design a simple 'bee hotel'.", designId:"d_lifecycle"}
+    ]}
+  ]},
+  intermediate:{ label:"Intermediate", tag:"Standard", blurb:"Longer texts on real issues. Read closely, infer, and justify.", units:[
+    {id:"u1", title:"Unit 1 · Informal & narrative texts", lessons:[
+      {id:"ri1", title:"Stranded! The catapult that saved a life", field:"Survival · STEM", register:"Informal", type:"Narrative",
+       text:`<p>When 14-year-old Sofia's small boat drifted onto a deserted island, she had no phone signal and no way to call for help. For two days she watched ships pass far out at sea, too distant to notice her waving.</p><p>Then she remembered a science lesson about levers and stored energy. Using a forked branch, strips of bark, and a length of stretchy vine, she built a simple catapult. With it, she launched a bright piece of cloth wrapped around a stone high into the air, again and again, near the shoreline.</p><p>A passing fisherman finally caught sight of the flash of colour arcing above the trees. Sofia was rescued that evening. 'I didn't have a phone,' she later said, 'but I had a catapult and an idea.'</p>`,
+       mcqs:[
+         {q:"Why couldn't Sofia call for help?", options:["Her phone was broken","There was no phone signal","She had no boat","She was asleep"], answer:1, exp:"She had no phone signal on the deserted island."},
+         {q:"What gave her the idea for the catapult?", options:["A film she saw","A science lesson about levers and stored energy","Advice from a fisherman","A book on the boat"], answer:1, exp:"She remembered a science lesson about levers and stored energy."},
+         {q:"What did she launch to get attention?", options:["A flare","Bright cloth wrapped around a stone","A wooden raft","A mirror"], answer:1, exp:"She launched a bright piece of cloth around a stone."},
+         {q:"What finally led to her rescue?", options:["A helicopter search","A fisherman saw the flash of colour","Her phone reconnected","She swam to a ship"], answer:1, exp:"A passing fisherman saw the colour arcing above the trees."}
+       ],
+       selfcheck:[
+         {q:"How does a catapult store and release energy? Explain in your own words.", model:"A possible answer tours around elastic energy: stretching the vine stores potential (elastic) energy; releasing it transfers that energy to the stone/cloth, launching it. Justify from the line about 'levers and stored energy' and the 'stretchy vine'. (Inference + justification.)"},
+         {q:"Why does the writer end with Sofia's quote? What is its effect?", model:"It captures the theme — ingenuity beats equipment. The contrast of 'no phone' with 'a catapult and an idea' leaves the reader with a clear message of resourcefulness."}
+       ],
+       design:"Design and build a mini catapult from sticks and rubber bands. Test how far it launches a small object.", designId:"d_catapult"}
+    ]},
+    {id:"u2", title:"Unit 2 · Formal & news texts", lessons:[
+      {id:"ri2", title:"A city plants a million trees", field:"Climate · local & global", register:"Formal", type:"News report",
+       text:`<p>The city of Greenford has announced that it has planted its one-millionth tree, completing a five-year project to cool its streets and clean its air. Officials report that average summer temperatures in the most shaded districts have already fallen by up to two degrees.</p><p>The initiative began after a record heatwave, when residents demanded action. Volunteers, schools and local businesses joined city workers to plant native species along roads, in parks, and on rooftops.</p><p>'Trees are the cheapest air conditioners we have,' said the project's lead scientist. The city now plans to share its method with neighbouring towns, turning a local idea into a regional movement.</p>`,
+       mcqs:[
+         {q:"What milestone did Greenford reach?", options:["A million new homes","Its one-millionth tree","A five-degree drop in heat","A new park"], answer:1, exp:"It planted its one-millionth tree."},
+         {q:"What measurable effect is reported?", options:["Cleaner rivers","Summer temperatures fell up to 2°C in shaded districts","Fewer cars","More rain"], answer:1, exp:"Average summer temperatures fell by up to two degrees in shaded districts."},
+         {q:"What event sparked the project?", options:["A flood","A record heatwave","An election","A festival"], answer:1, exp:"It began after a record heatwave."},
+         {q:"What does the city plan to do next?", options:["Stop planting","Share its method with neighbouring towns","Cut down old trees","Build more roads"], answer:1, exp:"It plans to share its method regionally."}
+       ],
+       selfcheck:[
+         {q:"Explain the scientist's metaphor: 'Trees are the cheapest air conditioners we have.'", model:"A possible answer tours around: trees cool the air naturally (shade and water release) at almost no cost — like an air conditioner, but free. Justify from the reported 2°C temperature drop."},
+         {q:"How does this story connect a LOCAL action to a GLOBAL issue?", model:"A local tree-planting project tackles the global problem of rising heat / climate change; the text shows it spreading to other towns, suggesting local actions can scale up."}
+       ],
+       design:"Design a 'Greener [your area]' poster or map: propose where and what to plant in your own neighbourhood.", designId:"d_climate"}
+    ]}
+  ]},
+  advanced:{ label:"Advanced", tag:"Proficient", blurb:"Argument, nuance and explanation. Read critically and weigh evidence.", units:[
+    {id:"u1", title:"Unit 1 · Informal & opinion texts", lessons:[
+      {id:"ra1", title:"Can we really trust AI tutors?", field:"Technology · debate", register:"Informal", type:"Opinion blog",
+       text:`<p><i>Opinion · by a Year 12 student</i></p><p>Everyone keeps telling me that AI tutors are the future. Type a question, get a patient explanation at 2 a.m. — what's not to love? Mine genuinely helped me understand calculus at last.</p><p>But I've started to worry. When an answer arrives instantly, I stop wrestling with the problem myself — and the wrestling, my teacher insists, is where the learning actually happens. There's also the quiet question of trust: the tutor sounds confident even when it's wrong, and a tired student rarely checks.</p><p>I'm not anti-AI. I just think we should use it like a gym, not a taxi: something that makes us stronger, not something that carries us. The tool is brilliant; whether it helps or harms depends entirely on how we hold it.</p>`,
+       mcqs:[
+         {q:"What benefit does the writer admit?", options:["It is free","Instant, patient help that aided their calculus","It does homework for you","It replaces teachers"], answer:1, exp:"The writer says it helped them finally understand calculus."},
+         {q:"What is the writer's main worry?", options:["AI is too slow","Students stop thinking for themselves","AI costs too much","AI is boring"], answer:1, exp:"The worry is that instant answers stop students from 'wrestling' with problems."},
+         {q:"What does 'sounds confident even when it's wrong' warn about?", options:["The voice is loud","You can't always trust the answer","It speaks too fast","It is rude"], answer:1, exp:"It warns that confident-sounding answers may still be incorrect."},
+         {q:"What is the writer's overall position?", options:["Ban AI tutors","Use AI wisely — like a gym, not a taxi","Use AI for everything","Ignore teachers"], answer:1, exp:"Not anti-AI — use it to build skill, 'like a gym, not a taxi'."}
+       ],
+       selfcheck:[
+         {q:"Explain the comparison 'like a gym, not a taxi.' Why is it effective?", model:"A possible answer tours around: a gym makes you stronger through effort; a taxi does the work for you. It is effective because it captures the writer's argument — AI should build skill, not replace effort. Justify from the final paragraph."},
+         {q:"Find evidence that the writer is balanced, not one-sided.", model:"The writer admits real benefits ('helped me finally understand calculus', 'not anti-AI') alongside the risks. Presenting both sides shows a balanced, fair argument."}
+       ],
+       design:"Design a one-page 'Smart rules for using AI in our school' guide (poster or infographic).", designId:"d_machine"}
+    ]},
+    {id:"u2", title:"Unit 2 · Formal & explanatory texts", lessons:[
+      {id:"ra2", title:"How a wind turbine turns wind into power", field:"Physics · energy", register:"Formal", type:"Explanatory feature",
+       text:`<p>A wind turbine converts the movement of air into electricity through a chain of simple steps. As wind strikes the long, curved blades, the difference in air pressure on each side creates <b>lift</b> — the same force that allows aeroplanes to fly — and the blades begin to turn.</p><p>The blades are connected to a shaft, which spins a generator housed behind them. Inside the generator, the spinning motion moves magnets past coils of wire, and this changing magnetic field pushes electrons through the wire, producing an electric current.</p><p>Because faster wind carries more energy, turbines are placed where wind is strong and steady — on hilltops, open plains, or out at sea. A single large turbine can power hundreds of homes, turning an invisible breeze into usable energy.</p>`,
+       mcqs:[
+         {q:"What makes the blades turn?", options:["A motor","Lift from a difference in air pressure","Electricity from the generator","Falling water"], answer:1, exp:"Lift, from the air-pressure difference, turns the blades — like an aeroplane wing."},
+         {q:"What does the generator contain?", options:["Water and pipes","Magnets and coils of wire","Solar cells","Fuel"], answer:1, exp:"It contains magnets and coils of wire."},
+         {q:"How is the electric current produced?", options:["Burning fuel","Spinning magnets past coils create a changing magnetic field that pushes electrons","Sunlight on panels","Chemical reaction"], answer:1, exp:"The spinning motion moves magnets past coils, pushing electrons through the wire."},
+         {q:"Why are turbines placed on hilltops or at sea?", options:["It looks nice","Wind there is strong and steady","Land is cheap","To avoid people"], answer:1, exp:"Faster, steadier wind carries more energy."}
+       ],
+       selfcheck:[
+         {q:"Explain in your own words how movement becomes electricity here.", model:"A possible answer tours around the chain: wind → lift → blades spin → shaft → generator → magnets move past coils → current. Justify from paragraph 2 (the generator description). (Inference + justification.)"},
+         {q:"Why does the writer compare turbine blades to aeroplane wings?", model:"To explain the abstract idea of 'lift' using something familiar — both use a difference in air pressure to create an upward/turning force. It makes the science concrete."}
+       ],
+       design:"Design and build a model windmill/turbine. Test which blade shape spins fastest in front of a fan.", designId:"d_windmill"}
+    ]}
+  ]}
+};
+let RC_LEVEL="beginner";
+function rcUnits(levelKey){
+  const built=RCOURSE[levelKey].units;
+  const custom=mergedCustom('reading').filter(r=>r.level===levelKey);
+  return custom.length ? built.concat([{id:"uT", title:"Unit · Teacher-added texts", lessons:custom}]) : built;
+}
+function rcLessonCount(){ let n=0; Object.keys(RCOURSE).forEach(k=>rcUnits(k).forEach(u=>n+=u.lessons.length)); return n; }
+function findRc(id){ for(const k of Object.keys(RCOURSE)){ for(const u of rcUnits(k)){ const ls=u.lessons.find(x=>x.id===id); if(ls) return {levelKey:k, level:RCOURSE[k], unit:u, lesson:ls}; } } return null; }
+
+/* =========================================================================
+   DESIGN STUDIO  (RWD · Design = the bridge literacy)
+   Students turn reading & writing into a made artefact, scaffolded with
+   suggested tools. (Tools are external suggestions — check school policy,
+   age limits and current availability before use.)
+   ========================================================================= */
+const TOOLS = {
+  tinkercad:{name:"Tinkercad", use:"free, beginner-friendly 3D design & simple circuits", url:"https://www.tinkercad.com"},
+  canva:{name:"Canva", use:"posters, infographics & diagrams (templates + AI design)", url:"https://www.canva.com"},
+  drawio:{name:"diagrams.net (draw.io)", use:"free labelled diagrams, flowcharts & life cycles", url:"https://app.diagrams.net"},
+  phet:{name:"PhET Simulations", use:"interactive science sims to test how it works first", url:"https://phet.colorado.edu"},
+  scratch:{name:"Scratch", use:"code a moving or interactive version of your design", url:"https://scratch.mit.edu"},
+  microbit:{name:"micro:bit MakeCode", use:"code sensors & simple robotics for a working model", url:"https://makecode.microbit.org"},
+  excalidraw:{name:"Excalidraw", use:"quick sketch-style diagrams and plans", url:"https://excalidraw.com"},
+  ai:{name:"An AI assistant (with your teacher's permission)", use:"brainstorm ideas, ask 'how does X work?', plan steps", url:""}
+};
+const DESIGN_CRITERIA = [
+  "Connected to what you read or researched",
+  "Clear purpose — what problem it solves or what it shows",
+  "Well-designed and clearly labelled",
+  "Creative / original thinking",
+  "Explains how it works or how to make it",
+  "Reflection: what worked and what you'd improve next time"
+];
+const DSTUDIO = [
+  {id:"d_catapult", title:"Build a survival catapult", theme:"Engineering · forces", icon:"🪃",
+   brief:"Like Sofia in the reading, design and build a simple catapult from everyday materials, then test how far it can launch a small, safe object.",
+   readFirst:"Read 'Stranded! The catapult that saved a life' and find out how levers and stored (elastic) energy work.", lessonId:"ri1",
+   steps:["Research: how does a lever multiply force? Where is the energy stored?","Sketch your design and label the parts (arm, pivot, elastic, base).","Gather safe materials: lolly sticks, a spoon, rubber bands, a bottle cap.","Build it, then test: measure the launch distance three times and record the best.","Improve one thing (longer arm? more tension?) and test again."],
+   tools:["phet","excalidraw","tinkercad","ai"]},
+  {id:"d_windmill", title:"Make a model windmill / turbine", theme:"Energy", icon:"🌬️",
+   brief:"Design a model windmill that spins in front of a fan. Experiment with blade shape and number to make it spin as fast as possible.",
+   readFirst:"Read 'How a wind turbine turns wind into power' to understand lift, the shaft and the generator.", lessonId:"ra2",
+   steps:["Research: why does blade shape change how fast it spins?","Sketch two blade designs to compare.","Build a hub and blades from card, a pin, and a stick or pencil.","Test each design in front of a fan and time ten spins.","Record which design won and explain WHY using what you read."],
+   tools:["phet","drawio","tinkercad","ai"]},
+  {id:"d_solarcar", title:"Design a solar-powered car", theme:"Energy · transport", icon:"🚗",
+   brief:"Design (on paper or in 3D) a small car powered by the sun. Show how energy travels from the panel to the wheels.",
+   readFirst:"Research how solar panels turn sunlight into electricity, and how a small motor drives wheels.",
+   steps:["Research the parts: solar panel, motor, axle, wheels, chassis.","Sketch or model your car and label the energy path: sun → panel → motor → wheels.","Decide how to keep it light and reduce friction.","Describe how you would test it on a sunny day.","Note one design improvement for cloudy conditions."],
+   tools:["tinkercad","drawio","ai"]},
+  {id:"d_lifecycle", title:"Create a life-cycle diagram or poster", theme:"Biology", icon:"🌱",
+   brief:"Choose a living thing (a plant, a bee, a butterfly, a frog) and design a clear, labelled life-cycle diagram or poster a younger student could understand.",
+   readFirst:"Read 'Why bees matter' (or research your chosen organism) to get the stages right.", lessonId:"rb2",
+   steps:["Research the correct stages in order.","Plan a circular or step layout that shows the cycle clearly.","Draw or build each stage with a short label in your own words.","Add one 'Did you know?' fact and one image idea per stage.","Check: could a younger student follow it without help?"],
+   tools:["canva","drawio","excalidraw","ai"]},
+  {id:"d_climate", title:"Design a climate-change solution", theme:"Sustainability · local & global", icon:"🌍",
+   brief:"Propose ONE realistic action for your school or neighbourhood that helps with climate change, and present it as a persuasive poster or infographic.",
+   readFirst:"Read 'A city plants a million trees' for how a small local action can grow into a big one.", lessonId:"ri2",
+   steps:["Pick one local problem (heat, waste, water, transport).","Research one workable solution and one fact or statistic to support it.","Design a poster: bold headline, one image idea, one fact, one call to action.","Name your audience (students? the council? families?).","Add a line on how you'd measure if it worked."],
+   tools:["canva","ai","drawio"]},
+  {id:"d_disaster", title:"Natural-disaster mitigation plan", theme:"Resilience", icon:"🌊",
+   brief:"Choose a natural hazard (flood, earthquake, wildfire, storm) and design a clear, step-by-step 'what to do' procedure or infographic for your community.",
+   readFirst:"Research how the chosen hazard happens and what experts advise people to do before, during and after.",
+   steps:["Research the hazard: causes, warning signs, official advice.","Organise your plan into BEFORE / DURING / AFTER.","Use numbered steps and simple icons — keep it calm and clear.","Make it usable in an emergency (short, readable, no jargon).","Add one local detail (a safe meeting point, an emergency number)."],
+   tools:["canva","drawio","ai"]},
+  {id:"d_machine", title:"Invent a machine that solves a problem", theme:"Design thinking", icon:"⚙️",
+   brief:"Identify a small everyday problem and design a machine, gadget, or system that solves it. Read or research how similar things work before you design — just like the students who studied 'how-to' guides before building a drone.",
+   readFirst:"Choose something to read first: a how-to, an explainer, or an article about a similar invention. Reading gives your design a purpose.",
+   steps:["Name the problem and who has it.","Research how similar machines or solutions already work.","Sketch your design and label how each part does its job.","Explain the 'how it works' in 3–5 steps.","Note what you'd prototype first and how you'd test it."],
+   tools:["tinkercad","scratch","microbit","drawio","ai"]}
+];
+function allChallenges(){ return DSTUDIO.concat(mergedCustom('design')); }
+function findChallenge(id){ return allChallenges().find(d=>d.id===id); }
+function allSpeaking(){ return SPEAKING.concat(mergedCustom('speaking')); }
+
+/* ---- Custom (teacher-authored) content: local store + optional cloud delivery ---- */
+function getCustom(kind){ return Store.get("ican_custom_"+kind)||[]; }
+function setCustom(kind,a){ Store.set("ican_custom_"+kind,a); }
+function addCustom(kind,item){ const a=getCustom(kind); a.push(item); setCustom(kind,a); }
+function delCustom(kind,id){ setCustom(kind, getCustom(kind).filter(x=>x.id!==id)); }
+let CLOUD_CONTENT={reading:[],design:[],writing:[],speaking:[]};
+function mergedCustom(kind){
+  const local=getCustom(kind), cloud=(CLOUD_CONTENT&&CLOUD_CONTENT[kind])||[];
+  const ids=new Set(local.map(x=>x.id));
+  return local.concat(cloud.filter(x=>x&&!ids.has(x.id)));
+}
+function publishContent(cb){
+  const url=cloudUrl(); if(!url){ if(cb)cb(false); return; }
+  const payload={reading:getCustom('reading'),design:getCustom('design'),writing:getCustom('writing'),speaking:getCustom('speaking')};
+  try{ fetch(url,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({_content:true,payload})}); if(cb)cb(true); }
+  catch(e){ if(cb)cb(false); }
+}
+let _ccbN=0;
+function pullContent(cb){
+  const url=cloudUrl(); if(!url){ if(cb)cb(); return; }
+  const name="__icanCC"+(++_ccbN); let done=false;
+  const s=document.createElement("script");
+  window[name]=function(data){ done=true; try{s.remove();}catch(e){} delete window[name]; if(data&&typeof data==='object'){ ["reading","design","writing","speaking"].forEach(k=>{ if(Array.isArray(data[k])) CLOUD_CONTENT[k]=data[k]; }); } if(cb)cb(); };
+  s.onerror=()=>{ if(!done){ try{s.remove();}catch(e){} if(cb)cb(); } };
+  s.src=url+(url.includes("?")?"&":"?")+"action=content&callback="+name+"&t="+Date.now();
+  document.body.appendChild(s);
+  setTimeout(()=>{ if(!done){ try{s.remove();}catch(e){} if(cb)cb(); } },8000);
+}
+
+/* =========================================================================
    ROUTER / SCREENS
    ========================================================================= */
 const app = () => document.getElementById('app');
@@ -791,16 +1234,29 @@ const ROUTES = {
     <div class="wrap screen">
       <div class="section-title">
         <div>
-          <h1 style="font-size:2.4rem">Choose a pathway</h1>
-          <p style="color:var(--muted);margin:6px 0 0">Pick a skill. Switch difficulty any time inside an activity.</p>
+          <h1 style="font-size:2.4rem">Welcome${SESSION&&SESSION.name?', '+esc(SESSION.name.split(' ')[0]):''} 👋</h1>
+          <p style="color:var(--muted);margin:6px 0 0">Start with a <b>course</b> to learn step by step, or jump into the <b>quizzes</b> to practise.</p>
         </div>
       </div>
+
+      <h2 style="font-family:'Fraunces';font-size:1.6rem;margin:6px 0 2px;color:var(--ink)">Your RWD journey — courses</h2>
+      <p style="color:var(--muted);margin:0 0 14px;font-size:.92rem">Read → Write → Design, with teaching, model answers and instant feedback. Reading feeds Writing; Writing becomes a designed artefact.</p>
       <div class="grid c4">
-        <button class="path read" onclick="go('reading')"><div><div class="ic">📖</div><h3>Reading</h3></div><span>${READING.length} texts · articles, blogs, podcasts, data</span></button>
+        <button class="path" style="background:linear-gradient(135deg,#2b2f63,#0c8a72)" onclick="go('readingCourse')"><div><div class="ic">🔭</div><h3>Reading Course</h3></div><span>The R · ${rcLessonCount()} levelled texts</span></button>
+        <button class="path" style="background:linear-gradient(135deg,#0c8a72,#15183A)" onclick="go('writingCourse')"><div><div class="ic">🎓</div><h3>Writing Course</h3></div><span>The W · ${wcLessonCount()} lessons</span></button>
+        <button class="path" style="background:linear-gradient(135deg,#E6464B,#8B5CF6)" onclick="go('dstudio')"><div><div class="ic">🎨</div><h3>Design Studio</h3></div><span>The bridge · ${allChallenges().length} make-it challenges</span></button>
+        <button class="path" style="background:linear-gradient(135deg,#8B5CF6,#E6464B)" onclick="go('vocab')"><div><div class="ic">📚</div><h3>Vocabulary Bank</h3></div><span>${myVocab().length} words · build 5 per lesson</span></button>
+      </div>
+
+      <h2 style="font-family:'Fraunces';font-size:1.6rem;margin:30px 0 2px;color:var(--ink)">Quizzes — differentiated practice</h2>
+      <p style="color:var(--muted);margin:0 0 14px;font-size:.92rem">Stand-alone practice with the <b>Standard ⇄ Supported</b> slider. Every activity has an <b>online</b> version and a printable <b>📄 PDF worksheet</b> for paper-based practice.</p>
+      <div class="grid c4">
+        <button class="path read" onclick="go('reading')"><div><div class="ic">📖</div><h3>Reading</h3></div><span>${READING.length} texts · articles, blogs, data</span></button>
         <button class="path write" onclick="go('writing')"><div><div class="ic">✍️</div><h3>Writing</h3></div><span>${WRITING.length} multimodal tasks</span></button>
         <button class="path listen" onclick="go('listening')"><div><div class="ic">🎧</div><h3>Listening</h3></div><span>Comprehension + timed spelling</span></button>
         <button class="path speak" onclick="go('speaking')"><div><div class="ic">🎤</div><h3>Speaking</h3></div><span>Prompts, debates & presentations</span></button>
       </div>
+
       <div class="card" style="margin-top:24px">
         <h3 style="font-size:1.2rem">Your recent results</h3>
         ${myResultsTable()}
@@ -843,6 +1299,7 @@ const ROUTES = {
       </div>
       <div class="reader-tools">
         <button class="btn ghost sm" onclick="readSelector('readBody')">▶ Read to me</button>
+        <button class="btn ghost sm" onclick="wsReadingPractice('${r.id}')">📄 Worksheet (PDF)</button>
         <button class="btn ghost sm" onclick="stopSpeak()">■ Stop</button>
         <button class="btn ghost sm" id="hlBtn2" onclick="toggleHighlighter()">✏️ Highlighter</button>
         <button class="btn ghost sm" onclick="setFont(0.1)">A+</button>
@@ -890,6 +1347,7 @@ const ROUTES = {
         <p style="margin:0 0 12px"><b>Your task.</b> ${w.prompt}</p>
         <p style="margin:0 0 6px"><b>Audience:</b> ${w.audience}.</p>
         <p style="margin:0"><b>Length:</b> ${w.wordCount}.</p>
+        <button class="btn ghost sm" style="margin-top:10px" onclick="wsWritingTask('${w.id}')">📄 Worksheet (PDF)</button>
       </div>
 
       <div class="card" style="margin:14px 0;border-color:var(--coral)">
@@ -968,6 +1426,7 @@ const ROUTES = {
         <button class="btn" onclick="playComp()">▶ Play</button>
         <button class="btn ghost" onclick="stopSpeak()">■ Stop</button>
         <button class="btn ghost" onclick="playComp()">↻ Replay</button>
+        <button class="btn ghost" onclick="wsListening('${c.id}')">📄 Worksheet</button>
         <span class="label">Listen first, then answer. You can replay as many times as you like.</span>
       </div>
       <details class="script"><summary>Show transcript (for support — try listening first)</summary>
@@ -992,11 +1451,277 @@ const ROUTES = {
       <h1 style="font-size:2.2rem">🎤 Speaking &amp; Oracy</h1>
       <p style="color:var(--muted);max-width:660px">Pick a prompt and speak. Use the recorder to capture a live transcript of what you say (so you can review your fluency), then self-assess. Presentation tasks connect reading, writing and speaking — prepare slides first, then present.</p>
       <div class="tabs" id="spkTabs">
-        ${SPEAKING.map((s,i)=>`<button class="${i===0?'on':''}" onclick="showSpeakCat(${i})">${s.cat}</button>`).join('')}
+        ${allSpeaking().map((s,i)=>`<button class="${i===0?'on':''}" onclick="showSpeakCat(${i})">${s.cat}</button>`).join('')}
       </div>
       <div id="spkBody"></div>
     </div>`;
     showSpeakCat(0);
+  },
+
+  /* ---------------- WRITING COURSE ---------------- */
+  writingCourse(){
+    const lv=WCOURSE[WC_LEVEL]; const units=wcUnits(WC_LEVEL);
+    const done=wcDone();
+    const total=units.reduce((a,u)=>a+u.lessons.length,0);
+    const doneHere=units.reduce((a,u)=>a+u.lessons.filter(l=>done.includes(l.id)).length,0);
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Pathways</button>
+      <h1 style="font-size:2.2rem">🎓 Writing Course</h1>
+      <p style="color:var(--muted);max-width:680px">Learn writing step by step. Choose your level, then work through three units. Every lesson teaches a skill, gives you a prompt, marks your writing against a rubric, and shows a model answer. Build five new words into your <b>Vocabulary Bank</b> each lesson.</p>
+      <div class="lvl-tabs">
+        ${Object.keys(WCOURSE).map(k=>`<button class="${WC_LEVEL===k?'on':''}" onclick="setWcLevel('${k}')">${WCOURSE[k].label} <span style="font-weight:400;opacity:.7">· ${WCOURSE[k].tag}</span></button>`).join('')}
+      </div>
+      <p style="color:var(--muted);margin-top:-4px">${lv.blurb}</p>
+      <div class="progress" style="max-width:420px"><span style="width:${total?Math.round(doneHere/total*100):0}%"></span></div>
+      <p style="font-size:.8rem;color:var(--muted)">${doneHere} of ${total} lessons complete at this level</p>
+      <div style="margin-top:16px">
+        ${units.map(u=>`
+          <div class="unit">
+            <h3>${u.title}</h3>
+            ${u.lessons.map(l=>`
+              <div class="lesson-row">
+                <div><div class="t">${l.title} ${done.includes(l.id)?'<span class="badge-done">✓ done</span>':''}</div><div class="ty">${l.type}</div></div>
+                <button class="btn sm" onclick="go('wcLesson','${l.id}')">${done.includes(l.id)?'Review':'Start'} →</button>
+              </div>`).join('')}
+          </div>`).join('')}
+      </div>
+    </div>`;
+  },
+  wcLesson(id){
+    const f=findLesson(id); if(!f){ go('writingCourse'); return; }
+    const {lesson:l, unit:u, level:lv}=f;
+    const draft=getDraft(id);
+    const vcount=lessonVocabCount(id);
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('writingCourse')">← ${lv.label} course</button>
+      <div class="ty" style="color:var(--coral-dk);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600">${lv.label} · ${u.title.replace(/^Unit \d+ · /,'')} · ${l.type}</div>
+      <h1 style="font-size:2rem">${l.title}</h1>
+
+      <div class="teach">
+        <b style="color:var(--teal-dk)">How to do it</b>
+        <ul>${l.teach.map(t=>`<li>${t}</li>`).join('')}</ul>
+      </div>
+
+      <div class="card" style="border-color:var(--coral)"><p style="margin:0"><b>✍️ Your task.</b> ${l.prompt}</p>
+        <p style="margin:8px 0 0;font-size:.82rem;color:var(--muted)">Suggested length: about ${l.minWords}+ words.</p></div>
+      <button class="btn ghost sm" style="margin-top:10px" onclick="wsWritingLesson('${id}')">📄 Worksheet (PDF)</button>
+
+      <div class="field" style="margin-top:14px"><label>Write your response (it saves automatically)</label>
+        <textarea id="wcText" style="min-height:200px" oninput="saveDraft('${id}')" placeholder="Start writing here…">${esc(draft)}</textarea>
+        <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-top:4px"><span id="wcWords">0 words</span><span>Autosaved ✓</span></div>
+      </div>
+      <button class="btn teal" onclick="getWcFeedback('${id}')">Get feedback →</button>
+      <button class="btn ghost" onclick="document.getElementById('modelBox').classList.toggle('hidden')">Show model answer</button>
+      <div id="wcFeedback" style="margin-top:18px"></div>
+      <div id="modelBox" class="card hidden" style="margin-top:14px;border-color:var(--teal)">
+        <b style="color:var(--teal-dk)">Model answer — compare, don't copy</b>
+        <div style="margin-top:8px">${l.model}</div>
+      </div>
+
+      <div class="vocab-mini">
+        <b style="color:var(--teal-dk)">📚 Build your vocabulary (add at least 5 from this lesson)</b>
+        <p style="font-size:.85rem;color:var(--muted);margin:4px 0 10px">For each word: add the word, a sentence using it, and (optionally) record yourself saying it. <span id="vCount" style="font-weight:600;color:var(--ink)">${vcount}/5 added</span></p>
+        <div class="field" style="margin-bottom:8px"><input id="vWord" placeholder="New word" style="text-transform:none"></div>
+        <div class="field" style="margin-bottom:8px"><input id="vSentence" placeholder="Use it in a sentence of your own"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+          <button class="btn sm dark" id="vRecBtn" onclick="toggleVocabRec()">● Record me</button>
+          <button class="btn sm ghost" id="vPlayBtn" onclick="playVocabRec()" disabled>▶ Play mine</button>
+          <button class="btn sm ghost" onclick="speak((document.getElementById('vWord').value||'').trim()||'word')">🔊 Hear model</button>
+          <span id="vRecStatus" style="font-size:.8rem;color:var(--muted)"></span>
+        </div>
+        <button class="btn sm teal" onclick="addVocabFromLesson('${id}')">+ Add to my bank</button>
+        <span id="vMsg" style="font-size:.82rem;color:var(--teal-dk);margin-left:8px"></span>
+      </div>
+
+      <div id="wcComplete"></div>
+    </div>`;
+    updateWcWords();
+    setTimeout(updateWcWords,50);
+  },
+
+  /* ---------------- VOCABULARY BANK ---------------- */
+  vocab(){
+    const list=myVocab();
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Pathways</button>
+      <h1 style="font-size:2.2rem">📚 Vocabulary Bank</h1>
+      <p style="color:var(--muted);max-width:660px">Your growing word collection. Each lesson, add at least five words with a sentence of your own and a pronunciation recording. ${list.length} word${list.length===1?'':'s'} so far.</p>
+      <div class="card" style="margin:14px 0">
+        <b>Add a word</b>
+        <div class="field" style="margin:10px 0 8px"><input id="vWord" placeholder="Word"></div>
+        <div class="field" style="margin-bottom:8px"><input id="vSentence" placeholder="A sentence using the word"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">
+          <button class="btn sm dark" id="vRecBtn" onclick="toggleVocabRec()">● Record me</button>
+          <button class="btn sm ghost" id="vPlayBtn" onclick="playVocabRec()" disabled>▶ Play mine</button>
+          <button class="btn sm ghost" onclick="speak((document.getElementById('vWord').value||'').trim()||'word')">🔊 Hear model</button>
+          <span id="vRecStatus" style="font-size:.8rem;color:var(--muted)"></span>
+        </div>
+        <button class="btn sm teal" onclick="addVocabFromLesson(null)">+ Add</button>
+        <span id="vMsg" style="font-size:.82rem;color:var(--teal-dk);margin-left:8px"></span>
+      </div>
+      <div id="vocabList">${renderVocabList(list)}</div>
+    </div>`;
+  },
+
+  /* ---------------- READING COURSE ---------------- */
+  readingCourse(){
+    const lv=RCOURSE[RC_LEVEL]; const units=rcUnits(RC_LEVEL); const done=rcDone();
+    const total=units.reduce((a,u)=>a+u.lessons.length,0);
+    const doneHere=units.reduce((a,u)=>a+u.lessons.filter(l=>done.includes(l.id)).length,0);
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Pathways</button>
+      <h1 style="font-size:2.2rem">🔭 Reading Course</h1>
+      <p style="color:var(--muted);max-width:680px">Levelled reading on contemporary themes, in both informal and formal styles. Answer the multiple-choice questions for an <b>instant score</b>, then use the self-check questions to grade your own thinking against a model answer. Every text ends with a <b>design challenge</b> — the bridge to the Design Studio.</p>
+      <div class="lvl-tabs">
+        ${Object.keys(RCOURSE).map(k=>`<button class="${RC_LEVEL===k?'on':''}" onclick="setRcLevel('${k}')">${RCOURSE[k].label} <span style="font-weight:400;opacity:.7">· ${RCOURSE[k].tag}</span></button>`).join('')}
+      </div>
+      <p style="color:var(--muted);margin-top:-4px">${lv.blurb}</p>
+      <div class="progress" style="max-width:420px"><span style="width:${total?Math.round(doneHere/total*100):0}%"></span></div>
+      <p style="font-size:.8rem;color:var(--muted)">${doneHere} of ${total} texts completed at this level</p>
+      <div style="margin-top:16px">
+        ${units.map(u=>`
+          <div class="unit">
+            <h3>${u.title}</h3>
+            ${u.lessons.map(l=>`
+              <div class="lesson-row">
+                <div><div class="t">${l.title} ${done.includes(l.id)?'<span class="badge-done">✓ done</span>':''}</div><div class="ty">${l.register} · ${l.type} · ${l.field}</div></div>
+                <button class="btn sm" onclick="go('rcLesson','${l.id}')">${done.includes(l.id)?'Review':'Read'} →</button>
+              </div>`).join('')}
+          </div>`).join('')}
+      </div>
+    </div>`;
+  },
+  rcLesson(id){
+    const f=findRc(id); if(!f){ go('readingCourse'); return; }
+    const {lesson:l, level:lv}=f; RC_STATE={lessonId:id, selfMarks:{}, graded:false};
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('readingCourse')">← ${lv.label} reading</button>
+      <div class="ty" style="color:var(--coral-dk);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600">${lv.label} · ${l.register} · ${l.type} · ${l.field}</div>
+      <h1 style="font-size:2rem">${l.title}</h1>
+      <div class="reader-tools">
+        <button class="btn ghost sm" onclick="readSelector('rcText')">▶ Read to me</button>
+        <button class="btn ghost sm" onclick="wsReadingCourse('${id}')">📄 Worksheet (PDF)</button>
+        <button class="btn ghost sm" onclick="stopSpeak()">■ Stop</button>
+        <button class="btn ghost sm" id="hlBtn2" onclick="toggleHighlighter()">✏️ Highlighter</button>
+        <button class="btn ghost sm" onclick="setFont(0.1)">A+</button>
+        <button class="btn ghost sm" onclick="setFont(-0.1)">A−</button>
+      </div>
+      <div class="passage" id="rcText">${l.text}</div>
+
+      <h2 style="font-size:1.4rem;margin:24px 0 4px">Comprehension (instant score)</h2>
+      <div id="rcMcq"></div>
+
+      <h2 style="font-size:1.4rem;margin:24px 0 4px">Self-check — grade your own thinking</h2>
+      <p style="color:var(--muted);font-size:.9rem;margin-top:0">Write your answers. When you submit, a model answer with justification appears and you give yourself a fair mark.</p>
+      <div id="rcSelf"></div>
+
+      <button class="btn teal" id="rcSubmit" onclick="gradeRc('${id}')">Submit & self-check</button>
+      <div id="rcResult"></div>
+
+      <div class="card hidden" id="rcDesign" style="margin-top:20px;border-color:var(--coral)">
+        <b style="color:var(--coral-dk)">🎨 Now design it — the RWD bridge</b>
+        <p style="margin:8px 0 10px">${l.design}</p>
+        ${l.designId?`<button class="btn sm" onclick="go('dChallenge','${l.designId}')">Open this challenge in the Design Studio →</button>`:`<button class="btn sm ghost" onclick="go('dstudio')">Go to the Design Studio →</button>`}
+      </div>
+    </div>`;
+    // render MCQs
+    document.getElementById('rcMcq').innerHTML = l.mcqs.map((q,i)=>`
+      <div class="q" data-i="${i}"><div class="qhead">${i+1}. ${q.q}</div>
+        ${q.options.map((o,j)=>`<label class="opt"><input type="radio" name="rmc${i}" value="${j}"><span>${o}</span></label>`).join('')}
+        <div class="feedback hidden"></div></div>`).join('');
+    // render self-check
+    document.getElementById('rcSelf').innerHTML = l.selfcheck.map((q,i)=>`
+      <div class="q" data-si="${i}"><div class="qhead">💭 ${i+1}. ${q.q}</div>
+        <textarea name="rsc${i}" style="min-height:80px" placeholder="Write your answer…"></textarea>
+        <div class="sc-model hidden" style="margin-top:10px"></div>
+        <div class="sc-grade hidden" style="margin-top:10px"></div>
+      </div>`).join('');
+  },
+
+  /* ---------------- DESIGN STUDIO ---------------- */
+  dstudio(){
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Pathways</button>
+      <h1 style="font-size:2.2rem">🎨 Design Studio</h1>
+      <p style="color:var(--muted);max-width:700px"><b>Design is the bridge.</b> Here you turn what you've <i>read</i> and <i>written</i> into something you <i>make</i>. Each challenge guides you: read & research, plan, design (with suggested tools), make it, then reflect. Find a purpose for reading — and end up creating something real.</p>
+      <p class="note" style="max-width:700px">The suggested tools are external websites/apps. Check your school's policy, any age limits, and current availability first, and use AI tools only with your teacher's permission.</p>
+      <div class="grid c2" style="margin-top:12px">
+        ${allChallenges().map(d=>`
+          <div class="item-row" style="flex-direction:column;align-items:flex-start">
+            <div style="font-size:1.8rem">${d.icon}</div>
+            <span class="genre-tag">${d.theme}</span>
+            <h3 style="font-size:1.2rem;margin:2px 0">${d.title}</h3>
+            <div class="meta">${doneTag('Design',d.title)}</div>
+            <button class="btn sm" style="margin-top:12px" onclick="go('dChallenge','${d.id}')">Open challenge →</button>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  },
+  dChallenge(id){
+    const d=findChallenge(id); if(!d){ go('dstudio'); return; }
+    const f=d.lessonId?findRc(d.lessonId):null;
+    const draft=getDraft("design_"+id);
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('dstudio')">← Design Studio</button>
+      <div style="font-size:2rem">${d.icon}</div>
+      <span class="genre-tag">${d.theme}</span>
+      <h1 style="font-size:2rem">${d.title}</h1>
+      <div class="card" style="border-color:var(--coral)"><p style="margin:0"><b>The brief.</b> ${d.brief}</p></div>
+
+      <h3 class="sub" style="margin-top:22px">1 · Read &amp; research first</h3>
+      <p style="margin-top:2px">${d.readFirst}</p>
+      ${f?`<button class="btn ghost sm" onclick="go('rcLesson','${d.lessonId}')">Open the reading: “${f.lesson.title}” →</button>`:''}
+
+      <h3 class="sub">2 · Plan it (write)</h3>
+      <p style="color:var(--muted);margin-top:2px;font-size:.9rem">Steps to work through:</p>
+      <div class="teach"><ul>${d.steps.map(s=>`<li>${s}</li>`).join('')}</ul></div>
+      <div class="field"><label>Your design plan (saves automatically)</label>
+        <textarea id="dPlan" style="min-height:130px" oninput="saveDraft('design_${id}')" placeholder="Write your plan: the problem, your idea, the parts, how it works…">${esc(draft)}</textarea></div>
+
+      <h3 class="sub">3 · Design it with these tools</h3>
+      <p style="color:var(--muted);margin-top:2px;font-size:.9rem">Optional helpers — pick what suits your idea:</p>
+      <div class="grid c2">
+        ${d.tools.map(t=>{const T=TOOLS[t]; return `<div class="item-row" style="align-items:flex-start">
+          <div><div class="t" style="font-weight:600;color:var(--ink)">${T.name}</div><div class="meta">${T.use}</div></div>
+          ${T.url?`<a class="btn sm ghost" href="${T.url}" target="_blank" rel="noopener">Open ↗</a>`:''}
+        </div>`;}).join('')}
+      </div>
+
+      <h3 class="sub">4 · Make &amp; describe your artefact</h3>
+      <div class="field"><label>Describe what you made (and how it works)</label>
+        <textarea id="dDesc" style="min-height:110px" placeholder="What did you build/design? What does each part do? What did you read that helped? What would you improve?"></textarea></div>
+      <p class="note">Attach a photo or file of your artefact: <input type="file" id="dFile" accept="image/*,.pdf,.ppt,.pptx" style="font-size:.85rem"> — filename recorded; connect a backend to store the file.</p>
+
+      <h3 class="sub">5 · Self-check</h3>
+      <ul class="rubric" id="dCrit">${DESIGN_CRITERIA.map((c,i)=>`<li><input type="checkbox" id="dc${i}"><label for="dc${i}">${c}</label></li>`).join('')}</ul>
+      <button class="btn teal" onclick="saveDesign('${id}','${escq(d.title)}')">Save my design</button>
+      <div id="dResult"></div>
+    </div>`;
+  },
+
+  /* ---------------- TEACHER CONTENT PANEL ---------------- */
+  content(arg){
+    const tab = (arg&&arg.tab) || CONTENT_TAB || "reading";
+    CONTENT_TAB = tab;
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('teacher')">← Dashboard</button>
+      <h1 style="font-size:2.2rem">✏️ Manage content</h1>
+      <p style="color:var(--muted);max-width:700px">Add your own readings, design briefs, writing lessons and speaking prompts — no code needed. They appear for students inside the matching course (under a “Teacher-added” section). Saved on this device; use <b>Publish / Backup</b> to share them or move them between devices.</p>
+      <div class="tabs">
+        ${[["reading","📖 Readings"],["writing","✍️ Writing lessons"],["design","🎨 Design briefs"],["speaking","🎤 Speaking prompts"],["share","☁️ Publish / Backup"]]
+          .map(([k,l])=>`<button class="${tab===k?'on':''}" onclick="go('content',{tab:'${k}'})">${l}</button>`).join('')}
+      </div>
+      <div id="contentBody"></div>
+    </div>`;
+    renderContentTab(tab);
   },
 
   /* ---------------- TEACHER DASHBOARD ---------------- */
@@ -1010,6 +1735,7 @@ const ROUTES = {
         <div><h1 style="font-size:2.2rem">Teacher dashboard</h1>
         <p style="color:var(--muted);margin:6px 0 0">${res.length} recorded attempt(s) · ${students.length} student(s) · ${online?'<span style="color:var(--teal-dk)">● online sync on</span>':'local only (this device)'}</p></div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn dark" onclick="go('content')">✏️ Manage content</button>
           <button class="btn" onclick="exportExcel()">⬇ Export to Excel</button>
           <button class="btn ghost" onclick="go('teacher')">↻ Refresh</button>
         </div>
@@ -1074,14 +1800,14 @@ function doStudentLogin(){
   const id = code+"::"+name.toLowerCase();
   SESSION={role:"student", name, class:cls, code, id};
   setStudent(id,{name, class:cls, code});
-  if(cloudUrl()){ err.textContent="Loading your online record…"; refreshCloud(()=>go('dashboard')); }
+  if(cloudUrl()){ err.textContent="Loading your online record…"; pullContent(()=>refreshCloud(()=>go('dashboard'))); }
   else go('dashboard');
 }
 function doTeacherLogin(){
   const code=val('tCode'); const err=document.getElementById('tErr');
   if(code!==CONFIG.teacherCode){ err.textContent="Incorrect teacher code."; return; }
   SESSION={role:"teacher"};
-  if(cloudUrl()){ err.textContent="Loading online records…"; refreshCloud(()=>go('teacher')); }
+  if(cloudUrl()){ err.textContent="Loading online records…"; pullContent(()=>refreshCloud(()=>go('teacher'))); }
   else go('teacher');
 }
 
@@ -1201,7 +1927,7 @@ function spellTile(key){
   return `<div class="item-row" style="flex-direction:column;align-items:flex-start">
     <h3 style="font-size:1.15rem;margin:0">${c.label}</h3>
     <div class="meta">${c.sub} · bank of ${c.items.length} ${doneTag('Listening',c.label)}</div>
-    <button class="btn sm" style="margin-top:12px" onclick="go('spellQuiz','${key}')">Start round →</button>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" onclick="go('spellQuiz','${key}')">Start round →</button><button class="btn ghost sm" onclick="wsSpelling('${key}')">📄 Sheet</button></div>
   </div>`;
 }
 function startSpellTimer(total){
@@ -1307,8 +2033,9 @@ function finishSpell(){
    ========================================================================= */
 function showSpeakCat(i){
   document.querySelectorAll('#spkTabs button').forEach((b,j)=>b.classList.toggle('on',j===i));
-  const s=SPEAKING[i];
+  const s=allSpeaking()[i];
   document.getElementById('spkBody').innerHTML =
+    `<div style="margin-bottom:14px"><button class="btn ghost sm" onclick="wsSpeaking(${i})">📄 Download these prompts (PDF)</button></div>` +
     (s.note?`<p class="note" style="margin-bottom:16px">💬 ${s.note}</p>`:'') +
     s.prompts.map((p,k)=>`
     <div class="card" style="margin-bottom:14px">
@@ -1395,6 +2122,9 @@ function exportExcel(){
   // 3) Summary
   const sum=summariseStudents(res).map(s=>({Name:s.name,Class:s.class,Attempts:s.attempts,Avg_percent:s.avg,Skills:s.skills.join(', '),Feedback:(students[s.key]?.feedback)||''}));
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sum.length?sum:[{Name:'',Class:'',Attempts:'',Avg_percent:'',Skills:'',Feedback:''}]), "Summary");
+  // 4) Vocabulary bank (local to this device)
+  const vocabRows=getAllVocab().map(v=>({Student:v.name||'', Word:v.word, Sentence:v.sentence||'', Recorded:v.audioId?'yes':'no', Date:new Date(v.date).toLocaleString()}));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(vocabRows.length?vocabRows:[{Student:'',Word:'',Sentence:'',Recorded:'',Date:''}]), "Vocabulary");
   XLSX.writeFile(wb, "iCAN-results-"+new Date().toISOString().slice(0,10)+".xlsx");
 }
 
@@ -1452,11 +2182,487 @@ function readPage(){ readSelector('readBody')||readSelector('app'); }
 function readSelector(id){ const el=document.getElementById(id); if(!el)return false; stopSpeak(); speak(el.innerText.slice(0,4000)); return true; }
 
 /* =========================================================================
-   UTIL
+   WRITING COURSE — drafts, feedback, progress
    ========================================================================= */
-function val(id){ const e=document.getElementById(id); return e?e.value:""; }
+function sid(){ return SESSION&&SESSION.id ? SESSION.id : "guest"; }
+function setWcLevel(k){ WC_LEVEL=k; go('writingCourse'); }
+function getDraft(id){ return (Store.get("ican_wc_drafts")||{})[sid()+"::"+id] || ""; }
+function saveDraft(id){ const all=Store.get("ican_wc_drafts")||{}; all[sid()+"::"+id]=val('wcText'); Store.set("ican_wc_drafts",all); updateWcWords(); }
+function updateWcWords(){ const t=(val('wcText')||"").trim(); const el=document.getElementById('wcWords'); if(el) el.textContent=(t?t.split(/\s+/).filter(Boolean).length:0)+" words"; }
+function wcDone(){ return (Store.get("ican_wc_done")||{})[sid()] || []; }
+function markWcDone(id){ const all=Store.get("ican_wc_done")||{}; const arr=all[sid()]||[]; if(!arr.includes(id)){ arr.push(id); all[sid()]=arr; Store.set("ican_wc_done",all); } }
+
+function getWcFeedback(id){
+  const f=findLesson(id); const text=(val('wcText')||"").trim();
+  const box=document.getElementById('wcFeedback');
+  if(text.split(/\s+/).filter(Boolean).length<8){ box.innerHTML=`<div class="feedback">Write a little more first — at least a couple of sentences — then ask for feedback.</div>`; return; }
+  const r=wcFeedback(text, f.lesson);
+  const bandLabel=["","Beginning","Developing","Good","Excellent"][Math.round(r.avg)];
+  box.innerHTML=`
+    <div class="card" style="border-color:var(--teal)">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <div><b style="font-family:'Fraunces';font-size:1.3rem;color:var(--ink)">Feedback · ${r.rub.label}</b>
+          <div style="font-size:.85rem;color:var(--muted)">Estimated level: <b>${bandLabel}</b> (${r.pct}%)</div></div>
+        <div class="fb-band b${Math.round(r.avg)}" style="width:54px;height:54px;font-size:1.4rem">${Math.round(r.avg)}</div>
+      </div>
+      <div style="margin-top:12px">
+        ${r.rows.map(row=>`<div class="fb-row"><span class="fb-band b${row.band}">${row.band}</span>
+          <div class="body"><b>${row.c}</b><br><span style="color:var(--muted)">${row.note}</span></div></div>`).join('')}
+      </div>
+      <p style="font-size:.82rem;color:var(--muted);margin:12px 0 0">This is automatic, rubric-based feedback to guide your next draft. Your teacher gives the final mark. Compare your work with the model answer above.</p>
+    </div>`;
+  if(SESSION&&SESSION.role==="student"){
+    saveResult({date:Date.now(), name:SESSION.name, class:SESSION.class, code:SESSION.code, id:SESSION.id,
+      skill:"Writing Course", activity:`${f.lesson.title} (${f.level.label})`, score:r.bandSum, max:r.max, percent:r.pct,
+      detail:`${r.m.wc} words; band ${Math.round(r.avg)}; ${text.slice(0,160)}`});
+  }
+  refreshWcComplete(id);
+  window.scrollTo({top:box.offsetTop-70, behavior:'smooth'});
+}
+function refreshWcComplete(id){
+  const fbDone=!!document.querySelector('#wcFeedback .card');
+  const v=lessonVocabCount(id);
+  const box=document.getElementById('wcComplete'); if(!box) return;
+  if(fbDone && v>=5){
+    markWcDone(id);
+    box.innerHTML=`<div class="scorebox" style="margin-top:18px"><div class="big">✓</div><div>Lesson complete! Feedback received and ${v} words added to your bank.</div>
+      <button class="btn ghost sm" style="margin-top:10px" onclick="go('writingCourse')">Back to course</button></div>`;
+  } else {
+    const need=[]; if(!fbDone) need.push("get feedback on your writing"); if(v<5) need.push(`add ${5-v} more vocabulary word${5-v===1?'':'s'}`);
+    box.innerHTML=`<p class="note" style="margin-top:18px">To complete this lesson: ${need.join(" and ")}.</p>`;
+  }
+}
+
+/* =========================================================================
+   READING COURSE — instant MCQ scoring + written self-check / self-grading
+   ========================================================================= */
+let RC_STATE=null;
+function setRcLevel(k){ RC_LEVEL=k; go('readingCourse'); }
+function rcDone(){ return (Store.get("ican_rc_done")||{})[sid()] || []; }
+function markRcDone(id){ const all=Store.get("ican_rc_done")||{}; const arr=all[sid()]||[]; if(!arr.includes(id)){ arr.push(id); all[sid()]=arr; Store.set("ican_rc_done",all); } }
+function gradeRc(id){
+  const f=findRc(id); const l=f.lesson;
+  let correct=0;
+  l.mcqs.forEach((q,i)=>{
+    const qEl=document.querySelector(`#rcMcq .q[data-i="${i}"]`); const fb=qEl.querySelector('.feedback');
+    fb.classList.remove('hidden');
+    const sel=qEl.querySelector(`input[name="rmc${i}"]:checked`); const chosen=sel?+sel.value:-1;
+    qEl.querySelectorAll('.opt').forEach((o,j)=>{ if(j===q.answer)o.classList.add('correct'); if(j===chosen&&chosen!==q.answer)o.classList.add('wrong'); });
+    if(chosen===q.answer){ correct++; fb.classList.add('good'); fb.textContent="✓ Correct. "+q.exp; }
+    else fb.textContent=(chosen===-1?"No answer chosen. ":"Not quite. ")+q.exp;
+  });
+  const mtot=l.mcqs.length, mpct=Math.round(correct/mtot*100);
+  // reveal self-check models + grading
+  l.selfcheck.forEach((q,i)=>{
+    const qEl=document.querySelector(`#rcSelf .q[data-si="${i}"]`);
+    const mb=qEl.querySelector('.sc-model'), gb=qEl.querySelector('.sc-grade');
+    mb.classList.remove('hidden'); gb.classList.remove('hidden');
+    mb.innerHTML=`<div class="feedback good"><b>Model answer &amp; justification:</b> ${q.model}</div>`;
+    gb.innerHTML=`<span style="font-size:.85rem;color:var(--muted)">Fairly grade your own answer: </span>
+      ${[["0","Not yet"],["1","Partly"],["2","Got it"]].map(([v,t])=>`<button class="chip" data-si="${i}" data-v="${v}" onclick="rcSelfGrade(${i},${v},this)">${t}</button>`).join(' ')}`;
+  });
+  RC_STATE.graded=true;
+  document.getElementById('rcSubmit').disabled=true;
+  document.getElementById('rcDesign').classList.remove('hidden');
+  renderRcResult(id, correct, mtot, mpct);
+  window.scrollTo({top:document.getElementById('rcResult').offsetTop-80, behavior:'smooth'});
+}
+function rcSelfGrade(i, v, btn){
+  RC_STATE.selfMarks[i]=v;
+  btn.parentNode.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  btn.classList.add('on');
+  const f=findRc(RC_STATE.lessonId);
+  renderRcResult(RC_STATE.lessonId, null, f.lesson.mcqs.length, null, true);
+}
+function renderRcResult(id, correct, mtot, mpct, keepMcq){
+  const f=findRc(id); const l=f.lesson;
+  if(correct===null){ // recompute mcq from DOM marks
+    correct=0; l.mcqs.forEach((q,i)=>{ const sel=document.querySelector(`#rcMcq .q[data-i="${i}"] input:checked`); if(sel&&+sel.value===q.answer)correct++; });
+    mpct=Math.round(correct/mtot*100);
+  }
+  const selfMax=l.selfcheck.length*2;
+  const selfGot=Object.values(RC_STATE.selfMarks).reduce((a,b)=>a+b,0);
+  const allSelfGraded=Object.keys(RC_STATE.selfMarks).length>=l.selfcheck.length;
+  document.getElementById('rcResult').innerHTML=`
+    <div class="scorebox"><div class="big">${correct}/${mtot}</div>
+      <div>Comprehension (MCQ) · ${mpct}% — scored instantly.</div>
+      <div style="margin-top:8px;font-size:.95rem">Self-assessed thinking: <b>${selfGot}/${selfMax}</b> ${allSelfGraded?'':'· grade each self-check above'}</div>
+      ${allSelfGraded?`<button class="btn ghost sm" style="margin-top:10px" onclick="saveRc('${id}')">Save my results</button>`:''}
+    </div>`;
+}
+function saveRc(id){
+  const f=findRc(id); const l=f.lesson;
+  let correct=0; l.mcqs.forEach((q,i)=>{ const sel=document.querySelector(`#rcMcq .q[data-i="${i}"] input:checked`); if(sel&&+sel.value===q.answer)correct++; });
+  const mpct=Math.round(correct/l.mcqs.length*100);
+  const selfGot=Object.values(RC_STATE.selfMarks).reduce((a,b)=>a+b,0), selfMax=l.selfcheck.length*2;
+  markRcDone(id);
+  if(SESSION&&SESSION.role==="student"){
+    saveResult({date:Date.now(), name:SESSION.name, class:SESSION.class, code:SESSION.code, id:SESSION.id,
+      skill:"Reading Course", activity:`${l.title} (${f.level.label})`, score:correct, max:l.mcqs.length, percent:mpct,
+      detail:`MCQ ${correct}/${l.mcqs.length}; self-assessed ${selfGot}/${selfMax}`});
+  }
+  document.getElementById('rcResult').insertAdjacentHTML('beforeend', `<p class="note" style="margin-top:10px">Saved ✓ — your score and self-assessment are recorded. ${f.lesson.designId?'Now try the design challenge below!':''}</p>`);
+}
+
+/* =========================================================================
+   DESIGN STUDIO — save a made artefact with a self-check
+   ========================================================================= */
+function saveDesign(id, title){
+  const plan=(val('dPlan')||"").trim(), desc=(val('dDesc')||"").trim();
+  const file=document.getElementById('dFile').files[0];
+  const crit=[...document.querySelectorAll('#dCrit input')]; const checks=crit.filter(c=>c.checked).length;
+  const res=document.getElementById('dResult');
+  if(desc.length<15 && plan.length<15){ res.innerHTML=`<div class="feedback">Add a little more to your plan or description before saving.</div>`; return; }
+  if(SESSION&&SESSION.role==="student"){
+    saveResult({date:Date.now(), name:SESSION.name, class:SESSION.class, code:SESSION.code, id:SESSION.id,
+      skill:"Design", activity:title, score:checks, max:crit.length, percent:Math.round(checks/crit.length*100),
+      detail:`${desc.slice(0,180)}${file?` | file: ${file.name}`:''}`});
+  }
+  res.innerHTML=`<div class="scorebox"><div class="big">🎨</div><div>Design saved · ${checks}/${crit.length} self-check criteria met${file?`<br>📎 ${esc(file.name)}`:''}</div>
+    <p style="opacity:.85;font-size:.85rem;margin:8px 0 0">Saved to your record. Reading → Writing → Design — you've completed the loop!</p></div>`;
+  window.scrollTo({top:res.offsetTop-80, behavior:'smooth'});
+}
+
+
+function getAllVocab(){ return Store.get("ican_vocab")||[]; }
+function myVocab(){ const id=sid(); return getAllVocab().filter(v=>v.sid===id); }
+function lessonVocabCount(lessonId){ return myVocab().filter(v=>v.lessonId===lessonId).length; }
+
+let MR=null, recChunks=[], recBlob=null, recURL=null;
+function toggleVocabRec(){
+  const btn=document.getElementById('vRecBtn'), st=document.getElementById('vRecStatus');
+  if(MR && MR.state==="recording"){ MR.stop(); return; }
+  if(!navigator.mediaDevices || !window.MediaRecorder){ st.textContent="Recording isn't supported in this browser — try Chrome. You can still add the word."; return; }
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+    recChunks=[]; recBlob=null;
+    MR=new MediaRecorder(stream);
+    MR.ondataavailable=e=>recChunks.push(e.data);
+    MR.onstart=()=>{ btn.innerHTML='<span class="rec-dot"></span>Stop'; st.textContent="Recording… say the word clearly."; };
+    MR.onstop=()=>{ recBlob=new Blob(recChunks,{type:'audio/webm'}); if(recURL)URL.revokeObjectURL(recURL); recURL=URL.createObjectURL(recBlob);
+      btn.innerHTML='● Record me'; st.textContent="Recorded ✓"; const pb=document.getElementById('vPlayBtn'); if(pb)pb.disabled=false;
+      stream.getTracks().forEach(t=>t.stop()); };
+    MR.start();
+  }).catch(()=>{ st.textContent="Microphone permission denied — you can still add the word and sentence."; });
+}
+function playVocabRec(){ if(recURL){ new Audio(recURL).play(); } }
+async function addVocabFromLesson(lessonId){
+  const word=(val('vWord')||"").trim(), sentence=(val('vSentence')||"").trim();
+  const msg=document.getElementById('vMsg');
+  if(!word){ if(msg){msg.style.color="var(--coral-dk)"; msg.textContent="Type a word first.";} return; }
+  let audioId=null;
+  if(recBlob){ audioId="aud_"+Date.now()+"_"+Math.random().toString(36).slice(2,7); try{ await IDB.put(audioId, recBlob); }catch(e){ audioId=null; } }
+  const entry={ id:"v"+Date.now(), sid:sid(), name:SESSION?SESSION.name:"", word, sentence, audioId, lessonId:lessonId||null, date:Date.now() };
+  const all=getAllVocab(); all.push(entry); Store.set("ican_vocab", all);
+  // reset inputs
+  document.getElementById('vWord').value=""; document.getElementById('vSentence').value="";
+  recBlob=null; if(recURL){URL.revokeObjectURL(recURL); recURL=null;} const pb=document.getElementById('vPlayBtn'); if(pb)pb.disabled=true;
+  const st=document.getElementById('vRecStatus'); if(st)st.textContent="";
+  if(msg){ msg.style.color="var(--teal-dk)"; msg.textContent=`“${word}” added ✓`; }
+  // update counters / lists
+  const vc=document.getElementById('vCount'); if(vc && lessonId){ const n=lessonVocabCount(lessonId); vc.textContent=`${n}/5 added`; }
+  const vl=document.getElementById('vocabList'); if(vl) vl.innerHTML=renderVocabList(myVocab());
+  if(lessonId){
+    // log a result the first time they reach 5 in a lesson, for the teacher
+    if(lessonVocabCount(lessonId)===5 && SESSION && SESSION.role==="student"){
+      saveResult({date:Date.now(), name:SESSION.name, class:SESSION.class, code:SESSION.code, id:SESSION.id,
+        skill:"Vocabulary", activity:"5 words added", score:null, max:null, percent:null,
+        detail:myVocab().filter(v=>v.lessonId===lessonId).map(v=>v.word).join(", ")});
+    }
+    refreshWcComplete(lessonId);
+  }
+}
+function renderVocabList(list){
+  if(!list.length) return `<p class="note">No words yet. Add your first one above — try a word you met in a lesson.</p>`;
+  return list.slice().reverse().map(v=>`
+    <div class="vocab-card">
+      <div><div class="w">${esc(v.word)}</div>${v.sentence?`<div class="s">“${esc(v.sentence)}”</div>`:''}</div>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        ${v.audioId?`<button class="btn ghost sm" onclick="playStoredAudio('${v.audioId}')">▶ Mine</button>`:''}
+        <button class="btn ghost sm" onclick="speak('${escq(v.word)}')">🔊 Model</button>
+        <button class="btn ghost sm" onclick="deleteVocab('${v.id}')" title="Remove">✕</button>
+      </div>
+    </div>`).join('');
+}
+function deleteVocab(id){ Store.set("ican_vocab", getAllVocab().filter(v=>v.id!==id)); const vl=document.getElementById('vocabList'); if(vl) vl.innerHTML=renderVocabList(myVocab()); }
+async function playStoredAudio(audioId){ try{ const blob=await IDB.get(audioId); if(blob){ const u=URL.createObjectURL(blob); const a=new Audio(u); a.onended=()=>URL.revokeObjectURL(u); a.play(); } }catch(e){} }
+
+/* Tiny IndexedDB store for voice clips (stays on this device) */
+const IDB = {
+  _db:null,
+  open(){ return new Promise(res=>{ if(this._db) return res(this._db); try{ const r=indexedDB.open("ican_audio",1);
+    r.onupgradeneeded=()=>{ if(!r.result.objectStoreNames.contains("clips")) r.result.createObjectStore("clips"); };
+    r.onsuccess=()=>{ this._db=r.result; res(this._db); }; r.onerror=()=>res(null);
+  }catch(e){ res(null); } }); },
+  async put(k,blob){ const db=await this.open(); if(!db)return; return new Promise(res=>{ const tx=db.transaction("clips","readwrite"); tx.objectStore("clips").put(blob,k); tx.oncomplete=()=>res(true); tx.onerror=()=>res(false); }); },
+  async get(k){ const db=await this.open(); if(!db)return null; return new Promise(res=>{ const tx=db.transaction("clips","readonly"); const rq=tx.objectStore("clips").get(k); rq.onsuccess=()=>res(rq.result||null); rq.onerror=()=>res(null); }); }
+};
+
+
 function escq(s){ return (s||"").replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* =========================================================================
+   TEACHER CONTENT PANEL — author readings, lessons, design briefs, prompts
+   ========================================================================= */
+let CONTENT_TAB="reading";
+function lines(s){ return (s||"").split(/\n+/).map(x=>x.trim()).filter(Boolean); }
+function toParas(t){ return (t||"").split(/\n\s*\n/).map(p=>`<p>${esc(p).replace(/\n/g,'<br>')}</p>`).join(''); }
+function lvlOptions(sel){ return ['beginner','intermediate','advanced'].map(k=>`<option value="${k}" ${sel===k?'selected':''}>${k[0].toUpperCase()+k.slice(1)}</option>`).join(''); }
+function allReadingLessons(){ const out=[]; Object.keys(RCOURSE).forEach(k=>rcUnits(k).forEach(u=>u.lessons.forEach(l=>out.push(l)))); return out; }
+function customList(kind, render){
+  const items=getCustom(kind);
+  if(!items.length) return `<p class="note">Nothing added yet.</p>`;
+  return items.map(it=>`<div class="item-row"><div>${render(it)}</div><button class="btn ghost sm" onclick="removeCustom('${kind}','${it.id}')">Delete</button></div>`).join('');
+}
+function removeCustom(kind,id){ if(!confirm("Delete this item?"))return; delCustom(kind,id); renderContentTab(CONTENT_TAB); }
+function cMsg(t, ok){ const m=document.getElementById('cMsg'); if(m){ m.style.color=ok?'var(--teal-dk)':'var(--coral-dk)'; m.textContent=t; } }
+
+function renderContentTab(tab){
+  const b=document.getElementById('contentBody'); if(!b)return;
+  b.innerHTML = tab==='reading'?readingEditor() : tab==='writing'?writingEditor() : tab==='design'?designEditor() : tab==='speaking'?speakingEditor() : shareEditor();
+}
+
+function readingEditor(){
+  let slots='';
+  for(let n=0;n<5;n++){ slots+=`<div class="mcq-slot">
+    <div class="ed-field"><label>MCQ ${n+1} — question ${n<2?'(recommended)':'(optional)'}</label><input id="r_m${n}_q" placeholder="Question text"></div>
+    <div class="opt-row">${[0,1,2,3].map(j=>`<input id="r_m${n}_o${j}" placeholder="Option ${j+1}">`).join('')}</div>
+    <div class="ed-grid two">
+      <div class="ed-field"><label>Correct option</label><select id="r_m${n}_ans">${[0,1,2,3].map(j=>`<option value="${j}">Option ${j+1}</option>`).join('')}</select></div>
+      <div class="ed-field"><label>Explanation (shown after answering)</label><input id="r_m${n}_exp" placeholder="Why it's correct"></div>
+    </div></div>`; }
+  let sc='';
+  for(let n=0;n<2;n++){ sc+=`<div class="mcq-slot">
+    <div class="ed-field"><label>Self-check question ${n+1} (optional)</label><input id="r_sc${n}_q" placeholder="A 'think about it' question"></div>
+    <div class="ed-field"><label>Model answer + justification</label><textarea id="r_sc${n}_model" style="min-height:60px" placeholder="A possible answer tours around… justify from paragraph…"></textarea></div></div>`; }
+  return `<div class="card">
+    <h3 style="font-size:1.2rem">Add a reading text</h3>
+    <div class="ed-grid two">
+      <div class="ed-field"><label>Title</label><input id="r_title" placeholder="e.g. The robot that learned to paint"></div>
+      <div class="ed-field"><label>Level</label><select id="r_level">${lvlOptions('beginner')}</select></div>
+      <div class="ed-field"><label>Register</label><select id="r_register"><option>Informal</option><option>Formal</option></select></div>
+      <div class="ed-field"><label>Type</label><input id="r_type" placeholder="Article / Blog / News / Story"></div>
+    </div>
+    <div class="ed-field"><label>Field / theme</label><input id="r_field" placeholder="Science · Society · Sport …"></div>
+    <div class="ed-field"><label>Reading text (leave a blank line between paragraphs)</label><textarea id="r_text" style="min-height:160px" placeholder="Type or paste the passage…"></textarea></div>
+    <h4 style="margin:10px 0 6px;color:var(--ink)">Comprehension — multiple choice (auto-scored)</h4>${slots}
+    <h4 style="margin:10px 0 6px;color:var(--ink)">Self-check questions (student self-grades vs your model)</h4>${sc}
+    <div class="ed-grid two">
+      <div class="ed-field"><label>Design challenge prompt (optional)</label><input id="r_design" placeholder="e.g. Design a poster about…"></div>
+      <div class="ed-field"><label>Link to a design challenge (optional)</label><select id="r_designId"><option value="">— none —</option>${allChallenges().map(d=>`<option value="${d.id}">${esc(d.title)}</option>`).join('')}</select></div>
+    </div>
+    <button class="btn teal" onclick="saveReadingCustom()">Save reading</button><span id="cMsg" style="margin-left:10px;font-size:.85rem"></span>
+  </div>
+  <h3 style="font-size:1.15rem;margin-top:20px">Your readings</h3>
+  ${customList('reading', it=>`<b>${esc(it.title)}</b> <span class="meta">· ${it.level} · ${esc(it.register||'')} · ${it.mcqs.length} MCQ</span>`)}`;
+}
+function saveReadingCustom(){
+  const title=val('r_title').trim(), text=val('r_text').trim();
+  if(!title||!text){ cMsg("Add a title and the reading text.",false); return; }
+  const mcqs=[];
+  for(let n=0;n<5;n++){ const q=val(`r_m${n}_q`).trim(); const raw=[0,1,2,3].map(j=>val(`r_m${n}_o${j}`).trim());
+    const opts=raw.filter(o=>o); const ansRaw=+val(`r_m${n}_ans`)||0;
+    if(q && opts.length>=2){ let ans=raw[ansRaw]?opts.indexOf(raw[ansRaw]):0; if(ans<0)ans=0;
+      mcqs.push({q, options:opts, answer:ans, exp:val(`r_m${n}_exp`).trim()||"That's the best answer."}); } }
+  if(!mcqs.length){ cMsg("Add at least one MCQ (a question + 2 options + a correct option).",false); return; }
+  const selfcheck=[];
+  for(let n=0;n<2;n++){ const q=val(`r_sc${n}_q`).trim(); if(q) selfcheck.push({q, model:val(`r_sc${n}_model`).trim()||"Compare your answer with the text and judge how fully you answered."}); }
+  addCustom('reading',{ id:"rc_custom_"+Date.now(), custom:true, level:val('r_level'), title, field:val('r_field').trim()||"General",
+    register:val('r_register'), type:val('r_type').trim()||"Text", text:toParas(text), mcqs, selfcheck,
+    design:val('r_design').trim()||"Design something inspired by this text.", designId:val('r_designId')||null });
+  renderContentTab('reading'); cMsg("Saved ✓ — it now appears in the Reading Course for students.",true);
+}
+
+function writingEditor(){
+  return `<div class="card">
+    <h3 style="font-size:1.2rem">Add a writing lesson</h3>
+    <div class="ed-grid two">
+      <div class="ed-field"><label>Title</label><input id="w_title" placeholder="e.g. Writing a product review"></div>
+      <div class="ed-field"><label>Level</label><select id="w_level">${lvlOptions('intermediate')}</select></div>
+      <div class="ed-field"><label>Type / genre label</label><input id="w_type" placeholder="e.g. Review · Paragraph"></div>
+      <div class="ed-field"><label>Marking rubric</label><select id="w_rubric">${Object.keys(RUBRICS).map(k=>`<option value="${k}">${RUBRICS[k].label}</option>`).join('')}</select></div>
+      <div class="ed-field"><label>Suggested length (words)</label><input id="w_min" type="number" value="120"></div>
+    </div>
+    <div class="ed-field"><label>“How to do it” tips (one per line)</label><textarea id="w_teach" style="min-height:90px" placeholder="Open with a hook&#10;Give one clear opinion&#10;Support it with an example"></textarea></div>
+    <div class="ed-field"><label>The writing prompt</label><textarea id="w_prompt" style="min-height:70px" placeholder="What the student must write…"></textarea></div>
+    <div class="ed-field"><label>Model answer</label><textarea id="w_model" style="min-height:110px" placeholder="A sample answer students can compare against…"></textarea></div>
+    <button class="btn teal" onclick="saveWritingCustom()">Save lesson</button><span id="cMsg" style="margin-left:10px;font-size:.85rem"></span>
+  </div>
+  <h3 style="font-size:1.15rem;margin-top:20px">Your writing lessons</h3>
+  ${customList('writing', it=>`<b>${esc(it.title)}</b> <span class="meta">· ${it.level} · ${RUBRICS[it.rubricKey]?RUBRICS[it.rubricKey].label:it.rubricKey}</span>`)}`;
+}
+function saveWritingCustom(){
+  const title=val('w_title').trim(), prompt=val('w_prompt').trim(), model=val('w_model').trim(), teach=lines(val('w_teach'));
+  if(!title||!prompt||!model||!teach.length){ cMsg("Add a title, tips, a prompt and a model answer.",false); return; }
+  addCustom('writing',{ id:"wc_custom_"+Date.now(), custom:true, level:val('w_level'), title, type:val('w_type').trim()||"Writing",
+    rubricKey:val('w_rubric'), minWords:+val('w_min')||100, teach, prompt, model:toParas(model) });
+  renderContentTab('writing'); cMsg("Saved ✓ — it now appears in the Writing Course.",true);
+}
+
+function designEditor(){
+  return `<div class="card">
+    <h3 style="font-size:1.2rem">Add a design brief</h3>
+    <div class="ed-grid two">
+      <div class="ed-field"><label>Title</label><input id="d_title" placeholder="e.g. Design a water filter"></div>
+      <div class="ed-field"><label>Theme</label><input id="d_theme" placeholder="e.g. Sustainability"></div>
+      <div class="ed-field"><label>Icon (emoji, optional)</label><input id="d_icon" placeholder="🎨" maxlength="2"></div>
+      <div class="ed-field"><label>Link to a reading (optional)</label><select id="d_lesson"><option value="">— none —</option>${allReadingLessons().map(l=>`<option value="${l.id}">${esc(l.title)}</option>`).join('')}</select></div>
+    </div>
+    <div class="ed-field"><label>The brief</label><textarea id="d_brief" style="min-height:70px" placeholder="What students should design/make…"></textarea></div>
+    <div class="ed-field"><label>Read &amp; research first</label><textarea id="d_readfirst" style="min-height:60px" placeholder="What to read or research before designing…"></textarea></div>
+    <div class="ed-field"><label>Steps (one per line)</label><textarea id="d_steps" style="min-height:90px" placeholder="Research how it works&#10;Sketch and label your design&#10;Build a prototype&#10;Test and improve"></textarea></div>
+    <label style="font-size:.8rem;color:var(--muted);font-weight:500">Suggested tools</label>
+    <div style="margin:6px 0 10px">${Object.keys(TOOLS).map(k=>`<label class="tool-check"><input type="checkbox" id="dtool_${k}"><span><b>${TOOLS[k].name}</b> — ${TOOLS[k].use}</span></label>`).join('')}</div>
+    <button class="btn teal" onclick="saveDesignCustom()">Save brief</button><span id="cMsg" style="margin-left:10px;font-size:.85rem"></span>
+  </div>
+  <h3 style="font-size:1.15rem;margin-top:20px">Your design briefs</h3>
+  ${customList('design', it=>`${it.icon||'🎨'} <b>${esc(it.title)}</b> <span class="meta">· ${esc(it.theme||'')}</span>`)}`;
+}
+function saveDesignCustom(){
+  const title=val('d_title').trim(), brief=val('d_brief').trim();
+  if(!title||!brief){ cMsg("Add a title and a brief.",false); return; }
+  const tools=Object.keys(TOOLS).filter(k=>{ const c=document.getElementById('dtool_'+k); return c&&c.checked; });
+  addCustom('design',{ id:"d_custom_"+Date.now(), custom:true, title, theme:val('d_theme').trim()||"Design",
+    icon:(val('d_icon').trim()||"🎨"), brief, readFirst:val('d_readfirst').trim()||"Research how similar things work before you design.",
+    lessonId:val('d_lesson')||null, steps:lines(val('d_steps')).length?lines(val('d_steps')):["Plan it","Design it","Make it","Test and improve it"], tools });
+  renderContentTab('design'); cMsg("Saved ✓ — it now appears in the Design Studio.",true);
+}
+
+function speakingEditor(){
+  return `<div class="card">
+    <h3 style="font-size:1.2rem">Add a speaking prompt set</h3>
+    <div class="ed-field"><label>Category name (shown as a tab)</label><input id="s_cat" placeholder="e.g. Our local issues"></div>
+    <div class="ed-field"><label>Note / instruction (optional)</label><input id="s_note" placeholder="e.g. Speak for one minute"></div>
+    <div class="ed-field"><label>Prompts (one per line)</label><textarea id="s_prompts" style="min-height:120px" placeholder="What change would improve our town?&#10;Describe a local tradition to a visitor.&#10;…"></textarea></div>
+    <button class="btn teal" onclick="saveSpeakingCustom()">Save prompts</button><span id="cMsg" style="margin-left:10px;font-size:.85rem"></span>
+  </div>
+  <h3 style="font-size:1.15rem;margin-top:20px">Your prompt sets</h3>
+  ${customList('speaking', it=>`<b>${esc(it.cat)}</b> <span class="meta">· ${it.prompts.length} prompts</span>`)}`;
+}
+function saveSpeakingCustom(){
+  const cat=val('s_cat').trim(), prompts=lines(val('s_prompts'));
+  if(!cat||!prompts.length){ cMsg("Add a category name and at least one prompt.",false); return; }
+  addCustom('speaking',{ id:"spk_custom_"+Date.now(), custom:true, cat, note:val('s_note').trim()||"", prompts });
+  renderContentTab('speaking'); cMsg("Saved ✓ — it appears as a new tab in Speaking.",true);
+}
+
+function shareEditor(){
+  const counts=['reading','writing','design','speaking'].map(k=>`${getCustom(k).length} ${k}`).join(' · ');
+  const online=!!cloudUrl();
+  return `<div class="card" style="margin-bottom:18px">
+    <h3 style="font-size:1.2rem">Publish to students ${online?'<span class="pill done">cloud on</span>':''}</h3>
+    <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Send your content to the cloud so it reaches students on their own devices. This needs online sync connected (Dashboard → Online sync) <b>and</b> the same URL set as <span class="kbd">CONFIG.cloudUrl</span> in the file, so every student's app reads it. Re-publish whenever you add or change content.</p>
+    <button class="btn" onclick="publishToStudents()" ${online?'':'disabled'}>☁️ Publish now</button>
+    <span id="cMsg" style="margin-left:10px;font-size:.85rem"></span>
+  </div>
+  <div class="card">
+    <h3 style="font-size:1.2rem">Backup &amp; move between devices</h3>
+    <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">You have ${counts} saved on this device. Export a file to back it up or load it on another computer.</p>
+    <button class="btn ghost" onclick="exportContent()">⬇ Export content (.json)</button>
+    <label class="btn ghost sm" style="display:inline-block;cursor:pointer">⬆ Import content<input type="file" accept="application/json,.json" onchange="importContent(this)" style="display:none"></label>
+    <div id="impMsg" style="font-size:.82rem;color:var(--teal-dk);margin-top:8px"></div>
+  </div>`;
+}
+function publishToStudents(){ if(!cloudUrl()){ cMsg("Connect online sync first (Dashboard → Online sync).",false); return; } publishContent(ok=>cMsg(ok?"Published ✓ — students using the site will receive your content.":"Couldn't publish — check your sync URL.", ok)); }
+function exportContent(){
+  const data={reading:getCustom('reading'),writing:getCustom('writing'),design:getCustom('design'),speaking:getCustom('speaking')};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download="ican-content.json"; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function importContent(input){
+  const f=input.files[0]; if(!f)return; const r=new FileReader();
+  r.onload=()=>{ try{ const d=JSON.parse(r.result); let added=0;
+    ['reading','writing','design','speaking'].forEach(k=>{ if(Array.isArray(d[k])){ const cur=getCustom(k); const ids=new Set(cur.map(x=>x.id));
+      d[k].forEach(it=>{ if(it&&it.id&&!ids.has(it.id)){ cur.push(it); added++; } }); setCustom(k,cur); } });
+    const m=document.getElementById('impMsg'); if(m)m.textContent=`Imported ${added} item(s) ✓`;
+  }catch(e){ const m=document.getElementById('impMsg'); if(m){ m.style.color='var(--coral-dk)'; m.textContent="That file isn't valid content JSON."; } } };
+  r.readAsText(f);
+}
+
+/* =========================================================================
+   PRINTABLE WORKSHEETS (PDF) — paper-based option for quizzes & activities
+   ========================================================================= */
+function pdfReady(){ return !!(window.jspdf && window.jspdf.jsPDF); }
+function noPdf(){ alert("The worksheet tool is still loading (it needs an internet connection). Please try again in a moment."); }
+function htmlToText(html){ return String(html||"")
+  .replace(/<\/(p|div|h\d|li|tr)>/gi,"\n").replace(/<br\s*\/?>/gi,"\n").replace(/<li>/gi,"• ")
+  .replace(/<th[^>]*>|<td[^>]*>/gi,"   ").replace(/<[^>]+>/g,"")
+  .replace(/&amp;/g,"&").replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&quot;/g,'"').replace(/&nbsp;/g," ")
+  .replace(/\n{3,}/g,"\n\n").trim(); }
+const LET=["A","B","C","D","E","F"];
+function pdfDoc(titleLeft){
+  const { jsPDF }=window.jspdf;
+  const doc=new jsPDF({unit:"pt",format:"a4"});
+  const M=48, W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight();
+  let y=52;
+  function header(){ doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(120); doc.text("iCAN · "+(titleLeft||"Worksheet"), M, 26); doc.setTextColor(0); doc.setDrawColor(220); doc.line(M,32,W-M,32); }
+  header();
+  function ensure(h){ if(y+h>H-M){ doc.addPage(); header(); y=52; } }
+  function text(str,opt){ opt=opt||{}; const size=opt.size||11; doc.setFont("helvetica",opt.style||"normal"); doc.setFontSize(size); doc.setTextColor(opt.color!=null?opt.color:25);
+    const arr=doc.splitTextToSize(String(str), (W-2*M)); arr.forEach(ln=>{ ensure(size*1.45); doc.text(ln, M, y); y+=size*1.45; }); if(opt.gap)y+=opt.gap; }
+  function h1(s){ text(s,{size:17,style:"bold",gap:2}); }
+  function h2(s){ y+=6; text(s,{size:13,style:"bold",gap:2}); }
+  function lines(n){ for(let i=0;i<n;i++){ ensure(24); doc.setDrawColor(210); doc.line(M,y+12,W-M,y+12); y+=24; } }
+  function gap(h){ y+=(h||10); }
+  function newpage(){ doc.addPage(); header(); y=52; }
+  return {doc,text,h1,h2,lines,gap,newpage,save:n=>doc.save(n)};
+}
+function nameLine(p){ p.text("Name: __________________     Class: __________     Date: __________",{size:10,gap:8}); }
+
+function wsReadingCourse(id){ if(!pdfReady())return noPdf(); const f=findRc(id); const l=f.lesson; const p=pdfDoc("Reading worksheet");
+  p.h1(l.title); p.text(`${f.level.label} · ${l.register} · ${l.type} · ${l.field}`,{size:9,color:120,gap:6}); nameLine(p);
+  p.h2("Read the text"); p.text(htmlToText(l.text),{gap:6});
+  p.h2("Comprehension — circle the correct letter");
+  l.mcqs.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); q.options.forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); p.gap(4); });
+  if(l.selfcheck.length){ p.h2("Self-check — answer in full sentences"); l.selfcheck.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); p.lines(3); }); }
+  p.newpage(); p.h1("Answer key"); p.text(l.title,{size:9,color:120,gap:6});
+  p.h2("Comprehension"); l.mcqs.forEach((q,i)=>{ p.text(`${i+1}.  ${LET[q.answer]} — ${q.options[q.answer]}`,{style:"bold"}); if(q.exp)p.text(`     ${q.exp}`,{size:10,color:90}); });
+  if(l.selfcheck.length){ p.h2("Self-check — model answers"); l.selfcheck.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); p.text(htmlToText(q.model),{size:10,color:60,gap:4}); }); }
+  p.save(`iCAN-reading-${id}.pdf`);
+}
+function wsReadingPractice(id){ if(!pdfReady())return noPdf(); const r=READING.find(x=>x.id===id); const lvl=r[LEVEL]; const p=pdfDoc("Reading worksheet");
+  p.h1(r.title); p.text(`${r.genre} · ${LEVEL==="scaffolded"?"Supported":"Standard"}`,{size:9,color:120,gap:6}); nameLine(p);
+  p.h2("Read the text"); p.text(htmlToText(r.isData?((lvl.intro||"")+"\n"+(lvl.figure||"")):lvl.text),{gap:6});
+  p.h2("Questions"); lvl.questions.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); if(q.type==="mcq"){ q.options.forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); } else { p.lines(2); } p.gap(3); });
+  p.newpage(); p.h1("Answer key"); lvl.questions.forEach((q,i)=>{ if(q.type==="mcq"){ p.text(`${i+1}.  ${LET[q.answer]} — ${q.options[q.answer]}`,{style:"bold"}); } else { p.text(`${i+1}.  ${q.answer||"(open response)"}`,{style:"bold"}); } if(q.exp)p.text(`     ${q.exp}`,{size:10,color:90}); });
+  p.save(`iCAN-reading-${id}-${LEVEL}.pdf`);
+}
+function wsListening(id){ if(!pdfReady())return noPdf(); const c=LISTEN_COMP.find(x=>x.id===id); const p=pdfDoc("Listening worksheet");
+  p.h1(c.title); p.text(c.kind,{size:9,color:120,gap:6}); nameLine(p);
+  p.text("Instructions: your teacher will read the passage aloud twice. Listen, then answer.",{style:"italic",size:10,color:90,gap:6});
+  p.h2("Questions"); c.questions.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); if(q.type==="mcq"){ q.options.forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); } else { p.lines(1); } p.gap(3); });
+  p.newpage(); p.h1("Teacher script & answer key"); p.h2("Read aloud (twice)"); p.text(htmlToText(c.script),{gap:6});
+  p.h2("Answers"); c.questions.forEach((q,i)=>{ const a=q.type==="mcq"?`${LET[q.answer]} — ${q.options[q.answer]}`:(Array.isArray(q.answer)?q.answer[0]:q.answer); p.text(`${i+1}.  ${a}`,{style:"bold"}); });
+  p.save(`iCAN-listening-${id}.pdf`);
+}
+function wsWritingLesson(id){ if(!pdfReady())return noPdf(); const f=findLesson(id); const l=f.lesson; const p=pdfDoc("Writing worksheet");
+  p.h1(l.title); p.text(`${f.level.label} · ${l.type}`,{size:9,color:120,gap:6}); nameLine(p);
+  p.h2("How to do it"); l.teach.forEach(t=>p.text("•  "+htmlToText(t)));
+  p.h2("Your task"); p.text(htmlToText(l.prompt),{gap:3}); p.text(`Suggested length: about ${l.minWords}+ words.`,{size:10,color:90,gap:6});
+  p.h2("Write your response"); p.lines(16);
+  p.newpage(); p.h1("Model answer (for reference)"); p.text(htmlToText(l.model));
+  p.save(`iCAN-writing-${id}.pdf`);
+}
+function wsWritingTask(id){ if(!pdfReady())return noPdf(); const w=WRITING.find(x=>x.id===id); const p=pdfDoc("Writing worksheet");
+  p.h1(w.title); p.text(w.genre,{size:9,color:120,gap:6}); nameLine(p);
+  p.h2("Your task"); p.text(htmlToText(w.prompt),{gap:3}); p.text(`Audience: ${w.audience}.`,{gap:2}); p.text(`Length: ${w.wordCount}.`,{gap:6});
+  p.h2(`${w.visual.verb} ${w.visual.what} — to score well, include:`); w.visual.lookLike.forEach(x=>p.text("•  "+x));
+  p.h2("Marking rubric"); w.criteria.forEach(c=>{ p.text(`${c.c}  (${c.weight}%)`,{style:"bold"}); p.text("   "+c.excellent,{size:10,color:90}); });
+  p.h2("Write your response"); p.lines(14);
+  p.save(`iCAN-writing-task-${id}.pdf`);
+}
+function wsSpelling(key){ if(!pdfReady())return noPdf(); const c=SPELL_BANK[key]; const items=shuffle(c.items.slice()).slice(0,Math.min(SPELL_ROUND_SIZE,c.items.length)); const p=pdfDoc("Dictation worksheet");
+  p.h1(c.label); p.text(c.sub,{size:9,color:120,gap:6}); nameLine(p);
+  p.text("Listen as your teacher reads each item, then write it on the line.",{style:"italic",size:10,color:90,gap:6});
+  items.forEach((it,i)=>{ p.text(`${i+1}.`+(it.hint?`   (meaning: ${it.hint})`:""),{style:"bold"}); p.lines(1); });
+  p.newpage(); p.h1("Teacher answer key — read each item aloud"); items.forEach((it,i)=>p.text(`${i+1}.  ${it.t}`,{style:"bold"}));
+  p.save(`iCAN-dictation-${key}.pdf`);
+}
+function wsSpeaking(i){ if(!pdfReady())return noPdf(); const s=allSpeaking()[i]; const p=pdfDoc("Speaking prompts");
+  p.h1(s.cat); if(s.note)p.text(s.note,{style:"italic",size:10,color:90,gap:6}); nameLine(p);
+  s.prompts.forEach((q,n)=>{ p.text(`${n+1}. ${q}`,{style:"bold",gap:4}); });
+  p.save(`iCAN-speaking-${i}.pdf`);
+}
 
 /* boot */
 go('home');
