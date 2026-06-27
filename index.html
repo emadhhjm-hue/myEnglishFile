@@ -256,10 +256,10 @@ table.data tr:nth-child(even){background:#fff}
    iCAN — configuration you can change
    ========================================================================= */
 const CONFIG = {
-  teacherCode: "TEACHER-ICAN-2025",      // <-- change this and keep it private
+  teacherCode: "iCAN2",      // <-- change this and keep it private
   // Student access codes you hand out. Edit freely, or add them from the
   // Teacher dashboard (those are saved in this browser).
-  classCodes: ["ICAN-321", "DEMO"],
+  classCodes: ["DEMO"],
   // Online sync (optional). Paste your Google Sheet web-app URL here, OR set it
   // from the Teacher dashboard. When set, every result is saved online and the
   // teacher dashboard reads everyone's records from the cloud. Leave "" for
@@ -1214,11 +1214,10 @@ const ROUTES = {
         <h2 style="font-size:1.8rem">Student sign-in</h2>
         <p style="color:var(--muted);margin:6px 0 20px;font-size:.92rem">Use the access code your teacher gave you.</p>
         <div class="field"><label>Your name</label><input id="sName" placeholder="e.g. Sara Al Hosani"></div>
-        <div class="field"><label>Class</label><input id="sClass" placeholder="e.g. 10B"></div>
-        <div class="field"><label>Access code</label><input id="sCode" placeholder="e.g. ICAN-321" autocapitalize="characters"></div>
+        <div class="field"><label>Access code</label><input id="sCode" placeholder="e.g. DEMO" autocapitalize="characters"></div>
         <div class="err" id="sErr"></div>
         <button class="btn" style="width:100%" onclick="doStudentLogin()">Start practising →</button>
-        <p class="note" style="margin-top:16px">Tip for trying it out: code <span class="kbd">DEMO</span> always works.</p>
+        <p class="note" style="margin-top:16px">Access code: <span class="kbd">DEMO</span></p>
       </div>
     </div>`;
   },
@@ -1870,9 +1869,9 @@ const ROUTES = {
    LOGIN ACTIONS
    ========================================================================= */
 function doStudentLogin(){
-  const name=val('sName').trim(), cls=val('sClass').trim(), code=val('sCode').trim().toUpperCase();
+  const name=val('sName').trim(), cls="", code=val('sCode').trim().toUpperCase();
   const err=document.getElementById('sErr');
-  if(!name||!cls){ err.textContent="Please enter your name and class."; return; }
+  if(!name){ err.textContent="Please enter your name."; return; }
   if(!getCodes().map(c=>c.toUpperCase()).includes(code)){ err.textContent="That access code isn't recognised. Check with your teacher."; return; }
   const id = code+"::"+name.toLowerCase();
   SESSION={role:"student", name, class:cls, code, id};
