@@ -198,6 +198,16 @@ table.data tr:nth-child(even){background:#fff}
 .ed-grid{display:grid; gap:10px}
 @media(min-width:680px){ .ed-grid.two{grid-template-columns:1fr 1fr} }
 .tool-check{display:flex; gap:8px; align-items:flex-start; padding:8px 10px; border:1px solid var(--line); border-radius:8px; margin-bottom:6px; font-size:.85rem}
+.pbar{height:14px; background:var(--mist); border-radius:50px; overflow:hidden; margin:4px 0}
+.pbar span{display:block; height:100%; border-radius:50px; transition:width .5s ease}
+.prow{margin-bottom:14px}
+.prow .lab{display:flex; justify-content:space-between; gap:10px; font-size:.9rem; margin-bottom:3px}
+.prow .lab b{color:var(--ink)}
+.prow .lab span{color:var(--muted); font-size:.82rem}
+.statline{display:flex; gap:12px; flex-wrap:wrap; margin:10px 0}
+.stat{background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 18px; min-width:110px; text-align:center; flex:1}
+.stat .n{font-family:"Fraunces"; font-size:1.7rem; color:var(--ink); line-height:1}
+.stat .l{font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-top:4px}
 </style>
 </head>
 <body>
@@ -249,7 +259,7 @@ const CONFIG = {
   teacherCode: "TEACHER-ICAN-2025",      // <-- change this and keep it private
   // Student access codes you hand out. Edit freely, or add them from the
   // Teacher dashboard (those are saved in this browser).
-  classCodes: ["ICAN-9A", "ICAN-10B", "ICAN-11C", "ICAN-12D", "DEMO"],
+  classCodes: ["ICAN-321", "DEMO"],
   // Online sync (optional). Paste your Google Sheet web-app URL here, OR set it
   // from the Teacher dashboard. When set, every result is saved online and the
   // teacher dashboard reads everyone's records from the cloud. Leave "" for
@@ -1205,7 +1215,7 @@ const ROUTES = {
         <p style="color:var(--muted);margin:6px 0 20px;font-size:.92rem">Use the access code your teacher gave you.</p>
         <div class="field"><label>Your name</label><input id="sName" placeholder="e.g. Sara Al Hosani"></div>
         <div class="field"><label>Class</label><input id="sClass" placeholder="e.g. 10B"></div>
-        <div class="field"><label>Access code</label><input id="sCode" placeholder="e.g. ICAN-10B" autocapitalize="characters"></div>
+        <div class="field"><label>Access code</label><input id="sCode" placeholder="e.g. ICAN-321" autocapitalize="characters"></div>
         <div class="err" id="sErr"></div>
         <button class="btn" style="width:100%" onclick="doStudentLogin()">Start practising →</button>
         <p class="note" style="margin-top:16px">Tip for trying it out: code <span class="kbd">DEMO</span> always works.</p>
@@ -1724,6 +1734,72 @@ const ROUTES = {
     renderContentTab(tab);
   },
 
+  /* ---------------- STUDENT PROGRESS (teacher view) ---------------- */
+  studentDetail(key){
+    const res = studentResults(key);
+    const name = res.length? res[0].name : (key.split('::')[1]||key);
+    const cls = res.length? res[0].class : '';
+    const code = res.length? res[0].code : (key.split('::')[0]||'');
+    const bySkill={};
+    res.forEach(r=>{ const k=r.skill||'Other'; (bySkill[k]=bySkill[k]||{n:0,pc:0,pn:0,acts:new Set(),last:0}); bySkill[k].n++; bySkill[k].acts.add(r.activity); bySkill[k].last=Math.max(bySkill[k].last,r.date); if(r.percent!=null){bySkill[k].pc+=r.percent; bySkill[k].pn++;} });
+    const avgOf=ks=>{let c=0,n=0; ks.forEach(k=>{ if(bySkill[k]){c+=bySkill[k].pc;n+=bySkill[k].pn;} }); return n?Math.round(c/n):null;};
+    const distinct=k=>bySkill[k]?bySkill[k].acts.size:0;
+    const overall=avgOf(Object.keys(bySkill));
+    const vocabWords=res.filter(r=>r.skill==='Vocabulary').map(r=>r.detail||'').join(', ').split(/,\s*/).filter(Boolean);
+    const lastDate=res.length?new Date(Math.max(...res.map(r=>r.date))).toLocaleDateString():'—';
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('teacher')">← Dashboard</button>
+      <h1 style="font-size:2.1rem">${esc(name)}</h1>
+      <p style="color:var(--muted);margin:4px 0 0">${esc(cls)} · code ${esc(code)} · last active ${lastDate}</p>
+      ${res.length? `
+      <div class="statline">
+        <div class="stat"><div class="n">${res.length}</div><div class="l">activities</div></div>
+        <div class="stat"><div class="n">${overall==null?'—':overall+'%'}</div><div class="l">overall avg</div></div>
+        <div class="stat"><div class="n">${distinct('Reading Course')+distinct('Writing Course')+distinct('Design')}</div><div class="l">course steps</div></div>
+        <div class="stat"><div class="n">${vocabWords.length}</div><div class="l">vocab words</div></div>
+      </div>
+
+      <div class="card" style="margin-top:8px">
+        <h3 style="font-size:1.2rem">RWD strands — average score</h3>
+        ${progRow('📖 Reading', avgOf(['Reading','Reading Course']), 'linear-gradient(90deg,#2b2f63,#0c8a72)', skillCount(bySkill,['Reading','Reading Course'])+' attempts')}
+        ${progRow('✍️ Writing', avgOf(['Writing','Writing Course']), 'linear-gradient(90deg,#0c8a72,#15183A)', skillCount(bySkill,['Writing','Writing Course'])+' attempts')}
+        ${progRow('🎨 Design', avgOf(['Design']), 'linear-gradient(90deg,#E6464B,#8B5CF6)', skillCount(bySkill,['Design'])+' attempts')}
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3 style="font-size:1.2rem">Supporting skills</h3>
+        ${progRow('🎧 Listening', avgOf(['Listening']), 'var(--teal)', skillCount(bySkill,['Listening'])+' attempts')}
+        ${progRow('🎤 Speaking', avgOf(['Speaking']), '#8B5CF6', skillCount(bySkill,['Speaking'])+' attempts')}
+        <p style="font-size:.82rem;color:var(--muted);margin:6px 0 0">Speaking is recorded for practice and isn't auto-scored, so it may show no percentage.</p>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3 style="font-size:1.2rem">Course progress (lessons completed)</h3>
+        ${courseRow('Reading Course', distinct('Reading Course'), rcLessonCount(), '#2b2f63')}
+        ${courseRow('Writing Course', distinct('Writing Course'), wcLessonCount(), '#0c8a72')}
+        ${courseRow('Design Studio', distinct('Design'), allChallenges().length, '#E6464B')}
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3 style="font-size:1.2rem">Feedback &amp; intervention plan</h3>
+        <textarea id="fb_${key}" style="width:100%;min-height:80px;padding:10px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit" placeholder="Strengths, next steps, intervention plan…">${esc(getStudents()[key]?.feedback||'')}</textarea>
+        <button class="btn sm teal" style="margin-top:8px" onclick="saveFeedback('${key}')">Save</button>
+      </div>
+
+      ${vocabWords.length?`<div class="card" style="margin-top:16px"><h3 style="font-size:1.2rem">Vocabulary built</h3><p style="color:var(--slate);font-size:.92rem">${vocabWords.map(w=>esc(w)).join(' · ')}</p></div>`:''}
+
+      <div class="card" style="margin-top:16px">
+        <h3 style="font-size:1.2rem">Activity log</h3>
+        <div style="overflow:auto"><table class="data">
+          <tr><th>Date</th><th>Skill</th><th>Activity</th><th>Score</th><th>%</th><th>Detail</th></tr>
+          ${res.slice().sort((a,b)=>b.date-a.date).map(r=>`<tr><td style="font-size:.78rem">${new Date(r.date).toLocaleString()}</td><td>${r.skill}</td><td style="font-size:.8rem">${esc(r.activity)}</td><td>${r.score==null?'—':r.score+'/'+r.max}</td><td>${r.percent==null?'—':r.percent+'%'}</td><td style="font-size:.75rem;max-width:280px;color:var(--muted)">${esc(r.detail||'')}</td></tr>`).join('')}
+        </table></div>
+      </div>`
+      : `<p class="note" style="margin-top:16px">No activities recorded for this student yet.</p>`}
+    </div>`;
+  },
+
   /* ---------------- TEACHER DASHBOARD ---------------- */
   teacher(){
     const res = allResults();
@@ -1765,11 +1841,12 @@ const ROUTES = {
       <div class="card" style="margin-bottom:22px">
         <h3 style="font-size:1.2rem">Class results &amp; intervention</h3>
         ${students.length? `<div style="overflow:auto"><table class="data">
-          <tr><th>Student</th><th>Class</th><th>Attempts</th><th>Avg score</th><th>Skills covered</th><th>Feedback / intervention</th></tr>
+          <tr><th>Student</th><th>Class</th><th>Attempts</th><th>Avg score</th><th>Skills covered</th><th>Progress</th><th>Feedback / intervention</th></tr>
           ${students.map(s=>`<tr>
-            <td><b>${esc(s.name)}</b></td><td>${esc(s.class)}</td><td>${s.attempts}</td>
+            <td><button class="btn ghost sm" style="font-weight:600" onclick="go('studentDetail','${s.key}')">${esc(s.name)} →</button></td><td>${esc(s.class)}</td><td>${s.attempts}</td>
             <td>${s.avg}%</td><td style="font-size:.78rem">${s.skills.join(', ')}</td>
-            <td><input id="fb_${s.key}" value="${esc(getStudents()[s.key]?.feedback||'')}" placeholder="Note + next step…" style="width:220px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:.82rem">
+            <td><button class="btn sm" onclick="go('studentDetail','${s.key}')">View</button></td>
+            <td><input id="fb_${s.key}" value="${esc(getStudents()[s.key]?.feedback||'')}" placeholder="Note + next step…" style="width:200px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:.82rem">
             <button class="btn sm teal" style="margin-left:6px" onclick="saveFeedback('${s.key}')">Save</button></td>
           </tr>`).join('')}
         </table></div>`
@@ -2104,6 +2181,17 @@ function renderCodeList(){
 function addCode(){ const v=val('newCode').trim().toUpperCase(); if(!v) return; const c=getCodes(); if(!c.includes(v)){ c.push(v); Store.set('ican_codes',c);} document.getElementById('newCode').value=''; renderCodeList(); }
 function removeCode(c){ Store.set('ican_codes', getCodes().filter(x=>x!==c)); renderCodeList(); }
 function saveFeedback(key){ setStudent(key,{feedback:val('fb_'+key)}); const b=event.target; b.textContent="Saved ✓"; setTimeout(()=>b.textContent="Save",1200); }
+function studentResults(key){ return allResults().filter(r=> (r.id||(r.code+"::"+(r.name||'').toLowerCase()))===key ); }
+function skillCount(bySkill, ks){ return ks.reduce((a,k)=>a+(bySkill[k]?bySkill[k].n:0),0); }
+function progRow(label, pct, color, sub){
+  return `<div class="prow"><div class="lab"><b>${label}</b><span>${pct==null?'no scored attempts':pct+'%'}${sub?' · '+sub:''}</span></div>
+    <div class="pbar"><span style="width:${pct==null?0:pct}%;background:${color}"></span></div></div>`;
+}
+function courseRow(label, done, total, color){
+  const pct=total?Math.round(done/total*100):0;
+  return `<div class="prow"><div class="lab"><b>${label}</b><span>${done} of ${total} · ${pct}%</span></div>
+    <div class="pbar"><span style="width:${pct}%;background:${color}"></span></div></div>`;
+}
 function summariseStudents(res){
   const map={};
   res.forEach(r=>{ const k=r.id||(r.code+"::"+(r.name||'').toLowerCase()); if(!map[k]) map[k]={key:k,name:r.name,class:r.class,attempts:0,pctSum:0,pctN:0,skills:new Set()};
