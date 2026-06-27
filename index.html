@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iCAN · English Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --ink:#15183A; --ink-2:#232a5c; --paper:#FBFAF6; --card:#FFFFFF;
+  --coral:#FF5A5F; --coral-dk:#E6464B; --amber:#FFD23F; --teal:#0FA98B; --teal-dk:#0c8a72;
+  --mist:#E7E6F0; --line:#D9D8E6; --slate:#3A3F58; --muted:#6E7290;
+  --hl:#FFE066; --radius:16px; --shadow:0 10px 30px -12px rgba(21,24,58,.25);
+  --fs:1; /* accessibility font scale */ --ls:1.6; /* line spacing */
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--paper); color:var(--slate);
+  font-family:"Lexend",system-ui,sans-serif; line-height:var(--ls);
+  font-size:calc(16px * var(--fs)); -webkit-font-smoothing:antialiased;
+}
+body.dyslexia{ letter-spacing:.04em; word-spacing:.16em; --ls:1.9; font-weight:400; }
+body.contrast{ --paper:#fff; --slate:#000; --muted:#222; --line:#000; --card:#fff;}
+h1,h2,h3,.display{font-family:"Fraunces",Georgia,serif; color:var(--ink); line-height:1.1; margin:0;}
+a{color:var(--coral)}
+button{font-family:inherit; cursor:pointer; font-size:1rem}
+.hidden{display:none !important}
+
+/* ---------- layout ---------- */
+.wrap{max-width:1080px; margin:0 auto; padding:0 20px}
+.screen{min-height:100vh; padding:90px 0 80px}
+.center{display:flex; align-items:center; justify-content:center; min-height:100vh; padding:80px 20px}
+
+/* ---------- top bar ---------- */
+.topbar{position:fixed; top:0; left:0; right:0; height:62px; background:rgba(251,250,246,.9);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--line); z-index:50;
+  display:flex; align-items:center; justify-content:space-between; padding:0 20px}
+.brand{display:flex; align-items:center; gap:10px; font-family:"Fraunces"; font-weight:700; font-size:1.35rem; color:var(--ink)}
+.brand .dot{display:inline-block; background:var(--amber); border-radius:4px; padding:0 .25em; box-shadow:inset 0 -6px 0 rgba(0,0,0,.06)}
+.brand small{font-family:"Lexend"; font-weight:400; color:var(--muted); font-size:.7rem; letter-spacing:.18em; text-transform:uppercase}
+.who{display:flex; align-items:center; gap:12px; font-size:.85rem; color:var(--muted)}
+.who b{color:var(--ink)}
+
+/* ---------- accessibility toolbar ---------- */
+.a11y{position:fixed; right:14px; bottom:14px; z-index:60; display:flex; flex-direction:column; gap:8px; align-items:flex-end}
+.a11y-toggle{background:var(--ink); color:#fff; border:none; border-radius:50px; padding:11px 16px; box-shadow:var(--shadow); display:flex; gap:8px; align-items:center; font-weight:500}
+.a11y-panel{background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px; box-shadow:var(--shadow); display:grid; gap:8px; width:230px}
+.a11y-panel h4{font-family:"Lexend"; font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--muted); margin:2px 0 0}
+.a11y-row{display:flex; gap:6px; flex-wrap:wrap}
+.chip{border:1px solid var(--line); background:#fff; border-radius:9px; padding:7px 10px; font-size:.8rem; color:var(--slate); flex:1; min-width:42px; text-align:center}
+.chip.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+
+/* ---------- buttons ---------- */
+.btn{background:var(--coral); color:#fff; border:none; border-radius:12px; padding:13px 22px; font-weight:600; box-shadow:0 6px 16px -6px rgba(255,90,95,.6); transition:transform .12s ease, filter .12s}
+.btn:hover{filter:brightness(1.05)} .btn:active{transform:translateY(1px)}
+.btn.ghost{background:#fff; color:var(--ink); border:1.5px solid var(--line); box-shadow:none}
+.btn.dark{background:var(--ink); box-shadow:none}
+.btn.teal{background:var(--teal); box-shadow:0 6px 16px -6px rgba(15,169,139,.6)}
+.btn.sm{padding:8px 14px; font-size:.85rem; border-radius:10px}
+.btn:disabled{opacity:.5; cursor:not-allowed}
+
+/* ---------- cards ---------- */
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:24px; box-shadow:var(--shadow)}
+.grid{display:grid; gap:18px}
+@media(min-width:720px){ .grid.c2{grid-template-columns:1fr 1fr} .grid.c4{grid-template-columns:repeat(2,1fr)} }
+@media(min-width:980px){ .grid.c4{grid-template-columns:repeat(4,1fr)} }
+
+/* ---------- home ---------- */
+.hero{text-align:center; max-width:640px}
+.hero .kicker{font-family:"Lexend"; letter-spacing:.22em; text-transform:uppercase; font-size:.72rem; color:var(--muted); margin-bottom:14px}
+.hero h1{font-size:clamp(2.6rem,7vw,4.4rem); font-weight:600}
+.mark{background:linear-gradient(transparent 60%, var(--hl) 60%); padding:0 .08em}
+.hero p{color:var(--muted); font-size:1.05rem; margin:18px auto 30px; max-width:480px}
+.role-grid{display:grid; gap:16px; grid-template-columns:1fr; max-width:520px; margin:0 auto}
+@media(min-width:560px){ .role-grid{grid-template-columns:1fr 1fr} }
+.role{cursor:pointer; text-align:left; border:1.5px solid var(--line); background:#fff; border-radius:var(--radius); padding:22px; transition:.15s; display:block}
+.role:hover{border-color:var(--ink); transform:translateY(-3px)}
+.role .ic{font-size:1.8rem} .role h3{margin:10px 0 4px; font-size:1.3rem} .role p{margin:0; color:var(--muted); font-size:.9rem}
+
+/* ---------- forms ---------- */
+.field{display:block; margin-bottom:14px; text-align:left}
+.field label{display:block; font-size:.8rem; color:var(--muted); margin-bottom:6px; font-weight:500}
+.field input, .field select, textarea{width:100%; padding:12px 14px; border:1.5px solid var(--line); border-radius:11px; font-family:inherit; font-size:1rem; color:var(--ink); background:#fff}
+.field input:focus, textarea:focus, select:focus{outline:none; border-color:var(--coral)}
+textarea{min-height:150px; resize:vertical; line-height:1.6}
+.err{color:var(--coral-dk); font-size:.85rem; margin-top:8px; min-height:1.2em}
+
+/* ---------- pathway ---------- */
+.path{cursor:pointer; text-align:left; border:none; border-radius:var(--radius); padding:24px; color:#fff; min-height:150px; display:flex; flex-direction:column; justify-content:space-between; transition:.15s; position:relative; overflow:hidden}
+.path:hover{transform:translateY(-4px)}
+.path .ic{font-size:2rem} .path h3{color:#fff; font-size:1.4rem; margin-top:10px} .path span{font-size:.82rem; opacity:.85}
+.path.read{background:linear-gradient(135deg,#2b2f63,#15183A)}
+.path.write{background:linear-gradient(135deg,#E6464B,#FF7A5F)}
+.path.listen{background:linear-gradient(135deg,#0FA98B,#1ec6a4)}
+.path.speak{background:linear-gradient(135deg,#8B5CF6,#6D3FD6)}
+
+/* ---------- reading ---------- */
+.level-slider{position:relative; display:inline-flex; background:#fff; border:1.5px solid var(--line); border-radius:50px; padding:5px; user-select:none}
+.level-slider button{position:relative; z-index:2; border:none; background:none; border-radius:50px; padding:9px 18px; font-size:.85rem; font-weight:600; color:var(--muted); transition:color .25s; white-space:nowrap}
+.level-slider .knob{position:absolute; top:5px; bottom:5px; left:5px; width:90px; border-radius:50px; background:var(--ink); transition:left .3s cubic-bezier(.34,1.4,.5,1), width .3s, background .25s; z-index:1}
+.level-slider[data-level="scaffolded"] .knob{background:var(--teal)}
+.level-slider[data-level="standard"] button:first-of-type{color:#fff}
+.level-slider[data-level="scaffolded"] button:last-of-type{color:#fff}
+.passage{font-family:"Lexend"; max-width:680px}
+.passage p{margin:0 0 1em} .passage h3{font-size:1.7rem; margin:0 0 6px}
+.genre-tag{display:inline-block; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--coral-dk); font-weight:600; margin-bottom:4px}
+.reader-tools{display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 20px; padding:12px; background:#fff; border:1px solid var(--line); border-radius:12px}
+mark.user-hl{background:var(--hl); padding:0 1px; border-radius:2px}
+.figure{border:1px solid var(--line); border-radius:12px; padding:16px; background:#fff; margin:16px 0}
+.figure table{width:100%; border-collapse:collapse; font-family:"Lexend"; font-size:.9rem}
+.figure th,.figure td{border:1px solid var(--line); padding:8px 10px; text-align:left}
+.figure th{background:var(--mist); color:var(--ink)}
+.figure figcaption{font-size:.8rem; color:var(--muted); margin-top:8px}
+.bar{height:14px; background:var(--coral); border-radius:4px; margin:4px 0}
+
+/* ---------- quiz ---------- */
+.q{border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:12px; background:#fff}
+.q .qhead{font-weight:500; color:var(--ink); margin-bottom:10px}
+.opt{display:flex; gap:10px; align-items:flex-start; padding:9px 12px; border:1.5px solid var(--line); border-radius:10px; margin-bottom:8px; cursor:pointer}
+.opt:hover{border-color:var(--ink)}
+.opt input{margin-top:3px}
+.opt.correct{border-color:var(--teal); background:rgba(15,169,139,.08)}
+.opt.wrong{border-color:var(--coral); background:rgba(255,90,95,.08)}
+.feedback{font-size:.85rem; margin-top:6px; padding:8px 10px; border-radius:8px; background:var(--mist)}
+.feedback.good{background:rgba(15,169,139,.12); color:var(--teal-dk)}
+.scorebox{text-align:center; padding:22px; border-radius:14px; background:var(--ink); color:#fff; margin-top:10px}
+.scorebox .big{font-family:"Fraunces"; font-size:3rem; color:#fff}
+
+/* ---------- lists / misc ---------- */
+.item-row{display:flex; justify-content:space-between; gap:12px; align-items:center; padding:16px; border:1px solid var(--line); border-radius:12px; background:#fff; margin-bottom:10px}
+.item-row .meta{font-size:.82rem; color:var(--muted)}
+.pill{display:inline-block; font-size:.7rem; padding:3px 9px; border-radius:50px; background:var(--mist); color:var(--ink); font-weight:500}
+.pill.done{background:rgba(15,169,139,.15); color:var(--teal-dk)}
+.back{background:none; border:none; color:var(--muted); padding:0; margin-bottom:18px; font-size:.9rem}
+.section-title{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; margin-bottom:22px}
+.rubric{list-style:none; padding:0; margin:14px 0}
+.rubric li{display:flex; gap:10px; padding:8px 0; border-bottom:1px dashed var(--line); font-size:.92rem}
+.rubric input{margin-top:4px}
+.note{font-size:.85rem; color:var(--muted); background:var(--mist); padding:12px 14px; border-radius:10px}
+.dictate-display{font-size:2rem; font-family:"Fraunces"; text-align:center; padding:20px; letter-spacing:.05em; color:var(--ink)}
+.spell-timer{position:relative; height:10px; background:var(--mist); border-radius:50px; margin:24px 0 16px}
+.spell-bar{height:100%; background:var(--coral); border-radius:50px; width:100%; transition:width 1s linear}
+.spell-timer span{position:absolute; right:0; top:-24px; font-weight:700; color:var(--ink); font-family:"Fraunces"; font-size:1.2rem}
+.gap-input{display:inline-block; width:auto; min-width:160px; padding:8px 12px; border:1.5px solid var(--line); border-radius:10px; font-family:inherit; font-size:1rem}
+.audio-player{display:flex; gap:10px; align-items:center; flex-wrap:wrap; padding:16px; background:var(--ink); border-radius:14px; margin:14px 0}
+.audio-player .btn{box-shadow:none}
+.audio-player .label{color:#fff; font-size:.85rem}
+.card ul{margin:8px 0 0; padding-left:20px} .card ul li{margin-bottom:6px; font-size:.92rem}
+.bands{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:12px 0}
+details.script{margin-top:10px; border:1px dashed var(--line); border-radius:10px; padding:10px 14px; background:#fff}
+details.script summary{cursor:pointer; color:var(--muted); font-size:.85rem}
+h2.sub{font-size:1.4rem; margin:30px 0 4px}
+.transcript{min-height:80px; border:1px dashed var(--line); border-radius:10px; padding:14px; background:#fff; font-style:italic; color:var(--slate)}
+table.data{width:100%; border-collapse:collapse; font-size:.85rem; margin-top:14px}
+table.data th, table.data td{border:1px solid var(--line); padding:9px 11px; text-align:left}
+table.data th{background:var(--ink); color:#fff; position:sticky; top:0}
+table.data tr:nth-child(even){background:#fff}
+.kbd{font-family:monospace; background:var(--ink); color:var(--amber); padding:2px 8px; border-radius:6px; font-size:.85em}
+.tabs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:18px}
+.tabs button{border:1.5px solid var(--line); background:#fff; border-radius:50px; padding:8px 16px; font-size:.85rem; color:var(--muted)}
+.tabs button.on{background:var(--coral); color:#fff; border-color:var(--coral)}
+@media (prefers-reduced-motion: reduce){*{transition:none !important; scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<div class="topbar">
+  <div class="brand" onclick="go('home')" style="cursor:pointer">
+    <span>i<span class="dot">CAN</span></span>
+    <small>English Practice</small>
+  </div>
+  <div class="who" id="whoBar"></div>
+</div>
+
+<!-- ============ ACCESSIBILITY TOOLBAR ============ -->
+<div class="a11y">
+  <div class="a11y-panel hidden" id="a11yPanel">
+    <h4>Text size</h4>
+    <div class="a11y-row">
+      <button class="chip" onclick="setFont(-0.1)">A−</button>
+      <button class="chip" onclick="setFont(0)">Reset</button>
+      <button class="chip" onclick="setFont(0.1)">A+</button>
+    </div>
+    <h4>Reading support</h4>
+    <div class="a11y-row">
+      <button class="chip" id="cDys" onclick="toggleClassBody('dyslexia','cDys')">Easy-read font</button>
+      <button class="chip" id="cCon" onclick="toggleClassBody('contrast','cCon')">High contrast</button>
+    </div>
+    <div class="a11y-row">
+      <button class="chip" id="cHl" onclick="toggleHighlighter()">✏️ Highlighter</button>
+      <button class="chip" onclick="clearHighlights()">Clear marks</button>
+    </div>
+    <h4>Read to me</h4>
+    <div class="a11y-row">
+      <button class="chip" onclick="readPage()">▶ Play</button>
+      <button class="chip" onclick="stopSpeak()">■ Stop</button>
+    </div>
+  </div>
+  <button class="a11y-toggle" onclick="toggleA11y()">♿ Tools</button>
+</div>
+
+<!-- ============ SCREENS MOUNT ============ -->
+<main id="app"></main>
+
+<script>
+/* =========================================================================
+   iCAN — configuration you can change
+   ========================================================================= */
+const CONFIG = {
+  teacherCode: "TEACHER-ICAN-2025",      // <-- change this and keep it private
+  // Student access codes you hand out. Edit freely, or add them from the
+  // Teacher dashboard (those are saved in this browser).
+  classCodes: ["ICAN-9A", "ICAN-10B", "ICAN-11C", "ICAN-12D", "DEMO"],
+  // Online sync (optional). Paste your Google Sheet web-app URL here, OR set it
+  // from the Teacher dashboard. When set, every result is saved online and the
+  // teacher dashboard reads everyone's records from the cloud. Leave "" for
+  // local-only mode (still fully works + Excel export).
+  cloudUrl: ""
+};
+
+/* =========================================================================
+   Storage — uses the browser when hosted; falls back to memory in preview.
+   When you add a backend later, replace these 4 functions with fetch() calls.
+   ========================================================================= */
+const Store = {
+  mem:{},
+  _ok(){ try{ const k="__t"; localStorage.setItem(k,"1"); localStorage.removeItem(k); return true; }catch(e){ return false; } },
+  get(k){ if(this._ok()){ const v=localStorage.getItem(k); return v?JSON.parse(v):null; } return this.mem[k]??null; },
+  set(k,v){ if(this._ok()){ localStorage.setItem(k,JSON.stringify(v)); } else { this.mem[k]=v; } }
+};
+function getResults(){ return Store.get("ican_results")||[]; }
+function getCodes(){ return Store.get("ican_codes")||CONFIG.classCodes.slice(); }
+function saveResult(r){ const a=getResults(); a.push(r); Store.set("ican_results",a); cloudSave(r); }
+function getStudents(){ return Store.get("ican_students")||{}; }
+function setStudent(id,o){ const s=getStudents(); s[id]=Object.assign(s[id]||{},o); Store.set("ican_students",s); }
+
+/* ---- Online sync (Google Sheet web app). Local always works as a backup. ---- */
+function cloudUrl(){ return Store.get("ican_cloud_url") || CONFIG.cloudUrl || ""; }
+function setCloudUrl(u){ Store.set("ican_cloud_url", u.trim()); }
+function cloudSave(rec){
+  const url = cloudUrl(); if(!url) return;
+  try{ fetch(url, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(rec)}); }
+  catch(e){ /* offline; local copy is kept */ }
+}
+let _cbN = 0, CLOUD_CACHE = [];
+function cloudList(cb){
+  const url = cloudUrl(); if(!url){ cb(null); return; }
+  const name = "__icanCb" + (++_cbN);
+  const s = document.createElement("script");
+  let done = false;
+  window[name] = function(data){ done=true; try{ s.remove(); }catch(e){} delete window[name]; cb(data); };
+  s.onerror = ()=>{ if(!done){ try{ s.remove(); }catch(e){} cb(null); } };
+  s.src = url + (url.includes("?")?"&":"?") + "action=list&callback=" + name + "&t=" + Date.now();
+  document.body.appendChild(s);
+  setTimeout(()=>{ if(!done){ try{ s.remove(); }catch(e){} cb(null); } }, 8000);
+}
+function rkey(r){ return r.date+"|"+(r.name||"")+"|"+(r.activity||"")+"|"+(r.skill||""); }
+function allResults(){
+  const local = getResults(); const seen = new Set(local.map(rkey)); const merged = local.slice();
+  CLOUD_CACHE.forEach(r=>{ if(r && !seen.has(rkey(r))){ seen.add(rkey(r)); merged.push(r); } });
+  return merged.sort((a,b)=>a.date-b.date);
+}
+function refreshCloud(then){ cloudList(data=>{ if(Array.isArray(data)) CLOUD_CACHE = data; if(then) then(); }); }
+
+let SESSION = null; // {role, name, class, code, id}
+
+/* =========================================================================
+   CONTENT — original practice material. Add more by extending these arrays.
+   Each reading item has a STANDARD and a SCAFFOLDED (SEN / below-grade) version.
+   ========================================================================= */
+const READING = [
+  {
+    id:"r1", genre:"Technology · Contemporary debate", title:"Can a Machine Be Creative?", type:"Article",
+    standard:{
+      text:`<p>When an artificial-intelligence program paints a portrait or writes a melody, audiences are often impressed — and uneasy. The image may be striking, yet something about its origin provokes doubt. Is the machine truly <em>creating</em>, or merely recombining the millions of human-made works it has studied?</p>
+      <p>Defenders of machine creativity argue that human artists also learn by imitation. A young painter copies the masters before finding a personal style; a songwriter absorbs the music of others. If borrowing and remixing count as creativity in people, they say, the same should hold for software.</p>
+      <p>Critics push back. Creativity, they argue, is not only the output but the <strong>intention</strong> behind it — the desire to express a feeling, to say something about being alive. A program has no feelings to express and no life to reflect upon. It produces patterns, not meaning.</p>
+      <p>Perhaps the real question is not whether machines can be creative, but what we want creativity to be. As these tools spread through classrooms, studios and newsrooms, that definition may matter more than ever.</p>`,
+      questions:[
+        {type:"mcq", q:"Why are audiences described as 'uneasy'?", options:["The images are ugly","They doubt whether the machine truly creates","Machines are expensive","The melodies are too loud"], answer:1, exp:"The passage says the origin of the work 'provokes doubt' about whether the machine is really creating."},
+        {type:"mcq", q:"How do defenders of machine creativity support their view?", options:["By saying machines have feelings","By noting that humans also learn by imitation","By claiming machines are smarter than people","By saying art does not matter"], answer:1, exp:"They compare AI to a young painter copying the masters."},
+        {type:"mcq", q:"According to critics, creativity depends most on…", options:["Speed","Intention and meaning","Colour","Cost"], answer:1, exp:"Critics stress the intention behind the work — expressing feeling and meaning."},
+        {type:"short", q:"In your own words, what does the writer suggest the 'real question' is?", answer:"The writer suggests the real question is not whether machines can be creative, but how we choose to define creativity itself.", exp:"Look at the final paragraph — it reframes the debate around our definition of creativity."},
+        {type:"short", q:"Find a word in paragraph 3 that means 'purpose' or 'aim'.", answer:"intention", exp:"'Intention' (the desire behind an action) is the key term in paragraph 3."}
+      ]
+    },
+    scaffolded:{
+      text:`<p>An AI program can now make pictures and music. People are often impressed. But they also feel unsure. Is the machine really <em>making</em> something new? Or is it just copying the human art it has studied?</p>
+      <p>Some people say machines <strong>are</strong> creative. They say humans also learn by copying. A young artist copies famous painters first. So copying can lead to creativity.</p>
+      <p>Other people disagree. They say real creativity needs a <strong>reason</strong> — a wish to share a feeling. A machine has no feelings. So it makes patterns, not meaning.</p>
+      <p>Maybe the big question is this: what do we <em>want</em> creativity to mean?</p>`,
+      questions:[
+        {type:"mcq", q:"How do people feel when AI makes art?", options:["Bored","Impressed but unsure","Angry","Sleepy"], answer:1, exp:"The text says people are impressed but also feel unsure."},
+        {type:"short", q:"In one sentence, why do some people say a machine is NOT really creative?", answer:"Because a machine has no feelings to share, so it only makes patterns, not meaning.", exp:"Look at paragraph 3 — it talks about feelings and meaning."},
+        {type:"reflect", q:"Knowledge building: Write one or two new things you learned from this text. Then say — do YOU think a machine can be creative? Why?", exp:"There is no single right answer. Share what you learned and your own honest opinion, with a reason."}
+      ]
+    }
+  },
+  {
+    id:"r2", genre:"Society · Contemporary debate", title:"Should Phones Be Banned in Schools?", type:"Blog post",
+    standard:{
+      text:`<p><em>Posted by Mara, 16 — student blog</em></p>
+      <p>My school banned phones last term, and the corridors sound different now. There is talking, laughter, even arguments — the ordinary noise of people actually noticing one another. For years our break times were silent rows of bent necks and glowing screens.</p>
+      <p>I won't pretend the ban was popular. Many of us felt cut off, anxious without the comfort of a quick scroll. Some pointed out that phones help us look up facts, contact parents, and stay safe walking home. These are fair points.</p>
+      <p>Yet I've noticed I concentrate better. The temptation to check a notification mid-lesson is simply gone. My grades have not soared overnight, but my attention feels less fractured, more whole.</p>
+      <p>So I find myself oddly grateful for a rule I once resented. Maybe the best decisions are the ones that protect us from our own habits.</p>`,
+      questions:[
+        {type:"mcq", q:"What change did Mara notice in the corridors?", options:["They were emptier","There was more talking and laughter","They were darker","Lessons were longer"], answer:1, exp:"She describes hearing talking, laughter and arguments — people noticing each other."},
+        {type:"mcq", q:"Which is given as an argument AGAINST the ban?", options:["Phones distract students","Phones help students stay safe and contact parents","Phones are cheap","Phones are quiet"], answer:1, exp:"Mara fairly notes phones help look up facts, contact parents, and stay safe."},
+        {type:"mcq", q:"The phrase 'silent rows of bent necks' mainly creates an image of…", options:["Students sleeping","Students absorbed in screens","An empty room","A library"], answer:1, exp:"It pictures students staring down at phones, ignoring each other."},
+        {type:"short", q:"How has Mara's attitude to the ban changed, and why?", answer:"She once resented the ban but is now grateful for it, because she concentrates better and feels her attention is less fractured.", exp:"Compare the start ('won't pretend it was popular') with the end ('oddly grateful')."},
+        {type:"short", q:"Identify the writer's tone in the final paragraph.", answer:"Reflective / thoughtful — she is reconsidering her earlier view and drawing a wider lesson.", exp:"The final line is a calm, considered conclusion."}
+      ]
+    },
+    scaffolded:{
+      text:`<p><em>By Mara, age 16</em></p>
+      <p>My school banned phones this term. Now the corridors are louder. People talk and laugh. Before, everyone just looked down at their screens.</p>
+      <p>Not everyone liked the ban. Some people felt cut off. They said phones help us find facts and call our parents. These are fair points.</p>
+      <p>But I focus better now. I cannot check my phone in class, so I pay more attention.</p>
+      <p>So I am happy about the rule now, even though I did not like it at first.</p>`,
+      questions:[
+        {type:"mcq", q:"How does Mara feel about the ban NOW?", options:["Angry","Happy about it","Sad","Bored"], answer:1, exp:"She is happy about it now, even though she didn't like it first."},
+        {type:"short", q:"Write one reason phones can be useful, using the text.", answer:"Phones help us find facts and call our parents (and stay safe).", exp:"Re-read paragraph 2."},
+        {type:"reflect", q:"Compare with yourself: should phones be banned in YOUR school? Do you agree with Mara — yes or no? Give one reason.", exp:"Say if you agree or disagree, then give one clear reason."}
+      ]
+    }
+  },
+  {
+    id:"r3", genre:"Geography · Environment", title:"The Town That Had to Move", type:"Article",
+    standard:{
+      text:`<p>For generations, the people of Kiruna in northern Sweden lived above one of the world's richest iron-ore mines. The mine made the town prosperous. It is also, slowly, swallowing it.</p>
+      <p>As tunnels reach deeper, the ground above grows unstable. Cracks creep toward homes, schools and the historic church. Rather than abandon the place, engineers chose something extraordinary: they are moving the entire town three kilometres east, building by building, over several decades.</p>
+      <p>Some structures are demolished and rebuilt; a few treasured ones are lifted whole and rolled to safety. Residents speak of the move with a strange mixture of grief and pride — grief for familiar streets that will vanish, pride in an act of collective survival.</p>
+      <p>Kiruna's story is unusual, but it raises a question many coastal cities now face as seas rise: when the land beneath us changes, do we hold on, or do we move?</p>`,
+      questions:[
+        {type:"mcq", q:"Why is Kiruna being moved?", options:["A war","Mining has made the ground unstable","Tourism","A new airport"], answer:1, exp:"Deep mine tunnels make the ground above unstable, with cracks spreading."},
+        {type:"mcq", q:"How are a few treasured buildings being saved?", options:["Painted","Lifted whole and rolled to safety","Hidden underground","Sold abroad"], answer:1, exp:"Some treasured buildings are lifted whole and rolled to a new site."},
+        {type:"mcq", q:"Residents feel a mixture of…", options:["Anger and fear","Grief and pride","Joy and boredom","Hunger and cold"], answer:1, exp:"They feel grief for vanishing streets and pride in surviving together."},
+        {type:"short", q:"What wider question does Kiruna's story raise?", answer:"As seas rise, other cities must decide whether to hold on to changing land or to move — the same dilemma Kiruna faces.", exp:"The final paragraph links Kiruna to coastal cities facing rising seas."},
+        {type:"short", q:"Explain the phrase 'an act of collective survival'.", answer:"It means the whole community working together to survive a threat — moving the town as one group.", exp:"'Collective' = shared/group; 'survival' = staying alive/safe."}
+      ]
+    },
+    scaffolded:{
+      text:`<p>Kiruna is a town in north Sweden. It sits above a big iron mine. The mine made the town rich. But now the mine is a problem.</p>
+      <p>The mine tunnels go very deep. This makes the ground above weak. Cracks are moving toward the houses and the old church.</p>
+      <p>So the people made a big plan. They are moving the whole town three kilometres away. Some buildings are knocked down and built again. A few special ones are lifted up and rolled to the new place.</p>
+      <p>People feel sad and proud at the same time. Sad to lose old streets. Proud to survive together.</p>`,
+      questions:[
+        {type:"mcq", q:"Why is the ground weak under Kiruna?", options:["Too much rain","The deep mine tunnels","Earthquakes","Heavy snow"], answer:1, exp:"The deep tunnels make the ground above weak."},
+        {type:"short", q:"Write what the people are doing to stay safe.", answer:"They are moving the whole town three kilometres away.", exp:"Re-read paragraph 3."},
+        {type:"reflect", q:"Knowledge building: Write one or two new facts you learned about Kiruna from this text.", exp:"Any true fact from the text is great — for example, why the town has to move."}
+      ]
+    }
+  },
+  {
+    id:"r4", genre:"Art · Music · Science", title:"Why a Song Gets Stuck in Your Head", type:"Article",
+    standard:{
+      text:`<p>You hear a catchy chorus once, and hours later it loops in your mind, uninvited. Scientists call this an <em>earworm</em>, and almost everyone gets them. The songs that stick tend to share a recipe: a fast, upbeat tempo, a simple melody, and one surprising twist — an unexpected leap or repeated note that the brain wants to replay and resolve.</p>
+      <p>Curiously, earworms cling hardest when a task is too easy or too hard. Bored or overloaded, the mind grabs a familiar tune to fill the gap. The cure many people find effective is also strange: chewing gum, or simply finishing the song in your head, can release its grip.</p>
+      <p>An earworm is a tiny window onto memory itself — proof that the brain is restless, always rehearsing, never quite still.</p>`,
+      questions:[
+        {type:"mcq", q:"What is an 'earworm'?", options:["A type of insect","A song stuck in your head","A musical instrument","A hearing problem"], answer:1, exp:"Scientists use 'earworm' for a song that loops in your mind."},
+        {type:"mcq", q:"Which is part of the 'recipe' for a sticky song?", options:["A slow, sad tune","A simple melody with a surprising twist","No rhythm","Quiet whispering"], answer:1, exp:"Fast tempo, simple melody, and one surprising twist."},
+        {type:"mcq", q:"Earworms cling hardest when a task is…", options:["Just right","Too easy or too hard","New","Outdoors"], answer:1, exp:"When bored or overloaded, the mind grabs a familiar tune."},
+        {type:"short", q:"What two 'cures' does the writer mention?", answer:"Chewing gum, and finishing the song in your head.", exp:"Both are named in paragraph 2."},
+        {type:"short", q:"What does the earworm reveal about the brain, according to the writer?", answer:"That the brain is restless and always rehearsing — never quite still.", exp:"See the final sentence."}
+      ]
+    },
+    scaffolded:{
+      text:`<p>You hear a song once. Hours later, it plays again in your head. This is called an <em>earworm</em>. Almost everyone gets them.</p>
+      <p>Sticky songs are often fast and simple. They have one surprising part that your brain wants to repeat.</p>
+      <p>Earworms are worst when a job is too easy or too hard. Your bored brain grabs a song. To stop it, try chewing gum, or finish the song in your head.</p>`,
+      questions:[
+        {type:"mcq", q:"What is an earworm?", options:["A bug","A song stuck in your head","A toy","A pet"], answer:1, exp:"It is a song that plays again in your head."},
+        {type:"short", q:"Write one way to stop an earworm.", answer:"Chew gum, or finish the song in your head.", exp:"Re-read the last paragraph."},
+        {type:"reflect", q:"Connect to you: Has a song ever stuck in your head? Which one, and how did it make you feel?", exp:"Share your own example — there is no wrong answer."}
+      ]
+    }
+  },
+  {
+    id:"r5", genre:"Career · Innovation", title:"The Jobs That Don't Exist Yet", type:"Podcast transcript",
+    type2:"podcast",
+    standard:{
+      text:`<p><strong>[Podcast: "Future-Proof" — Episode 12]</strong></p>
+      <p><strong>Host:</strong> So, many of the jobs today's teenagers will do haven't been invented. That sounds frightening. Should it?</p>
+      <p><strong>Guest (careers researcher):</strong> Not really. Think back twenty years — "social-media manager" or "app developer" would have sounded like nonsense. New tools create new roles. The skill is not predicting the exact job; it's becoming the kind of person who can learn the next one quickly.</p>
+      <p><strong>Host:</strong> And which abilities travel well between jobs?</p>
+      <p><strong>Guest:</strong> The ones machines struggle with: judgement, communication, working with people, asking good questions. I tell students — don't only ask "what do I want to be?" Ask "what problems do I want to help solve?" Roles change; problems last.</p>
+      <p><strong>Host:</strong> Comforting, and a little demanding.</p>
+      <p><strong>Guest:</strong> The best advice usually is.</p>`,
+      questions:[
+        {type:"mcq", q:"The guest argues the key skill is to be someone who can…", options:["Predict the exact future job","Learn new roles quickly","Avoid technology","Work alone"], answer:1, exp:"He says the skill is becoming someone who can learn the next role quickly."},
+        {type:"mcq", q:"Which abilities does the guest say 'travel well' between jobs?", options:["Typing speed","Judgement, communication, asking good questions","Memorising facts","Lifting weights"], answer:1, exp:"He lists judgement, communication, working with people, asking good questions."},
+        {type:"mcq", q:"What question does the guest prefer students ask?", options:["'What do I want to be?'","'What problems do I want to help solve?'","'How much money will I make?'","'Where will I live?'"], answer:1, exp:"He reframes 'what to be' as 'what problems to solve' because problems last."},
+        {type:"short", q:"Explain the line 'Roles change; problems last.'", answer:"Specific job titles disappear and appear, but real problems (and the need to solve them) stay around — so focusing on problems is more reliable.", exp:"It contrasts short-lived job titles with long-lasting problems."},
+        {type:"short", q:"What tone does the host's final line ('a little demanding') add?", answer:"A wry, honest tone — acknowledging the advice is helpful but also asks a lot of you.", exp:"It is half-joking, half-serious."}
+      ]
+    },
+    scaffolded:{
+      text:`<p><strong>[Podcast: "Future-Proof"]</strong></p>
+      <p><strong>Host:</strong> Many future jobs are not invented yet. Is that scary?</p>
+      <p><strong>Guest:</strong> Not really. Twenty years ago, "app developer" sounded strange. New tools make new jobs. The key skill is being able to <strong>learn new things fast</strong>.</p>
+      <p><strong>Host:</strong> Which skills help in any job?</p>
+      <p><strong>Guest:</strong> The ones machines find hard: good thinking, talking with people, and asking good questions. So don't only ask "What job do I want?" Ask "What problems do I want to solve?"</p>`,
+      questions:[
+        {type:"mcq", q:"What is the key skill for the future?", options:["Running","Learning new things fast","Sleeping","Shouting"], answer:1, exp:"Being able to learn new things quickly."},
+        {type:"short", q:"Write the better question the guest says you should ask.", answer:"'What problems do I want to solve?'", exp:"The guest says to ask about problems, not just job titles."},
+        {type:"reflect", q:"Knowledge building + opinion: What problem in the world would YOU like to help solve? Do you agree that 'problems last' longer than jobs?", exp:"Name a real problem you care about, and say whether you agree, with a reason."}
+      ]
+    }
+  },
+  {
+    id:"r6", genre:"Data literacy · Infographic", title:"Reading the Numbers: Teens & Screens", type:"Infographic / Table",
+    isData:true,
+    standard:{
+      intro:`<p>Not all reading is paragraphs. Study the table and chart below, then answer the questions. This is <strong>data literacy</strong> — reading information from figures.</p>`,
+      figure:`<div class="figure">
+        <table>
+          <tr><th>Activity (avg. per day)</th><th>Age 13–15</th><th>Age 16–18</th></tr>
+          <tr><td>Video & streaming</td><td>2h 40m</td><td>3h 10m</td></tr>
+          <tr><td>Social media</td><td>1h 50m</td><td>2h 20m</td></tr>
+          <tr><td>Gaming</td><td>1h 30m</td><td>1h 05m</td></tr>
+          <tr><td>Reading (for pleasure)</td><td>0h 25m</td><td>0h 18m</td></tr>
+        </table>
+        <div style="margin-top:14px">
+          <div style="font-size:.8rem;color:var(--muted)">Video &amp; streaming, age 16–18</div>
+          <div class="bar" style="width:100%"></div>
+          <div style="font-size:.8rem;color:var(--muted)">Reading for pleasure, age 16–18</div>
+          <div class="bar" style="width:9%"></div>
+        </div>
+        <figcaption>Figure 1. Illustrative daily screen-time data (sample, not from a real survey).</figcaption>
+      </div>`,
+      questions:[
+        {type:"mcq", q:"Which activity takes the MOST time for ages 16–18?", options:["Gaming","Social media","Video & streaming","Reading"], answer:2, exp:"Video & streaming is 3h 10m — the highest figure in that column."},
+        {type:"mcq", q:"Which activity DECREASES from the younger to the older group?", options:["Social media","Gaming","Video & streaming","None"], answer:1, exp:"Gaming falls from 1h30m to 1h05m; reading also falls. Of the options, gaming is correct."},
+        {type:"mcq", q:"Reading for pleasure (16–18) is closest to…", options:["3 hours","18 minutes","2 hours","1 hour"], answer:1, exp:"The table shows 0h 18m for that group."},
+        {type:"short", q:"Describe ONE overall trend you can see in the data.", answer:"Sample answer: as teens get older, screen-based viewing/social media rises while reading for pleasure falls.", exp:"Compare the two age columns row by row."},
+        {type:"short", q:"Why might a chart be more useful than a paragraph for this information?", answer:"A chart shows differences in size at a glance and makes comparisons and trends quick to see.", exp:"Think about how bars let you compare amounts instantly."}
+      ]
+    },
+    scaffolded:{
+      intro:`<p>Look at the table. Then answer the questions. You are <strong>reading data</strong>, not a story.</p>`,
+      figure:`<div class="figure">
+        <table>
+          <tr><th>Activity each day</th><th>Time</th></tr>
+          <tr><td>Watching video</td><td>3 hours</td></tr>
+          <tr><td>Social media</td><td>2 hours</td></tr>
+          <tr><td>Gaming</td><td>1 hour</td></tr>
+          <tr><td>Reading books</td><td>20 minutes</td></tr>
+        </table>
+        <figcaption>Figure 1. Time teens spend each day (sample).</figcaption>
+      </div>`,
+      questions:[
+        {type:"mcq", q:"Which activity takes the most time?", options:["Reading","Watching video","Gaming","Social media"], answer:1, exp:"Watching video is 3 hours — the biggest."},
+        {type:"short", q:"Write ONE thing the table tells you.", answer:"Any true reading, e.g. 'Teens watch video much more than they read.'", exp:"Read one row and compare it with another."},
+        {type:"reflect", q:"Thinking deeper: Are you surprised by any number in the table? Which one, and why?", exp:"Pick one number and say why it surprised you (or did not)."}
+      ]
+    }
+  }
+];
+
+/* ---- Writing: focused prompts, named audiences, a designed visual, and a marking rubric ---- */
+const WRITE_BANDS = [
+  {n:4, label:"Excellent"}, {n:3, label:"Good"}, {n:2, label:"Developing"}, {n:1, label:"Beginning"}
+];
+const WRITING = [
+  {id:"w1", title:"Persuade with a campaign poster", genre:"Multimodal · Persuasion",
+   audience:"your school principal and the student council",
+   wordCount:"150–200 words for the written argument",
+   prompt:"Choose ONE change you want at your school (a later start time, a phone-free study zone, a recycling scheme, a homework-free weekend). Write a persuasive text that argues for it. Open by stating your position clearly, give two strong reasons backed by an example or fact, answer one objection the principal might raise, and finish with a clear call to action.",
+   visual:{verb:"Design", what:"a campaign poster", short:"poster",
+     lookLike:["A bold headline of six words or fewer","One eye-catching image or icon — describe it in words","One fact or statistic shown in large type","A short, memorable slogan (your call to action)","A colour scheme and layout that would stand out on a school noticeboard"]},
+   criteria:[
+     {c:"Argument & persuasion", weight:30, excellent:"Clear position; two convincing reasons with evidence; handles an objection; strong call to action."},
+     {c:"Structure & cohesion", weight:15, excellent:"Logical order with linking words; reads smoothly from hook to close."},
+     {c:"Poster design (multimodal)", weight:25, excellent:"Headline, image, fact and slogan work together and suit the audience and place."},
+     {c:"Language & vocabulary", weight:15, excellent:"Persuasive devices used well; precise, varied word choice."},
+     {c:"Accuracy (spelling, grammar, punctuation)", weight:15, excellent:"Virtually error-free; punctuation controlled for effect."}
+   ]},
+  {id:"w2", title:"Explain a process with an infographic", genre:"Multimodal · Science/Technology",
+   audience:"students two years younger than you (around Grade 7)",
+   wordCount:"150–200 words for the explanation",
+   prompt:"Pick a process you understand well (how vaccines train the immune system, how a search engine ranks pages, how a tsunami forms, how recycling is sorted). Explain it in plain language a younger student could follow. Use sequencing words (first, next, as a result) and define any tricky term the moment you use it.",
+   visual:{verb:"Create", what:"a labelled infographic or flowchart", short:"infographic",
+     lookLike:["3–5 clear stages shown in order","A short label for each stage in your own words","One everyday analogy made visual (e.g. 'like a bouncer at a door')","Arrows or numbers that guide the eye through the steps","An uncluttered layout a younger reader can follow at a glance"]},
+   criteria:[
+     {c:"Clarity for the audience", weight:25, excellent:"A 12-year-old could follow it; jargon is explained or avoided."},
+     {c:"Accuracy of content", weight:25, excellent:"The process is correct and complete; no key step missing."},
+     {c:"Infographic design (multimodal)", weight:25, excellent:"Stages, labels, analogy and flow combine into a clear visual."},
+     {c:"Organisation & sequencing", weight:15, excellent:"Strong sequencing language; ideas build logically."},
+     {c:"Accuracy (spelling, grammar, punctuation)", weight:10, excellent:"Clean, controlled writing."}
+   ]},
+  {id:"w3", title:"Turn a scene into a film script", genre:"Multimodal · Drama/Literature",
+   audience:"the audience at a class film festival",
+   wordCount:"about one page of script",
+   prompt:"Rewrite a small, real-feeling moment (a missed bus, an awkward apology, a secret almost revealed) as a short film script. Use correct layout: a SCENE heading, character names above their lines, dialogue, and stage or camera directions in [brackets]. By the end, SHOW a change in one character — through action or subtext — rather than telling us how they feel.",
+   visual:{verb:"Storyboard", what:"ONE key shot from your scene", short:"key shot",
+     lookLike:["Name the shot type (close-up, wide, over-the-shoulder)","Say exactly what is in the frame","State the feeling the shot should create in the audience","Note the lighting or colour mood","Explain in one sentence why this is the most important image in the scene"]},
+   criteria:[
+     {c:"Script format & conventions", weight:20, excellent:"Correct headings, names, dialogue and bracketed directions throughout."},
+     {c:"Dialogue & characterisation", weight:25, excellent:"Natural, distinct voices; we sense who these people are."},
+     {c:"The key shot (multimodal)", weight:25, excellent:"A vivid, purposeful shot with clear emotional and visual reasoning."},
+     {c:"Showing change / subtext", weight:20, excellent:"A real shift in a character is shown, not stated."},
+     {c:"Accuracy (spelling, grammar, punctuation)", weight:10, excellent:"Clean and readable."}
+   ]},
+  {id:"w4", title:"Summarise a text and map it", genre:"Multimodal · Reading-into-writing",
+   audience:"a classmate who was absent the day your class read the text",
+   wordCount:"60–90 words for the summary",
+   prompt:"Choose any text from the Reading pathway. Write a summary in your OWN words: state the main idea first, then the key supporting points. Do not copy phrases from the original — if you can't say it your way, you haven't understood it yet.",
+   visual:{verb:"Make", what:"a mind-map or a summary table", short:"mind-map",
+     lookLike:["The central idea in the middle (mind-map) or the top row (table)","3–5 branches or rows for the key points","Keywords only — not full sentences","Links or arrows showing how the points connect","Clear enough that your classmate 'gets it' in about 30 seconds"]},
+   criteria:[
+     {c:"Accurate summary", weight:30, excellent:"Captures the main idea and the right key points; nothing important missed or invented."},
+     {c:"Own words (no copying)", weight:20, excellent:"Fully reworded; shows real understanding."},
+     {c:"Mind-map / table design (multimodal)", weight:25, excellent:"Well-structured, keyword-based, with clear connections."},
+     {c:"Conciseness", weight:15, excellent:"Within the word limit; every word earns its place."},
+     {c:"Accuracy (spelling, grammar, punctuation)", weight:10, excellent:"Clean and clear."}
+   ]},
+  {id:"w5", title:"Make a 4-slide awareness post", genre:"Multimodal · Contemporary · local & global",
+   audience:"other teenagers who follow your school's social account",
+   wordCount:"120–160 words of text across the four slides",
+   prompt:"Choose a contemporary issue that links the global and the local (saving water, online kindness, food waste, road safety). Write the text for a four-slide awareness post: Slide 1 a hook, Slides 2–3 the problem plus ONE local fact or example, Slide 4 a single action a teenager could take today. Keep the tone real, not preachy.",
+   visual:{verb:"Design", what:"the four slides", short:"slide set",
+     lookLike:["A scroll-stopping first slide (image idea + hook)","One idea per slide — never crowded","A consistent colour and font 'brand' across all four","One genuinely local image or example, not a generic stock idea","A clear, doable final call to action"]},
+   criteria:[
+     {c:"Message & purpose", weight:25, excellent:"A sharp, single message that links local and global; clearly informs or moves the reader."},
+     {c:"Audience awareness", weight:20, excellent:"Tone and references fit teenagers; never preachy or vague."},
+     {c:"Slide design (multimodal)", weight:25, excellent:"Hook, flow, branding and local example work as a set."},
+     {c:"Concision & impact", weight:15, excellent:"Tight, punchy text; within the word limit."},
+     {c:"Accuracy (spelling, grammar, punctuation)", weight:15, excellent:"Clean across all slides."}
+   ]}
+];
+
+/* ---- Listening A: comprehension. TTS reads the script; students answer MCQ + gap-fill ---- */
+const LISTEN_COMP = [
+  {id:"lc1", title:"At the library", kind:"Dialogue",
+   script:"Speaker A: Hi, I borrowed this novel two weeks ago and it's due today. Can I keep it a little longer? "
+        +"Speaker B: Let me check. Yes, you can renew it once for another week, as long as no one else has reserved it. "
+        +"Speaker A: Great. Has anyone reserved it? "
+        +"Speaker B: No, you're fine. But please note the late fee is twenty cents per day after the new due date. "
+        +"Speaker A: Understood. Could I also reserve the sequel? "
+        +"Speaker B: Of course. It's on loan at the moment, so I'll email you when it's returned.",
+   questions:[
+     {type:"mcq", q:"How long can the reader renew the book?", options:["One more day","One more week","One more month","It can't be renewed"], answer:1, exp:"The librarian offers a renewal of one more week."},
+     {type:"gap", q:"The late fee is ___ cents per day after the new due date.", answer:["twenty","20"], exp:"The librarian says twenty cents per day."},
+     {type:"mcq", q:"What will happen with the sequel?", options:["It is lent immediately","The reader is emailed when it's returned","The reservation is cancelled","It is delivered home"], answer:1, exp:"It's on loan, so the librarian will email when it comes back."}
+   ]},
+  {id:"lc2", title:"Why coral reefs matter", kind:"Short lecture",
+   script:"Today we'll look at why coral reefs matter. Although reefs cover less than one percent of the ocean floor, they support about a quarter of all marine species. "
+        +"Corals are tiny animals that build hard skeletons. Inside them live colourful algae that make food from sunlight. "
+        +"When the water gets too warm, the coral pushes out the algae and turns white. This is called bleaching. "
+        +"Without the algae, the coral can starve. So protecting reefs also protects the thousands of species that depend on them.",
+   questions:[
+     {type:"mcq", q:"Roughly what share of marine species do reefs support?", options:["About one percent","About a quarter","About a half","About three quarters"], answer:1, exp:"Reefs support about a quarter of marine species despite their small area."},
+     {type:"gap", q:"When coral pushes out its algae and turns white, the process is called ___.", answer:["bleaching"], exp:"The lecturer names this 'bleaching'."},
+     {type:"mcq", q:"Why do the algae matter to the coral?", options:["They cool the water","They build the skeleton","They make food from sunlight","They scare away fish"], answer:2, exp:"The algae make food from sunlight; without them the coral can starve."}
+   ]},
+  {id:"lc3", title:"How to prepare a short talk", kind:"How-to instructions",
+   script:"Here's how to prepare for a short presentation. First, write your one main message in a single sentence. "
+        +"Next, choose only three points that support it — no more, or your audience will forget. "
+        +"Then design simple slides with one idea each and very few words. "
+        +"After that, rehearse out loud at least twice, timing yourself. "
+        +"Finally, prepare for one likely question, so you're not caught off guard.",
+   questions:[
+     {type:"mcq", q:"How many supporting points are recommended?", options:["One","Three","Five","As many as possible"], answer:1, exp:"Choose only three supporting points."},
+     {type:"gap", q:"You should rehearse out loud at least ___ times.", answer:["two","2","twice"], exp:"Rehearse out loud at least twice."},
+     {type:"mcq", q:"What is the final step?", options:["Design the slides","Write the main message","Prepare for a likely question","Choose three points"], answer:2, exp:"The last step is preparing for one likely question."}
+   ]}
+];
+
+/* ---- Listening B: spelling & dictation. Timed, two attempts, big bank, fresh each round ---- */
+const SPELL_TIME   = { word:{a1:10,a2:5}, phrase:{a1:12,a2:6}, sentence:{a1:15,a2:10} };
+const SPELL_REVEAL = 5;            // seconds the correct spelling is shown after a final miss
+let   SPELL_ROUND_SIZE = 10;       // items per round (student can pick 10 / 20 / 30)
+
+const SPELL_BANK = {
+  advanced:{ label:"Advanced & tricky words", sub:"long, foreign-origin, silent letters", type:"word", items:[
+    {t:"bureaucracy"},{t:"entrepreneur"},{t:"rendezvous"},{t:"liaison"},{t:"silhouette"},{t:"connoisseur"},
+    {t:"conscientious"},{t:"mischievous"},{t:"pronunciation"},{t:"accommodate"},{t:"questionnaire"},{t:"Wednesday"},
+    {t:"subtle"},{t:"receipt"},{t:"gauge"},{t:"hierarchy"},{t:"paradigm"},{t:"camouflage"},{t:"exaggerate"},
+    {t:"millennium"},{t:"occurrence"},{t:"embarrass"},{t:"privilege"},{t:"conscience"},{t:"rhythm"},{t:"vacuum"},
+    {t:"fluorescent"},{t:"surveillance"},{t:"maintenance"},{t:"restaurant"},{t:"manoeuvre"},{t:"hors d'oeuvre"} ]},
+  vowel:{ label:"Vowel teams", sub:"-ea-, -ough-, -ie-/-ei- that sound different", type:"word", items:[
+    {t:"heal"},{t:"break"},{t:"head"},{t:"great"},{t:"bread"},{t:"weather"},{t:"thorough"},{t:"though"},
+    {t:"through"},{t:"thought"},{t:"weird"},{t:"believe"},{t:"receive"},{t:"ceiling"},{t:"science"},{t:"piece"},
+    {t:"seize"},{t:"neighbour"},{t:"height"},{t:"foreign"},{t:"beautiful"},{t:"queue"},{t:"sieve"},{t:"protein"} ]},
+  homophone:{ label:"Homophones", sub:"spell the RIGHT one — use the meaning hint", type:"word", items:[
+    {t:"heir", hint:"a person who will inherit"},{t:"air", hint:"the gas we breathe"},
+    {t:"principal", hint:"the head of a school"},{t:"principle", hint:"a rule or belief"},
+    {t:"stationary", hint:"standing still, not moving"},{t:"stationery", hint:"paper, pens and envelopes"},
+    {t:"complement", hint:"something that completes or goes well with"},{t:"compliment", hint:"words of praise"},
+    {t:"their", hint:"belonging to them"},{t:"there", hint:"in that place"},{t:"they're", hint:"short for 'they are'"},
+    {t:"weather", hint:"rain, sun and wind"},{t:"whether", hint:"if; it introduces a choice"},
+    {t:"aloud", hint:"out loud, so others can hear"},{t:"allowed", hint:"permitted"},
+    {t:"council", hint:"a group that governs a town"},{t:"counsel", hint:"advice, or to advise"},
+    {t:"bare", hint:"uncovered, empty"},{t:"bear", hint:"the large animal (or to carry)"} ]},
+  phrase:{ label:"Idioms & phrases", sub:"common expressions", type:"phrase", items:[
+    {t:"a piece of cake"},{t:"once in a blue moon"},{t:"under the weather"},{t:"the last straw"},
+    {t:"food for thought"},{t:"bite the bullet"},{t:"break the ice"},{t:"the bigger picture"},
+    {t:"hit the nail on the head"},{t:"cost an arm and a leg"},{t:"the ball is in your court"},
+    {t:"a blessing in disguise"},{t:"the tip of the iceberg"},{t:"jump on the bandwagon"} ]},
+  simple:{ label:"Simple sentences", sub:"one clause · capitals & punctuation count", type:"sentence", items:[
+    {t:"The museum opens at nine o'clock."},{t:"She couldn't believe her eyes."},{t:"Where did you put my keys?"},
+    {t:"What an incredible performance!"},{t:"Our flight leaves on Tuesday."},{t:"He rarely eats breakfast."},
+    {t:"The children played in the rain."},{t:"I haven't finished my essay yet."} ]},
+  compound:{ label:"Compound sentences", sub:"joined with and/but/so/or · punctuation counts", type:"sentence", items:[
+    {t:"I wanted to help, but I arrived too late."},{t:"The storm passed, and the sun finally appeared."},
+    {t:"You can take the bus, or you can walk with us."},{t:"She studied all night, so she felt ready."},
+    {t:"He didn't call, nor did he reply to my message."},{t:"The plan was risky, yet it worked."} ]},
+  complex:{ label:"Complex sentences", sub:"with a subordinate clause · punctuation counts", type:"sentence", items:[
+    {t:"Although she was tired, she finished the marathon."},{t:"Because the bridge was closed, we took the long way home."},
+    {t:"The book that you lent me was fascinating."},{t:"When the lights went out, everyone gasped."},
+    {t:"If you practise daily, your accent will improve."},{t:"Whoever finishes first should help the others."} ]}
+};
+
+/* ---- Speaking: icebreakers, layered 'what if' sets, imagine, debate, presentation ---- */
+const SPEAKING = [
+  {cat:"Icebreakers & quick talk", note:"Warm-ups — speak for 30–60 seconds. Great as a lesson opener.", prompts:[
+    "If you could eat only one food for the rest of your life, what would you choose — and why?",
+    "You have to spend $500 today. How would you spend it?",
+    "Name a famous person you admire and one reason why.",
+    "Would you ever get a tattoo? If yes, of what? If no, why not?",
+    "If you could teleport anywhere in the world right now, where would you go?",
+    "What's the weirdest food combination you've actually enjoyed?",
+    "What's your dream job, and what draws you to it?",
+    "What reliably makes you laugh out loud?",
+    "What's your favourite smell, and what memory does it bring back?",
+    "If your home were on fire and everyone was safe, what one object would you save?",
+    "If someone could tell you your future, would you want to know? Why?",
+    "If you could change one thing about our school, what would it be?",
+    "A magician must turn you into an animal — but you choose. Which, and why?",
+    "Describe a place you've always wanted to visit and why it fascinates you.",
+    "If you could instantly master one skill, what would it be?",
+    "Describe a person who has shaped who you are today.",
+    "Share one surprising fact about yourself.",
+    "If you could have any superpower, what would it be — and how would you use it responsibly?",
+    "What's one thing you're passionate about outside school?",
+    "What's the best advice anyone has ever given you?"
+  ]},
+  {cat:"What if — everyday dilemmas", note:"Real situations. Say what you'd do AND why.", prompts:[
+    "What would you do if you found a wallet full of cash on the street?",
+    "What would you do if a classmate asked to copy your work?",
+    "What would you do if you were locked out of your home with no phone?",
+    "What would you do if you saw a stranger drop their phone and walk away?",
+    "What would you do if you witnessed someone being bullied online?",
+    "What would you do if you accidentally broke something in a friend's house?"
+  ]},
+  {cat:"What if — fantasy & sci-fi", prompts:[
+    "What if you could be invisible for one whole day — how would you (honestly) use it?",
+    "What if an alien ship offered you a single ride — would you go? What would you ask?",
+    "What if you never needed to sleep again? How would your days change?",
+    "If you could time-travel to ONE period, when would you go and what would you do there?",
+    "What if animals could talk for a week? Which conversation would you want first?",
+    "What if you woke up able to speak every language? What's the first thing you'd do?"
+  ]},
+  {cat:"What if — life & big questions", note:"Think before you speak — there are no easy answers.", prompts:[
+    "What if you could choose the country you were born in? Would you change yours?",
+    "What would you do with a massive lottery win — name your first three actions.",
+    "What if you led your country for one year — what would your first decision be?",
+    "What if humans could live forever — would that be a gift or a problem?",
+    "If you could meet one historical figure — who, when, and what would you ask or tell them? Why that person?",
+    "If you could have dinner with anyone from history, who would it be and what's your first question?"
+  ]},
+  {cat:"Imagine…", prompts:[
+    "Imagine your favourite story set in your own town — describe the opening scene.",
+    "Imagine the year 2050 — describe one completely ordinary morning.",
+    "Imagine you could interview anyone, alive or from history — who, and your first question?",
+    "Imagine your phone could do only ONE thing for a month — what would you keep, and why?",
+    "Imagine you could add one new subject to school — what is it, and what would lesson one be?"
+  ]},
+  {cat:"What happens when…", prompts:[
+    "What happens when a community loses a shared space — a park, a library?",
+    "What happens when news travels faster than the truth? Give an example.",
+    "What happens when an old tradition meets a new generation? Use a local example.",
+    "What happens when everyone in a group thinks exactly the same way?",
+    "What happens when a small kindness is passed from one stranger to another?"
+  ]},
+  {cat:"Opinion & debate", note:"Try arguing FOR, then immediately AGAINST. Or split into two teams.", prompts:[
+    "\"Social media does more harm than good for teenagers.\" Argue one side, then the other.",
+    "Should every student learn a second (or third) language? Make your case.",
+    "Is it better to be a specialist in one thing, or capable in many? Debate it.",
+    "\"Exams measure memory, not intelligence.\" Agree or disagree, with reasons.",
+    "Should schools teach wellbeing and happiness as a timetabled subject?",
+    "\"Tradition should always make way for progress.\" How far do you agree?"
+  ]},
+  {cat:"Presentation task (oracy + RWS)", note:"Prepare slides first, then record your talk. This links reading, writing and speaking.", prompts:[
+    "Prepare a 3-minute slide talk on a LOCAL tradition you'd want to share with the world. Upload your slides, then record your presentation.",
+    "Research one GLOBAL issue and one LOCAL response to it. Build four slides, then present your findings and your own view.",
+    "Pitch an invention that solves a small everyday problem. Slides plus a 90-second spoken pitch.",
+    "Give a \"How to…\" demonstration talk about a skill you have. Four slides; present the steps clearly and in order."
+  ]}
+];
+
+/* =========================================================================
+   ROUTER / SCREENS
+   ========================================================================= */
+const app = () => document.getElementById('app');
+let LEVEL = "standard"; // or "scaffolded"
+let CURRENT_SCREEN = "home", CURRENT_ARG = null;
+
+function go(screen, arg){
+  CURRENT_SCREEN = screen; CURRENT_ARG = arg;
+  stopSpeak(); turnOffHighlighter(); clearSpellTimer(); window.scrollTo(0,0);
+  ROUTES[screen](arg); updateWho();
+  requestAnimationFrame(positionKnobs);
+}
+function positionKnobs(){
+  document.querySelectorAll('.level-slider').forEach(sl=>{
+    const btns = sl.querySelectorAll('button');
+    const active = sl.getAttribute('data-level')==='standard' ? btns[0] : btns[1];
+    const knob = sl.querySelector('.knob');
+    if(active && knob){ knob.style.left = active.offsetLeft+'px'; knob.style.width = active.offsetWidth+'px'; }
+  });
+}
+window.addEventListener('resize', positionKnobs);
+function updateWho(){
+  const w=document.getElementById('whoBar');
+  if(!SESSION){ w.innerHTML=""; return; }
+  if(SESSION.role==="teacher"){ w.innerHTML=`<span>Teacher</span> · <button class="btn ghost sm" onclick="logout()">Log out</button>`; }
+  else { w.innerHTML=`<span><b>${esc(SESSION.name)}</b> · ${esc(SESSION.class)}</span> <button class="btn ghost sm" onclick="logout()">Log out</button>`; }
+}
+function logout(){ SESSION=null; go('home'); }
+function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+const ROUTES = {
+  /* ---------------- HOME ---------------- */
+  home(){
+    app().innerHTML = `
+    <div class="center">
+      <div class="hero">
+        <div class="kicker">English skills · Grades 9–12</div>
+        <h1>You <span class="mark">can</span> read, write, listen<br>&amp; speak with confidence.</h1>
+        <p>A practice space for reading, writing, listening and speaking — built for every learner, from those who need a little scaffolding to those chasing the hardest challenge.</p>
+        <div class="role-grid">
+          <div class="role" onclick="go('studentLogin')">
+            <div class="ic">🎓</div>
+            <h3>I'm a student</h3>
+            <p>Enter the access code from your teacher and choose your pathway.</p>
+          </div>
+          <div class="role" onclick="go('teacherLogin')">
+            <div class="ic">📋</div>
+            <h3>I'm a teacher</h3>
+            <p>View results, leave feedback, plan interventions, export to Excel.</p>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  },
+
+  /* ---------------- STUDENT LOGIN ---------------- */
+  studentLogin(){
+    app().innerHTML = `
+    <div class="center">
+      <div class="card" style="max-width:420px;width:100%">
+        <button class="back" onclick="go('home')">← Back</button>
+        <h2 style="font-size:1.8rem">Student sign-in</h2>
+        <p style="color:var(--muted);margin:6px 0 20px;font-size:.92rem">Use the access code your teacher gave you.</p>
+        <div class="field"><label>Your name</label><input id="sName" placeholder="e.g. Sara Al Hosani"></div>
+        <div class="field"><label>Class</label><input id="sClass" placeholder="e.g. 10B"></div>
+        <div class="field"><label>Access code</label><input id="sCode" placeholder="e.g. ICAN-10B" autocapitalize="characters"></div>
+        <div class="err" id="sErr"></div>
+        <button class="btn" style="width:100%" onclick="doStudentLogin()">Start practising →</button>
+        <p class="note" style="margin-top:16px">Tip for trying it out: code <span class="kbd">DEMO</span> always works.</p>
+      </div>
+    </div>`;
+  },
+
+  /* ---------------- TEACHER LOGIN ---------------- */
+  teacherLogin(){
+    app().innerHTML = `
+    <div class="center">
+      <div class="card" style="max-width:420px;width:100%">
+        <button class="back" onclick="go('home')">← Back</button>
+        <h2 style="font-size:1.8rem">Teacher sign-in</h2>
+        <p style="color:var(--muted);margin:6px 0 20px;font-size:.92rem">Enter your private teacher code.</p>
+        <div class="field"><label>Teacher code</label><input id="tCode" type="password" placeholder="••••••••"></div>
+        <div class="err" id="tErr"></div>
+        <button class="btn dark" style="width:100%" onclick="doTeacherLogin()">Open dashboard →</button>
+      </div>
+    </div>`;
+  },
+
+  /* ---------------- STUDENT DASHBOARD ---------------- */
+  dashboard(){
+    app().innerHTML = `
+    <div class="wrap screen">
+      <div class="section-title">
+        <div>
+          <h1 style="font-size:2.4rem">Choose a pathway</h1>
+          <p style="color:var(--muted);margin:6px 0 0">Pick a skill. Switch difficulty any time inside an activity.</p>
+        </div>
+      </div>
+      <div class="grid c4">
+        <button class="path read" onclick="go('reading')"><div><div class="ic">📖</div><h3>Reading</h3></div><span>${READING.length} texts · articles, blogs, podcasts, data</span></button>
+        <button class="path write" onclick="go('writing')"><div><div class="ic">✍️</div><h3>Writing</h3></div><span>${WRITING.length} multimodal tasks</span></button>
+        <button class="path listen" onclick="go('listening')"><div><div class="ic">🎧</div><h3>Listening</h3></div><span>Comprehension + timed spelling</span></button>
+        <button class="path speak" onclick="go('speaking')"><div><div class="ic">🎤</div><h3>Speaking</h3></div><span>Prompts, debates & presentations</span></button>
+      </div>
+      <div class="card" style="margin-top:24px">
+        <h3 style="font-size:1.2rem">Your recent results</h3>
+        ${myResultsTable()}
+      </div>
+    </div>`;
+  },
+
+  /* ---------------- READING LIST ---------------- */
+  reading(){
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Pathways</button>
+      <div class="section-title">
+        <h1 style="font-size:2.2rem">📖 Reading</h1>
+        ${levelSliderHTML()}
+      </div>
+      <p style="color:var(--muted);margin-top:-8px;max-width:620px">A multimodal mix of genres — literature, science, society, geography, art, careers — including blogs, a podcast transcript and a data table. Use the ♿ tools (bottom-right) for read-aloud, larger text, easy-read font and a highlighter.</p>
+      <div class="grid c2" style="margin-top:8px">
+        ${READING.map(r=>`
+          <div class="item-row" style="flex-direction:column;align-items:flex-start">
+            <span class="genre-tag">${r.genre}</span>
+            <h3 style="font-size:1.25rem;margin:2px 0 2px">${r.title}</h3>
+            <div class="meta">${r.type} ${doneTag('Reading',r.title)}</div>
+            <button class="btn sm" style="margin-top:12px" onclick="go('readItem','${r.id}')">Open text →</button>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  },
+
+  /* ---------------- READING ITEM ---------------- */
+  readItem(id){
+    const r = READING.find(x=>x.id===id); const lvl = r[LEVEL];
+    const body = r.isData ? (lvl.intro + lvl.figure) : `<div class="passage" id="readText">${lvl.text}</div>`;
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('reading')">← All texts</button>
+      <div class="section-title">
+        <div><span class="genre-tag">${r.genre}</span><h1 style="font-size:2rem">${r.title}</h1></div>
+        ${levelSliderHTML()}
+      </div>
+      <div class="reader-tools">
+        <button class="btn ghost sm" onclick="readSelector('readBody')">▶ Read to me</button>
+        <button class="btn ghost sm" onclick="stopSpeak()">■ Stop</button>
+        <button class="btn ghost sm" id="hlBtn2" onclick="toggleHighlighter()">✏️ Highlighter</button>
+        <button class="btn ghost sm" onclick="setFont(0.1)">A+</button>
+        <button class="btn ghost sm" onclick="setFont(-0.1)">A−</button>
+      </div>
+      <div id="readBody">${body}</div>
+      <div style="margin-top:26px">
+        <h2 style="font-size:1.5rem;margin-bottom:6px">Comprehension</h2>
+        <p style="color:var(--muted);font-size:.9rem;margin-top:0">${LEVEL==='scaffolded'?'Shorter, supported set: one choice question, one to write, and one to share your own thinking. Take your time — there are no trick questions.':'Some questions ask you to read between the lines.'}</p>
+        <div id="quiz"></div>
+        <button class="btn teal" id="submitQ" onclick="markQuiz('${r.id}','Reading','${escq(r.title)}')">Check my answers</button>
+        <div id="quizResult"></div>
+      </div>
+    </div>`;
+    renderQuiz(lvl.questions);
+  },
+
+  /* ---------------- WRITING ---------------- */
+  writing(){
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Pathways</button>
+      <h1 style="font-size:2.2rem">✍️ Writing</h1>
+      <p style="color:var(--muted);max-width:660px">Focused, multimodal tasks: each gives you a clear brief, a named audience, a visual to <b>create</b> (poster, infographic, storyboard, mind-map, slides), and a <b>marking rubric</b> so you know exactly how it's assessed. Write, design, self-check, and save for your teacher.</p>
+      <div class="grid c2" style="margin-top:8px">
+        ${WRITING.map(w=>`
+          <div class="item-row" style="flex-direction:column;align-items:flex-start">
+            <span class="genre-tag">${w.genre}</span>
+            <h3 style="font-size:1.2rem;margin:2px 0">${w.title}</h3>
+            <div class="meta">${doneTag('Writing',w.title)}</div>
+            <button class="btn sm" style="margin-top:12px" onclick="go('writeItem','${w.id}')">Open task →</button>
+          </div>`).join('')}
+      </div>
+    </div>`;
+  },
+  writeItem(id){
+    const w = WRITING.find(x=>x.id===id);
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('writing')">← Writing tasks</button>
+      <span class="genre-tag">${w.genre}</span>
+      <h1 style="font-size:2rem">${w.title}</h1>
+
+      <div class="card" style="margin:14px 0">
+        <p style="margin:0 0 12px"><b>Your task.</b> ${w.prompt}</p>
+        <p style="margin:0 0 6px"><b>Audience:</b> ${w.audience}.</p>
+        <p style="margin:0"><b>Length:</b> ${w.wordCount}.</p>
+      </div>
+
+      <div class="card" style="margin:14px 0;border-color:var(--coral)">
+        <h3 style="font-size:1.2rem">🎨 ${w.visual.verb} ${w.visual.what}</h3>
+        <p style="margin:6px 0 0">To score well, your ${w.visual.short} should include:</p>
+        <ul>${w.visual.lookLike.map(x=>`<li>${x}</li>`).join('')}</ul>
+      </div>
+
+      <div class="field"><label>1 · Your written response</label>
+        <textarea id="wText" placeholder="Write your ${w.title.toLowerCase()} here…"></textarea></div>
+      <div class="field"><label>2 · Describe your ${w.visual.short} in words (or upload it below)</label>
+        <textarea id="wVisual" style="min-height:110px" placeholder="Describe your ${w.visual.what}: what it shows, how it's laid out, and why it works for the audience."></textarea></div>
+      <p class="note">Attach a file (image, PDF, slides): <input type="file" id="wFile" style="font-size:.85rem"> — the filename is recorded; connect online sync / a backend to store the file itself.</p>
+
+      <h3 style="font-size:1.3rem;margin-top:24px">How your work will be marked</h3>
+      <p style="color:var(--muted);font-size:.9rem;margin-top:2px">Tick each criterion you believe you've met. Your teacher gives the final band per criterion.</p>
+      <div style="overflow:auto"><table class="data">
+        <tr><th>Criterion</th><th>Weight</th><th>What "excellent" looks like</th><th>Met?</th></tr>
+        ${w.criteria.map((c,i)=>`<tr>
+          <td><b>${c.c}</b></td><td>${c.weight}%</td>
+          <td style="font-size:.82rem">${c.excellent}</td>
+          <td style="text-align:center"><input type="checkbox" class="wcrit"></td></tr>`).join('')}
+      </table></div>
+      <div class="bands">Marking bands: ${WRITE_BANDS.map(b=>`<span class="pill">${b.n} · ${b.label}</span>`).join(' ')}</div>
+
+      <button class="btn teal" onclick="submitWriting('${w.id}','${escq(w.title)}')">Save my work</button>
+      <div id="wResult"></div>
+    </div>`;
+  },
+
+  /* ---------------- LISTENING ---------------- */
+  listening(){
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Pathways</button>
+      <h1 style="font-size:2.2rem">🎧 Listening</h1>
+      <p style="color:var(--muted);max-width:660px">Two kinds of practice: <b>listen and answer</b> (comprehension), and <b>spell and dictation</b> (timed). Everything uses your device's built-in voice — works best in Chrome, Edge or Safari.</p>
+
+      <h2 class="sub">1 · Listen &amp; answer</h2>
+      <p style="color:var(--muted);margin-top:0">Listen to a dialogue, a short talk, or how-to instructions, then answer multiple-choice and gap-fill questions. Replay as often as you need.</p>
+      <div class="grid c2" style="margin-top:6px">
+        ${LISTEN_COMP.map(c=>`
+          <div class="item-row" style="flex-direction:column;align-items:flex-start">
+            <span class="genre-tag">${c.kind}</span>
+            <h3 style="font-size:1.2rem;margin:2px 0">${c.title}</h3>
+            <div class="meta">${c.questions.length} questions ${doneTag('Listening',c.title)}</div>
+            <button class="btn sm" style="margin-top:12px" onclick="go('listenComp','${c.id}')">Listen →</button>
+          </div>`).join('')}
+      </div>
+
+      <h2 class="sub">2 · Spell &amp; dictation</h2>
+      <p style="color:var(--muted);margin-top:0">Listen, then type exactly what you hear. You get <b>two attempts</b> per item (the second is faster). Miss both and the correct spelling shows for ${SPELL_REVEAL} seconds. Each round pulls fresh items from a large bank, so it's different every time.</p>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0">
+        <span style="font-size:.85rem;color:var(--muted)">Items per round:</span>
+        ${[10,20,30].map(n=>`<button class="chip ${SPELL_ROUND_SIZE===n?'on':''}" onclick="setRoundSize(${n})">${n}</button>`).join('')}
+      </div>
+      <div class="grid c2" style="margin-top:6px">
+        ${Object.keys(SPELL_BANK).map(k=>spellTile(k)).join('')}
+      </div>
+    </div>`;
+  },
+  spellQuiz(key){
+    const cat = SPELL_BANK[key];
+    const items = shuffle(cat.items.slice()).slice(0, Math.min(SPELL_ROUND_SIZE, cat.items.length));
+    SPELLSTATE = { key, type:cat.type, label:cat.label, items, i:0, attempt:1, first:0, second:0, missed:0, log:[] };
+    renderSpell();
+  },
+  listenComp(id){
+    const c = LISTEN_COMP.find(x=>x.id===id); CURRENT_COMP = c;
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('listening')">← Listening</button>
+      <span class="genre-tag">${c.kind}</span>
+      <h1 style="font-size:2rem">${c.title}</h1>
+      <div class="audio-player">
+        <button class="btn" onclick="playComp()">▶ Play</button>
+        <button class="btn ghost" onclick="stopSpeak()">■ Stop</button>
+        <button class="btn ghost" onclick="playComp()">↻ Replay</button>
+        <span class="label">Listen first, then answer. You can replay as many times as you like.</span>
+      </div>
+      <details class="script"><summary>Show transcript (for support — try listening first)</summary>
+        <p style="font-size:.9rem;line-height:1.7;margin:8px 0 0">${c.script.replace(/Speaker A:/g,'<br><b>A:</b>').replace(/Speaker B:/g,'<br><b>B:</b>')}</p>
+      </details>
+      <div style="margin-top:22px">
+        <h2 style="font-size:1.4rem;margin-bottom:6px">Questions</h2>
+        <div id="quiz"></div>
+        <button class="btn teal" id="submitQ" onclick="markQuiz('${c.id}','Listening','${escq(c.title)}')">Check my answers</button>
+        <div id="quizResult"></div>
+      </div>
+    </div>`;
+    renderQuiz(c.questions);
+    setTimeout(playComp, 350);
+  },
+
+  /* ---------------- SPEAKING ---------------- */
+  speaking(){
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Pathways</button>
+      <h1 style="font-size:2.2rem">🎤 Speaking &amp; Oracy</h1>
+      <p style="color:var(--muted);max-width:660px">Pick a prompt and speak. Use the recorder to capture a live transcript of what you say (so you can review your fluency), then self-assess. Presentation tasks connect reading, writing and speaking — prepare slides first, then present.</p>
+      <div class="tabs" id="spkTabs">
+        ${SPEAKING.map((s,i)=>`<button class="${i===0?'on':''}" onclick="showSpeakCat(${i})">${s.cat}</button>`).join('')}
+      </div>
+      <div id="spkBody"></div>
+    </div>`;
+    showSpeakCat(0);
+  },
+
+  /* ---------------- TEACHER DASHBOARD ---------------- */
+  teacher(){
+    const res = allResults();
+    const students = summariseStudents(res);
+    const online = !!cloudUrl();
+    app().innerHTML = `
+    <div class="wrap screen">
+      <div class="section-title">
+        <div><h1 style="font-size:2.2rem">Teacher dashboard</h1>
+        <p style="color:var(--muted);margin:6px 0 0">${res.length} recorded attempt(s) · ${students.length} student(s) · ${online?'<span style="color:var(--teal-dk)">● online sync on</span>':'local only (this device)'}</p></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" onclick="exportExcel()">⬇ Export to Excel</button>
+          <button class="btn ghost" onclick="go('teacher')">↻ Refresh</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:22px">
+        <h3 style="font-size:1.2rem">Online sync ${online?'<span class="pill done">connected</span>':''}</h3>
+        <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Paste your Google Sheet web-app URL to save every student's results online (so any device — student or teacher — keeps the same record). Leave empty to stay local. Setup steps are in the project notes.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <input id="cloudInput" value="${esc(cloudUrl())}" placeholder="https://script.google.com/macros/s/..../exec" style="flex:1;min-width:240px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:.85rem">
+          <button class="btn sm" onclick="saveCloudUrl()">Save &amp; connect</button>
+          ${online?'<button class="btn sm ghost" onclick="testCloud()">Test</button>':''}
+        </div>
+        <div id="cloudMsg" style="font-size:.82rem;color:var(--muted);margin-top:8px"></div>
+      </div>
+
+      <div class="card" style="margin-bottom:22px">
+        <h3 style="font-size:1.2rem">Access codes</h3>
+        <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Codes students use to sign in. Add a code for a new class or group.</p>
+        <div id="codeList" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0"></div>
+        <div style="display:flex;gap:8px">
+          <input id="newCode" placeholder="NEW-CODE" style="flex:1;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;text-transform:uppercase">
+          <button class="btn sm" onclick="addCode()">Add code</button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:22px">
+        <h3 style="font-size:1.2rem">Class results &amp; intervention</h3>
+        ${students.length? `<div style="overflow:auto"><table class="data">
+          <tr><th>Student</th><th>Class</th><th>Attempts</th><th>Avg score</th><th>Skills covered</th><th>Feedback / intervention</th></tr>
+          ${students.map(s=>`<tr>
+            <td><b>${esc(s.name)}</b></td><td>${esc(s.class)}</td><td>${s.attempts}</td>
+            <td>${s.avg}%</td><td style="font-size:.78rem">${s.skills.join(', ')}</td>
+            <td><input id="fb_${s.key}" value="${esc(getStudents()[s.key]?.feedback||'')}" placeholder="Note + next step…" style="width:220px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:.82rem">
+            <button class="btn sm teal" style="margin-left:6px" onclick="saveFeedback('${s.key}')">Save</button></td>
+          </tr>`).join('')}
+        </table></div>`
+        : `<p class="note">No results yet. Ask a student to complete a quiz, or use code <span class="kbd">DEMO</span> to generate sample data.</p>`}
+      </div>
+
+      <div class="card">
+        <h3 style="font-size:1.2rem">All attempts (raw log)</h3>
+        ${res.length? `<div style="overflow:auto"><table class="data">
+          <tr><th>Date</th><th>Student</th><th>Class</th><th>Skill</th><th>Activity</th><th>Score</th><th>%</th><th>Written / detail</th></tr>
+          ${res.slice().reverse().map(r=>`<tr><td style="font-size:.78rem">${new Date(r.date).toLocaleString()}</td><td>${esc(r.name)}</td><td>${esc(r.class)}</td><td>${r.skill}</td><td style="font-size:.8rem">${esc(r.activity)}</td><td>${r.score==null?'—':r.score+'/'+r.max}</td><td>${r.percent==null?'—':r.percent+'%'}</td><td style="font-size:.76rem;max-width:260px">${esc(r.detail||'')}</td></tr>`).join('')}
+        </table></div>` : `<p class="note">No attempts logged yet.</p>`}
+      </div>
+    </div>`;
+    renderCodeList();
+    if(online){ refreshCloud(()=>{ if(CURRENT_SCREEN==='teacher') { const r2=allResults(); if(r2.length!==res.length){ ROUTES.teacher(); } } }); }
+  }
+};
+
+/* =========================================================================
+   LOGIN ACTIONS
+   ========================================================================= */
+function doStudentLogin(){
+  const name=val('sName').trim(), cls=val('sClass').trim(), code=val('sCode').trim().toUpperCase();
+  const err=document.getElementById('sErr');
+  if(!name||!cls){ err.textContent="Please enter your name and class."; return; }
+  if(!getCodes().map(c=>c.toUpperCase()).includes(code)){ err.textContent="That access code isn't recognised. Check with your teacher."; return; }
+  const id = code+"::"+name.toLowerCase();
+  SESSION={role:"student", name, class:cls, code, id};
+  setStudent(id,{name, class:cls, code});
+  if(cloudUrl()){ err.textContent="Loading your online record…"; refreshCloud(()=>go('dashboard')); }
+  else go('dashboard');
+}
+function doTeacherLogin(){
+  const code=val('tCode'); const err=document.getElementById('tErr');
+  if(code!==CONFIG.teacherCode){ err.textContent="Incorrect teacher code."; return; }
+  SESSION={role:"teacher"};
+  if(cloudUrl()){ err.textContent="Loading online records…"; refreshCloud(()=>go('teacher')); }
+  else go('teacher');
+}
+
+/* =========================================================================
+   QUIZ ENGINE (reading)
+   ========================================================================= */
+function renderQuiz(qs){
+  const box=document.getElementById('quiz');
+  box.innerHTML = qs.map((q,i)=>{
+    if(q.type==="mcq"){
+      return `<div class="q" data-i="${i}"><div class="qhead">${i+1}. ${q.q}</div>
+        ${q.options.map((o,j)=>`<label class="opt"><input type="radio" name="q${i}" value="${j}"><span>${o}</span></label>`).join('')}
+        <div class="feedback hidden"></div></div>`;
+    } else if(q.type==="reflect"){
+      return `<div class="q" data-i="${i}" style="border-color:var(--teal)"><div class="qhead">💡 ${i+1}. ${q.q}</div>
+        <textarea name="q${i}" style="min-height:80px" placeholder="Your own ideas — there is no wrong answer…"></textarea>
+        <div class="feedback hidden"></div></div>`;
+    } else if(q.type==="gap"){
+      return `<div class="q" data-i="${i}"><div class="qhead">${i+1}. ${q.q}</div>
+        <input type="text" name="q${i}" class="gap-input" autocomplete="off" placeholder="the missing word(s)">
+        <div class="feedback hidden"></div></div>`;
+    } else {
+      return `<div class="q" data-i="${i}"><div class="qhead">${i+1}. ${q.q}</div>
+        <textarea name="q${i}" style="min-height:70px" placeholder="Write your answer…"></textarea>
+        <div class="feedback hidden"></div></div>`;
+    }
+  }).join('');
+  CURRENT_Q = qs;
+}
+let CURRENT_Q=[];
+function markQuiz(id,skill,title){
+  const qs=CURRENT_Q; let auto=0, autoMax=0; const written=[];
+  qs.forEach((q,i)=>{
+    const qEl=document.querySelector(`.q[data-i="${i}"]`);
+    const fb=qEl.querySelector('.feedback');
+    fb.classList.remove('hidden');
+    if(q.type==="mcq"){
+      autoMax++;
+      const sel=qEl.querySelector(`input[name="q${i}"]:checked`);
+      const chosen = sel? +sel.value : -1;
+      qEl.querySelectorAll('.opt').forEach((o,j)=>{
+        if(j===q.answer) o.classList.add('correct');
+        if(j===chosen && chosen!==q.answer) o.classList.add('wrong');
+      });
+      if(chosen===q.answer){ auto++; fb.classList.add('good'); fb.textContent="✓ Correct. "+q.exp; }
+      else { fb.textContent=(chosen===-1?"No answer chosen. ":"Not quite. ")+q.exp; }
+    } else if(q.type==="reflect"){
+      const txt=(qEl.querySelector('textarea').value||"").trim();
+      if(txt) written.push("Reflection: "+txt);
+      fb.classList.add('good');
+      fb.innerHTML = txt ? `✓ Thanks for sharing your thinking — your teacher will read this.`
+        : `Try writing a sentence or two here. ${q.exp}`;
+    } else if(q.type==="gap"){
+      autoMax++;
+      const inp=qEl.querySelector(`[name="q${i}"]`);
+      const got=(inp.value||"").trim();
+      const ans=Array.isArray(q.answer)?q.answer:[q.answer];
+      const norm=x=>x.toLowerCase().replace(/[.,!?;:'"]/g,'').replace(/\s+/g,' ').trim();
+      const ok=ans.some(a=>norm(a)===norm(got));
+      if(ok){ auto++; inp.style.borderColor="var(--teal)"; fb.classList.add('good'); fb.textContent="✓ Correct. "+(q.exp||""); }
+      else { inp.style.borderColor="var(--coral)"; fb.innerHTML=`Answer: <b>${ans[0]}</b>. ${q.exp||""}`; }
+    } else {
+      const txt=(qEl.querySelector('textarea').value||"").trim();
+      if(txt) written.push("Answer: "+txt);
+      fb.innerHTML = `<b>Model answer / answer key:</b> ${q.answer}<br><span style="color:var(--muted)">Hint: ${q.exp}</span>`;
+    }
+  });
+  const pct = autoMax? Math.round(auto/autoMax*100) : null;
+  document.getElementById('quizResult').innerHTML =
+    `<div class="scorebox"><div class="big">${auto}/${autoMax}</div>
+     <div>Auto-marked score${pct!=null?` · ${pct}%`:''}. Written answers are self-marked against the key${written.length?' and shared with your teacher':''}.</div></div>`;
+  document.getElementById('submitQ').disabled=true;
+  if(SESSION&&SESSION.role==="student"){
+    saveResult({date:Date.now(), name:SESSION.name, class:SESSION.class, code:SESSION.code,
+      id:SESSION.id, skill, activity:title+(skill==='Reading'?" ("+LEVEL+")":""), score:auto, max:autoMax, percent:pct,
+      detail: written.join("  |  ").slice(0,800)});
+  }
+  window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+}
+
+/* =========================================================================
+   WRITING
+   ========================================================================= */
+function submitWriting(id,title){
+  const text=val('wText').trim(); const vis=val('wVisual').trim();
+  const file=document.getElementById('wFile').files[0];
+  const crit=[...document.querySelectorAll('.wcrit')];
+  const checks=crit.filter(c=>c.checked).length; const total=crit.length;
+  if(text.length<20){ document.getElementById('wResult').innerHTML=`<div class="feedback">Write a bit more before saving — at least a few sentences of your response.</div>`; return; }
+  const words=text.split(/\s+/).filter(Boolean).length;
+  const detail=`${words} words; visual ${vis?'described':'not described'}`+(vis?`: ${vis.slice(0,200)}`:'')+(file?`; file: ${file.name}`:'');
+  if(SESSION&&SESSION.role==="student"){
+    saveResult({date:Date.now(), name:SESSION.name, class:SESSION.class, code:SESSION.code, id:SESSION.id,
+      skill:"Writing", activity:title, score:checks, max:total, percent:Math.round(checks/total*100),
+      detail:detail.slice(0,800)});
+  }
+  document.getElementById('wResult').innerHTML=`<div class="scorebox"><div class="big">${words}</div>
+    <div>words saved · ${checks}/${total} criteria self-checked${vis?' · visual described':''}${file?`<br>📎 ${esc(file.name)}`:''}</div>
+    <p style="opacity:.85;font-size:.85rem;margin:8px 0 0">Saved. Your teacher will mark each criterion and add feedback.</p></div>`;
+  window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+}
+
+/* =========================================================================
+   LISTENING — comprehension audio
+   ========================================================================= */
+let CURRENT_COMP=null;
+function playComp(){ if(CURRENT_COMP){ stopSpeak(); speak(CURRENT_COMP.script.replace(/Speaker A:/g,'').replace(/Speaker B:/g,'')); } }
+function setRoundSize(n){ SPELL_ROUND_SIZE=n; go('listening'); }
+
+/* =========================================================================
+   LISTENING — spelling & dictation (timed, two attempts, reveal on miss)
+   ========================================================================= */
+let SPELLSTATE=null, _spellTimer=null;
+function clearSpellTimer(){ if(_spellTimer){ clearInterval(_spellTimer); _spellTimer=null; } }
+function spellTile(key){
+  const c=SPELL_BANK[key];
+  return `<div class="item-row" style="flex-direction:column;align-items:flex-start">
+    <h3 style="font-size:1.15rem;margin:0">${c.label}</h3>
+    <div class="meta">${c.sub} · bank of ${c.items.length} ${doneTag('Listening',c.label)}</div>
+    <button class="btn sm" style="margin-top:12px" onclick="go('spellQuiz','${key}')">Start round →</button>
+  </div>`;
+}
+function startSpellTimer(total){
+  clearSpellTimer();
+  let left=total;
+  const bar=document.getElementById('spellBar'), cnt=document.getElementById('spellCount');
+  if(cnt)cnt.textContent=left; if(bar)bar.style.width='100%';
+  _spellTimer=setInterval(()=>{
+    left--;
+    if(cnt)cnt.textContent=Math.max(left,0);
+    if(bar)bar.style.width=(Math.max(left,0)/total*100)+'%';
+    if(left<=0){ clearSpellTimer(); submitSpell(true); }
+  },1000);
+}
+function renderSpell(){
+  clearSpellTimer();
+  const s=SPELLSTATE;
+  if(s.i>=s.items.length){ finishSpell(); return; }
+  const item=s.items[s.i];
+  const isSentence=s.type==='sentence';
+  const t=SPELL_TIME[s.type][s.attempt===1?'a1':'a2'];
+  app().innerHTML=`
+  <div class="wrap screen">
+    <button class="back" onclick="go('listening')">← Listening</button>
+    <h1 style="font-size:1.7rem">🎧 ${s.label}</h1>
+    <p style="color:var(--muted)">Item ${s.i+1} of ${s.items.length} · Correct so far: ${s.first+s.second}</p>
+    <div class="card" style="max-width:620px">
+      <div class="spell-timer"><div class="spell-bar" id="spellBar"></div><span id="spellCount">${t}</span></div>
+      <p style="text-align:center;font-weight:600;color:${s.attempt===2?'var(--coral-dk)':'var(--muted)'}">${s.attempt===1?'Attempt 1 of 2':'Attempt 2 — be quick!'}</p>
+      <div style="text-align:center;margin:10px 0"><button class="btn dark" onclick="speakItem()">🔊 Play again</button></div>
+      ${item.hint?`<p class="note" style="text-align:center">Meaning: ${item.hint}</p>`:''}
+      ${isSentence?`<p style="text-align:center;font-size:.82rem;color:var(--muted)">Capital letters and punctuation count.</p>`:''}
+      <div class="field"><label>Type exactly what you hear</label>
+        <input id="spellIn" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Type here…" onkeydown="if(event.key==='Enter')submitSpell(false)"></div>
+      <div class="err" id="spellFb"></div>
+      <button class="btn teal" onclick="submitSpell(false)">Submit</button>
+    </div>
+  </div>`;
+  setTimeout(()=>{ const inp=document.getElementById('spellIn'); if(inp)inp.focus(); speakItem(); startSpellTimer(t); },250);
+}
+function speakItem(){ if(!SPELLSTATE)return; stopSpeak(); speak(SPELLSTATE.items[SPELLSTATE.i].t); }
+function checkSpelling(answer, got, type){
+  if(type==='sentence'){ const n=x=>x.replace(/\s+/g,' ').trim(); return n(got)===n(answer); }
+  const n=x=>x.toLowerCase().replace(/[.,!?;:'"]/g,'').replace(/\s+/g,' ').trim();
+  return n(got)===n(answer);
+}
+function submitSpell(timedOut){
+  clearSpellTimer();
+  const s=SPELLSTATE; const item=s.items[s.i];
+  const got=(val('spellIn')||"").trim();
+  const fb=document.getElementById('spellFb');
+  if(checkSpelling(item.t, got, s.type)){
+    if(s.attempt===1) s.first++; else s.second++;
+    s.log.push({t:item.t, got, ok:true, attempt:s.attempt});
+    if(fb){ fb.style.color="var(--teal-dk)"; fb.textContent="✓ Correct!"; }
+    setTimeout(nextSpell, 800);
+    return;
+  }
+  if(s.attempt===1){
+    s.attempt=2;
+    if(fb){ fb.style.color="var(--coral-dk)"; fb.textContent=timedOut?"⏱ Time's up — one more try…":"Not quite — one more try…"; }
+    setTimeout(renderSpell, 900);
+  } else {
+    s.missed++;
+    s.log.push({t:item.t, got, ok:false, attempt:2});
+    revealSpell(item.t);
+  }
+}
+function revealSpell(correct){
+  clearSpellTimer();
+  app().innerHTML=`<div class="wrap screen"><button class="back" onclick="go('listening')">← Listening</button>
+    <div class="card" style="max-width:620px;text-align:center;margin-top:10px">
+      <p style="color:var(--coral-dk);font-weight:600;margin:0">The correct spelling was:</p>
+      <div class="dictate-display">${esc(correct)}</div>
+      <p style="color:var(--muted);margin:0">Next item in <span id="revCount">${SPELL_REVEAL}</span>s…</p>
+      <button class="btn ghost sm" style="margin-top:12px" onclick="nextSpell()">Skip ahead</button>
+    </div></div>`;
+  let left=SPELL_REVEAL;
+  _spellTimer=setInterval(()=>{ left--; const c=document.getElementById('revCount'); if(c)c.textContent=Math.max(left,0); if(left<=0){ clearSpellTimer(); nextSpell(); } },1000);
+}
+function nextSpell(){ clearSpellTimer(); const s=SPELLSTATE; if(!s)return; s.i++; s.attempt=1; renderSpell(); }
+function finishSpell(){
+  clearSpellTimer();
+  const s=SPELLSTATE; const N=s.items.length;
+  const pct=Math.round((s.first + 0.5*s.second)/N*100);
+  app().innerHTML=`<div class="wrap screen"><button class="back" onclick="go('listening')">← Listening</button>
+    <div class="scorebox" style="max-width:520px;margin:24px auto"><div class="big">${pct}%</div>
+      <div>${s.first} right first try · ${s.second} on the second · ${s.missed} missed</div>
+      <div style="opacity:.85;font-size:.9rem;margin-top:6px">${pct>=80?'Excellent — that bank is getting easy. Try a longer round!':pct>=50?'Good progress. Run it again for fresh items.':'Keep going — every round pulls new words.'}</div></div>
+    <div style="text-align:center;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn" onclick="go('spellQuiz','${s.key}')">New round (fresh items)</button>
+      <button class="btn ghost" onclick="go('listening')">Back to listening</button>
+    </div></div>`;
+  if(SESSION&&SESSION.role==="student"){
+    saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,
+      skill:"Listening",activity:s.label+" (spelling round)",score:(s.first+s.second),max:N,percent:pct,
+      detail:`first-try ${s.first}, second-try ${s.second}, missed ${s.missed}`});
+  }
+}
+
+/* =========================================================================
+   SPEAKING
+   ========================================================================= */
+function showSpeakCat(i){
+  document.querySelectorAll('#spkTabs button').forEach((b,j)=>b.classList.toggle('on',j===i));
+  const s=SPEAKING[i];
+  document.getElementById('spkBody').innerHTML =
+    (s.note?`<p class="note" style="margin-bottom:16px">💬 ${s.note}</p>`:'') +
+    s.prompts.map((p,k)=>`
+    <div class="card" style="margin-bottom:14px">
+      <p style="margin:0 0 12px;font-size:1.05rem;color:var(--ink)">${p}</p>
+      ${s.cat.includes('Presentation')?`<p class="note" style="margin-bottom:12px">📎 Upload slides: <input type="file" id="ppt_${i}_${k}" accept=".ppt,.pptx,.pdf,image/*" style="font-size:.85rem"> <span style="font-size:.8rem">(filename recorded; add a backend to store the file)</span></p>`:''}
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <button class="btn sm dark" onclick="startRec(${i},${k})">● Record / transcribe</button>
+        <button class="btn sm ghost" onclick="stopRec()">■ Stop</button>
+        <span style="font-size:.8rem;color:var(--muted)" id="recStatus_${i}_${k}"></span>
+      </div>
+      <div class="transcript" id="trans_${i}_${k}" style="margin-top:12px">Your spoken words will appear here…</div>
+      <button class="btn sm teal" style="margin-top:10px" onclick="saveSpeaking(${i},${k},${JSON.stringify(s.cat)})">Save attempt</button>
+      <span id="spkSaved_${i}_${k}" style="font-size:.82rem;color:var(--teal-dk);margin-left:8px"></span>
+    </div>`).join('');
+}
+let REC=null, REC_TARGET=null;
+function startRec(i,k){
+  const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+  const status=document.getElementById(`recStatus_${i}_${k}`);
+  if(!SR){ status.textContent="Speech-to-text isn't supported in this browser — try Chrome. You can still speak aloud and self-assess."; return; }
+  stopRec();
+  REC=new SR(); REC.continuous=true; REC.interimResults=true; REC.lang='en-US';
+  REC_TARGET=document.getElementById(`trans_${i}_${k}`); REC_TARGET.textContent="";
+  status.textContent="● Listening…";
+  let finalT="";
+  REC.onresult=e=>{ let interim=""; for(let n=e.resultIndex;n<e.results.length;n++){ const t=e.results[n][0].transcript; if(e.results[n].isFinal) finalT+=t+" "; else interim+=t; } REC_TARGET.textContent=finalT+interim; };
+  REC.onerror=e=>{ status.textContent="Mic error: "+e.error; };
+  REC.onend=()=>{ status.textContent="■ Stopped"; };
+  try{ REC.start(); }catch(e){ status.textContent="Couldn't start — check microphone permission."; }
+}
+function stopRec(){ if(REC){ try{REC.stop();}catch(e){} REC=null; } }
+function saveSpeaking(i,k,cat){
+  const t=document.getElementById(`trans_${i}_${k}`).textContent.trim();
+  const words=t&&t!=="Your spoken words will appear here…"? t.split(/\s+/).filter(Boolean).length : 0;
+  const fileEl=document.getElementById(`ppt_${i}_${k}`); const file=fileEl&&fileEl.files[0];
+  if(SESSION&&SESSION.role==="student"){
+    saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,
+      skill:"Speaking",activity:cat,score:null,max:null,percent:null,
+      detail:`${words} spoken words`+(file?`, slides: ${file.name}`:'')});
+  }
+  document.getElementById(`spkSaved_${i}_${k}`).textContent=`✓ Saved (${words} words${file?', slides attached':''})`;
+}
+
+/* =========================================================================
+   TEACHER: codes, feedback, summaries, Excel
+   ========================================================================= */
+function saveCloudUrl(){
+  const u=val('cloudInput').trim();
+  setCloudUrl(u);
+  const msg=document.getElementById('cloudMsg');
+  if(!u){ msg.textContent="Online sync turned off — back to local-only."; return; }
+  msg.textContent="Saved. Testing connection…";
+  refreshCloud(()=>{ go('teacher'); });
+}
+function testCloud(){
+  const msg=document.getElementById('cloudMsg'); msg.textContent="Testing…";
+  cloudList(data=>{
+    if(Array.isArray(data)) msg.innerHTML=`<span style="color:var(--teal-dk)">✓ Connected — read ${data.length} record(s) from the sheet.</span>`;
+    else msg.innerHTML=`<span style="color:var(--coral-dk)">Couldn't read from that URL. Check the deployment is set to "Anyone" access and the URL ends in /exec.</span>`;
+  });
+}
+function renderCodeList(){
+  const el=document.getElementById('codeList'); if(!el) return;
+  el.innerHTML=getCodes().map(c=>`<span class="pill">${esc(c)} <span style="cursor:pointer;color:var(--coral)" onclick="removeCode('${esc(c)}')">✕</span></span>`).join('');
+}
+function addCode(){ const v=val('newCode').trim().toUpperCase(); if(!v) return; const c=getCodes(); if(!c.includes(v)){ c.push(v); Store.set('ican_codes',c);} document.getElementById('newCode').value=''; renderCodeList(); }
+function removeCode(c){ Store.set('ican_codes', getCodes().filter(x=>x!==c)); renderCodeList(); }
+function saveFeedback(key){ setStudent(key,{feedback:val('fb_'+key)}); const b=event.target; b.textContent="Saved ✓"; setTimeout(()=>b.textContent="Save",1200); }
+function summariseStudents(res){
+  const map={};
+  res.forEach(r=>{ const k=r.id||(r.code+"::"+(r.name||'').toLowerCase()); if(!map[k]) map[k]={key:k,name:r.name,class:r.class,attempts:0,pctSum:0,pctN:0,skills:new Set()};
+    map[k].attempts++; map[k].skills.add(r.skill); if(r.percent!=null){ map[k].pctSum+=r.percent; map[k].pctN++; } });
+  return Object.values(map).map(s=>({key:s.key,name:s.name,class:s.class,attempts:s.attempts,avg:s.pctN?Math.round(s.pctSum/s.pctN):'—',skills:[...s.skills]}));
+}
+function exportExcel(){
+  const res=allResults(); const students=getStudents();
+  const wb=XLSX.utils.book_new();
+  // 1) Student bios + feedback
+  const bioRows=Object.entries(students).map(([k,v])=>({Code:v.code||'',Name:v.name||'',Class:v.class||'',Feedback_Intervention:v.feedback||''}));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(bioRows.length?bioRows:[{Code:'',Name:'',Class:'',Feedback_Intervention:''}]), "Learners");
+  // 2) All attempts
+  const attemptRows=res.map(r=>({Date:new Date(r.date).toLocaleString(),Name:r.name,Class:r.class,Code:r.code,Skill:r.skill,Activity:r.activity,Score:r.score==null?'':r.score,Max:r.max==null?'':r.max,Percent:r.percent==null?'':r.percent,Detail:r.detail||''}));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(attemptRows.length?attemptRows:[{Date:'',Name:'',Class:'',Code:'',Skill:'',Activity:'',Score:'',Max:'',Percent:'',Detail:''}]), "All attempts");
+  // 3) Summary
+  const sum=summariseStudents(res).map(s=>({Name:s.name,Class:s.class,Attempts:s.attempts,Avg_percent:s.avg,Skills:s.skills.join(', '),Feedback:(students[s.key]?.feedback)||''}));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(sum.length?sum:[{Name:'',Class:'',Attempts:'',Avg_percent:'',Skills:'',Feedback:''}]), "Summary");
+  XLSX.writeFile(wb, "iCAN-results-"+new Date().toISOString().slice(0,10)+".xlsx");
+}
+
+/* =========================================================================
+   STUDENT result helpers
+   ========================================================================= */
+function myResultsTable(){
+  if(!SESSION) return "";
+  const mine=allResults().filter(r=>r.id===SESSION.id || (r.code===SESSION.code && (r.name||'').toLowerCase()===SESSION.name.toLowerCase()));
+  if(!mine.length) return `<p class="note">Nothing yet — complete an activity and your progress will show here.</p>`;
+  return `<div style="overflow:auto"><table class="data">
+    <tr><th>When</th><th>Skill</th><th>Activity</th><th>Score</th></tr>
+    ${mine.slice().reverse().slice(0,12).map(r=>`<tr><td style="font-size:.78rem">${new Date(r.date).toLocaleDateString()}</td><td>${r.skill}</td><td style="font-size:.82rem">${esc(r.activity)}</td><td>${r.percent!=null?r.percent+'%':(r.detail||'saved')}</td></tr>`).join('')}
+  </table></div>`;
+}
+function doneTag(skill,title){
+  if(!SESSION) return "";
+  const done=getResults().some(r=>r.id===SESSION.id&&r.skill===skill&&r.activity.indexOf(title)===0);
+  return done?`<span class="pill done">✓ done</span>`:"";
+}
+
+/* =========================================================================
+   LEVEL SLIDER  (re-renders the current screen — no fragile arg threading)
+   ========================================================================= */
+function levelSliderHTML(){
+  return `<div class="level-slider" data-level="${LEVEL}" role="group" aria-label="Reading level">
+    <button onclick="setLevel('standard')" aria-pressed="${LEVEL==='standard'}">Standard</button>
+    <button onclick="setLevel('scaffolded')" aria-pressed="${LEVEL==='scaffolded'}">Supported · SEN / abridged</button>
+    <span class="knob"></span>
+  </div>`;
+}
+function setLevel(l){ LEVEL=l; go(CURRENT_SCREEN, CURRENT_ARG); }
+
+/* =========================================================================
+   ACCESSIBILITY
+   ========================================================================= */
+let FONT=1;
+function setFont(d){ if(d===0) FONT=1; else FONT=Math.min(1.8,Math.max(.8,FONT+d)); document.documentElement.style.setProperty('--fs',FONT); }
+function toggleA11y(){ document.getElementById('a11yPanel').classList.toggle('hidden'); }
+function toggleClassBody(cls,btn){ document.body.classList.toggle(cls); const b=document.getElementById(btn); if(b)b.classList.toggle('on'); }
+let HL=false;
+function toggleHighlighter(){ HL=!HL; document.querySelectorAll('#cHl,#hlBtn2').forEach(b=>b&&b.classList.toggle('on',HL)); document.body.style.cursor=HL?'text':''; }
+function turnOffHighlighter(){ HL=false; document.querySelectorAll('#cHl,#hlBtn2').forEach(b=>b&&b.classList.remove('on')); document.body.style.cursor=''; }
+document.addEventListener('mouseup',()=>{
+  if(!HL) return;
+  const sel=window.getSelection(); if(!sel.rangeCount||sel.isCollapsed) return;
+  try{ const r=sel.getRangeAt(0); const m=document.createElement('mark'); m.className='user-hl'; r.surroundContents(m); sel.removeAllRanges(); }catch(e){}
+});
+function clearHighlights(){ document.querySelectorAll('mark.user-hl').forEach(m=>{ const p=m.parentNode; while(m.firstChild)p.insertBefore(m.firstChild,m); p.removeChild(m); p.normalize&&p.normalize(); }); }
+
+/* Text-to-speech */
+function speak(text){ if(!('speechSynthesis'in window))return; const u=new SpeechSynthesisUtterance(text); u.lang='en-GB'; u.rate=.95; speechSynthesis.speak(u); }
+function stopSpeak(){ if('speechSynthesis'in window) speechSynthesis.cancel(); }
+function readPage(){ readSelector('readBody')||readSelector('app'); }
+function readSelector(id){ const el=document.getElementById(id); if(!el)return false; stopSpeak(); speak(el.innerText.slice(0,4000)); return true; }
+
+/* =========================================================================
+   UTIL
+   ========================================================================= */
+function val(id){ const e=document.getElementById(id); return e?e.value:""; }
+function escq(s){ return (s||"").replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+/* boot */
+go('home');
+</script>
+</body>
+</html>
