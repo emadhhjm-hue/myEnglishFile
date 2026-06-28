@@ -208,6 +208,7 @@ table.data tr:nth-child(even){background:#fff}
 .stat{background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 18px; min-width:110px; text-align:center; flex:1}
 .stat .n{font-family:"Fraunces"; font-size:1.7rem; color:var(--ink); line-height:1}
 .stat .l{font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-top:4px}
+.exam-timer{background:var(--ink); color:#fff; font-weight:700; padding:8px 16px; border-radius:50px; font-size:1.05rem; font-variant-numeric:tabular-nums; transition:background .4s}
 </style>
 </head>
 <body>
@@ -618,7 +619,20 @@ const LISTEN_COMP = [
 ];
 
 /* ---- Listening B: spelling & dictation. Timed, two attempts, big bank, fresh each round ---- */
-const SPELL_TIME   = { word:{a1:10,a2:5}, phrase:{a1:12,a2:6}, sentence:{a1:15,a2:10} };
+const SPELL_TIME   = { word:{a1:10,a2:6}, phrase:{a1:14,a2:8}, sentence:{a1:22,a2:14} };
+function spellTime(type, attempt, text){
+  if(type==="sentence"){
+    const words=(text||"").trim().split(/\s+/).filter(Boolean).length;
+    const a1=Math.min(40, Math.max(22, Math.round(words*2.2)));  // 22s floor, ~2.2s/word, 40s cap
+    return attempt===1 ? a1 : Math.round(a1*0.65);
+  }
+  if(type==="phrase"){
+    const words=(text||"").trim().split(/\s+/).filter(Boolean).length;
+    const a1=Math.max(14, Math.round(words*3));
+    return attempt===1 ? a1 : Math.round(a1*0.6);
+  }
+  return SPELL_TIME.word[attempt===1?"a1":"a2"];
+}
 const SPELL_REVEAL = 5;            // seconds the correct spelling is shown after a final miss
 let   SPELL_ROUND_SIZE = 10;       // items per round (student can pick 10 / 20 / 30)
 
@@ -1016,12 +1030,13 @@ const RCOURSE = {
   advanced:{ label:"Advanced", tag:"Proficient", blurb:"Argument, nuance and explanation. Read critically and weigh evidence.", units:[
     {id:"u1", title:"Unit 1 · Informal & opinion texts", lessons:[
       {id:"ra1", title:"Can we really trust AI tutors?", field:"Technology · debate", register:"Informal", type:"Opinion blog",
-       text:`<p><i>Opinion · by a Year 12 student</i></p><p>Everyone keeps telling me that AI tutors are the future. Type a question, get a patient explanation at 2 a.m. — what's not to love? Mine genuinely helped me understand calculus at last.</p><p>But I've started to worry. When an answer arrives instantly, I stop wrestling with the problem myself — and the wrestling, my teacher insists, is where the learning actually happens. There's also the quiet question of trust: the tutor sounds confident even when it's wrong, and a tired student rarely checks.</p><p>I'm not anti-AI. I just think we should use it like a gym, not a taxi: something that makes us stronger, not something that carries us. The tool is brilliant; whether it helps or harms depends entirely on how we hold it.</p>`,
+       text:`<p><i>Opinion · by a Year 12 student</i></p><p>Everyone keeps telling me that AI tutors are the future. Type a question and get a patient, detailed explanation at two o'clock in the morning — what's not to love? Mine genuinely helped me understand calculus when nothing else had, breaking a problem into steps no textbook ever bothered to explain.</p><p>But the more I rely on it, the more uneasy I become. When an answer appears instantly, I stop wrestling with the problem myself — and the wrestling, my teacher insists, is exactly where the learning happens. A muscle that is never strained never grows stronger, and I notice that I remember far less from a solution handed to me than from one I had to fight for.</p><p>There is also the quieter problem of trust. An AI tutor sounds equally confident whether it is right or completely wrong, and a tired student at midnight rarely stops to check. It never says, 'I'm not sure.' That smooth confidence can slowly replace a student's own judgement — one of the very things school is meant to build.</p><p>I am not anti-AI; that would be like refusing to use a calculator. I simply think we should treat it like a gym, not a taxi: something that makes us stronger through effort, not something that carries us while we sit still. Used carelessly, it could produce a generation that can find any answer but truly understand none of them. Used wisely, it might be the most patient teacher any of us has ever had. The tool is remarkable. Whether it helps or harms depends entirely on how we choose to hold it.</p>`,
        mcqs:[
          {q:"What benefit does the writer admit?", options:["It is free","Instant, patient help that aided their calculus","It does homework for you","It replaces teachers"], answer:1, exp:"The writer says it helped them finally understand calculus."},
          {q:"What is the writer's main worry?", options:["AI is too slow","Students stop thinking for themselves","AI costs too much","AI is boring"], answer:1, exp:"The worry is that instant answers stop students from 'wrestling' with problems."},
          {q:"What does 'sounds confident even when it's wrong' warn about?", options:["The voice is loud","You can't always trust the answer","It speaks too fast","It is rude"], answer:1, exp:"It warns that confident-sounding answers may still be incorrect."},
-         {q:"What is the writer's overall position?", options:["Ban AI tutors","Use AI wisely — like a gym, not a taxi","Use AI for everything","Ignore teachers"], answer:1, exp:"Not anti-AI — use it to build skill, 'like a gym, not a taxi'."}
+         {q:"What is the writer's overall position?", options:["Ban AI tutors","Use AI wisely — like a gym, not a taxi","Use AI for everything","Ignore teachers"], answer:1, exp:"Not anti-AI — use it to build skill, 'like a gym, not a taxi'."},
+         {type:"tfng", q:"The writer believes AI tutors should be banned from schools.", answer:"False", exp:"The writer says 'I am not anti-AI' and argues for using it wisely, not banning it."}
        ],
        selfcheck:[
          {q:"Explain the comparison 'like a gym, not a taxi.' Why is it effective?", model:"A possible answer tours around: a gym makes you stronger through effort; a taxi does the work for you. It is effective because it captures the writer's argument — AI should build skill, not replace effort. Justify from the final paragraph."},
@@ -1031,18 +1046,54 @@ const RCOURSE = {
     ]},
     {id:"u2", title:"Unit 2 · Formal & explanatory texts", lessons:[
       {id:"ra2", title:"How a wind turbine turns wind into power", field:"Physics · energy", register:"Formal", type:"Explanatory feature",
-       text:`<p>A wind turbine converts the movement of air into electricity through a chain of simple steps. As wind strikes the long, curved blades, the difference in air pressure on each side creates <b>lift</b> — the same force that allows aeroplanes to fly — and the blades begin to turn.</p><p>The blades are connected to a shaft, which spins a generator housed behind them. Inside the generator, the spinning motion moves magnets past coils of wire, and this changing magnetic field pushes electrons through the wire, producing an electric current.</p><p>Because faster wind carries more energy, turbines are placed where wind is strong and steady — on hilltops, open plains, or out at sea. A single large turbine can power hundreds of homes, turning an invisible breeze into usable energy.</p>`,
+       text:`<p>A wind turbine converts the movement of air into electricity through a chain of surprisingly simple steps. As wind strikes the long, curved blades, the air travelling over the curved side moves faster than the air beneath it, creating a difference in pressure. This produces <b>lift</b> — the very same force that allows aeroplanes to fly — and the blades begin to turn.</p><p>The blades are fixed to a central shaft, which runs back into a sealed box called the nacelle. There, the slow rotation is usually sped up by a gearbox before it reaches the generator. Inside the generator, the spinning motion drags powerful magnets past tightly wound coils of copper wire. This constantly changing magnetic field pushes electrons along the wire, and that flow of electrons is an electric current — the electricity we use.</p><p>Because faster wind carries far more energy, turbines are placed where the wind is strong and steady: on exposed hilltops, across open plains, or out at sea, where nothing slows the air down. Engineers also raise them on tall towers, since wind speeds increase with height.</p><p>A single large turbine can generate enough power for hundreds of homes, and, unlike a coal or gas plant, it burns no fuel and releases no carbon dioxide while running. Wind is not perfect — it does not blow on demand, so turbines must be paired with storage or other sources for calm days. Yet the basic achievement remains remarkable: with no flames and no fuel, a turbine turns an invisible, everyday breeze into usable energy.</p>`,
        mcqs:[
          {q:"What makes the blades turn?", options:["A motor","Lift from a difference in air pressure","Electricity from the generator","Falling water"], answer:1, exp:"Lift, from the air-pressure difference, turns the blades — like an aeroplane wing."},
          {q:"What does the generator contain?", options:["Water and pipes","Magnets and coils of wire","Solar cells","Fuel"], answer:1, exp:"It contains magnets and coils of wire."},
          {q:"How is the electric current produced?", options:["Burning fuel","Spinning magnets past coils create a changing magnetic field that pushes electrons","Sunlight on panels","Chemical reaction"], answer:1, exp:"The spinning motion moves magnets past coils, pushing electrons through the wire."},
-         {q:"Why are turbines placed on hilltops or at sea?", options:["It looks nice","Wind there is strong and steady","Land is cheap","To avoid people"], answer:1, exp:"Faster, steadier wind carries more energy."}
+         {q:"Why are turbines placed on hilltops or at sea?", options:["It looks nice","Wind there is strong and steady","Land is cheap","To avoid people"], answer:1, exp:"Faster, steadier wind carries more energy."},
+         {type:"tfng", q:"Wind turbines release carbon dioxide while they are running.", answer:"False", exp:"The text states a turbine 'burns no fuel and releases no carbon dioxide while running'."},
+         {type:"tfng", q:"Wind speed increases the higher you go.", answer:"True", exp:"The text says wind speeds increase with height, which is why turbines sit on tall towers."}
        ],
        selfcheck:[
-         {q:"Explain in your own words how movement becomes electricity here.", model:"A possible answer tours around the chain: wind → lift → blades spin → shaft → generator → magnets move past coils → current. Justify from paragraph 2 (the generator description). (Inference + justification.)"},
-         {q:"Why does the writer compare turbine blades to aeroplane wings?", model:"To explain the abstract idea of 'lift' using something familiar — both use a difference in air pressure to create an upward/turning force. It makes the science concrete."}
+         {q:"Explain in your own words how movement becomes electricity here.", model:"A possible answer tours around the chain: wind → lift → blades spin → shaft → gearbox → generator → magnets move past coils → current. Justify from paragraph 2."},
+         {q:"Why does the writer compare turbine blades to aeroplane wings?", model:"To explain the abstract idea of 'lift' using something familiar — both use a difference in air pressure to create force. It makes the science concrete."}
        ],
        design:"Design and build a model windmill/turbine. Test which blade shape spins fastest in front of a fan.", designId:"d_windmill"}
+    ]},
+    {id:"u3", title:"Unit 3 · Extended texts across genres (≈300 words)", lessons:[
+      {id:"ra3", title:"The race to map the brain", field:"Neuroscience · technology", register:"Formal", type:"Science report",
+       text:`<p>The human brain contains roughly eighty-six billion neurons, each connected to thousands of others. Together they form a network so dense that, until recently, mapping it in full seemed impossible. Today, an international effort known as the 'connectome' project is attempting exactly that: to chart every connection in the brain, much as earlier scientists once mapped the genome.</p><p>The task is staggering. To trace the wiring, researchers slice brain tissue into sheets thinner than a human hair, photograph each one under powerful electron microscopes, and then use artificial intelligence to follow individual fibres from image to image. A single cubic millimetre of brain can produce more data than an entire library of books.</p><p>Why attempt something so difficult? Scientists hope a complete map will reveal how memory, learning and emotion arise from physical connections — and what goes wrong in conditions such as Alzheimer's disease, epilepsy and depression. If a disorder is caused by faulty wiring, then seeing the wiring is a first step towards repairing it.</p><p>Critics caution that a map is not the same as understanding. Knowing how a city's roads connect does not tell you why people travel, and a diagram of neurons may not, by itself, explain a thought or a feeling. There are ethical questions too, about privacy and about what it means to reduce a mind to a chart.</p><p>Still, few doubt the value of the attempt. Each earlier map of the unknown — of coastlines, of genes, of the night sky — has changed how humans see themselves. The map of the mind may prove the most revealing of all.</p>`,
+       mcqs:[
+         {q:"What is the connectome project trying to do?", options:["Cure all brain disease","Chart every connection in the brain","Build an artificial brain","Map the genome"], answer:1, exp:"It aims to chart every connection in the brain."},
+         {q:"Why is the task described as 'staggering'?", options:["It is cheap","A tiny piece of brain produces enormous amounts of data","Nobody is interested","It takes one day"], answer:1, exp:"A single cubic millimetre yields more data than a library of books."},
+         {q:"One reason scientists want the map is to ____.", options:["sell it","understand disorders like Alzheimer's","replace doctors","map the night sky"], answer:1, exp:"Seeing faulty wiring is a first step to repairing it."},
+         {q:"What do critics argue?", options:["A map equals full understanding","A map is not the same as understanding","The brain has no neurons","Maps are useless"], answer:1, exp:"Knowing connections is not the same as understanding thoughts."},
+         {type:"tfng", q:"Scientists use artificial intelligence to help trace brain fibres.", answer:"True", exp:"The text says AI follows individual fibres from image to image."},
+         {type:"tfng", q:"The connectome project has already produced a complete map of the human brain.", answer:"False", exp:"The text says it is 'attempting' the task — it is not finished."},
+         {type:"tfng", q:"The connectome project is funded mainly by private companies.", answer:"Not Given", exp:"The text does not mention who funds the project."}
+       ],
+       selfcheck:[
+         {q:"Explain the comparison between a brain map and a map of a city's roads. What point does it make?", model:"Roads show how a city connects but not why people travel; likewise, neuron connections may not explain a thought or feeling. The point: structure is not the same as meaning. Justify from paragraph 4."},
+         {q:"The writer ends by calling this 'the most revealing' map of all. Do you agree it is worth the effort? Justify your view.", model:"Open response. A strong answer weighs the medical/scientific benefits against the cost, difficulty and ethical concerns the writer raises, and takes a clear position."}
+       ],
+       design:"Design an infographic that explains, step by step, how scientists map the brain.", designId:null},
+      {id:"ra4", title:"The last light", field:"Literature · narrative", register:"Informal", type:"Narrative extract",
+       text:`<p>For forty-one years, Idris had climbed the lighthouse stairs at dusk, and for forty-one years the great lamp had answered him, throwing its slow gold arm across the water. Tonight would be the last time. In the morning, engineers were coming to replace the light with a small automatic bulb that needed no keeper at all.</p><p>He climbed slowly, as he always did, counting the steps under his breath the way his father had taught him. The sea below was the colour of old iron, restless and patient at once. Somewhere out in the dark, he knew, a fishing boat was reading his light, as sailors had read it since before he was born.</p><p>At the top, he wound the mechanism a final time and watched the beam sweep out. He thought of all the storms it had outlasted, all the ships it had quietly guided home without ever being thanked. A machine, he supposed, would do the job just as well — better, even, never sleeping, never growing old. And yet a machine would not know the names of the rocks, or remember the night the trawler nearly foundered on them.</p><p>Idris did not feel angry, only strangely light, as though he were handing something precious to a stranger he would never meet. He pressed his palm flat against the warm glass. 'Goodnight,' he said — to the lamp, to the sea, to forty-one years. Then he began, for the last time, the long climb down into an ordinary world that would never quite know what it was losing.</p>`,
+       mcqs:[
+         {q:"How long has Idris kept the lighthouse?", options:["Forty-one years","One year","A few months","Since this morning"], answer:0, exp:"Stated in the opening line."},
+         {q:"What will replace Idris?", options:["A younger keeper","A small automatic bulb","Nothing at all","A larger lamp"], answer:1, exp:"Engineers are installing an automatic bulb that needs no keeper."},
+         {q:"'The sea below was the colour of old iron' mainly creates a feeling of ____.", options:["warmth and joy","cold, heavy seriousness","fear and panic","boredom"], answer:1, exp:"‘Old iron’ suggests grey, heavy, sombre mood."},
+         {q:"Why does the writer say a machine 'would not know the names of the rocks'?", options:["Machines can't read","To show what human experience and care will be lost","Rocks have no names","To criticise sailors"], answer:1, exp:"It highlights the human knowledge and care a machine cannot hold."},
+         {type:"tfng", q:"Idris feels angry about losing his job.", answer:"False", exp:"The text says he 'did not feel angry, only strangely light'."},
+         {type:"tfng", q:"Idris's father taught him to count the steps.", answer:"True", exp:"He counts the steps 'the way his father had taught him'."},
+         {type:"tfng", q:"Idris has a family waiting for him at home.", answer:"Not Given", exp:"The text never mentions Idris's family."}
+       ],
+       selfcheck:[
+         {q:"What mood does the writer create, and which words help create it? Give two examples.", model:"A reflective, wistful, slightly sad mood. Evidence: 'the colour of old iron', 'slow gold arm', 'strangely light', 'what it was losing'. Any two well-chosen examples with explanation."},
+         {q:"The text contrasts a person with a machine. What is the writer suggesting about each?", model:"The machine is reliable, tireless and efficient, but lacks memory, care and human meaning; the person brings knowledge, history and feeling that cannot be automated. The writer values what is being lost."}
+       ],
+       design:"Design an illustrated tribute (poster) to a person or place whose quiet, unthanked work matters.", designId:null}
     ]}
   ]}
 };
@@ -1158,7 +1209,7 @@ let CURRENT_SCREEN = "home", CURRENT_ARG = null;
 
 function go(screen, arg){
   CURRENT_SCREEN = screen; CURRENT_ARG = arg;
-  stopSpeak(); turnOffHighlighter(); clearSpellTimer(); window.scrollTo(0,0);
+  stopSpeak(); turnOffHighlighter(); clearSpellTimer(); clearExamTimer(); window.scrollTo(0,0);
   ROUTES[screen](arg); updateWho();
   requestAnimationFrame(positionKnobs);
 }
@@ -1213,7 +1264,9 @@ const ROUTES = {
         <button class="back" onclick="go('home')">← Back</button>
         <h2 style="font-size:1.8rem">Student sign-in</h2>
         <p style="color:var(--muted);margin:6px 0 20px;font-size:.92rem">Use the access code your teacher gave you.</p>
-        <div class="field"><label>Your name</label><input id="sName" placeholder="e.g. Sara Al Hosani"></div>
+        <div class="field"><label>First name</label><input id="sFirst" placeholder="e.g. Sara"></div>
+        <div class="field"><label>Middle name</label><input id="sMiddle" placeholder="e.g. Ahmed"></div>
+        <div class="field"><label>Last name</label><input id="sLast" placeholder="e.g. Al Hosani"></div>
         <div class="field"><label>Access code</label><input id="sCode" placeholder="e.g. DEMO" autocapitalize="characters"></div>
         <div class="err" id="sErr"></div>
         <button class="btn" style="width:100%" onclick="doStudentLogin()">Start practising →</button>
@@ -1248,6 +1301,17 @@ const ROUTES = {
         </div>
       </div>
 
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin:6px 0 22px">
+        <button onclick="go('diagnostic')" style="flex:1;min-width:240px;text-align:left;border:none;cursor:pointer;background:linear-gradient(135deg,#15183A,#0c8a72);color:#fff;border-radius:16px;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:14px">
+          <span><span style="font-size:1.1rem;font-weight:700">🧭 Diagnostic test</span><br><span style="opacity:.85;font-size:.88rem">Check your level now, and again later to see progress.</span></span>
+          <span style="background:rgba(255,255,255,.2);padding:8px 14px;border-radius:50px;font-weight:600;white-space:nowrap">Take →</span>
+        </button>
+        <button onclick="go('exams')" style="flex:1;min-width:240px;text-align:left;border:none;cursor:pointer;background:linear-gradient(135deg,#8B5CF6,#E6464B);color:#fff;border-radius:16px;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:14px">
+          <span><span style="font-size:1.1rem;font-weight:700">🎓 Full-length exams</span><br><span style="opacity:.85;font-size:.88rem">Timed, all-skills exams with a certificate.</span></span>
+          <span style="background:rgba(255,255,255,.2);padding:8px 14px;border-radius:50px;font-weight:600;white-space:nowrap">Start →</span>
+        </button>
+      </div>
+
       <h2 style="font-family:'Fraunces';font-size:1.6rem;margin:6px 0 2px;color:var(--ink)">Your RWD journey — courses</h2>
       <p style="color:var(--muted);margin:0 0 14px;font-size:.92rem">Read → Write → Design, with teaching, model answers and instant feedback. Reading feeds Writing; Writing becomes a designed artefact.</p>
       <div class="grid c4">
@@ -1255,6 +1319,7 @@ const ROUTES = {
         <button class="path" style="background:linear-gradient(135deg,#0c8a72,#15183A)" onclick="go('writingCourse')"><div><div class="ic">🎓</div><h3>Writing Course</h3></div><span>The W · ${wcLessonCount()} lessons</span></button>
         <button class="path" style="background:linear-gradient(135deg,#E6464B,#8B5CF6)" onclick="go('dstudio')"><div><div class="ic">🎨</div><h3>Design Studio</h3></div><span>The bridge · ${allChallenges().length} make-it challenges</span></button>
         <button class="path" style="background:linear-gradient(135deg,#8B5CF6,#E6464B)" onclick="go('vocab')"><div><div class="ic">📚</div><h3>Vocabulary Bank</h3></div><span>${myVocab().length} words · build 5 per lesson</span></button>
+        <button class="path" style="background:linear-gradient(135deg,#d98324,#15183A)" onclick="go('grammar')"><div><div class="ic">🧩</div><h3>Grammar Lab</h3></div><span>${grLessonCount()} lessons · all levels</span></button>
       </div>
 
       <h2 style="font-family:'Fraunces';font-size:1.6rem;margin:30px 0 2px;color:var(--ink)">Quizzes — differentiated practice</h2>
@@ -1271,6 +1336,88 @@ const ROUTES = {
         ${myResultsTable()}
       </div>
     </div>`;
+  },
+
+  /* ---------------- DIAGNOSTIC TEST ---------------- */
+  diagnostic(){
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Home</button>
+      <h1 style="font-size:2.2rem">🧭 Diagnostic test</h1>
+      <p style="color:var(--muted);max-width:680px">A short test of four skills — <b>Vocabulary, Grammar, Reading</b> and <b>Writing</b>. Take the <b>Start-of-year</b> version first. Later in the year, take the <b>End-of-year</b> version to measure how far you've come. Your scores are saved for your teacher.</p>
+      <div class="grid c2" style="margin-top:14px">
+        ${["pre","mid","post"].map(v=>{ const d=DIAG[v]; return `
+          <div class="card">
+            <h3 style="font-size:1.25rem">${d.label}</h3>
+            <p style="color:var(--muted);font-size:.9rem">${d.blurb}</p>
+            <p style="font-size:.85rem;color:var(--slate);margin:8px 0">4 sections · ${d.vocab.length} vocab · ${d.grammar.length} grammar · ${d.readingA.questions.length+d.readingB.questions.length} reading · 1 essay</p>
+            <button class="btn" onclick="go('diagTest','${v}')">Start ${d.short} →</button>
+            <button class="btn ghost sm" style="margin-top:8px" onclick="wsDiag('${v}')">📄 Paper version (PDF)</button>
+          </div>`; }).join('')}
+      </div>
+    </div>`;
+  },
+  diagTest(v){ renderDiag(v||"pre"); },
+  diagResult(){ /* rendered directly by gradeDiag */ },
+
+  /* ---------------- FULL-LENGTH EXAMS ---------------- */
+  exams(){
+    app().innerHTML=`
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Home</button>
+      <h1 style="font-size:2.2rem">🎓 Full-length exams</h1>
+      <p style="color:var(--muted);max-width:700px">Complete, timed exams covering all four skills — <b>Vocabulary, Grammar, Reading</b> and <b>Writing</b> — with a wide range of grammar and topics. Each exam is <b>40 minutes</b> and auto-submits when time runs out. Finish to earn a <b>certificate</b> (Emerging · At-level · Outstanding).</p>
+      <div class="grid c2" style="margin-top:14px">
+        ${EXAMS.map((e,i)=>`
+          <div class="card">
+            <div class="meta" style="margin-bottom:4px">${e.level} · ${e.topic}</div>
+            <h3 style="font-size:1.25rem">${e.label}</h3>
+            <p style="font-size:.85rem;color:var(--slate);margin:8px 0">${e.vocab.length} vocab · ${e.grammar.length} grammar · ${e.readingA.questions.length+e.readingB.questions.length} reading · 1 essay · ⏱ 40 min</p>
+            <button class="btn" onclick="go('examTest','${i}')">Start exam →</button>
+            <button class="btn ghost sm" style="margin-top:8px" onclick="wsExam(EXAMS[${i}],'exam-${i+1}')">📄 Paper version (PDF)</button>
+          </div>`).join('')}
+      </div>
+      <p class="note" style="margin-top:16px">More exam sets (of varying difficulty) will be added here — each one automatically gets its timer, certificate and printable worksheet.</p>
+    </div>`;
+  },
+  examTest(i){ runExam(EXAMS[+i], {key:'exam_'+i, minutes:40, backRoute:'exams', skill:'Full exam', cert:true}); },
+
+  /* ---------------- GRAMMAR LAB ---------------- */
+  grammar(){
+    const done=grDone();
+    app().innerHTML=`
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Home</button>
+      <h1 style="font-size:2.2rem">🧩 Grammar Lab</h1>
+      <p style="color:var(--muted);max-width:680px">Short lessons on each grammar point: a clear explanation, examples, instant-feedback practice (multiple choice + gap-fill) and a printable worksheet. Grouped by level — start where you're comfortable.</p>
+      ${Object.keys(GRAMMAR).map(k=>{ const lv=GRAMMAR[k]; return `
+        <h2 style="font-family:'Fraunces';font-size:1.4rem;margin:24px 0 8px;color:var(--ink)">${lv.label}</h2>
+        <div class="grid c2">
+          ${lv.topics.map(t=>`<button onclick="go('grammarLesson','${t.id}')" style="text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer">
+             <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="color:var(--ink)">${t.title}</b>${done.includes(t.id)?'<span style="background:var(--teal);color:#fff;font-size:.68rem;padding:2px 8px;border-radius:50px;white-space:nowrap">✓ done</span>':''}</div>
+             <span style="font-size:.82rem;color:var(--muted)">${t.questions.length} practice questions</span></button>`).join('')}
+        </div>`; }).join('')}
+    </div>`;
+  },
+  grammarLesson(id){
+    const f=findGr(id); if(!f){ go('grammar'); return; } const t=f.topic;
+    app().innerHTML=`
+    <div class="wrap screen">
+      <button class="back" onclick="go('grammar')">← Grammar Lab</button>
+      <div class="meta">${f.level.label}</div>
+      <h1 style="font-size:1.9rem">${t.title}</h1>
+      <div class="card"><h3 style="font-size:1.1rem;margin-top:0">How it works</h3>
+        <p style="color:var(--slate)">${t.explain}</p>
+        <div style="background:var(--mist);border-radius:10px;padding:12px;margin-top:10px"><b style="font-size:.85rem;color:var(--ink)">Examples</b>
+          <ul style="margin:6px 0 0;padding-left:18px;color:var(--slate)">${t.examples.map(e=>`<li style="margin:4px 0">${e}</li>`).join('')}</ul></div>
+        <button class="btn ghost sm" style="margin-top:12px" onclick="wsGrammar('${id}')">📄 Worksheet (PDF)</button>
+      </div>
+      <h3 style="font-size:1.2rem;margin:20px 0 6px">Practice</h3>
+      <div id="quiz"></div>
+      <button class="btn" id="submitQ" style="width:100%;margin-top:10px" onclick="gradeGrammar('${id}','${escq(t.title)}')">Check answers →</button>
+      <div id="quizResult" style="margin-top:14px"></div>
+    </div>`;
+    renderQuiz(t.questions);
   },
 
   /* ---------------- READING LIST ---------------- */
@@ -1639,10 +1786,13 @@ const ROUTES = {
       </div>
     </div>`;
     // render MCQs
-    document.getElementById('rcMcq').innerHTML = l.mcqs.map((q,i)=>`
-      <div class="q" data-i="${i}"><div class="qhead">${i+1}. ${q.q}</div>
-        ${q.options.map((o,j)=>`<label class="opt"><input type="radio" name="rmc${i}" value="${j}"><span>${o}</span></label>`).join('')}
-        <div class="feedback hidden"></div></div>`).join('');
+    document.getElementById('rcMcq').innerHTML = l.mcqs.map((q,i)=>{
+      const opts = q.type==="tfng" ? TFNG : q.options;
+      const tag = q.type==="tfng" ? ` <span style="font-size:.72rem;color:var(--muted);font-weight:400">— True / False / Not Given</span>` : '';
+      return `<div class="q" data-i="${i}"><div class="qhead">${i+1}. ${q.q}${tag}</div>
+        ${opts.map((o,j)=>`<label class="opt"><input type="radio" name="rmc${i}" value="${j}"><span>${o}</span></label>`).join('')}
+        <div class="feedback hidden"></div></div>`;
+    }).join('');
     // render self-check
     document.getElementById('rcSelf').innerHTML = l.selfcheck.map((q,i)=>`
       <div class="q" data-si="${i}"><div class="qhead">💭 ${i+1}. ${q.q}</div>
@@ -1869,12 +2019,13 @@ const ROUTES = {
    LOGIN ACTIONS
    ========================================================================= */
 function doStudentLogin(){
-  const name=val('sName').trim(), cls="", code=val('sCode').trim().toUpperCase();
+  const first=val('sFirst').trim(), middle=val('sMiddle').trim(), last=val('sLast').trim();
+  const name=[first,middle,last].filter(Boolean).join(' '), cls="", code=val('sCode').trim().toUpperCase();
   const err=document.getElementById('sErr');
-  if(!name){ err.textContent="Please enter your name."; return; }
+  if(!first||!last){ err.textContent="Please enter your first and last name (middle name optional)."; return; }
   if(!getCodes().map(c=>c.toUpperCase()).includes(code)){ err.textContent="That access code isn't recognised. Check with your teacher."; return; }
   const id = code+"::"+name.toLowerCase();
-  SESSION={role:"student", name, class:cls, code, id};
+  SESSION={role:"student", name, first, middle, last, class:cls, code, id};
   setStudent(id,{name, class:cls, code});
   if(cloudUrl()){ err.textContent="Loading your online record…"; pullContent(()=>refreshCloud(()=>go('dashboard'))); }
   else go('dashboard');
@@ -1890,12 +2041,18 @@ function doTeacherLogin(){
 /* =========================================================================
    QUIZ ENGINE (reading)
    ========================================================================= */
+const TFNG=["True","False","Not Given"];
+function ansIdx(q){ if(q.type==="tfng"){ return typeof q.answer==="number"?q.answer:TFNG.indexOf(q.answer); } return q.answer; }
 function renderQuiz(qs){
   const box=document.getElementById('quiz');
   box.innerHTML = qs.map((q,i)=>{
     if(q.type==="mcq"){
       return `<div class="q" data-i="${i}"><div class="qhead">${i+1}. ${q.q}</div>
         ${q.options.map((o,j)=>`<label class="opt"><input type="radio" name="q${i}" value="${j}"><span>${o}</span></label>`).join('')}
+        <div class="feedback hidden"></div></div>`;
+    } else if(q.type==="tfng"){
+      return `<div class="q" data-i="${i}"><div class="qhead">${i+1}. ${q.q} <span style="font-size:.72rem;color:var(--muted);font-weight:400">— True / False / Not Given</span></div>
+        ${TFNG.map((o,j)=>`<label class="opt"><input type="radio" name="q${i}" value="${j}"><span>${o}</span></label>`).join('')}
         <div class="feedback hidden"></div></div>`;
     } else if(q.type==="reflect"){
       return `<div class="q" data-i="${i}" style="border-color:var(--teal)"><div class="qhead">💡 ${i+1}. ${q.q}</div>
@@ -1930,6 +2087,14 @@ function markQuiz(id,skill,title){
       });
       if(chosen===q.answer){ auto++; fb.classList.add('good'); fb.textContent="✓ Correct. "+q.exp; }
       else { fb.textContent=(chosen===-1?"No answer chosen. ":"Not quite. ")+q.exp; }
+    } else if(q.type==="tfng"){
+      autoMax++;
+      const ans=ansIdx(q);
+      const sel=qEl.querySelector(`input[name="q${i}"]:checked`);
+      const chosen = sel? +sel.value : -1;
+      qEl.querySelectorAll('.opt').forEach((o,j)=>{ if(j===ans) o.classList.add('correct'); if(j===chosen && chosen!==ans) o.classList.add('wrong'); });
+      if(chosen===ans){ auto++; fb.classList.add('good'); fb.textContent=`✓ Correct — ${TFNG[ans]}. ${q.exp}`; }
+      else { fb.textContent=(chosen===-1?"No answer chosen. ":"Not quite. ")+`Answer: ${TFNG[ans]}. ${q.exp}`; }
     } else if(q.type==="reflect"){
       const txt=(qEl.querySelector('textarea').value||"").trim();
       if(txt) written.push("Reflection: "+txt);
@@ -2024,7 +2189,7 @@ function renderSpell(){
   if(s.i>=s.items.length){ finishSpell(); return; }
   const item=s.items[s.i];
   const isSentence=s.type==='sentence';
-  const t=SPELL_TIME[s.type][s.attempt===1?'a1':'a2'];
+  const t=spellTime(s.type, s.attempt, s.items[s.i].t);
   app().innerHTML=`
   <div class="wrap screen">
     <button class="back" onclick="go('listening')">← Listening</button>
@@ -2333,10 +2498,11 @@ function gradeRc(id){
   l.mcqs.forEach((q,i)=>{
     const qEl=document.querySelector(`#rcMcq .q[data-i="${i}"]`); const fb=qEl.querySelector('.feedback');
     fb.classList.remove('hidden');
+    const ans=ansIdx(q);
     const sel=qEl.querySelector(`input[name="rmc${i}"]:checked`); const chosen=sel?+sel.value:-1;
-    qEl.querySelectorAll('.opt').forEach((o,j)=>{ if(j===q.answer)o.classList.add('correct'); if(j===chosen&&chosen!==q.answer)o.classList.add('wrong'); });
-    if(chosen===q.answer){ correct++; fb.classList.add('good'); fb.textContent="✓ Correct. "+q.exp; }
-    else fb.textContent=(chosen===-1?"No answer chosen. ":"Not quite. ")+q.exp;
+    qEl.querySelectorAll('.opt').forEach((o,j)=>{ if(j===ans)o.classList.add('correct'); if(j===chosen&&chosen!==ans)o.classList.add('wrong'); });
+    if(chosen===ans){ correct++; fb.classList.add('good'); fb.textContent="✓ Correct. "+q.exp; }
+    else fb.textContent=(chosen===-1?"No answer chosen. ":"Not quite. ")+(q.type==="tfng"?`Answer: ${TFNG[ans]}. `:"")+q.exp;
   });
   const mtot=l.mcqs.length, mpct=Math.round(correct/mtot*100);
   // reveal self-check models + grading
@@ -2700,27 +2866,27 @@ function nameLine(p){ p.text("Name: __________________     Class: __________    
 function wsReadingCourse(id){ if(!pdfReady())return noPdf(); const f=findRc(id); const l=f.lesson; const p=pdfDoc("Reading worksheet");
   p.h1(l.title); p.text(`${f.level.label} · ${l.register} · ${l.type} · ${l.field}`,{size:9,color:120,gap:6}); nameLine(p);
   p.h2("Read the text"); p.text(htmlToText(l.text),{gap:6});
-  p.h2("Comprehension — circle the correct letter");
-  l.mcqs.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); q.options.forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); p.gap(4); });
+  p.h2("Comprehension — circle the correct answer");
+  l.mcqs.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); const opts=q.type==="tfng"?TFNG:q.options; opts.forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); p.gap(4); });
   if(l.selfcheck.length){ p.h2("Self-check — answer in full sentences"); l.selfcheck.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); p.lines(3); }); }
   p.newpage(); p.h1("Answer key"); p.text(l.title,{size:9,color:120,gap:6});
-  p.h2("Comprehension"); l.mcqs.forEach((q,i)=>{ p.text(`${i+1}.  ${LET[q.answer]} — ${q.options[q.answer]}`,{style:"bold"}); if(q.exp)p.text(`     ${q.exp}`,{size:10,color:90}); });
+  p.h2("Comprehension"); l.mcqs.forEach((q,i)=>{ const a=ansIdx(q); const opts=q.type==="tfng"?TFNG:q.options; p.text(`${i+1}.  ${LET[a]} — ${opts[a]}`,{style:"bold"}); if(q.exp)p.text(`     ${q.exp}`,{size:10,color:90}); });
   if(l.selfcheck.length){ p.h2("Self-check — model answers"); l.selfcheck.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); p.text(htmlToText(q.model),{size:10,color:60,gap:4}); }); }
   p.save(`iCAN-reading-${id}.pdf`);
 }
 function wsReadingPractice(id){ if(!pdfReady())return noPdf(); const r=READING.find(x=>x.id===id); const lvl=r[LEVEL]; const p=pdfDoc("Reading worksheet");
   p.h1(r.title); p.text(`${r.genre} · ${LEVEL==="scaffolded"?"Supported":"Standard"}`,{size:9,color:120,gap:6}); nameLine(p);
   p.h2("Read the text"); p.text(htmlToText(r.isData?((lvl.intro||"")+"\n"+(lvl.figure||"")):lvl.text),{gap:6});
-  p.h2("Questions"); lvl.questions.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); if(q.type==="mcq"){ q.options.forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); } else { p.lines(2); } p.gap(3); });
-  p.newpage(); p.h1("Answer key"); lvl.questions.forEach((q,i)=>{ if(q.type==="mcq"){ p.text(`${i+1}.  ${LET[q.answer]} — ${q.options[q.answer]}`,{style:"bold"}); } else { p.text(`${i+1}.  ${q.answer||"(open response)"}`,{style:"bold"}); } if(q.exp)p.text(`     ${q.exp}`,{size:10,color:90}); });
+  p.h2("Questions"); lvl.questions.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); if(q.type==="mcq"){ q.options.forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); } else if(q.type==="tfng"){ TFNG.forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); } else { p.lines(2); } p.gap(3); });
+  p.newpage(); p.h1("Answer key"); lvl.questions.forEach((q,i)=>{ if(q.type==="mcq"){ p.text(`${i+1}.  ${LET[q.answer]} — ${q.options[q.answer]}`,{style:"bold"}); } else if(q.type==="tfng"){ const a=ansIdx(q); p.text(`${i+1}.  ${TFNG[a]}`,{style:"bold"}); } else { p.text(`${i+1}.  ${q.answer||"(open response)"}`,{style:"bold"}); } if(q.exp)p.text(`     ${q.exp}`,{size:10,color:90}); });
   p.save(`iCAN-reading-${id}-${LEVEL}.pdf`);
 }
 function wsListening(id){ if(!pdfReady())return noPdf(); const c=LISTEN_COMP.find(x=>x.id===id); const p=pdfDoc("Listening worksheet");
   p.h1(c.title); p.text(c.kind,{size:9,color:120,gap:6}); nameLine(p);
   p.text("Instructions: your teacher will read the passage aloud twice. Listen, then answer.",{style:"italic",size:10,color:90,gap:6});
-  p.h2("Questions"); c.questions.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); if(q.type==="mcq"){ q.options.forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); } else { p.lines(1); } p.gap(3); });
+  p.h2("Questions"); c.questions.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); if(q.type==="mcq"){ q.options.forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); } else if(q.type==="tfng"){ TFNG.forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); } else { p.lines(1); } p.gap(3); });
   p.newpage(); p.h1("Teacher script & answer key"); p.h2("Read aloud (twice)"); p.text(htmlToText(c.script),{gap:6});
-  p.h2("Answers"); c.questions.forEach((q,i)=>{ const a=q.type==="mcq"?`${LET[q.answer]} — ${q.options[q.answer]}`:(Array.isArray(q.answer)?q.answer[0]:q.answer); p.text(`${i+1}.  ${a}`,{style:"bold"}); });
+  p.h2("Answers"); c.questions.forEach((q,i)=>{ const a=q.type==="mcq"?`${LET[q.answer]} — ${q.options[q.answer]}`:q.type==="tfng"?TFNG[ansIdx(q)]:(Array.isArray(q.answer)?q.answer[0]:q.answer); p.text(`${i+1}.  ${a}`,{style:"bold"}); });
   p.save(`iCAN-listening-${id}.pdf`);
 }
 function wsWritingLesson(id){ if(!pdfReady())return noPdf(); const f=findLesson(id); const l=f.lesson; const p=pdfDoc("Writing worksheet");
@@ -2750,6 +2916,616 @@ function wsSpeaking(i){ if(!pdfReady())return noPdf(); const s=allSpeaking()[i];
   p.h1(s.cat); if(s.note)p.text(s.note,{style:"italic",size:10,color:90,gap:6}); nameLine(p);
   s.prompts.forEach((q,n)=>{ p.text(`${n+1}. ${q}`,{style:"bold",gap:4}); });
   p.save(`iCAN-speaking-${i}.pdf`);
+}
+
+/* =========================================================================
+   DIAGNOSTIC TEST — pre (start of year) & post (end of year)
+   Sections: Vocabulary (10) · Grammar (10) · Reading (Part A + Part B) · Writing
+   Reading passages & essays use live high-school exam topics.
+   ========================================================================= */
+const MC=(q,options,answer,exp)=>({type:"mcq",q,options,answer,exp});
+const TF=(q,answer,exp)=>({type:"tfng",q,answer,exp});
+const DIAG={
+  pre:{
+    label:"Start-of-year diagnostic", short:"Start-of-year", blurb:"Best taken in the first weeks of the school year.",
+    vocab:[
+      MC("The new rule will ____ how students use phones at school.",["effect","affect","infect","afflict"],1,"‘Affect’ is the verb meaning to influence; ‘effect’ is usually a noun."),
+      MC("Scientists made an important ____ about how birds learn songs.",["discover","discovery","discovered","discoverable"],1,"A noun is needed after ‘an important’."),
+      MC("A word meaning the same as ‘huge’ is ____.",["tiny","narrow","enormous","brief"],2,"‘Enormous’ is a synonym for ‘huge’."),
+      MC("She spoke with great ____ during the debate.",["confident","confidence","confide","confidently"],1,"A noun follows ‘great’."),
+      MC("The opposite of ‘ancient’ is ____.",["historic","antique","old","modern"],3,"‘Modern’ is the opposite of ‘ancient’."),
+      MC("We must ____ energy to protect the environment.",["consume","conserve","convert","conceive"],1,"To ‘conserve’ energy means to save it."),
+      MC("A person who studies animals is a ____.",["geologist","botanist","zoologist","biographer"],2,"A zoologist studies animals; a botanist studies plants."),
+      MC("‘Reliable’ most nearly means ____.",["fragile","trustworthy","temporary","doubtful"],1,"‘Reliable’ means able to be trusted."),
+      MC("The story had a surprising ____.",["outline","outcome","outcast","outset"],1,"An ‘outcome’ is a result or ending."),
+      MC("Social media can ____ false information very quickly.",["sprain","spare","spread","sprout"],2,"Information ‘spreads’ when it travels widely.")
+    ],
+    grammar:[
+      MC("By the time we arrived, the film ____.",["already started","had already started","has already started","already starts"],1,"Past perfect for the earlier of two past actions."),
+      MC("If I ____ more time, I would travel the world.",["have","had","will have","having"],1,"The second conditional uses the past simple after ‘if’."),
+      MC("The report, ____ was written by students, won a prize.",["who","which","whom","whose"],1,"‘Which’ refers to a thing (the report)."),
+      MC("She is interested ____ learning Japanese.",["on","in","at","of"],1,"‘Interested in’ is the fixed preposition."),
+      MC("Neither the teacher nor the students ____ ready.",["was","were","is","has"],1,"With ‘neither…nor’, the verb agrees with the nearer subject (students)."),
+      MC("This is the ____ book I have ever read.",["more interesting","most interesting","interesting","interestingest"],1,"A superlative is needed after ‘the … I have ever’."),
+      MC("He suggested ____ earlier to avoid the traffic.",["to leave","leaving","leave","left"],1,"‘Suggest’ is followed by the -ing form."),
+      MC("The homework ____ by tomorrow morning.",["must finish","must be finished","must finishing","must to finish"],1,"Passive: the homework is finished by someone."),
+      MC("I haven't seen her ____ last year.",["for","since","from","during"],1,"‘Since’ is used with a point in time (last year)."),
+      MC("____ you help me with this, please?",["Could","Should","Must","May"],0,"‘Could you…’ is a polite request.")
+    ],
+    readingA:{ title:"Living online", topic:"Social media — pros and cons",
+      text:`<p>Twenty years ago, most friendships were kept alive face to face or by telephone. Today, a teenager can talk to dozens of people at once without leaving the bedroom. Social media has made the world feel smaller and faster: a photograph taken in one country can be seen everywhere within seconds, and a good idea can reach millions overnight.</p><p>But the same speed has a darker side. Because anyone can post anything, false stories spread just as quickly as true ones. Many young people also feel pressure to appear happy and successful online, comparing their ordinary lives to the polished images of others. Studies suggest that hours of scrolling can leave users feeling more anxious, not less.</p><p>Social media is neither a hero nor a villain. Like any powerful tool, its value depends on how carefully — and how kindly — we choose to use it.</p>`,
+      questions:[
+        MC("What is the main idea of the text?",["Social media is mostly harmful","Social media is a tool whose value depends on how we use it","Social media has no real effect on people","Social media should be banned for teenagers"],1,"The final paragraph says its value depends on how we use it."),
+        MC("According to the text, what spreads quickly online?",["Only true stories","Both true and false stories","Only photographs","Only good ideas"],1,"Paragraph 2: false stories spread as quickly as true ones."),
+        MC("Comparing ‘ordinary lives to the polished images of others’ makes people feel ____.",["proud","pressured and inadequate","bored","relaxed"],1,"This comparison creates pressure."),
+        MC("‘Neither a hero nor a villain’ means social media is ____.",["completely good","completely bad","neither simply good nor bad","unimportant"],2,"It is presented as a tool that is neither purely good nor bad.")
+      ]},
+    readingB:{ title:"Do animals have language?", topic:"Animal & bird communication", genre:"Science article",
+      text:`<p>Humans often assume that language belongs to people alone. Yet the more closely scientists study the natural world, the more they find that animals communicate in surprising and complex ways.</p><p>Honeybees, for example, perform a ‘waggle dance’ inside the hive. By moving in a figure-of-eight and shaking their bodies, a returning bee can tell others the direction and distance of a field of flowers. The angle of the dance points the way; the length of the waggle signals how far to fly.</p><p>Birds, too, do more than simply sing for pleasure. Many species use different alarm calls for different predators. A small bird called the black-capped chickadee adds extra ‘dee’ sounds to its call when a more dangerous enemy is near, almost like turning up the volume of a warning.</p><p>Some animals even appear to give each other names. Dolphins develop a ‘signature whistle’, a unique sound that works much like a personal name, and other dolphins can copy it to get that individual's attention.</p><p>Despite these discoveries, most scientists are careful. Animal communication, they argue, is not the same as human language. Bees cannot discuss the past, and birds cannot invent endless new sentences as humans do; animal signals tend to be fixed and tied to the present moment. Still, the gap may be narrower than we once believed.</p>`,
+      questions:[
+        MC("What does a honeybee's waggle dance communicate?",["The time of day","The direction and distance of flowers","The number of bees in the hive","How to build a hive"],1,"The angle and length of the dance signal direction and distance."),
+        MC("The black-capped chickadee changes its call to show ____.",["its age","how dangerous a predator is","the weather","its location"],1,"Extra ‘dee’ sounds signal a more dangerous enemy."),
+        TF("Dolphins use a ‘signature whistle’ that works like a personal name.","True","Stated directly in paragraph 4."),
+        TF("Scientists believe animal communication is exactly the same as human language.","False","The text says most scientists are careful — it is not the same."),
+        TF("Whales communicate using signature whistles.","Not Given","The text mentions dolphins, not whales.")
+      ]},
+    writing:{ prompt:"Technology in education: does it help or harm students? Give your opinion with clear reasons and examples.", minWords:150,
+      tips:["State your opinion clearly in the first sentence.","Give two reasons, each with an example.","Use linking words: firstly, however, for example, in conclusion.","Finish with a short conclusion."] }
+  },
+  post:{
+    label:"End-of-year diagnostic", short:"End-of-year", blurb:"Take this in semester 2 or 3 to measure your progress.",
+    vocab:[
+      MC("The scientist's argument was ____ and convincing.",["incoherent","coherent","irrelevant","vague"],1,"‘Coherent’ means clear and logical."),
+      MC("Renewable energy could ____ our dependence on oil.",["reproduce","reduce","reuse","refuse"],1,"‘Reduce’ means to make less."),
+      MC("‘Sustainable’ most nearly means ____.",["expensive","temporary","able to continue long-term","harmful"],2,"‘Sustainable’ = able to be maintained long-term."),
+      MC("AI may ____ many routine jobs in the future.",["animate","alienate","automate","allocate"],2,"To ‘automate’ is to do a task by machine."),
+      MC("A synonym for ‘preserve’ is ____.",["pollute","protect","produce","postpone"],1,"To ‘preserve’ ≈ to ‘protect’."),
+      MC("The two cultures share a common ____.",["hesitation","heritage","hierarchy","hindrance"],1,"‘Heritage’ = shared history and traditions."),
+      MC("Her essay was praised for its ____ analysis.",["insignificant","insightful","inflexible","indifferent"],1,"‘Insightful’ = showing deep understanding."),
+      MC("Cities must ____ to climate change.",["adopt","adapt","admire","address"],1,"To ‘adapt’ = to change to suit new conditions."),
+      MC("‘Innovative’ describes something ____.",["new and creative","old and traditional","simple and cheap","slow and careful"],0,"‘Innovative’ = introducing new ideas."),
+      MC("The data clearly ____ the scientist's theory.",["supposes","supports","suppresses","surpasses"],1,"Data ‘supports’ (backs up) a theory.")
+    ],
+    grammar:[
+      MC("____ harder, she would have passed the exam.",["If she studies","Had she studied","Did she study","Should she study"],1,"Third-conditional inversion: ‘Had she studied…’."),
+      MC("The new law requires that every citizen ____ registered.",["is","be","was","being"],1,"‘Requires that … be’ uses the subjunctive."),
+      MC("Not only ____ late, but he also forgot the documents.",["he was","was he","did he","he did"],1,"After ‘Not only’ at the start, we invert the subject and verb."),
+      MC("The project, ____ deadline is Friday, is nearly complete.",["which","whose","who","that"],1,"‘Whose’ shows possession (the project's deadline)."),
+      MC("By 2050, scientists predict that sea levels ____ significantly.",["will rise","will have risen","rise","had risen"],1,"Future perfect: ‘By 2050 … will have risen’."),
+      MC("I'd rather you ____ tell anyone about this.",["don't","didn't","won't","not"],1,"‘I'd rather you’ is followed by the past simple."),
+      MC("The more we learn, ____.",["more we realise how little we know","the more we realise how little we know","the most we realise","we realise more"],1,"The ‘the more…, the more…’ structure."),
+      MC("Hardly ____ when the rain started.",["we had arrived","had we arrived","we arrived","did we arrive"],1,"‘Hardly had we arrived when…’ (inversion)."),
+      MC("The committee was divided ____ the issue.",["of","over","to","by"],1,"‘Divided over an issue’ is the usual collocation."),
+      MC("It's high time we ____ action on climate change.",["take","took","will take","taking"],1,"‘It's high time we…’ is followed by the past simple.")
+    ],
+    readingA:{ title:"Learning beyond the classroom", topic:"Educational camping",
+      text:`<p>Some of the most valuable lessons a student learns never appear in a textbook. Educational camping — taking young people out of the classroom and into forests, deserts or mountains — has become popular in many schools for exactly this reason.</p><p>Away from screens and daily routines, students must cook, navigate and solve problems together. A teenager who has never lit a fire or read a map suddenly discovers skills they did not know they had. Just as importantly, they learn to rely on one another. Tasks that seem simple at home become real challenges in the open air, and shy students often surprise everyone, including themselves.</p><p>Critics point out that such trips can be costly and that not every family can afford them. Yet supporters argue that the confidence and teamwork gained are difficult to teach in any other way — and that these lessons last far longer than a single exam.</p>`,
+      questions:[
+        MC("What is the main idea of the text?",["Camping replaces all classroom learning","Camping teaches skills that are hard to learn in class","Camping is only about having fun","Camping is always affordable"],1,"The text stresses skills that are hard to teach in a classroom."),
+        MC("According to the text, what do students learn to do on camps?",["Rely on one another","Avoid each other","Use more screens","Read textbooks"],0,"Paragraph 2: they learn to rely on one another."),
+        MC("One criticism of camps mentioned is that they ____.",["are boring","can be expensive","are too short","teach nothing"],1,"Critics note the cost."),
+        MC("‘Shy students often surprise themselves’ suggests they ____.",["fail the tasks","discover hidden abilities","refuse to take part","prefer to stay home"],1,"They find abilities they didn't know they had.")
+      ]},
+    readingB:{ title:"Working with intelligent machines", topic:"AI for current & future careers", genre:"Opinion article",
+      text:`<p>For most of history, new technology replaced muscles. Machines lifted, dug and carried so that humans did not have to. Artificial intelligence is different: it is beginning to take over tasks that once required a trained mind, from reading medical scans to translating languages and writing computer code.</p><p>This shift worries many workers, and not without reason. Jobs built on routine — sorting documents, answering predictable questions, checking data for errors — are the easiest for software to learn. As these tasks are automated, some roles will certainly disappear.</p><p>Yet history offers a more complicated lesson. When cash machines were introduced, many predicted the end of bank workers. Instead, banks opened more branches and staff moved into advice and customer service. Technology destroyed some jobs but created others that no one had imagined.</p><p>The same pattern is likely with AI. The most valuable human skills may become the ones machines struggle to copy: creativity, ethical judgement, persuasion and the ability to work well with others. A doctor may spend less time reading scans and more time talking with patients; a lawyer may rely on software for research but still argue the case.</p><p>For today's students, the message is not to fear these machines but to prepare to work alongside them. Learning to use AI wisely — and developing the human qualities it cannot replace — may matter far more than competing against it.</p>`,
+      questions:[
+        MC("How is AI different from earlier technology?",["It replaces physical strength","It takes over tasks that once needed a trained mind","It is always cheaper","It never makes mistakes"],1,"AI differs by handling mental tasks, not muscle work."),
+        MC("The example of cash machines shows that technology ____.",["always destroys jobs","can create new jobs as well as destroy some","never affects jobs","is always feared"],1,"Banks created new roles even as some disappeared."),
+        TF("Routine jobs are the easiest for AI to take over.","True","Stated in paragraph 2."),
+        TF("The writer advises students to fear AI and avoid using it.","False","The writer urges working alongside AI, not fearing it."),
+        TF("AI has already replaced most doctors.","Not Given","The text says a doctor may spend less time on scans, not that doctors are replaced.")
+      ]},
+    writing:{ prompt:"Heritage homes and modern cities: should old houses be protected as cities grow, or replaced with modern buildings? Compare both sides and give your own view.", minWords:150,
+      tips:["Introduce the issue in one sentence.","Give one argument for protecting old homes and one for modern buildings.","Use comparison language: whereas, on the other hand, similarly.","State your own opinion in the conclusion."] }
+  },
+  mid:{
+    label:"Mid-year diagnostic", short:"Mid-year", blurb:"A different set for the middle of the year — useful to check progress between the start and end.",
+    vocab:[
+      MC("Plants and animals living in an area form an ____.",["ecosystem","ecology","economy","epidemic"],0,"An ‘ecosystem’ is a community of living things and their environment."),
+      MC("Energy from the sun is called ____ energy.",["soldier","solar","solid","sole"],1,"‘Solar’ relates to the sun."),
+      MC("A word meaning ‘to take in and use’ (information) is ____.",["absorb","absent","abandon","absurd"],0,"To ‘absorb’ = soak up / take in."),
+      MC("The opposite of ‘temporary’ is ____.",["permanent","pleasant","previous","peculiar"],0,"‘Permanent’ = lasting; opposite of ‘temporary’."),
+      MC("A synonym for ‘curious’ is ____.",["inquisitive","invisible","identical","intentional"],0,"‘Inquisitive’ = eager to learn."),
+      MC("Customs passed down over time are ____.",["traditions","transitions","translations","transactions"],0,"‘Traditions’ are inherited customs."),
+      MC("To make something larger is to ____ it.",["expand","expend","expel","expire"],0,"‘Expand’ = make bigger."),
+      MC("A scientist who studies weather is a ____.",["meteorologist","biologist","geologist","zoologist"],0,"A ‘meteorologist’ studies weather."),
+      MC("‘Generous’ most nearly means ____.",["giving","greedy","grumpy","gentle"],0,"‘Generous’ = willing to give."),
+      MC("To say sorry is to ____.",["apologise","analyse","approve","announce"],0,"To ‘apologise’ = say sorry.")
+    ],
+    grammar:[
+      MC("They ____ in this town since 2015.",["live","have lived","are living","lived"],1,"‘since 2015’ → present perfect."),
+      MC("If it ____ tomorrow, we'll stay home.",["rains","will rain","rained","would rain"],0,"First conditional: present simple after ‘if’."),
+      MC("She enjoys ____ in the park.",["to run","running","run","ran"],1,"‘enjoy’ + -ing."),
+      MC("This is ____ film I've ever seen.",["good","better","the best","best"],2,"Superlative with ‘the’."),
+      MC("The window ____ by the storm.",["broke","was broken","breaks","is breaking"],1,"Passive past → ‘was broken’."),
+      MC("You ____ touch that — it's dangerous.",["mustn't","don't have to","needn't","wouldn't"],0,"Prohibition → ‘mustn't’."),
+      MC("The man ____ car was stolen called the police.",["who","which","whose","whom"],2,"Possession → ‘whose’."),
+      MC("I ____ to the dentist last week.",["have gone","went","go","was going"],1,"‘last week’ → past simple."),
+      MC("She's good ____ drawing.",["in","on","at","of"],2,"‘good at’ + activity."),
+      MC("There isn't ____ milk left.",["many","much","a lot","few"],1,"Uncountable noun → ‘much’.")
+    ],
+    readingA:{ title:"Why we still tell stories", topic:"Communication · culture",
+      text:`<p>Long before writing existed, people sat around fires and told stories. Tens of thousands of years later, with libraries, cinemas and phones at our fingertips, we still cannot stop. Why does storytelling survive every change in technology?</p><p>One answer is that stories are how humans make sense of the world. A list of facts is hard to remember, but the same facts wrapped in a story — with characters, problems and endings — stay with us for years. Stories also let us feel what another person feels, practising kindness and understanding from the safety of our own chair.</p><p>The tools keep changing, from cave walls to glowing screens, but the need does not. Whatever comes next, it seems, we will find a way to tell each other stories.</p>`,
+      questions:[
+        MC("What is the writer's main point?",["Storytelling is dying out","Storytelling survives despite changing technology","Only books tell stories","Stories are hard to remember"],1,"Stories survive every change in technology."),
+        MC("Why are stories easier to remember than facts?",["they are shorter","they wrap facts in characters and problems","they are written down","they are true"],1,"A story makes facts memorable."),
+        MC("Stories help us ____, according to the text.",["feel what others feel","forget the past","avoid people","memorise lists"],0,"They let us practise empathy."),
+        MC("‘From cave walls to glowing screens’ shows that ____.",["stories have stopped","the tools change but storytelling continues","screens are bad","caves were better"],1,"The medium changes; the need to tell stories does not.")
+      ]},
+    readingB:{ title:"The clever crows", topic:"Animal communication & intelligence", genre:"Science article",
+      text:`<p>For a long time, the word 'birdbrain' was an insult, suggesting someone foolish. Scientists studying crows and their relatives, however, have discovered that these birds are among the most intelligent animals on Earth — and that the insult is badly misplaced.</p><p>Crows can solve puzzles that defeat many mammals. In careful experiments, they have bent wire into hooks to lift food from a tube, and used one tool to reach another in a planned sequence of steps. This suggests they are not simply copying; they appear to understand cause and effect.</p><p>They also communicate in surprisingly rich ways. Crows give different calls for different threats, recognise individual human faces, and even seem to share information about dangerous people with other crows that never saw the event themselves. A crow that has been treated badly by a particular person may later be 'scolded' by birds that were not present at all.</p><p>None of this means crows think exactly as people do. Their world is built around different senses and needs, and we should be careful about reading human motives into animal behaviour. Yet the evidence is humbling. Intelligence, it appears, is not a single ladder with humans at the top, but a branching tree on which many creatures have climbed their own way to remarkable heights.</p>`,
+      questions:[
+        MC("What did crows do in the experiments described?",["sang songs","bent wire into hooks and used tools in sequence","built nests","mimicked speech"],1,"They made and used tools in planned steps."),
+        MC("What does this tool use suggest about crows?",["they only copy","they seem to understand cause and effect","they cannot learn","they are slow"],1,"Planned tool use suggests understanding, not mere copying."),
+        TF("Crows can recognise individual human faces.","True","The text states crows recognise individual human faces."),
+        TF("The writer claims crows think in exactly the same way as humans.","False","The text warns against reading human motives into animal behaviour."),
+        TF("Crows are the most intelligent animals on Earth.","Not Given","The text says they are among the most intelligent, not the single most intelligent.")
+      ]},
+    writing:{ prompt:"Animals are far more intelligent than people once believed. Should this change how we treat them? Give your opinion with reasons and examples.", minWords:150,
+      tips:["State your opinion at the start.","Give two reasons, each with an example.","Use linking words: firstly, however, for example.","End with a conclusion."] }
+  }
+};
+const EXAMS=[
+ { label:"Foundation · Set A-1", level:"Core", topic:"Environment · Science",
+   vocab:[
+     MC("A ____ is a possible explanation that scientists test.",["conclusion","hypothesis","summary","opinion"],1,"A hypothesis is a testable explanation."),
+     MC("Clearing large areas of forest is called ____.",["reforestation","irrigation","deforestation","cultivation"],2,"Deforestation = removing forests."),
+     MC("Something that causes damage is ____.",["harmless","harmful","careful","useful"],1,"Harmful = causing damage."),
+     MC("A more formal word for ‘begin’ is ____.",["conclude","cancel","commence","continue"],2,"‘Commence’ = begin."),
+     MC("The opposite of ‘artificial’ is ____.",["plastic","natural","fake","synthetic"],1,"‘Natural’ is the opposite of ‘artificial’."),
+     MC("Species at risk of dying out are ____.",["dangerous","endanger","endangered","danger"],2,"‘Endangered’ species risk extinction."),
+     MC("To ‘____ resources’ means to use them.",["confuse","consume","conclude","contain"],1,"To ‘consume’ = to use up."),
+     MC("Information shown in charts is called ____.",["data","ideas","stories","beliefs"],0,"‘Data’ = information, often numerical."),
+     MC("To make an amount smaller is to ____ it.",["produce","reduce","induce","deduce"],1,"‘Reduce’ = make less."),
+     MC("A scientist who studies living things is a ____.",["geologist","chemist","biologist","physicist"],2,"A biologist studies life.")
+   ],
+   grammar:[
+     MC("Scientists ____ about climate change for decades.",["knew","have known","know","are knowing"],1,"Present perfect with ‘for decades’."),
+     MC("She isn't answering — she ____ be asleep.",["must","can","need","would"],0,"‘Must’ shows a logical deduction."),
+     MC("I'd rather ____ at home this evening.",["to stay","stay","staying","stayed"],1,"‘Would rather’ + bare infinitive."),
+     MC("You ____ revise tonight; the exam is tomorrow.",["would better","had better","better had","had best to"],1,"‘Had better’ + bare infinitive."),
+     MC("If we ____ plastic, the oceans will suffer.",["will keep using","keep using","kept using","would keep using"],1,"First conditional: present simple after ‘if’."),
+     MC("She avoided ____ the difficult question.",["to answer","answering","answer","answered"],1,"‘Avoid’ is followed by the -ing form."),
+     MC("He decided ____ the truth.",["telling","to tell","tell","told"],1,"‘Decide’ is followed by the to-infinitive."),
+     MC("She bought a ____ table.",["wooden old beautiful","beautiful old wooden","old beautiful wooden","beautiful wooden old"],1,"Adjective order: opinion–age–material."),
+     MC("The lecture was so ____ that I fell asleep.",["bored","boring","bore","boredom"],1,"‘-ing’ adjectives describe the cause of a feeling."),
+     MC("The scientist ____ discovered the cure won a prize.",["who","which","whose","whom"],0,"‘Who’ refers to a person as the subject."),
+     MC("The meeting is ____ Monday morning.",["on","in","at","by"],0,"‘On’ is used with days."),
+     MC("The report ____ next week.",["will publish","will be published","publishes","is publishing"],1,"Future passive: ‘will be + past participle’.")
+   ],
+   readingA:{ title:"A small change, a big difference", topic:"Environment — local vs global",
+     text:`<p>It is easy to feel powerless about the environment. The problems — melting ice, rising seas, vanishing forests — are global, while a single person seems very small. Yet history shows that large changes often begin with local action.</p><p>When one neighbourhood starts recycling, others notice and copy it. When a school plants trees or bans single-use plastic, students carry those habits home. These small steps rarely solve a global crisis on their own, but together they shift what people see as normal.</p><p>Critics say individual effort is a distraction from the real work of governments and industry. Supporters reply that the two are connected: citizens who change their own habits are far more likely to demand bigger changes from those in power. The local and the global, in other words, push each other forward.</p>`,
+     questions:[
+       MC("What is the main idea of the text?",["Individual action is pointless","Local action can lead to global change","Only governments matter","Recycling solves everything"],1,"Local steps shift what is normal and push bigger change."),
+       MC("Which example does the text give?",["A school banning single-use plastic","Building a new factory","Banning all cars","Closing schools"],0,"Schools planting trees or banning plastic."),
+       MC("Critics argue that individual effort is ____.",["the only solution","a distraction from real work","always successful","illegal"],1,"Critics call it a distraction from governments and industry."),
+       MC("‘The two are connected’ means ____.",["local and global efforts support each other","governments do nothing","people should not recycle","industry is unimportant"],0,"Personal change makes people demand bigger change.")
+     ]},
+   readingB:{ title:"How we learned to see the invisible", topic:"Science now & then", genre:"Science article",
+     text:`<p>For most of human history, illness was a mystery. People blamed bad air, bad luck or punishment from the gods, because the true causes were simply too small to see. Without a way to look closer, even the cleverest doctors were guessing.</p><p>The first real breakthrough came in the seventeenth century, when early microscopes revealed a hidden world. A Dutch cloth merchant, Antonie van Leeuwenhoek, ground tiny glass lenses and became the first person to observe living bacteria, which he called ‘animalcules’. Few believed him at first; the idea that invisible creatures filled our water and bodies seemed absurd.</p><p>Two centuries later, scientists such as Louis Pasteur and Robert Koch proved that these microbes could cause disease. This ‘germ theory’ transformed medicine. Doctors began to wash their hands and sterilise instruments, and deaths from infection fell dramatically.</p><p>Today, the tools are almost unimaginably more powerful. Electron microscopes can show individual viruses, and scientists can read the genetic code of a microbe in hours. During recent outbreaks, researchers shared the structure of a new virus within days — a task that would once have taken years, if it had been possible at all.</p><p>Yet the basic lesson has not changed. Progress in medicine has always depended on our ability to see what was previously hidden, and then to act on what we find.</p>`,
+     questions:[
+       MC("Before microscopes, people explained illness by ____.",["studying bacteria","bad air, luck or the gods","reading genetic codes","washing their hands"],1,"The causes were too small to see, so they blamed other things."),
+       MC("Germ theory led doctors to ____.",["ignore hygiene","wash hands and sterilise instruments","stop using microscopes","blame the gods"],1,"Hand-washing and sterilising reduced infection deaths."),
+       TF("Antonie van Leeuwenhoek was the first person to observe living bacteria.","True","Stated directly in paragraph 2."),
+       TF("Everyone immediately believed Leeuwenhoek's discovery.","False","‘Few believed him at first.’"),
+       TF("Louis Pasteur invented the first microscope.","Not Given","The text credits early microscopes to the 17th century and Leeuwenhoek, not Pasteur.")
+     ]},
+   writing:{ prompt:"Many environmental problems are global, but some people say change must start locally. Explain whether you think individuals can make a real difference to the environment.", minWords:150,
+     tips:["State your opinion clearly at the start.","Give two reasons with examples.","Use linking words: firstly, however, for example.","End with a conclusion."] }
+ },
+ { label:"Advanced Challenge · Set B-1", level:"Challenge", topic:"Heritage · Language",
+   vocab:[
+     MC("Buildings of historical value form a nation's ____.",["heredity","heritage","hierarchy","heresy"],1,"‘Heritage’ = inherited history and culture."),
+     MC("To knock down an old building is to ____ it.",["diminish","demote","demolish","detain"],2,"‘Demolish’ = pull down."),
+     MC("To keep something safe for the future is to ____ it.",["preserve","preview","presume","prevent"],0,"‘Preserve’ = protect for the future."),
+     MC("Children acquire language with remarkable ____.",["easily","ease","easing","easy"],1,"A noun (‘ease’) follows ‘remarkable’."),
+     MC("A formal word for the difference between two things is ____.",["contract","contrast","contact","content"],1,"‘Contrast’ = a striking difference."),
+     MC("Something passed down through generations is ____.",["inhabited","inherited","inhibited","inhaled"],1,"‘Inherited’ = received from ancestors."),
+     MC("The scientific study of language is ____.",["logistics","genetics","linguistics","statistics"],2,"‘Linguistics’ = the study of language."),
+     MC("To change a building's use is to ____ it.",["repossess","repurpose","replay","report"],1,"‘Repurpose’ = adapt for a new use."),
+     MC("Very early childhood speech is called ____ speech.",["elegant","infant","distant","constant"],1,"‘Infant’ relates to babies/young children."),
+     MC("An adjective meaning ‘happening slowly over time’ is ____.",["sudden","gradual","instant","brief"],1,"‘Gradual’ = step by step over time.")
+   ],
+   grammar:[
+     MC("If she ____ harder last year, she would be in a top class now.",["had worked","worked","works","would work"],0,"Mixed conditional: past condition, present result."),
+     MC("Hardly ____ the lesson begun when the bell rang.",["did","had","has","was"],1,"‘Hardly had … when …’ (inversion)."),
+     MC("____ was the noise that we couldn't sleep.",["So","Such","Very","Too"],1,"‘Such was the noise that…’."),
+     MC("The ____ of old homes protects our heritage.",["preserve","preserving","preservation","preserved"],2,"Nominalisation: ‘the preservation of’."),
+     MC("I'd sooner walk ____ wait an hour for the bus.",["than","then","that","to"],0,"‘Would sooner … than …’."),
+     MC("My grandmother, ____ grew up here, remembers the old market.",["who","which","that","whom"],0,"Non-defining relative clause uses ‘who’ with commas."),
+     MC("He's not here yet; he ____ missed the train.",["must","must have","should","will have"],1,"‘Must have + past participle’ = past deduction."),
+     MC("____ by tourists, the old town has been carefully restored.",["Visiting","Visited","To visit","Having visit"],1,"Passive participle clause: ‘Visited by tourists…’."),
+     MC("It is essential that every child ____ access to education.",["has","have","had","having"],1,"Subjunctive: ‘that every child have’."),
+     MC("I ____ believe that heritage matters — strongly.",["am","do","have","was"],1,"Emphatic ‘do’ + base verb adds emphasis."),
+     MC("____ was in 1971 that the country was founded.",["It","There","That","This"],0,"It-cleft for emphasis: ‘It was in 1971 that…’."),
+     MC("We must look ____ our traditions and protect them.",["after","for","into","up"],0,"‘Look after’ = take care of.")
+   ],
+   readingA:{ title:"Old walls, new lives", topic:"Heritage & housing over time",
+     text:`<p>Walk through almost any old city and you will see two stories side by side. On one street stand houses built a century ago, with thick walls, shaded courtyards and small windows designed to keep out the heat. A few steps away rise towers of glass and steel, cooled by electricity and reaching towards the sky.</p><p>The older homes were shaped by their climate and by the materials people had nearby. They used little energy because they had none to spare. Modern buildings, by contrast, offer space, light and comfort, but they often depend heavily on air conditioning and imported materials.</p><p>Many architects now argue that the future lies in learning from the past. By combining traditional design — natural shade, thick walls, good airflow — with modern technology, we may build homes that are both comfortable and kinder to the planet.</p>`,
+     questions:[
+       MC("What is the main idea of the text?",["Old homes are always better","We can combine old wisdom with new technology","Modern towers are useless","Cities should stop growing"],1,"The final paragraph argues for combining old and new."),
+       MC("How did old homes stay cool?",["Air conditioning","Thick walls and small windows","Glass and steel","Imported materials"],1,"Thick walls, shade and small windows kept out heat."),
+       MC("Modern buildings often depend on ____.",["natural shade","air conditioning","courtyards","thick walls"],1,"They rely on air conditioning and imported materials."),
+       MC("‘Two stories side by side’ refers to ____.",["two books","old and new buildings together","two families","two streets only"],1,"It means old and new architecture standing together.")
+     ]},
+   readingB:{ title:"How children crack the code of language", topic:"Child talk & human language", genre:"Non-fiction article",
+     text:`<p>By the age of five, most children can hold a conversation, tell a story and invent sentences they have never heard before. They do this without formal lessons, simply by living among people who talk. How they manage such a feat is one of the great puzzles of science.</p><p>Babies begin by listening. Even before birth, they grow used to the rhythm of their mother's language. In their first year, they babble, testing sounds long before they understand words. Slowly, single words appear — usually names for people and familiar objects — followed by short combinations such as ‘more milk’ or ‘daddy gone’.</p><p>What amazes researchers is that children do not simply copy adults. They produce forms they could never have heard, saying ‘goed’ instead of ‘went’ or ‘foots’ instead of ‘feet’. These ‘mistakes’ are actually a sign of intelligence: the child has worked out a rule and is applying it everywhere, before learning the exceptions.</p><p>Some scientists argue that humans are born with a special capacity for grammar, a kind of mental blueprint. Others believe children learn language as they learn everything else, by noticing patterns. The debate is far from settled.</p><p>What is clear is that language learning is most powerful in early childhood. A skill that an adult struggles for years to master, a small child absorbs almost effortlessly — a reminder of how extraordinary the ordinary human mind really is.</p>`,
+     questions:[
+       MC("Children mainly learn language by ____.",["formal lessons","living among people who talk","reading books","memorising rules"],1,"They learn simply by living among speakers."),
+       MC("Saying ‘goed’ instead of ‘went’ shows the child ____.",["is not intelligent","has worked out a rule and applies it everywhere","cannot learn language","is copying adults exactly"],1,"It shows the child has internalised a rule."),
+       TF("Babies become used to their language's rhythm before they are born.","True","Stated in paragraph 2."),
+       TF("Children learn language only by copying adults exactly.","False","The text says they produce forms they could never have heard."),
+       TF("Girls learn to speak faster than boys.","Not Given","The text does not compare girls and boys.")
+     ]},
+   writing:{ prompt:"Some people argue that we should protect local traditions, while others say we should focus on global progress. Discuss both views and give your own opinion.", minWords:150,
+     tips:["Introduce the issue in one sentence.","Give one argument for each side.","Use comparison language: whereas, on the other hand.","State your opinion in the conclusion."] }
+ },
+ { label:"Foundation · Set A-2", level:"Core", topic:"Technology · Social media",
+   vocab:[
+     MC("To share a post widely online is to make it ____.",["viral","virtual","vital","violent"],0,"A post that spreads fast 'goes viral'."),
+     MC("False information spread online is called ____.",["information","misinformation","formation","reformation"],1,"‘Mis-’ means wrong or false."),
+     MC("A synonym for ‘connect’ is ____.",["leak","link","lock","lack"],1,"To 'link' = to connect."),
+     MC("The opposite of ‘online’ is ____.",["outline","ongoing","offline","oncoming"],2,"‘Offline’ is the opposite of ‘online’."),
+     MC("To protect your personal data online is to protect your ____.",["priority","privacy","property","prairie"],1,"‘Privacy’ = keeping personal data safe."),
+     MC("Done by a machine without humans, a task is ____.",["automatic","autograph","autumn","author"],0,"‘Automatic’ = self-operating."),
+     MC("A person who follows your account is a ____.",["flower","founder","follower","folder"],2,"A 'follower' follows your posts."),
+     MC("To check facts before believing them is to be ____.",["comical","critical","classical","chemical"],1,"Being 'critical' = evaluating carefully."),
+     MC("A word meaning ‘able to be trusted’ is ____.",["reliable","readable","reasonable","removable"],0,"‘Reliable’ = trustworthy."),
+     MC("Spending too long online can ____ your sleep.",["affect","effect","infect","inject"],0,"‘Affect’ (verb) = influence.")
+   ],
+   grammar:[
+     MC("She has been online ____ three hours.",["since","for","from","while"],1,"‘for’ + a length of time."),
+     MC("If you click that link, you ____ a virus.",["get","will get","would get","got"],1,"First conditional → 'will get'."),
+     MC("I look forward to ____ from you.",["hear","to hear","hearing","heard"],2,"After 'look forward to' → -ing."),
+     MC("He told me ____ my password with anyone.",["don't share","not to share","to not sharing","sharing not"],1,"Reported command → 'not to share'."),
+     MC("This app is ____ than the old one.",["more easy","easier","easiest","most easy"],1,"Short adjective comparative → 'easier'."),
+     MC("The photo ____ yesterday.",["uploaded","was uploaded","uploads","is uploading"],1,"Passive past → 'was uploaded'."),
+     MC("____ you mind turning off notifications?",["Could","Would","Should","Must"],1,"‘Would you mind…’ is the polite request."),
+     MC("She's the influencer ____ video went viral.",["who","which","whose","whom"],2,"Possession → 'whose'."),
+     MC("Neither the post nor the comments ____ true.",["was","were","is","being"],1,"Agree with the nearer subject (comments)."),
+     MC("By next year, the app ____ a million users.",["will reach","will have reached","reaches","reached"],1,"Future perfect."),
+     MC("It was on Friday ____ the news spread.",["when","that","which","what"],1,"It-cleft uses 'that'."),
+     MC("You shouldn't believe everything ____ you read online.",["what","that","who","whose"],1,"Defining relative for a thing → 'that'.")
+   ],
+   readingA:{ title:"The like button", topic:"Social media development", genre:"Informative text",
+     text:`<p>It is hard to imagine social media without the 'like' button, yet it did not always exist. When it first appeared, it was meant to be a simple, friendly way to show approval without writing a comment. Within a few years, it had quietly reshaped how millions of people behaved online.</p><p>The button made approval measurable. Suddenly a photo or a thought carried a public score, and many users — especially young ones — began to judge their posts, and sometimes themselves, by that number. Designers noticed that the small burst of pleasure from a notification kept people coming back, again and again.</p><p>Some of the engineers who built these features have since expressed regret, arguing that a tool meant to spread friendliness also spread anxiety. Others insist it simply reflects human nature: we have always wanted to be liked. The truth, as usual, probably lies somewhere in between.</p>`,
+     questions:[
+       MC("What was the like button originally meant to do?",["measure popularity","show approval simply, without a comment","sell advertising","reduce screen time"],1,"It was a simple way to show approval."),
+       MC("How did it change behaviour?",["people wrote longer comments","people judged posts and themselves by the number","people stopped posting","people left social media"],1,"Approval became a public, measurable score."),
+       MC("Why do notifications keep people coming back?",["they are required","they give a small burst of pleasure","they are slow","they are silent"],1,"The small pleasure is habit-forming."),
+       MC("‘The truth lies somewhere in between’ shows the writer is ____.",["completely against it","balanced, seeing both sides","sure it is harmless","uninterested"],1,"The writer weighs both regret and human nature.")
+     ]},
+   readingB:{ title:"The town that switched off its phones", topic:"Technology & lifestyle", genre:"Feature article",
+     text:`<p>For one week each summer, the small mountain town of Vellac tries an unusual experiment: it asks every resident to switch off their smartphones. Shops display 'no-screen' signs, the school runs outdoor classes, and a single landline in the town square handles emergencies. The idea began as a joke among neighbours; it has since become the town's most famous tradition.</p><p>At first, organisers admit, the week is difficult. People reach instinctively for phones that are not there, and parents worry about being unreachable. But by the third or fourth day, something shifts. Streets that were usually quiet fill with conversation, children invent games, and neighbours who had not spoken in years sit together in the evenings.</p><p>Researchers who study the town are careful not to overstate the results. A week is short, they note, and Vellac is small and unusually close-knit; what works in a mountain village may not work in a busy city. Nor does anyone suggest abandoning technology that brings real benefits, from medicine to education.</p><p>Yet the experiment clearly touches something. Visitors arrive each year to take part, and many leave determined to change their own habits, even slightly. The lesson, residents say, is not that phones are evil, but that attention is precious — and that deciding, deliberately, where to place it can change how a community feels.</p>`,
+     questions:[
+       MC("What happens in Vellac for one week each summer?",["a music festival","residents switch off their smartphones","a phone sale","an election"],1,"Residents turn off smartphones for a week."),
+       MC("How do people feel at the start of the week?",["relaxed","it is difficult; they reach for absent phones","bored and asleep","angry"],1,"The first days are hard."),
+       TF("By the third or fourth day, streets fill with more conversation.","True","The text describes streets filling with conversation."),
+       TF("The researchers claim the experiment would work everywhere.","False","They warn that a small, close-knit village differs from a busy city."),
+       TF("Visitors who join the experiment are paid to attend.","Not Given","The text says visitors arrive, but never mentions payment.")
+     ]},
+   writing:{ prompt:"Social media: does it bring people closer together or push them apart? Give your opinion with reasons and examples.", minWords:150,
+     tips:["State your opinion clearly at the start.","Give two reasons with examples.","Use linking words.","End with a conclusion."] }
+ },
+ { label:"Advanced Challenge · Set B-2", level:"Challenge", topic:"Communication · Local vs global",
+   vocab:[
+     MC("A formal word for ‘talk between people’ is ____.",["dialogue","diagram","dialect","diameter"],0,"‘Dialogue’ = conversation/exchange."),
+     MC("Something understood by people everywhere is ____.",["universal","unusual","unstable","unspoken"],0,"‘Universal’ = applying to all."),
+     MC("To make an idea simpler to understand is to ____ it.",["complicate","clarify","conceal","contradict"],1,"‘Clarify’ = make clearer."),
+     MC("A ____ is a regional form of a language.",["dialect","diocese","diameter","decimal"],0,"‘Dialect’ = a regional variety of a language."),
+     MC("Information passed without words, e.g. gestures, is ____ communication.",["non-verbal","invisible","irregular","informal"],0,"‘Non-verbal’ = without words."),
+     MC("A word meaning ‘existing in many places worldwide’ is ____.",["global","glossy","gradual","genuine"],0,"‘Global’ = worldwide."),
+     MC("To keep a custom alive is to ____ it.",["preserve","perceive","persuade","perform"],0,"‘Preserve’ = keep/maintain."),
+     MC("An ____ is a strong local or regional accent or trait.",["identity","entity","irony","agency"],0,"Local 'identity' marks a community."),
+     MC("To gradually disappear is to ____.",["fade","fold","flee","forge"],0,"‘Fade’ = slowly disappear."),
+     MC("A ____ solution works for one specific place.",["localised","localise","locally","locator"],0,"‘Localised’ (adj) = adapted to a place.")
+   ],
+   grammar:[
+     MC("____ had the meeting ended than arguments began.",["No sooner","Hardly","Scarcely","Rarely"],0,"‘No sooner … than …’."),
+     MC("If the language ____ taught at home, it would survive.",["is","were","was being","had been"],1,"Second conditional → 'were'."),
+     MC("____ it not been for translators, the talks would have failed.",["Had","Has","Have","Having"],0,"Inverted third conditional: ‘Had it not been for…’."),
+     MC("The elders insisted that the custom ____ respected.",["is","be","was","being"],1,"Subjunctive after 'insist that' → 'be'."),
+     MC("It is the local dialect ____ gives the town its character.",["who","which","that","what"],2,"It-cleft → 'that'."),
+     MC("Rarely ____ such a clear example of cultural change.",["we see","do we see","we do see","seeing"],1,"Inversion after 'Rarely' → 'do we see'."),
+     MC("The ____ of minority languages is a global concern.",["disappear","disappearing","disappearance","disappeared"],2,"Nominalisation → 'disappearance'."),
+     MC("She speaks three languages, ____ is impressive.",["which","that","what","who"],0,"Non-defining clause about the whole idea → 'which'."),
+     MC("I'd rather we ____ both traditions than lose one.",["keep","kept","keeping","to keep"],1,"‘would rather we’ + past tense → 'kept'."),
+     MC("Not until he travelled ____ how diverse the world was.",["he realised","did he realise","he did realise","realising"],1,"Inversion after 'Not until' → 'did he realise'."),
+     MC("____ surprised me was how similar the two cultures were.",["That","It","What","Which"],2,"What-cleft subject → 'What…'."),
+     MC("The festival, ____ dates back centuries, attracts visitors worldwide.",["that","which","who","what"],1,"Non-defining about a thing → 'which'.")
+   ],
+   readingA:{ title:"When a language dies", topic:"Local vs global · communication", genre:"Opinion article",
+     text:`<p>Every two weeks, somewhere in the world, a language falls silent forever as its last speaker dies. Of the roughly seven thousand languages alive today, experts warn that nearly half may vanish within a century, pushed aside by a handful of global tongues used in business, science and the internet.</p><p>Some argue this is simply progress. If everyone shares a few common languages, they say, we can trade, travel and cooperate more easily; perhaps a single world language would even reduce conflict. Why mourn the loss of words almost no one speaks?</p><p>Others see it very differently. A language, they argue, is not just a set of words but a way of seeing — a store of stories, jokes, plants, weather and wisdom that exists nowhere else. When it disappears, a unique window on human experience closes for good. The challenge, perhaps, is not to choose between the local and the global, but to find room for both.</p>`,
+     questions:[
+       MC("How often does a language reportedly die?",["every day","about every two weeks","every year","never"],1,"The text says roughly every two weeks."),
+       MC("Why do some people see language loss as progress?",["shared languages ease trade and cooperation","languages are useless","it saves money","it is unavoidable"],0,"Common languages make trade and travel easier."),
+       MC("Why do others want to protect small languages?",["they are easy to learn","each holds a unique way of seeing the world","they are global","they are written down"],1,"A language stores unique stories and knowledge."),
+       MC("The writer's final suggestion is to ____.",["choose global over local","find room for both local and global","ban global languages","stop learning languages"],1,"‘Room for both’, not a choice between them.")
+     ]},
+   readingB:{ title:"Do other animals have accents?", topic:"Animal & human communication", genre:"Science feature",
+     text:`<p>We take it for granted that a person from one region may sound different from someone a few hundred kilometres away. What is more surprising is that humans may not be alone in this. A growing body of research suggests that some animals, too, develop local 'accents'.</p><p>Sperm whales, which live in groups across the world's oceans, produce patterns of clicks known as codas. Researchers have found that whales in different regions use subtly different coda patterns — and that calves seem to learn the local style from the adults around them, rather than being born knowing it. In other words, the difference is cultural, not merely genetic.</p><p>Birdsong tells a similar story. The same species of sparrow can sing recognisably different 'tunes' in different valleys, and young birds raised in one area grow up to sing like their neighbours. Even some whales' songs change over the years, with new versions spreading from one population to another like a popular melody.</p><p>None of this means animals have language in the full human sense. Their signals remain limited and tied to immediate needs, and no sparrow can discuss yesterday or imagine tomorrow. Yet the discovery of animal 'accents' blurs a line we once thought was sharp. Communication, it seems, is not a single human invention but a vast spectrum — and we are only beginning to learn where we sit upon it.</p>`,
+     questions:[
+       MC("What does the article say about sperm whale codas?",["they are identical worldwide","they differ by region and are learned, not innate","they are random noise","they are written down"],1,"Coda patterns differ regionally and are learned."),
+       MC("How do young sparrows come to sing local 'tunes'?",["they are born knowing them","they learn from neighbouring birds","they copy whales","they never change"],1,"They grow up singing like their neighbours."),
+       TF("The article claims animal communication is exactly like human language.","False","It says their signals remain limited and tied to immediate needs."),
+       TF("Sperm whale calves learn their local coda style from adults.","True","The text says calves learn the local style, so it is cultural."),
+       TF("Dolphins were the first animals found to have accents.","Not Given","The article discusses whales and sparrows, not which animal was 'first'.")
+     ]},
+   writing:{ prompt:"Should the world try to keep many different languages alive, or is it better to share a few global languages? Discuss both views and give your opinion.", minWords:150,
+     tips:["Introduce the issue in one sentence.","Give one argument for each side.","Use comparison language: whereas, on the other hand.","State your opinion in the conclusion."] }
+ }
+];
+let CURRENT_EXAM=null, EXAM_TIMER=null;
+function diagMCQ(q,n,name){ const opts=q.type==="tfng"?TFNG:q.options; const tag=q.type==="tfng"?` <span style="font-size:.72rem;color:var(--muted);font-weight:400">— True / False / Not Given</span>`:"";
+  return `<div class="q"><div class="qhead">${n}. ${q.q}${tag}</div>${opts.map((o,j)=>`<label class="opt"><input type="radio" name="${name}" value="${j}"><span>${o}</span></label>`).join('')}</div>`; }
+function diagRadio(name){ const el=document.querySelector(`input[name="${name}"]:checked`); return el?+el.value:-1; }
+function diagScore(arr,prefix){ let c=0; const rev=arr.map((q,i)=>{ const ans=ansIdx(q); const got=diagRadio(prefix+i); const ok=got===ans; if(ok)c++; const opts=q.type==="tfng"?TFNG:q.options; return {q:q.q, your:got>=0?opts[got]:"(blank)", correct:opts[ans], exp:q.exp, ok}; }); return {c, max:arr.length, rev}; }
+function certBand(p){ return p>=80?"Outstanding":p>=50?"At-level":"Emerging"; }
+
+/* ---- countdown timer ---- */
+function clearExamTimer(){ if(EXAM_TIMER){ clearInterval(EXAM_TIMER); EXAM_TIMER=null; } }
+function startCountdown(minutes, onZero){
+  clearExamTimer(); let remain=Math.round(minutes*60);
+  function tick(){ const el=document.getElementById('examClock');
+    if(el){ const m=Math.floor(remain/60), s=remain%60; el.textContent=`${m}:${String(s).padStart(2,'0')}`; el.parentElement.style.background = remain<=60?'var(--coral)':(remain<=300?'#d98324':'var(--ink)'); }
+    if(remain<=0){ clearExamTimer(); if(onZero)onZero(); return; }
+    remain--; }
+  tick(); EXAM_TIMER=setInterval(tick,1000);
+}
+
+/* ---- generic exam runner (used by diagnostic and full-length exams) ---- */
+function runExam(ex, ctx){
+  CURRENT_EXAM={ex,ctx}; clearExamTimer();
+  const sec=(t,sub)=>`<h2 style="font-family:'Fraunces';font-size:1.45rem;margin:26px 0 4px;color:var(--ink)">${t}</h2><p style="color:var(--muted);font-size:.88rem;margin:0 0 12px">${sub}</p>`;
+  const qh=(arr,prefix)=>arr.map((q,i)=>diagMCQ(q,i+1,prefix+i)).join('');
+  const timer = ctx.minutes ? `<div class="exam-timer">⏱ <span id="examClock">${ctx.minutes}:00</span></div>` : '';
+  app().innerHTML=`
+   <div class="wrap screen">
+     <button class="back" onclick="go('${ctx.backRoute}')">← Back</button>
+     <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+       <h1 style="font-size:1.9rem;margin:0">${ex.label}</h1>${timer}
+     </div>
+     <p style="color:var(--muted)">${ctx.minutes?`You have <b>${ctx.minutes} minutes</b>. The test submits itself automatically when time runs out.`:'Answer every question, then press Submit.'}</p>
+     ${sec('1 · Vocabulary','Choose the option that best completes each sentence.')}${qh(ex.vocab,'d_v_')}
+     ${sec('2 · Grammar','Choose the grammatically correct option.')}${qh(ex.grammar,'d_g_')}
+     ${sec('3 · Reading','Read each text, then answer the questions.')}
+     <div class="card"><div class="meta" style="margin-bottom:4px">Part A · ${ex.readingA.topic}</div><h3 style="font-size:1.15rem;margin:0 0 8px">${ex.readingA.title}</h3>${ex.readingA.text}</div>
+     ${qh(ex.readingA.questions,'d_ra_')}
+     <div class="card"><div class="meta" style="margin-bottom:4px">Part B · ${ex.readingB.topic} · ${ex.readingB.genre}</div><h3 style="font-size:1.15rem;margin:0 0 8px">${ex.readingB.title}</h3>${ex.readingB.text}</div>
+     ${qh(ex.readingB.questions,'d_rb_')}
+     ${sec('4 · Writing','Plan briefly, then write your essay in the box.')}
+     <div class="card"><p style="font-weight:600;margin:0 0 6px">${ex.writing.prompt}</p>
+       <ul style="color:var(--muted);font-size:.86rem;margin:0 0 10px;padding-left:18px">${ex.writing.tips.map(t=>`<li>${t}</li>`).join('')}</ul>
+       <textarea id="diagEssay" style="width:100%;min-height:180px;padding:12px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit" placeholder="Write about ${ex.writing.minWords} words…" oninput="document.getElementById('diagWC').textContent=this.value.trim().split(/\\s+/).filter(Boolean).length"></textarea>
+       <p style="font-size:.82rem;color:var(--muted);margin:6px 0 0"><span id="diagWC">0</span> words · aim for about ${ex.writing.minWords}</p></div>
+     <button class="btn" style="width:100%;margin-top:18px" onclick="gradeExam()">Submit test →</button>
+   </div>`;
+  window.scrollTo(0,0);
+  if(ctx.minutes) startCountdown(ctx.minutes, ()=>{ alert("Time is up — your test has been submitted automatically."); gradeExam(); });
+}
+function gradeExam(){
+  if(!CURRENT_EXAM)return; const {ex,ctx}=CURRENT_EXAM; CURRENT_EXAM=null; clearExamTimer();
+  const V=diagScore(ex.vocab,'d_v_'),G=diagScore(ex.grammar,'d_g_'),RA=diagScore(ex.readingA.questions,'d_ra_'),RB=diagScore(ex.readingB.questions,'d_rb_');
+  const rC=RA.c+RB.c, rM=RA.max+RB.max;
+  const essay=(val('diagEssay')||"").trim(); const words=essay?essay.split(/\s+/).filter(Boolean).length:0;
+  const tot=V.c+G.c+rC, max=V.max+G.max+rM, pct=Math.round(tot/max*100);
+  saveResult({skill:ctx.skill, activity:ex.label, score:tot, max, percent:pct,
+    detail:`Vocab ${V.c}/${V.max} · Grammar ${G.c}/${G.max} · Reading ${rC}/${rM} · Essay ${words}w: ${essay.slice(0,800)}`});
+  showExamResults(ex,ctx,{V,G,RA,RB,rC,rM,tot,max,pct,essay,words});
+}
+function showExamResults(ex,ctx,r){
+  const bar=(label,c,m,color)=>{ const p=m?Math.round(c/m*100):0; return `<div class="prow"><div class="lab"><b>${label}</b><span>${c}/${m} · ${p}%</span></div><div class="pbar"><span style="width:${p}%;background:${color}"></span></div></div>`; };
+  const review=(title,s)=>`<h4 style="margin:14px 0 6px">${title}</h4>`+s.rev.map((x,i)=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div style="font-size:.9rem">${x.ok?'✅':'❌'} ${i+1}. ${x.q}</div><div style="font-size:.82rem;color:var(--muted)">Your answer: ${esc(x.your)} · Correct: <b>${esc(x.correct)}</b>. ${x.exp||''}</div></div>`).join('');
+  const band=certBand(r.pct);
+  const cert = ctx.cert ? `<div class="card" style="margin-top:16px"><h3 style="font-size:1.15rem">🏆 Your certificate — ${band}</h3>
+     <p style="font-size:.85rem;color:var(--muted);margin:0 0 10px">Auto-scored sections only. ${SESSION&&SESSION.name?'':'<b>Log in with your full name to personalise the certificate.</b>'}</p>
+     <div id="certBox">${certificateHTML({name:(SESSION&&SESSION.name)||'Student', title:ex.label, score:r.tot, max:r.max, percent:r.pct, band, date:new Date().toLocaleDateString()})}</div></div>` : '';
+  app().innerHTML=`
+   <div class="wrap screen">
+     <button class="back" onclick="go('${ctx.backRoute}')">← Back</button>
+     <h1 style="font-size:2rem">${ex.label} — results</h1>
+     <div class="card">
+       <div class="statline">
+         <div class="stat"><div class="n">${r.pct}%</div><div class="l">auto-scored</div></div>
+         <div class="stat"><div class="n">${r.tot}/${r.max}</div><div class="l">correct</div></div>
+         <div class="stat"><div class="n" style="font-size:1.1rem;font-family:inherit;font-weight:700">${band}</div><div class="l">band</div></div>
+         <div class="stat"><div class="n">${r.words}</div><div class="l">essay words</div></div>
+       </div>
+       ${bar('Vocabulary',r.V.c,r.V.max,'#2b2f63')}${bar('Grammar',r.G.c,r.G.max,'#0c8a72')}${bar('Reading',r.rC,r.rM,'#8B5CF6')}
+       <p style="font-size:.85rem;color:var(--muted);margin-top:8px">✍️ The essay isn't auto-scored — your teacher reads and marks it. It has been saved.</p>
+     </div>
+     ${cert}
+     <div class="card" style="margin-top:16px"><h3 style="font-size:1.15rem">Review your answers</h3>${review('Vocabulary',r.V)}${review('Grammar',r.G)}${review('Reading — Part A',r.RA)}${review('Reading — Part B',r.RB)}</div>
+     <div class="card" style="margin-top:16px"><h3 style="font-size:1.15rem">Your essay</h3><p style="white-space:pre-wrap;color:var(--slate)">${esc(r.essay)||'(no essay written)'}</p></div>
+     <button class="btn ghost" style="margin-top:14px" onclick="go('dashboard')">Back to home</button>
+   </div>`;
+  window.scrollTo(0,0);
+}
+function wsExam(ex, fileTag){ if(!pdfReady())return noPdf(); const p=pdfDoc("Full-length test");
+  p.h1(ex.label); nameLine(p);
+  const sectionMcq=(title,arr)=>{ p.h2(title); arr.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); (q.type==="tfng"?TFNG:q.options).forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); p.gap(2); }); };
+  sectionMcq("Section 1 · Vocabulary",ex.vocab); sectionMcq("Section 2 · Grammar",ex.grammar);
+  p.h2("Section 3 · Reading");
+  p.text(`Part A — ${ex.readingA.title} (${ex.readingA.topic})`,{style:"bold",gap:2}); p.text(htmlToText(ex.readingA.text),{gap:4});
+  ex.readingA.questions.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); (q.type==="tfng"?TFNG:q.options).forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); p.gap(2); });
+  p.gap(4); p.text(`Part B — ${ex.readingB.title} (${ex.readingB.topic})`,{style:"bold",gap:2}); p.text(htmlToText(ex.readingB.text),{gap:4});
+  ex.readingB.questions.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); (q.type==="tfng"?TFNG:q.options).forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); p.gap(2); });
+  p.h2("Section 4 · Writing"); p.text(ex.writing.prompt,{style:"bold",gap:3}); p.text(`Write about ${ex.writing.minWords} words.`,{size:10,color:90,gap:4}); p.lines(14);
+  p.newpage(); p.h1("Answer key");
+  const key=(t,arr)=>{ p.h2(t); arr.forEach((q,i)=>{ const a=ansIdx(q); const opts=q.type==="tfng"?TFNG:q.options; p.text(`${i+1}.  ${LET[a]} — ${opts[a]}`,{style:"bold"}); if(q.exp)p.text(`     ${q.exp}`,{size:10,color:90}); }); };
+  key("Vocabulary",ex.vocab); key("Grammar",ex.grammar); key("Reading — Part A",ex.readingA.questions); key("Reading — Part B",ex.readingB.questions);
+  p.h2("Writing"); p.text("Marked by the teacher using the writing rubric.",{size:10,color:90});
+  p.save(`iCAN-${fileTag}.pdf`);
+}
+/* diagnostic uses the generic engine */
+function renderDiag(v){ runExam(DIAG[v], {key:'diag_'+v, minutes:35, backRoute:'diagnostic', skill:'Diagnostic', cert:true}); }
+function wsDiag(v){ wsExam(DIAG[v], 'diagnostic-'+v); }
+
+/* ---- certificate image (canvas → PNG, right-click or button to save) ---- */
+function makeCertificate(o){
+  const theme = o.band==="Outstanding" ? {a:"#b8860b",b:"#f3d98b",ink:"#5a4500",seal:"#caa12e"}
+              : o.band==="At-level"   ? {a:"#0c8a72",b:"#8fd6c6",ink:"#073d33",seal:"#0c8a72"}
+              :                          {a:"#2b5fa6",b:"#a9c6ec",ink:"#10294d",seal:"#2b5fa6"};
+  const W=1200,H=850,c=document.createElement('canvas'); c.width=W;c.height=H; const x=c.getContext('2d');
+  x.fillStyle="#fffdf7"; x.fillRect(0,0,W,H);
+  x.strokeStyle=theme.a; x.lineWidth=16; x.strokeRect(30,30,W-60,H-60);
+  x.strokeStyle=theme.b; x.lineWidth=4; x.strokeRect(54,54,W-108,H-108);
+  x.textAlign="center";
+  x.fillStyle=theme.a; x.font="bold 34px Georgia"; x.fillText("iCAN · English Practice", W/2, 140);
+  x.fillStyle="#777"; x.font="italic 26px Georgia"; x.fillText("Certificate of Achievement", W/2, 185);
+  x.fillStyle=theme.a; x.font="bold 52px Georgia"; x.fillText(o.band.toUpperCase(), W/2, 270);
+  x.fillStyle="#555"; x.font="24px Georgia"; x.fillText("This certifies that", W/2, 350);
+  let nf=58; x.font="bold "+nf+"px Georgia"; while(x.measureText(o.name).width>W-200 && nf>26){ nf-=2; x.font="bold "+nf+"px Georgia"; }
+  x.fillStyle=theme.ink; x.fillText(o.name, W/2, 420);
+  x.strokeStyle=theme.b; x.lineWidth=2; x.beginPath(); x.moveTo(W/2-260,440); x.lineTo(W/2+260,440); x.stroke();
+  x.fillStyle="#555"; x.font="24px Georgia"; x.fillText("has completed", W/2, 490);
+  let tf=30; x.font="bold "+tf+"px Georgia"; while(x.measureText(o.title).width>W-260 && tf>18){ tf-=2; x.font="bold "+tf+"px Georgia"; }
+  x.fillStyle=theme.ink; x.fillText(o.title, W/2, 535);
+  x.fillStyle=theme.a; x.font="bold 30px Georgia"; x.fillText(`Score: ${o.percent}%   (${o.score}/${o.max})`, W/2, 600);
+  x.fillStyle="#777"; x.font="22px Georgia"; x.fillText(o.date, W/2, 650);
+  // seal
+  x.beginPath(); x.arc(W/2, 730, 46, 0, Math.PI*2); x.fillStyle=theme.seal; x.fill();
+  x.fillStyle="#fff"; x.font="bold 20px Georgia"; x.fillText("iCAN", W/2, 737);
+  return c.toDataURL("image/png");
+}
+function certificateHTML(o){
+  let url; try{ url=makeCertificate(o); }catch(e){ return `<p class="note">Certificate image couldn't be generated in this browser.</p>`; }
+  const fname=`iCAN-certificate-${(o.name||'student').replace(/\s+/g,'-')}.png`;
+  return `<div style="text-align:center">
+    <img src="${url}" alt="${o.band} certificate for ${esc(o.name)}" style="max-width:100%;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.15)">
+    <div style="margin-top:10px"><a class="btn" href="${url}" download="${fname}">⬇ Download certificate</a></div>
+    <p style="font-size:.8rem;color:var(--muted);margin-top:6px">You can also right-click (or press &amp; hold) the image and choose “Save image”.</p>
+  </div>`;
+}
+
+/* =========================================================================
+   GRAMMAR LAB — explanation + examples + MCQ & gap-fill practice, by level
+   ========================================================================= */
+const GAP=(q,answer,exp)=>({type:"gap",q,answer,exp});
+const GRAMMAR={
+  beginner:{ label:"Beginner", topics:[
+    { id:"g_pres", title:"Present simple vs continuous",
+      explain:"Use the <b>present simple</b> for habits, routines and facts (<i>I play tennis on Fridays</i>). Use the <b>present continuous</b> (am/is/are + -ing) for actions happening now or around now (<i>I am studying for exams</i>).",
+      examples:["Habit: She <b>walks</b> to school every day.","Now: Look — it <b>is raining</b>!","Fact: Water <b>boils</b> at 100°C."],
+      questions:[ MC("Every morning she ____ a cup of tea.",["is drinking","drinks","drink","drank"],1,"A daily habit → present simple."),
+        MC("Be quiet! The baby ____.",["sleeps","is sleeping","sleep","slept"],1,"Happening now → present continuous."),
+        MC("The sun ____ in the east.",["is rising","rises","rise","rose"],1,"A general fact → present simple."),
+        GAP("Right now I ____ (read) a great book.",["am reading","i am reading","'m reading"],"Action happening now → am + -ing."),
+        GAP("They usually ____ (play) football on Sundays.",["play"],"A routine → present simple.") ] },
+    { id:"g_past", title:"Past simple vs present perfect",
+      explain:"Use the <b>past simple</b> for finished actions at a specific past time (<i>I visited Rome in 2019</i>). Use the <b>present perfect</b> (have/has + past participle) for past actions connected to now, or with <i>just, already, yet, ever, since, for</i>.",
+      examples:["Finished time: I <b>saw</b> her yesterday.","Connected to now: I <b>have</b> just <b>finished</b>.","With 'since': She <b>has lived</b> here since 2010."],
+      questions:[ MC("I ____ my keys — I can't find them anywhere.",["lost","have lost","lose","was losing"],1,"The result matters now → present perfect."),
+        MC("We ____ to Paris last summer.",["have gone","went","have been","go"],1,"Specific finished time → past simple."),
+        MC("She ____ here since 2010.",["lived","has lived","lives","is living"],1,"'since' → present perfect."),
+        GAP("I have already ____ (finish) my work.",["finished"],"Present perfect → have + past participle."),
+        GAP("They ____ (arrive) an hour ago.",["arrived"],"'an hour ago' = finished time → past simple.") ] },
+    { id:"g_art", title:"Articles: a / an / the",
+      explain:"Use <b>a/an</b> for a single, non-specific thing (<i>a book, an apple</i> — 'an' before a vowel <i>sound</i>). Use <b>the</b> for something specific or already mentioned. Use <b>no article</b> for general plurals and uncountables.",
+      examples:["<b>A</b> dog ran past. <b>The</b> dog was huge.","She is <b>an</b> honest person (vowel sound).","I love music (general — no article)."],
+      questions:[ MC("I saw ____ elephant at the zoo.",["a","an","the","—"],1,"'elephant' begins with a vowel sound → 'an'."),
+        MC("Can you pass me ____ salt, please?",["a","an","the","—"],2,"Specific salt → 'the'."),
+        MC("____ honesty is important.",["A","An","The","—"],3,"General uncountable noun → no article."),
+        GAP("She plays ____ piano beautifully.",["the"],"Musical instruments take 'the'."),
+        GAP("He is ____ engineer.",["an"],"'engineer' starts with a vowel sound → 'an'.") ] },
+    { id:"g_comp", title:"Comparatives & superlatives",
+      explain:"Short adjectives add <b>-er/-est</b> (tall → taller → tallest). Longer ones use <b>more/most</b> (more careful). Some are irregular (good → better → best; bad → worse → worst).",
+      examples:["This box is <b>heavier</b> than that one.","It was <b>the most interesting</b> film I've seen.","Her work is <b>better</b> than mine."],
+      questions:[ MC("Today is ____ than yesterday.",["hot","hotter","hottest","more hot"],1,"Short adjective comparative → 'hotter'."),
+        MC("It's ____ day of the year.",["the longer","the longest","longest","more long"],1,"Superlative with 'the'."),
+        MC("This question is ____ than the last one.",["difficulter","more difficult","most difficult","difficult"],1,"Long adjective → 'more difficult'."),
+        GAP("My brother is ____ (good) at chess than me.",["better"],"Irregular comparative of 'good'."),
+        GAP("This is ____ (bad) film I have ever seen.",["the worst"],"Irregular superlative of 'bad' with 'the'.") ] }
+  ]},
+  intermediate:{ label:"Intermediate", topics:[
+    { id:"g_modal", title:"Modal verbs",
+      explain:"<b>Obligation:</b> must / have to. <b>Prohibition:</b> mustn't. <b>No obligation:</b> don't have to. <b>Advice:</b> should. <b>Deduction:</b> must (sure true), can't (sure false), might/may (possible).",
+      examples:["You <b>must</b> wear a seatbelt (rule).","He <b>can't</b> be home — his car is gone (deduction).","You <b>should</b> rest (advice)."],
+      questions:[ MC("You ____ smoke here — it's a hospital.",["mustn't","don't have to","shouldn't have","might not"],0,"Prohibition → 'mustn't'."),
+        MC("She's not answering; she ____ be busy.",["can't","must","should","would"],1,"Deduction (probably true) → 'must'."),
+        MC("That ____ be true — I saw it myself.",["must","can't","mustn't","needn't"],1,"Sure it's false → 'can't'."),
+        GAP("You ____ (advice: 'should' + see) a dentist.",["should see"],"Advice → 'should' + base verb."),
+        GAP("We ____ (no obligation) hurry; there's time.",["don't have to","do not have to"],"No obligation → 'don't have to'.") ] },
+    { id:"g_cond", title:"Conditionals: first & second",
+      explain:"<b>First conditional</b> (real future): If + present simple, will + verb. <b>Second conditional</b> (unreal present): If + past simple, would + verb (use <i>were</i> for all persons).",
+      examples:["If we <b>miss</b> the bus, we<b>'ll be</b> late (first).","If I <b>were</b> you, I <b>would</b> apologise (second).","If you <b>heat</b> ice, it <b>melts</b> (general truth)."],
+      questions:[ MC("If it rains tomorrow, we ____ the trip.",["cancel","will cancel","would cancel","cancelled"],1,"Real future → first conditional 'will'."),
+        MC("If I ____ rich, I would buy a house by the sea.",["am","was","were","will be"],2,"Hypothetical → second conditional 'were'."),
+        MC("She would help you if she ____ here.",["is","were","will be","has been"],1,"Second conditional → 'were'."),
+        GAP("If you study hard, you ____ (pass) the exam.",["will pass"],"First conditional → will + base verb."),
+        GAP("If I ____ (have) more time, I would travel.",["had"],"Second conditional → past simple in the if-clause.") ] },
+    { id:"g_ging", title:"Gerund vs infinitive",
+      explain:"Some verbs take the <b>-ing form</b> (enjoy, avoid, finish, suggest, mind, can't help). Others take the <b>to-infinitive</b> (want, decide, hope, plan, agree). After a <b>preposition</b> we use -ing.",
+      examples:["I enjoy <b>reading</b>.","She decided <b>to leave</b>.","He's good at <b>cooking</b> (after preposition)."],
+      questions:[ MC("I can't help ____ at his jokes.",["to laugh","laughing","laugh","laughed"],1,"'can't help' + -ing."),
+        MC("They agreed ____ the contract.",["signing","to sign","sign","signed"],1,"'agree' + to-infinitive."),
+        MC("She's interested in ____ Arabic.",["learn","to learn","learning","learns"],2,"After a preposition → -ing."),
+        GAP("Would you mind ____ (open) the window?",["opening"],"'mind' + -ing."),
+        GAP("We hope ____ (see) you soon.",["to see"],"'hope' + to-infinitive.") ] },
+    { id:"g_rel", title:"Relative clauses: defining vs non-defining",
+      explain:"<b>Defining</b> clauses say which one and use no commas (<i>The man who called is my uncle</i>). <b>Non-defining</b> clauses add extra information, use commas, and never use 'that' (<i>My uncle, who lives in Cairo, called</i>).",
+      examples:["The book <b>that</b> I borrowed was great (defining).","Cairo, <b>which</b> is huge, is the capital (non-defining).","The student <b>whose</b> phone rang…"],
+      questions:[ MC("The woman ____ lives next door is a doctor.",["which","who","whose","where"],1,"Person, subject → 'who'."),
+        MC("Paris, ____ is in France, is beautiful.",["that","which","who","where"],1,"Non-defining about a thing → 'which', not 'that'."),
+        MC("That's the boy ____ bag was stolen.",["who","which","whose","whom"],2,"Possession → 'whose'."),
+        GAP("This is the house ____ I grew up. (one word, place)",["where"],"Refers to a place → 'where'."),
+        GAP("My teacher, ____ is very kind, helped me. (one word)",["who"],"Non-defining, person → 'who'.") ] }
+  ]},
+  advanced:{ label:"Advanced", topics:[
+    { id:"g_mixed", title:"Mixed conditionals",
+      explain:"Mix the times. <b>Past condition → present result:</b> If + past perfect, would + verb (<i>If I had saved, I would be rich now</i>). <b>Present condition → past result:</b> If + past simple, would have + participle.",
+      examples:["If she <b>had studied</b> medicine, she <b>would be</b> a doctor today.","If he <b>weren't</b> so shy, he <b>would have asked</b> her."],
+      questions:[ MC("If I had taken that job, I ____ in London now.",["would live","would have lived","will live","lived"],0,"Past condition → present result: 'would live'."),
+        MC("If she ____ more careful, she wouldn't have crashed.",["were","had been","is","would be"],0,"Present trait → past result: 'were'."),
+        MC("If we had left earlier, we ____ here by now.",["would be","would have been","will be","were"],0,"Past action → present result: 'would be'."),
+        GAP("If I ____ (not eat) so much, I wouldn't feel sick now.",["hadn't eaten","had not eaten"],"Past cause, present result → past perfect."),
+        GAP("If he were taller, he ____ (be chosen — passive) for the team last week.",["would have been chosen"],"Present trait, past result → would have been + participle.") ] },
+    { id:"g_inv", title:"Inversion (negative adverbials)",
+      explain:"For emphasis, a negative/limiting adverbial at the start triggers <b>inversion</b> (auxiliary before subject): Never, Rarely, Seldom, Hardly…when, No sooner…than, Not only…but also, Little.",
+      examples:["<b>Never have</b> I seen such a mess.","<b>Hardly had</b> we arrived <b>when</b> it rained.","<b>Not only did</b> he win, but he also broke the record."],
+      questions:[ MC("Never ____ such kindness.",["I have seen","have I seen","I saw","did I saw"],1,"Inversion after 'Never' → 'have I seen'."),
+        MC("No sooner had we sat down ____ the phone rang.",["when","than","then","that"],1,"'No sooner … than …'."),
+        MC("Not only ____ late, but he also forgot the tickets.",["he was","was he","did he was","he did"],1,"Inversion after 'Not only' → 'was he'."),
+        GAP("Rarely ____ I been so happy. (one word)",["have"],"Inversion: 'Rarely have I been…'."),
+        GAP("Little ____ they know how lucky they were. (one word)",["did"],"'Little did they know…' (inversion).") ] },
+    { id:"g_cleft", title:"Cleft sentences (emphasis)",
+      explain:"Cleft sentences split one idea into two clauses for emphasis. <b>It-cleft:</b> <i>It was John who paid</i>. <b>What-cleft:</b> <i>What I need is a holiday</i>.",
+      examples:["<b>It was</b> in 1969 <b>that</b> humans landed on the Moon.","<b>What</b> she wants <b>is</b> more time.","<b>It's</b> your help <b>that</b> we need."],
+      questions:[ MC("____ was Sara who solved the problem.",["It","There","That","What"],0,"It-cleft → 'It was Sara who…'."),
+        MC("____ I really enjoy is a long walk.",["That","It","What","Which"],2,"What-cleft → 'What I enjoy is…'."),
+        MC("It was at midnight ____ the alarm rang.",["when","that","which","what"],1,"It-cleft uses 'that'."),
+        GAP("____ surprised everyone was his honesty. (one word)",["what"],"What-cleft subject → 'What…'."),
+        GAP("It ____ his attitude that annoyed me. (one word, past)",["was"],"It-cleft past → 'It was … that'.") ] },
+    { id:"g_rather", title:"would rather · had better · would sooner",
+      explain:"<b>'d rather / 'd sooner</b> + bare infinitive (<i>I'd rather stay</i>). With a different subject, use the <b>past tense</b> (<i>I'd rather you stayed</i>). <b>'d better</b> + bare infinitive for strong advice or warning.",
+      examples:["I'<b>d rather</b> walk than drive.","I'<b>d rather</b> you <b>didn't</b> smoke here.","You'<b>d better</b> hurry."],
+      questions:[ MC("I'd rather ____ at home tonight.",["to stay","staying","stay","stayed"],2,"'would rather' + bare infinitive."),
+        MC("You'd better ____ now or you'll miss the train.",["leaving","to leave","leave","left"],2,"'had better' + bare infinitive."),
+        MC("I'd rather you ____ tell anyone.",["don't","didn't","won't","not"],1,"Different subject → past tense: 'didn't'."),
+        GAP("She'd sooner read ____ watch television.",["than"],"'would sooner … than …'."),
+        GAP("We'd better ____ (book) the tickets early.",["book"],"'had better' + bare infinitive.") ] },
+    { id:"g_nom", title:"Nominalization & emphasis",
+      explain:"<b>Nominalization</b> turns verbs/adjectives into nouns for a formal style (decide → the decision; preserve → preservation). The emphatic <b>do/does/did</b> stresses a positive verb (<i>I do understand</i>).",
+      examples:["Verb: They <b>decided</b> quickly → Noun: Their <b>decision</b> was quick.","I <b>do</b> appreciate your help.","The <b>preservation</b> of heritage matters."],
+      questions:[ MC("Choose the noun form of 'analyse':",["analytical","analyse","analysis","analysing"],2,"Noun form → 'analysis'."),
+        MC("Add emphasis: 'I ____ believe you.'",["am","do","have","did"],1,"Emphatic 'do' + base verb."),
+        MC("Formal noun for 'to improve':",["improve","improving","improvement","improved"],2,"Noun → 'improvement'."),
+        GAP("Verb 'preserve' → noun: the ____ of old homes.",["preservation"],"Nominalization of 'preserve'."),
+        GAP("Add emphasis (past): 'She ____ warn us, but we ignored her.'",["did"],"Emphatic 'did' + base verb.") ] }
+  ]}
+};
+function grDone(){ return (Store.get("ican_gr_done")||{})[sid()] || []; }
+function markGrDone(id){ const all=Store.get("ican_gr_done")||{}; const a=all[sid()]||[]; if(!a.includes(id)){ a.push(id); all[sid()]=a; Store.set("ican_gr_done",all); } }
+function grLessonCount(){ let n=0; Object.values(GRAMMAR).forEach(l=>n+=l.topics.length); return n; }
+function findGr(id){ for(const k of Object.keys(GRAMMAR)){ const t=GRAMMAR[k].topics.find(x=>x.id===id); if(t) return {levelKey:k, level:GRAMMAR[k], topic:t}; } return null; }
+function gradeGrammar(id,title){ markQuiz(id,'Grammar',title); markGrDone(id); }
+function wsGrammar(id){ if(!pdfReady())return noPdf(); const f=findGr(id); const t=f.topic; const p=pdfDoc("Grammar worksheet");
+  p.h1(t.title); p.text(f.level.label,{size:9,color:120,gap:6}); nameLine(p);
+  p.h2("How it works"); p.text(htmlToText(t.explain),{gap:4});
+  p.h2("Examples"); t.examples.forEach(e=>p.text("•  "+htmlToText(e)));
+  p.h2("Practice"); t.questions.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); if(q.type==="mcq"){ q.options.forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); } else { p.lines(1); } p.gap(2); });
+  p.newpage(); p.h1("Answer key"); t.questions.forEach((q,i)=>{ let a; if(q.type==="mcq")a=`${LET[q.answer]} — ${q.options[q.answer]}`; else a=Array.isArray(q.answer)?q.answer[0]:q.answer; p.text(`${i+1}.  ${a}`,{style:"bold"}); if(q.exp)p.text(`     ${q.exp}`,{size:10,color:90}); });
+  p.save(`iCAN-grammar-${id}.pdf`);
 }
 
 /* boot */
