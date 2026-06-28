@@ -209,6 +209,27 @@ table.data tr:nth-child(even){background:#fff}
 .stat .n{font-family:"Fraunces"; font-size:1.7rem; color:var(--ink); line-height:1}
 .stat .l{font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-top:4px}
 .exam-timer{background:var(--ink); color:#fff; font-weight:700; padding:8px 16px; border-radius:50px; font-size:1.05rem; font-variant-numeric:tabular-nums; transition:background .4s}
+.hero{display:flex; justify-content:space-between; align-items:center; gap:18px; background:linear-gradient(120deg,#15183A 0%,#2b2f63 45%,#0c8a72 100%); color:#fff; border-radius:22px; padding:26px 28px; margin:6px 0 20px; box-shadow:0 12px 34px rgba(21,24,58,.22)}
+.hero-text h1{font-family:'Fraunces'; font-size:2.1rem; margin:0 0 6px; color:#fff}
+.hero-text p{margin:0; opacity:.9; font-size:.96rem; max-width:560px}
+.hero-text b{color:#fff}
+.hero-badge{font-family:'Fraunces'; font-weight:800; font-size:1.7rem; background:#FACC3D; color:#15183A; width:84px; height:84px; min-width:84px; border-radius:20px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.2); transform:rotate(-4deg)}
+@media(max-width:560px){ .hero-badge{display:none} .hero-text h1{font-size:1.7rem} }
+.type-target{background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:16px 18px; font-family:'Courier New',monospace; font-size:1.12rem; line-height:2.05; letter-spacing:.3px; margin:10px 0; color:var(--slate)}
+.type-target span.ok{color:var(--teal-dk)}
+.type-target span.bad{background:#ffd9d9; color:#b00020; border-radius:3px}
+.type-target span.cur{background:var(--ink); color:#fff; border-radius:3px}
+.type-input{width:100%; font-family:'Courier New',monospace; font-size:1.05rem; padding:12px; border:1.5px solid var(--line); border-radius:12px; color:var(--ink)}
+.type-stats{display:flex; gap:14px; font-size:.92rem; color:var(--muted)} .type-stats b{color:var(--ink); font-variant-numeric:tabular-nums}
+.cv-toolbar{display:flex; flex-direction:column; gap:8px; margin:8px 0}
+.cv-tools,.cv-opts{display:flex; gap:6px; flex-wrap:wrap; align-items:center}
+.cv-tool,.cv-btn{border:1.5px solid var(--line); background:#fff; border-radius:8px; padding:6px 10px; font-size:.82rem; cursor:pointer; font-family:inherit; color:var(--ink)}
+.cv-tool.on{background:var(--ink); color:#fff; border-color:var(--ink)}
+.cv-btn.primary{background:var(--teal); color:#fff; border-color:var(--teal)}
+.cv-sw{width:22px; height:22px; border-radius:50%; border:2px solid #fff; box-shadow:0 0 0 1px var(--line); cursor:pointer; padding:0}
+.cv-swatches{display:inline-flex; gap:5px; align-items:center}
+#cvColor{width:34px; height:30px; border:1px solid var(--line); border-radius:6px; background:#fff; cursor:pointer; padding:2px}
+#cvSize{width:90px}
 </style>
 </head>
 <body>
@@ -1294,21 +1315,26 @@ const ROUTES = {
   dashboard(){
     app().innerHTML = `
     <div class="wrap screen">
-      <div class="section-title">
-        <div>
-          <h1 style="font-size:2.4rem">Welcome${SESSION&&SESSION.name?', '+esc(SESSION.name.split(' ')[0]):''} 👋</h1>
-          <p style="color:var(--muted);margin:6px 0 0">Start with a <b>course</b> to learn step by step, or jump into the <b>quizzes</b> to practise.</p>
+      <div class="hero">
+        <div class="hero-text">
+          <h1>Hello${SESSION&&SESSION.name?', '+esc(SESSION.name.split(' ')[0]):''} 👋</h1>
+          <p>Welcome to <b>iCAN</b> — read, write, design, and grow your English. Start a <b>course</b>, take an <b>exam</b>, or build a skill below.</p>
         </div>
+        <div class="hero-badge">iCAN</div>
       </div>
 
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin:6px 0 22px">
-        <button onclick="go('diagnostic')" style="flex:1;min-width:240px;text-align:left;border:none;cursor:pointer;background:linear-gradient(135deg,#15183A,#0c8a72);color:#fff;border-radius:16px;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:14px">
-          <span><span style="font-size:1.1rem;font-weight:700">🧭 Diagnostic test</span><br><span style="opacity:.85;font-size:.88rem">Check your level now, and again later to see progress.</span></span>
-          <span style="background:rgba(255,255,255,.2);padding:8px 14px;border-radius:50px;font-weight:600;white-space:nowrap">Take →</span>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin:0 0 22px">
+        <button onclick="go('diagnostic')" style="flex:1;min-width:200px;text-align:left;border:none;cursor:pointer;background:linear-gradient(135deg,#15183A,#0c8a72);color:#fff;border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <span><span style="font-size:1.05rem;font-weight:700">🧭 Diagnostic</span><br><span style="opacity:.85;font-size:.82rem">Check your level</span></span>
+          <span style="background:rgba(255,255,255,.2);padding:6px 12px;border-radius:50px;font-weight:600;white-space:nowrap">Take →</span>
         </button>
-        <button onclick="go('exams')" style="flex:1;min-width:240px;text-align:left;border:none;cursor:pointer;background:linear-gradient(135deg,#8B5CF6,#E6464B);color:#fff;border-radius:16px;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:14px">
-          <span><span style="font-size:1.1rem;font-weight:700">🎓 Full-length exams</span><br><span style="opacity:.85;font-size:.88rem">Timed, all-skills exams with a certificate.</span></span>
-          <span style="background:rgba(255,255,255,.2);padding:8px 14px;border-radius:50px;font-weight:600;white-space:nowrap">Start →</span>
+        <button onclick="go('exams')" style="flex:1;min-width:200px;text-align:left;border:none;cursor:pointer;background:linear-gradient(135deg,#8B5CF6,#E6464B);color:#fff;border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <span><span style="font-size:1.05rem;font-weight:700">🎓 Full exams</span><br><span style="opacity:.85;font-size:.82rem">Timed · with certificate</span></span>
+          <span style="background:rgba(255,255,255,.2);padding:6px 12px;border-radius:50px;font-weight:600;white-space:nowrap">Start →</span>
+        </button>
+        <button onclick="go('typing')" style="flex:1;min-width:200px;text-align:left;border:none;cursor:pointer;background:linear-gradient(135deg,#0c8a72,#2b5fa6);color:#fff;border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <span><span style="font-size:1.05rem;font-weight:700">⌨️ Typing Tutor</span><br><span style="opacity:.85;font-size:.82rem">Speed · accuracy · certificate</span></span>
+          <span style="background:rgba(255,255,255,.2);padding:6px 12px;border-radius:50px;font-weight:600;white-space:nowrap">Type →</span>
         </button>
       </div>
 
@@ -1381,6 +1407,26 @@ const ROUTES = {
     </div>`;
   },
   examTest(i){ runExam(EXAMS[+i], {key:'exam_'+i, minutes:40, backRoute:'exams', skill:'Full exam', cert:true}); },
+
+  /* ---------------- TYPING TUTOR ---------------- */
+  typing(){
+    const grp=(lvl,label,desc)=>{ const items=TYPING_TEXTS.filter(t=>t.level===lvl); return `
+      <h2 style="font-family:'Fraunces';font-size:1.4rem;margin:22px 0 2px;color:var(--ink)">${label}</h2>
+      <p style="color:var(--muted);font-size:.86rem;margin:0 0 10px">${desc}</p>
+      <div class="grid c2">${items.map(t=>`<button onclick="startTyping('${t.id}')" style="text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer">
+        <b style="color:var(--ink)">${t.title}</b><br><span style="font-size:.82rem;color:var(--muted)">${t.genre} · ${t.text.split(/\s+/).length} words</span></button>`).join('')}</div>`; };
+    app().innerHTML=`
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Home</button>
+      <h1 style="font-size:2.2rem">⌨️ Typing Tutor</h1>
+      <p style="color:var(--muted);max-width:700px">Learn touch typing and race yourself. Type each text exactly; you'll see your <b>speed (WPM)</b>, <b>accuracy</b> and <b>time</b> live, and earn a certificate showing your level — from <i>Struggling</i> to <i>Fantastic</i>.</p>
+      ${grp('short','Short texts (warm-up)','About 30–60 words — quick bursts, including numbers and punctuation.')}
+      ${grp('medium','Medium texts','About 90–120 words across different genres.')}
+      ${grp('long','Long texts (challenge)','About 300 words — build stamina and a steady rhythm.')}
+      <p class="note" style="margin-top:16px">Levels: Struggling (under 10 WPM) · Emerging (10–30) · Proficient (31–49) · Pre-advanced (50–60) · Advanced (61–89) · Fantastic (90+).</p>
+    </div>`;
+  },
+  typingTest(id){ startTyping(id); },
 
   /* ---------------- GRAMMAR LAB ---------------- */
   grammar(){
@@ -1844,8 +1890,12 @@ const ROUTES = {
       <div class="field"><label>Your design plan (saves automatically)</label>
         <textarea id="dPlan" style="min-height:130px" oninput="saveDraft('design_${id}')" placeholder="Write your plan: the problem, your idea, the parts, how it works…">${esc(draft)}</textarea></div>
 
-      <h3 class="sub">3 · Design it with these tools</h3>
-      <p style="color:var(--muted);margin-top:2px;font-size:.9rem">Optional helpers — pick what suits your idea:</p>
+      <h3 class="sub">3 · Create it here (draw your design)</h3>
+      <p style="color:var(--muted);margin-top:2px;font-size:.9rem">Use the tools to sketch, label, add text and pictures — then download your design and attach it below.</p>
+      <div id="designCanvas"></div>
+
+      <h3 class="sub">4 · More design tools (optional)</h3>
+      <p style="color:var(--muted);margin-top:2px;font-size:.9rem">External helpers for bigger projects — pick what suits your idea:</p>
       <div class="grid c2">
         ${d.tools.map(t=>{const T=TOOLS[t]; return `<div class="item-row" style="align-items:flex-start">
           <div><div class="t" style="font-weight:600;color:var(--ink)">${T.name}</div><div class="meta">${T.use}</div></div>
@@ -1853,16 +1903,17 @@ const ROUTES = {
         </div>`;}).join('')}
       </div>
 
-      <h3 class="sub">4 · Make &amp; describe your artefact</h3>
+      <h3 class="sub">5 · Make &amp; describe your artefact</h3>
       <div class="field"><label>Describe what you made (and how it works)</label>
         <textarea id="dDesc" style="min-height:110px" placeholder="What did you build/design? What does each part do? What did you read that helped? What would you improve?"></textarea></div>
       <p class="note">Attach a photo or file of your artefact: <input type="file" id="dFile" accept="image/*,.pdf,.ppt,.pptx" style="font-size:.85rem"> — filename recorded; connect a backend to store the file.</p>
 
-      <h3 class="sub">5 · Self-check</h3>
+      <h3 class="sub">6 · Self-check</h3>
       <ul class="rubric" id="dCrit">${DESIGN_CRITERIA.map((c,i)=>`<li><input type="checkbox" id="dc${i}"><label for="dc${i}">${c}</label></li>`).join('')}</ul>
       <button class="btn teal" onclick="saveDesign('${id}','${escq(d.title)}')">Save my design</button>
       <div id="dResult"></div>
     </div>`;
+    mountCanvas('designCanvas');
   },
 
   /* ---------------- TEACHER CONTENT PANEL ---------------- */
@@ -3526,6 +3577,163 @@ function wsGrammar(id){ if(!pdfReady())return noPdf(); const f=findGr(id); const
   p.h2("Practice"); t.questions.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); if(q.type==="mcq"){ q.options.forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); } else { p.lines(1); } p.gap(2); });
   p.newpage(); p.h1("Answer key"); t.questions.forEach((q,i)=>{ let a; if(q.type==="mcq")a=`${LET[q.answer]} — ${q.options[q.answer]}`; else a=Array.isArray(q.answer)?q.answer[0]:q.answer; p.text(`${i+1}.  ${a}`,{style:"bold"}); if(q.exp)p.text(`     ${q.exp}`,{size:10,color:90}); });
   p.save(`iCAN-grammar-${id}.pdf`);
+}
+
+/* =========================================================================
+   TYPING TUTOR — practice/race, live WPM + accuracy + timer, banded certificate
+   ========================================================================= */
+const TYPING_TEXTS=[
+  {id:"ty1",title:"A good morning",genre:"Everyday",level:"short",text:`The sun rose over the quiet town. Birds sang in the tall green trees, and a soft wind moved through the streets. It was going to be a calm and happy day for everyone who lived there.`},
+  {id:"ty2",title:"Numbers at the shop",genre:"Numbers",level:"short",text:`I bought 3 apples for $1.50, 12 eggs for $2.99, and 2 loaves of bread for $4.25. In total, I spent $8.74 and saved about 15% with my member card.`},
+  {id:"ty3",title:"A short email",genre:"Email",level:"short",text:`Dear Mr. Khan, thank you for your message. I can meet on Tuesday at 9:30 a.m. or Thursday at 2 p.m. Please let me know which time suits you best. Kind regards, Sara.`},
+  {id:"ty4",title:"Punctuation practice",genre:"Symbols & punctuation",level:"short",text:`"Wait!" she shouted. "Did you lock the door, turn off the lights, and feed the cat?" He paused, smiled, and replied: "Yes — all done; don't worry!"`},
+  {id:"ty5",title:"A quick fact",genre:"Science",level:"short",text:`Light travels at about 300,000 kilometres per second. That means sunlight, which leaves the Sun 150 million kilometres away, takes roughly 8 minutes to reach your eyes.`},
+  {id:"ty6",title:"A kind note",genre:"Personal",level:"short",text:`Thank you for helping me yesterday. I was tired and stressed, and your patience made a real difference. I hope I can return the favour someday soon. You are a true friend.`},
+  {id:"ty7",title:"The first computers",genre:"History",level:"medium",text:`In the 1940s, the first electronic computers filled entire rooms. They weighed many tonnes, used thousands of glowing tubes, and could perform only a few thousand calculations each second. Today, a small phone in your pocket is millions of times faster and far cheaper. What changed was the invention of the tiny transistor, which replaced those fragile tubes. Engineers learned to pack more and more transistors onto a single chip, doubling the power roughly every two years. The machine that once needed a room now fits on a fingernail, quietly running the apps we use without a second thought.`},
+  {id:"ty8",title:"How rain forms",genre:"Science",level:"medium",text:`Rain begins long before a single drop falls. The Sun heats lakes, rivers and oceans, turning liquid water into an invisible gas called water vapour. This warm, moist air rises, and as it climbs it cools. Cooler air cannot hold as much vapour, so the water gathers around tiny specks of dust to form clouds. Inside the cloud, droplets bump together and grow heavier. When they become too heavy for the air to hold, they fall as rain. The same water has travelled this loop for billions of years, in an endless cycle that keeps our planet alive.`},
+  {id:"ty9",title:"The sea at last",genre:"Narrative",level:"medium",text:`Mara had never seen the sea. For sixteen years she had lived among dry hills, dreaming of a blue she knew only from photographs. On the morning of her birthday, her grandmother woke her early and said nothing, only smiled and pointed to the old car. They drove for hours. When at last the road curved and the water appeared, vast and shining, Mara forgot to breathe. She walked to the edge, let the cold waves cover her feet, and laughed out loud. Some things, she realised, are even bigger than the dreams we build of them.`},
+  {id:"ty10",title:"Pancakes for four",genre:"Instructional · numbers",level:"medium",text:`To make pancakes for 4 people, mix 200 g of flour, 2 large eggs, and 300 ml of milk in a bowl. Add a pinch of salt and 1 tablespoon of sugar, then whisk until smooth. Heat a little oil in a pan over medium heat, about 180°C. Pour in roughly 60 ml of batter for each pancake and cook for 1 to 2 minutes per side, until golden. This recipe makes about 8 pancakes. Serve with fruit, honey, or a squeeze of lemon, and enjoy them while they are still warm.`},
+  {id:"ty11",title:"The night the power went out",genre:"Narrative",level:"long",text:`The night the power went out, the whole street fell silent at once. One moment the houses glowed with the blue light of a hundred screens; the next, everything was dark, and a strange, old-fashioned quiet settled over the neighbourhood. At first there was panic. Phones were useless without the internet, and the fridge ticked and went still. Children complained that they were bored, a word they had not used in years. But then, slowly, something unexpected happened. Doors opened. Neighbours who had lived side by side for a decade, exchanging nothing more than nods, stepped onto their porches with candles and torches. Someone produced a guitar. Someone else carried out a tray of warm bread. The Patel family, who owned the corner shop, gave away ice cream before it could melt, and for once nobody counted the cost. Old Mr. Hassan told stories of his childhood, when power cuts were common and evenings were spent talking rather than scrolling. The younger ones listened, half amazed, half embarrassed that they had never asked. By midnight, the street that had been a row of separate boxes had become, for a few hours, a single living thing. When the lights finally flickered back at two in the morning, there was a small, surprising groan of disappointment. People said goodnight slowly, reluctant to go inside. In the days that followed, the neighbours nodded a little longer when they passed. Some stopped to talk. A few became friends. The power had failed for only one night, but it had quietly switched something else back on — something that, in all their bright and busy years, they had forgotten they were missing.`},
+  {id:"ty12",title:"The hidden life of soil",genre:"Informational · environment",level:"long",text:`Beneath our feet lies one of the most crowded and least understood places on Earth: the soil. A single handful of healthy garden soil can contain more living organisms than there are people on the planet. Most are far too small to see — bacteria, fungi, and microscopic animals that spend their entire lives in the dark, breaking down dead leaves and turning them into food for new plants. For a long time, people treated soil as little more than dirt, a lifeless surface to be ploughed, paved, or pushed aside. Scientists now understand that this thin, fragile layer is alive, and that our survival depends on it. Healthy soil grows the food we eat, stores vast amounts of carbon that would otherwise warm the atmosphere, and soaks up rainwater that might otherwise cause floods. Yet around the world, soil is being lost far faster than it can form. It can take more than a thousand years for nature to build a few centimetres of fertile topsoil, but careless farming, building, and pollution can strip it away in a single season. Once it is gone, it does not quickly return. The good news is that soil can be protected and even healed. Farmers who plant cover crops, avoid heavy chemicals, and disturb the ground less are finding that life returns surprisingly quickly. Earthworms reappear, water sinks in instead of running off, and harvests improve. Protecting the ground beneath us may not feel as dramatic as saving a forest or a whale, but it is just as important. The future of our food, our climate, and our cities is rooted, quite literally, in the soil we so often ignore.`}
+];
+let TYPING=null;
+function typingBand(wpm){ return wpm>=90?"Fantastic":wpm>=61?"Advanced":wpm>=50?"Pre-advanced":wpm>=31?"Proficient":wpm>=10?"Emerging":"Struggling"; }
+function typingSpans(text){ return text.split('').map((c,i)=>`<span id="tc${i}">${c===' '?'&nbsp;':esc(c)}</span>`).join(''); }
+function startTyping(id){
+  const t=TYPING_TEXTS.find(x=>x.id===id)||TYPING_TEXTS[0];
+  TYPING={t, started:0, timer:null, done:false};
+  app().innerHTML=`
+   <div class="wrap screen">
+     <button class="back" onclick="go('typing')">← Typing Tutor</button>
+     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+       <h1 style="font-size:1.6rem;margin:0">⌨️ ${t.title}</h1>
+       <div class="type-stats"><span>⏱ <b id="tyTime">0s</b></span><span>WPM <b id="tyWpm">0</b></span><span>Acc <b id="tyAcc">100%</b></span></div>
+     </div>
+     <p style="color:var(--muted);font-size:.85rem">${t.genre} · ${t.level} · ${t.text.split(/\s+/).length} words. The timer starts on your first keystroke. Type the text exactly, including punctuation.</p>
+     <div id="tyTarget" class="type-target">${typingSpans(t.text)}</div>
+     <textarea id="tyInput" class="type-input" rows="4" oninput="typingInput()" placeholder="Click here and start typing…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+     <div style="margin-top:10px"><button class="btn ghost sm" onclick="startTyping('${id}')">↻ Restart</button></div>
+     <div id="tyResult" style="margin-top:14px"></div>
+   </div>`;
+  setTimeout(()=>{ const i=document.getElementById('tyInput'); if(i)i.focus(); },60);
+}
+function typingTick(){ const s=TYPING; if(!s||!s.started)return; const el=document.getElementById('tyTime'); if(el)el.textContent=Math.round((Date.now()-s.started)/1000)+'s'; }
+function typingInput(){
+  const s=TYPING; if(!s||s.done)return;
+  const typed=document.getElementById('tyInput').value; const target=s.t.text;
+  if(!s.started){ s.started=Date.now(); s.timer=setInterval(typingTick,250); }
+  let correct=0;
+  for(let i=0;i<target.length;i++){ const el=document.getElementById('tc'+i); if(!el)continue; el.className='';
+    if(i<typed.length){ if(typed[i]===target[i]){ el.className='ok'; correct++; } else el.className='bad'; }
+    else if(i===typed.length){ el.className='cur'; } }
+  const mins=(Date.now()-s.started)/60000; const wpm=mins>0?Math.max(0,Math.round((correct/5)/mins)):0;
+  const acc=typed.length?Math.round(correct/typed.length*100):100;
+  const w=document.getElementById('tyWpm'), a=document.getElementById('tyAcc');
+  if(w)w.textContent=wpm; if(a)a.textContent=acc+'%';
+  if(typed.length>=target.length) typingFinish();
+}
+function typingFinish(){
+  const s=TYPING; if(!s||s.done)return; s.done=true; clearInterval(s.timer);
+  const typed=document.getElementById('tyInput').value; const target=s.t.text;
+  let correct=0; for(let i=0;i<Math.min(typed.length,target.length);i++) if(typed[i]===target[i]) correct++;
+  const secs=Math.max(1,(Date.now()-s.started)/1000); const mins=secs/60;
+  const wpm=Math.round((correct/5)/mins); const acc=typed.length?Math.round(correct/typed.length*100):100;
+  const band=typingBand(wpm);
+  const inp=document.getElementById('tyInput'); if(inp)inp.disabled=true;
+  if(SESSION&&SESSION.role==='student'){ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:"Typing",activity:s.t.title,score:wpm,max:100,percent:acc,detail:`${wpm} WPM · ${acc}% accuracy · ${Math.round(secs)}s · ${band}`}); }
+  document.getElementById('tyResult').innerHTML=`<div class="card">
+     <div class="statline"><div class="stat"><div class="n">${wpm}</div><div class="l">WPM</div></div><div class="stat"><div class="n">${acc}%</div><div class="l">accuracy</div></div><div class="stat"><div class="n">${Math.round(secs)}s</div><div class="l">time</div></div><div class="stat"><div class="n" style="font-size:1rem;font-family:inherit;font-weight:700">${band}</div><div class="l">level</div></div></div>
+     <h3 style="font-size:1.15rem">🏆 Your typing certificate</h3>
+     ${typingCertHTML({name:(SESSION&&SESSION.name)||'Student', wpm, acc, secs, band, date:new Date().toLocaleDateString()})}
+     <div style="margin-top:10px"><button class="btn ghost sm" onclick="startTyping('${s.t.id}')">↻ Try again</button> <button class="btn ghost sm" onclick="go('typing')">More texts →</button></div>
+   </div>`;
+  window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
+}
+function makeTypingCert(o){
+  const themes={Fantastic:{a:"#b8860b",b:"#f3d98b",ink:"#5a4500",seal:"#caa12e"},Advanced:{a:"#8B5CF6",b:"#cbb6f5",ink:"#3b2470",seal:"#8B5CF6"},"Pre-advanced":{a:"#0c8a72",b:"#8fd6c6",ink:"#073d33",seal:"#0c8a72"},Proficient:{a:"#2b5fa6",b:"#a9c6ec",ink:"#10294d",seal:"#2b5fa6"},Emerging:{a:"#d98324",b:"#f0c596",ink:"#5e3608",seal:"#d98324"},Struggling:{a:"#6b7280",b:"#cbd0d8",ink:"#2c333d",seal:"#6b7280"}};
+  const t=themes[o.band]||themes.Emerging;
+  const W=1200,H=850,c=document.createElement('canvas'); c.width=W;c.height=H; const x=c.getContext('2d');
+  x.fillStyle="#fffdf7"; x.fillRect(0,0,W,H);
+  x.strokeStyle=t.a; x.lineWidth=16; x.strokeRect(30,30,W-60,H-60);
+  x.strokeStyle=t.b; x.lineWidth=4; x.strokeRect(54,54,W-108,H-108);
+  x.textAlign="center";
+  x.fillStyle=t.a; x.font="bold 34px Georgia"; x.fillText("iCAN · Typing Tutor", W/2, 140);
+  x.fillStyle="#777"; x.font="italic 26px Georgia"; x.fillText("Certificate of Typing Achievement", W/2, 185);
+  x.fillStyle=t.a; x.font="bold 50px Georgia"; x.fillText(o.band.toUpperCase(), W/2, 265);
+  x.fillStyle="#555"; x.font="24px Georgia"; x.fillText("Awarded to", W/2, 345);
+  let nf=56; x.font="bold "+nf+"px Georgia"; while(x.measureText(o.name).width>W-220 && nf>26){ nf-=2; x.font="bold "+nf+"px Georgia"; }
+  x.fillStyle=t.ink; x.fillText(o.name, W/2, 415);
+  x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(W/2-260,435); x.lineTo(W/2+260,435); x.stroke();
+  x.fillStyle=t.ink; x.font="bold 42px Georgia"; x.fillText(o.wpm+" words per minute", W/2, 505);
+  x.fillStyle="#555"; x.font="24px Georgia"; x.fillText("Accuracy "+o.acc+"%      ·      Time "+Math.round(o.secs)+" seconds", W/2, 555);
+  x.fillStyle="#777"; x.font="22px Georgia"; x.fillText(o.date, W/2, 615);
+  x.beginPath(); x.arc(W/2,710,46,0,Math.PI*2); x.fillStyle=t.seal; x.fill();
+  x.fillStyle="#fff"; x.font="bold 18px Georgia"; x.fillText("iCAN", W/2, 716);
+  return c.toDataURL("image/png");
+}
+function typingCertHTML(o){ let url; try{ url=makeTypingCert(o); }catch(e){ return `<p class="note">Certificate couldn't be generated in this browser.</p>`; }
+  const fn=`iCAN-typing-${(o.name||'student').replace(/\s+/g,'-')}.png`;
+  return `<div style="text-align:center"><img src="${url}" alt="Typing certificate for ${esc(o.name)}" style="max-width:100%;border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,.15)">
+    <div style="margin-top:10px"><a class="btn" href="${url}" download="${fn}">⬇ Download certificate</a></div>
+    <p style="font-size:.8rem;color:var(--muted);margin-top:6px">You can also right-click (or press &amp; hold) the image to save it.</p></div>`; }
+
+/* =========================================================================
+   CREATIVE CANVAS — draw / text / shapes / image, inside the Design Studio
+   ========================================================================= */
+let CANVAS_STATE=null;
+function cvPushUndo(){ const s=CANVAS_STATE; if(!s)return; try{ s.undo.push(s.canvas.toDataURL()); if(s.undo.length>16)s.undo.shift(); }catch(e){} }
+function cvSetTool(t,btn){ if(CANVAS_STATE)CANVAS_STATE.tool=t; document.querySelectorAll('.cv-tool').forEach(b=>b.classList.remove('on')); if(btn)btn.classList.add('on'); }
+function cvPick(c){ if(CANVAS_STATE)CANVAS_STATE.color=c; const i=document.getElementById('cvColor'); if(i)i.value=c; }
+function cvUndo(){ const s=CANVAS_STATE; if(!s||!s.undo.length)return; const data=s.undo.pop(); const img=new Image(); img.onload=()=>{ s.ctx.fillStyle='#fff'; s.ctx.fillRect(0,0,s.canvas.width,s.canvas.height); s.ctx.drawImage(img,0,0); }; img.src=data; }
+function cvClear(){ const s=CANVAS_STATE; if(!s)return; cvPushUndo(); s.ctx.fillStyle='#fff'; s.ctx.fillRect(0,0,s.canvas.width,s.canvas.height); }
+function cvDownload(){ const s=CANVAS_STATE; if(!s)return; const a=document.createElement('a'); a.href=s.canvas.toDataURL('image/png'); a.download='iCAN-design.png'; a.click(); }
+function cvLoadImage(input){ const s=CANVAS_STATE; const f=input.files[0]; if(!f||!s)return; const r=new FileReader();
+  r.onload=()=>{ const img=new Image(); img.onload=()=>{ cvPushUndo(); const scale=Math.min((s.canvas.width-20)/img.width,(s.canvas.height-20)/img.height,1); const w=img.width*scale,h=img.height*scale; s.ctx.drawImage(img,(s.canvas.width-w)/2,(s.canvas.height-h)/2,w,h); }; img.src=r.result; };
+  r.readAsDataURL(f); input.value=''; }
+function mountCanvas(containerId){
+  const wrap=document.getElementById(containerId); if(!wrap)return;
+  const W=Math.min(860,(wrap.clientWidth||760)), H=460;
+  const tools=[['pen','✏️ Pen'],['marker','🖊️ Marker'],['eraser','🧽 Eraser'],['line','╱ Line'],['rect','▭ Box'],['ellipse','◯ Circle'],['text','T Text'],['image','🖼️ Image']];
+  const sw=['#15183A','#E6464B','#0FA98B','#8B5CF6','#d98324','#2b5fa6','#000000','#ffffff'];
+  wrap.innerHTML=`
+   <div class="cv-toolbar">
+     <div class="cv-tools">${tools.map(([t,l],i)=>`<button class="cv-tool${i===0?' on':''}" onclick="cvSetTool('${t}',this)">${l}</button>`).join('')}</div>
+     <div class="cv-opts">
+       <input type="color" id="cvColor" value="#15183A" onchange="if(CANVAS_STATE)CANVAS_STATE.color=this.value" title="Colour">
+       <input type="range" id="cvSize" min="1" max="40" value="4" oninput="if(CANVAS_STATE)CANVAS_STATE.size=+this.value" title="Brush size">
+       <span class="cv-swatches">${sw.map(c=>`<button class="cv-sw" style="background:${c}" onclick="cvPick('${c}')"></button>`).join('')}</span>
+       <button class="cv-btn" onclick="cvUndo()">↶ Undo</button>
+       <button class="cv-btn" onclick="cvClear()">🗑 Clear</button>
+       <button class="cv-btn primary" onclick="cvDownload()">⬇ Download</button>
+       <input type="file" id="cvFile" accept="image/*" style="display:none" onchange="cvLoadImage(this)">
+     </div>
+   </div>
+   <canvas id="cvCanvas" width="${W}" height="${H}" style="touch-action:none;border:1.5px solid var(--line);border-radius:12px;background:#fff;max-width:100%;display:block"></canvas>
+   <p style="font-size:.78rem;color:var(--muted);margin:6px 0 0">Pick a tool, then draw on the white area. <b>Text</b>: click where you want it. <b>Image</b>: opens a picker. <b>Download</b> saves your design as a picture you can attach below.</p>`;
+  const canvas=document.getElementById('cvCanvas'); const ctx=canvas.getContext('2d');
+  ctx.lineCap='round'; ctx.lineJoin='round'; ctx.fillStyle='#fff'; ctx.fillRect(0,0,W,H);
+  CANVAS_STATE={canvas,ctx,tool:'pen',color:'#15183A',size:4,drawing:false,startX:0,startY:0,snapshot:null,undo:[]};
+  function pos(e){ const r=canvas.getBoundingClientRect(); return {x:(e.clientX-r.left)*(canvas.width/r.width), y:(e.clientY-r.top)*(canvas.height/r.height)}; }
+  canvas.addEventListener('pointerdown',e=>{ const s=CANVAS_STATE; const p=pos(e);
+    if(s.tool==='text'){ const t=prompt('Type your text:'); if(t){ cvPushUndo(); ctx.fillStyle=s.color; ctx.textAlign='left'; ctx.font=`${Math.max(16,s.size*5)}px Georgia`; ctx.fillText(t,p.x,p.y); } return; }
+    if(s.tool==='image'){ document.getElementById('cvFile').click(); return; }
+    cvPushUndo(); s.drawing=true; s.startX=p.x; s.startY=p.y; s.snapshot=ctx.getImageData(0,0,canvas.width,canvas.height);
+    if(s.tool==='pen'||s.tool==='marker'||s.tool==='eraser'){ ctx.beginPath(); ctx.moveTo(p.x,p.y); }
+    try{ canvas.setPointerCapture(e.pointerId); }catch(err){} });
+  canvas.addEventListener('pointermove',e=>{ const s=CANVAS_STATE; if(!s.drawing)return; const p=pos(e);
+    if(s.tool==='pen'||s.tool==='marker'||s.tool==='eraser'){
+      ctx.lineWidth=s.tool==='eraser'?Math.max(s.size,14):(s.tool==='marker'?s.size*3:s.size);
+      ctx.strokeStyle=s.tool==='eraser'?'#ffffff':s.color; ctx.globalAlpha=s.tool==='marker'?0.3:1;
+      ctx.lineTo(p.x,p.y); ctx.stroke(); ctx.globalAlpha=1;
+    } else {
+      ctx.putImageData(s.snapshot,0,0); ctx.strokeStyle=s.color; ctx.lineWidth=s.size; ctx.beginPath();
+      if(s.tool==='line'){ ctx.moveTo(s.startX,s.startY); ctx.lineTo(p.x,p.y); }
+      else if(s.tool==='rect'){ ctx.rect(s.startX,s.startY,p.x-s.startX,p.y-s.startY); }
+      else if(s.tool==='ellipse'){ ctx.ellipse((s.startX+p.x)/2,(s.startY+p.y)/2,Math.abs(p.x-s.startX)/2,Math.abs(p.y-s.startY)/2,0,0,Math.PI*2); }
+      ctx.stroke();
+    } });
+  function end(){ if(CANVAS_STATE){ CANVAS_STATE.drawing=false; ctx.globalAlpha=1; } }
+  canvas.addEventListener('pointerup',end); canvas.addEventListener('pointerleave',end); canvas.addEventListener('pointercancel',end);
 }
 
 /* boot */
