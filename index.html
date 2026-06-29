@@ -253,6 +253,22 @@ table.data tr:nth-child(even){background:#fff}
 .feedbk{background:var(--mist); border:1px solid var(--line); border-left:4px solid var(--teal); border-radius:10px; padding:14px 16px; margin:14px 0}
 .res-card{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:14px 16px; margin:10px 0}
 .res-card .tag{font-size:.72rem; color:var(--teal-dk); background:#e6f4f0; padding:2px 9px; border-radius:50px; display:inline-block; margin-top:4px}
+.excerpt{white-space:pre-wrap; font-family:Georgia,serif; line-height:1.7; color:var(--slate); margin-top:10px; background:#fff; border:1px solid var(--line); border-radius:10px; padding:14px 16px}
+.rev-draft{width:100%; min-height:200px; font-family:Georgia,serif; font-size:1rem; line-height:1.6; padding:14px; border:1.5px solid var(--line); border-radius:12px; color:var(--ink)}
+.rub-table{border-collapse:collapse; width:100%; font-size:.8rem; min-width:680px}
+.rub-table th,.rub-table td{border:1px solid var(--line); padding:7px 9px; vertical-align:top; text-align:left}
+.rub-table th{background:var(--ink); color:#fff; font-weight:600}
+.rub-table td.lvl{font-weight:700; text-align:center; background:var(--mist); color:var(--ink)}
+.fb-table{border-collapse:collapse; width:100%; font-size:.92rem}
+.fb-table td{border-top:1px solid var(--line); padding:8px 8px; vertical-align:top; color:var(--slate)}
+.fb-ok{color:#0c8a72; font-weight:700; white-space:nowrap}
+.fb-no{color:#c0552b; font-weight:700; white-space:nowrap}
+.corr-table{border-collapse:collapse; width:100%; font-size:.86rem; margin-top:6px}
+.corr-table th,.corr-table td{border:1px solid var(--line); padding:7px 9px; vertical-align:top; text-align:left}
+.corr-table th{background:var(--mist); color:var(--ink)}
+.corr-table .was{color:#b00020; text-decoration:line-through}
+.corr-table .now{color:#0c8a72; font-weight:600}
+.corr-tag{font-size:.68rem; background:var(--ink); color:#fff; padding:2px 7px; border-radius:50px; white-space:nowrap}
 </style>
 </head>
 <body>
@@ -1522,6 +1538,22 @@ const ROUTES = {
     </div>`;
   },
 
+  /* ---------------- REVISE & EDIT ---------------- */
+  revise(){
+    app().innerHTML=`
+    <div class="wrap screen">
+      <button class="back" onclick="go('writingCourse')">← Writing Course</button>
+      <h1 style="font-size:2.1rem">✏️ Revise &amp; Edit</h1>
+      <p style="color:var(--muted);max-width:720px">Real exam responses, with mistakes. Read one against the marking rubric, rewrite it into a stronger version, get instant feedback, then compare with a corrected model answer. A powerful way to sharpen grammar, spelling, punctuation, structure and word choice.</p>
+      <div class="grid c2">
+        ${REVISE.map(t=>`<button onclick="go('reviseTask','${t.id}')" style="text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:16px;cursor:pointer">
+           <b style="color:var(--ink)">${t.title}</b><br><span style="font-size:.82rem;color:var(--muted)">${t.level} · aim for ${t.minWords}+ words</span></button>`).join('')}
+      </div>
+      <p class="note" style="margin-top:14px">Teachers can add more excerpts and model answers from <b>Manage content</b> (coming to the editor). Rubric: ${WRITING_RUBRIC.title}.</p>
+    </div>`;
+  },
+  reviseTask(id){ openReviseScreen(id); },
+
   /* ---------------- READING LIST ---------------- */
   reading(){
     app().innerHTML = `
@@ -1727,6 +1759,9 @@ const ROUTES = {
       <button class="back" onclick="go('dashboard')">← Pathways</button>
       <h1 style="font-size:2.2rem">🎓 Writing Course</h1>
       <p style="color:var(--muted);max-width:680px">Learn writing step by step. Choose your level, then work through three units. Every lesson teaches a skill, gives you a prompt, marks your writing against a rubric, and shows a model answer. Build five new words into your <b>Vocabulary Bank</b> each lesson.</p>
+      <button onclick="go('revise')" style="width:100%;text-align:left;border:none;cursor:pointer;background:linear-gradient(135deg,#0c8a72,#8B5CF6);color:#fff;border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;margin:6px 0 14px">
+        <span><span style="font-size:1.05rem;font-weight:700">✏️ Revise &amp; Edit</span><br><span style="opacity:.9;font-size:.84rem">Improve real exam responses against the marking rubric, then compare with a model answer.</span></span>
+        <span style="background:rgba(255,255,255,.2);padding:6px 12px;border-radius:50px;font-weight:600;white-space:nowrap">Open →</span></button>
       <div class="lvl-tabs">
         ${Object.keys(WCOURSE).map(k=>`<button class="${WC_LEVEL===k?'on':''}" onclick="setWcLevel('${k}')">${WCOURSE[k].label} <span style="font-weight:400;opacity:.7">· ${WCOURSE[k].tag}</span></button>`).join('')}
       </div>
@@ -3968,6 +4003,159 @@ function startGrMixed(levelKey,seed,label){
      <div id="quizResult" style="margin-top:14px"></div>
    </div>`;
   renderQuiz(qs); window.scrollTo({top:0});
+}
+
+/* =========================================================================
+   REVISE & EDIT — improve a real student excerpt against the marking rubric,
+   get instant rubric-based feedback, then reveal a corrected model answer.
+   Source: EoT writing standardisation set (rubric Level 6.1–9.1).
+   ========================================================================= */
+const WRITING_RUBRIC={
+  title:"Writing rubric (Level 6.1 – 9.1) · 5 marks per criterion · /25 total",
+  criteria:["Task completion","Structure","Grammar","Vocabulary","Spelling & punctuation"],
+  levels:[
+    {n:5, cells:["Extended, sophisticated response; every aspect of the prompt covered in detail.","Structured with clear awareness of style and audience.","Simple and complex structures used accurately; only isolated minor slips.","Range of technical/sophisticated vocabulary suited to the topic.","Consistently accurate, even in complex words and sentences."]},
+    {n:4, cells:["Extended response of the expected length; all aspects covered.","Clear paragraphs with an introduction, body and conclusion.","Range of simple and complex structures; infrequent errors that don't affect readability.","A few examples of more sophisticated vocabulary.","Mostly accurate; small errors rarely affect readability."]},
+    {n:3, cells:["Adequately extended; most aspects covered (no more than one missed).","One or more paragraphs with a topic sentence and supporting ideas.","Grammar appropriate to the prompt; errors sometimes affect readability.","Adequate, but relies on common/simple words.","Common words mostly correct; basic punctuation; frequent errors on harder words."]},
+    {n:2, cells:["Several ideas, but more than one area missed or thin.","Clear sentences but little or no paragraphing.","Only basic grammar; errors may be frequent.","Limited range; not enough for some topics.","Some accuracy, but frequent errors throughout."]},
+    {n:1, cells:["Does not cover any aspect of the prompt.","Not structured in any conventional sense.","No attempt at grammatical structures.","Very little vocabulary that fits the task.","Almost everything misspelt; barely decipherable."]}
+  ]
+};
+function writingRubricHTML(){
+  return `<div style="overflow-x:auto"><table class="rub-table"><thead><tr><th>Level</th>${WRITING_RUBRIC.criteria.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>
+    ${WRITING_RUBRIC.levels.map(l=>`<tr><td class="lvl">${l.n}</td>${l.cells.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}
+  </tbody></table></div>`;
+}
+const REVISE=[
+  { id:"rv_arch", title:"Architecture & people's lives", level:"Level 4–5 sample", minWords:200,
+    prompt:`<b>In your opinion, how does architecture influence people's lives?</b><br>You should include: what architecture means to you; the importance of architecture in the UAE; two examples to support your opinion. <i>Write at least 200 words in paragraphs.</i>`,
+    excerpt:`Architecture can change peoples lives
+
+Architecture is a type of art, it can play a huge role in making people happiness. architecture means a lot for me because it can make you see the buildings in a different way, such as the design of the building. the interior design can affect peoples mood, also it can affect the building itself, because if you saw a nice building from the inside with no broken walls, or broken windows, that means that the building is in a good shape and that it won't be falling apart anytime soon.
+
+In the UAE Architecture is so important because if the buildings in Dubai or Abu Dhabi aren't that good, then no one will come to see them or live in them, but as you see in Dubai you have Burj Khalifa, Burj Al Arab, and a lot more, for example Burj Khallifa, it's one of the most known buildings in dubai, and if it wasnt built good it won't be the highest building in the world.
+
+Another example is Burj Al Arab, it's a 7 star hotel, did you ask why? basically it's because of the outerior and the interior design, also it's built in the middle of the sea, in my opinion i think architecture can influence peoples lives.`,
+    model:`How architecture influences people's lives
+
+Architecture is a form of art, and it can play a huge role in making people happy. To me, architecture means a great deal, because it changes the way we see buildings — for example, through their design. Interior design can affect people's mood, and it can also affect the building itself: if you walk into a building with no broken walls or windows, you can tell that it is in good condition and will not fall apart any time soon.
+
+In the UAE, architecture is especially important. If the buildings in Dubai or Abu Dhabi were not well designed, few people would want to visit them or live in them. Dubai, however, is home to landmarks such as the Burj Khalifa and the Burj Al Arab. The Burj Khalifa is one of the most famous buildings in the city, and if it had not been built so well, it would never have become the tallest building in the world.
+
+Another example is the Burj Al Arab, a seven-star hotel. Why is it so famous? Mainly because of its striking exterior and luxurious interior design, and because it stands on its own island in the sea. In my opinion, these examples show clearly that architecture can influence people's lives.`,
+    corrections:[
+      {t:"Spelling & punctuation", b:"peoples lives", a:"people's lives", why:"Possessive needs an apostrophe."},
+      {t:"Grammar / word choice", b:"making people happiness", a:"making people happy", why:"Use the adjective 'happy' after 'making people'."},
+      {t:"Spelling & punctuation", b:"architecture… the interior… (lower-case starts)", a:"Architecture… The interior…", why:"Start every sentence with a capital letter."},
+      {t:"Structure / Grammar", b:"Architecture is a type of art, it can play…", a:"Architecture is a form of art, and it can play…", why:"Avoid the comma splice — join with 'and' or use a full stop."},
+      {t:"Grammar", b:"if you saw a nice building", a:"if you walk into a building", why:"Use the present for a general truth, and keep the tense consistent."},
+      {t:"Vocabulary", b:"in a good shape", a:"in good condition", why:"More precise and more formal."},
+      {t:"Spelling / Grammar", b:"if it wasnt built good", a:"if it had not been built so well", why:"'wasn't' needs an apostrophe; use the adverb 'well'; conditional 'had not been'."},
+      {t:"Spelling & punctuation", b:"7 star … dubai … outerior", a:"seven-star … Dubai … exterior", why:"Spell out and hyphenate; capitalise the proper noun; correct the spelling of 'exterior'."},
+      {t:"Vocabulary / Grammar", b:"in my opinion i think", a:"In my opinion", why:"Remove the redundancy and capitalise 'I'."}
+    ] },
+  { id:"rv_exam", title:"The end-of-term exam", level:"Level 2–3 sample", minWords:100,
+    prompt:`<b>Write about the end-of-term exam.</b><br>Include details about: why we have an end-of-term exam; what topics will be in the essay question; how to write a good essay. <i>Write at least 100 words in paragraphs.</i>`,
+    excerpt:`the end of term exam is very important for us students. we have it because the teacher want to know how much we learn in this term and to see if we are ready for the next level. i think exams is good because it make us study harder.
+
+in the essay question there is many topics, for example technology, environment and the social media. you should write at least 100 word and make paragraph. to write a good essay you must planning first, use good grammar and dont forget the punctuation. also you should check you'r spelling befor you finish.`,
+    model:`The end-of-term exam
+
+The end-of-term exam is very important for us as students. We take it because our teachers want to know how much we have learned during the term and whether we are ready for the next level. In my opinion, exams are useful because they encourage us to study harder.
+
+The essay question can cover many topics, such as technology, the environment, or social media. You should write at least 100 words and organise your answer into paragraphs. To write a good essay, you should plan first, use accurate grammar, and remember your punctuation. Finally, always check your spelling before you finish.`,
+    corrections:[
+      {t:"Spelling & punctuation", b:"the… we… i… (lower-case starts)", a:"The… We… I…", why:"Capital letter to begin each sentence, and always capitalise 'I'."},
+      {t:"Grammar", b:"the teacher want", a:"our teachers want", why:"Subject–verb agreement."},
+      {t:"Grammar", b:"how much we learn", a:"how much we have learned", why:"Use the present perfect for the term so far."},
+      {t:"Grammar", b:"exams is good… it make us", a:"exams are useful… they encourage us", why:"Agreement: plural subject 'exams' → 'are'/'they'."},
+      {t:"Grammar / Structure", b:"there is many topics", a:"the essay question can cover many topics", why:"'topics' is plural; rephrase for clarity."},
+      {t:"Grammar", b:"the social media", a:"social media", why:"No article with this general noun."},
+      {t:"Spelling & punctuation", b:"100 word and make paragraph", a:"100 words and organise it into paragraphs", why:"Plural 'words'; use a clear verb phrase."},
+      {t:"Grammar", b:"you must planning", a:"you should plan", why:"After a modal verb, use the base form."},
+      {t:"Spelling & punctuation", b:"dont … you'r … befor", a:"don't (remember) … your … before", why:"Apostrophe in 'don't'; 'your' not 'you'␣r'; spell 'before'."}
+    ] }
+];
+let REVISE_CUR=null;
+function openReviseScreen(id){
+  const t=REVISE.find(x=>x.id===id)||REVISE[0]; REVISE_CUR=t;
+  app().innerHTML=`
+   <div class="wrap screen">
+     <button class="back" onclick="go('revise')">← Revise &amp; Edit</button>
+     <h1 style="font-size:1.7rem">✏️ ${t.title}</h1>
+     <div class="card"><b style="color:var(--ink)">The task</b><p style="color:var(--slate);margin:6px 0 0">${t.prompt}</p></div>
+     <div class="card" style="background:#fdf2f2;border-color:#e6a3a8"><b style="color:var(--ink)">A student's response (${t.level}) — spot the errors</b>
+       <div class="excerpt">${esc(t.excerpt)}</div></div>
+     <details class="card" style="cursor:pointer"><summary style="font-weight:700;color:var(--ink)">📋 Show the marking rubric</summary>
+       <p style="color:var(--muted);font-size:.85rem;margin:8px 0">${WRITING_RUBRIC.title}</p>${writingRubricHTML()}</details>
+     <h3 style="font-size:1.2rem;margin:18px 0 6px">Your improved version</h3>
+     <p style="color:var(--muted);font-size:.9rem;margin:0 0 8px">Rewrite the response so it would score well on every part of the rubric — fix grammar, spelling, punctuation, structure, word choice, and make sure it answers the task. Keep the writer's ideas.</p>
+     <textarea id="revDraft" class="rev-draft" oninput="revWordCount()" placeholder="Type your improved version here…"></textarea>
+     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:8px">
+       <span style="color:var(--muted);font-size:.88rem"><b id="revWords">0</b> words · aim for at least ${t.minWords}</span>
+       <span><button class="btn" onclick="reviseGetFeedback()">Get feedback →</button> <button class="btn ghost" onclick="reviseReveal()">Show model &amp; corrections</button></span>
+     </div>
+     <div id="revFeedback" style="margin-top:14px"></div>
+     <div id="revModel" style="margin-top:14px"></div>
+   </div>`;
+  window.scrollTo({top:0});
+}
+function revWordCount(){ const v=(document.getElementById('revDraft').value||'').trim(); const n=v?v.split(/\s+/).length:0; const e=document.getElementById('revWords'); if(e)e.textContent=n; }
+function reviseFeedback(draft,t){
+  const text=(draft||'').trim();
+  const words=text?text.split(/\s+/).length:0;
+  const paras=text.split(/\n\s*\n/).filter(p=>p.trim()).length;
+  const sentences=text.split(/[.!?]+/).map(s=>s.trim()).filter(Boolean);
+  const lowerStarts=sentences.filter(s=>/^[a-z]/.test(s)).length;
+  const loneI=(text.match(/\bi\b/g)||[]).length;
+  const noApos=(text.match(/\b(dont|cant|wont|isnt|wasnt|didnt|doesnt|youre|im|its a|thats)\b/gi)||[]).length;
+  const dblSpace=/ {2,}/.test(text);
+  const endsOk=/[.!?]["')\]]?\s*$/.test(text);
+  const basicWords=(text.match(/\b(good|nice|very|things?|stuff|a lot|big)\b/gi)||[]).length;
+  const ok=(c)=>c?'<span class="fb-ok">on track</span>':'<span class="fb-no">look again</span>';
+  const tips=[];
+  // Task completion
+  const taskOk=words>=t.minWords;
+  tips.push({c:"Task completion", ok:taskOk, tip: taskOk?`Good length (${words} words). Check you've covered every bullet point in the task.`:`You have ${words} words — aim for at least ${t.minWords}, and address each bullet point in the task.`});
+  // Structure
+  const structOk=paras>=2;
+  tips.push({c:"Structure", ok:structOk, tip: structOk?`Nice — ${paras} paragraphs. Make sure each has a clear topic sentence.`:`Try to organise your answer into at least two paragraphs (leave a blank line between them).`});
+  // Grammar
+  const gramOk=lowerStarts===0;
+  tips.push({c:"Grammar", ok:gramOk, tip: gramOk?`Sentences look well-formed. Re-read for subject–verb agreement and tense.`:`${lowerStarts} sentence(s) seem to start in lower case — check sentence boundaries and verb forms.`});
+  // Vocabulary
+  const vocabOk=basicWords<=3;
+  tips.push({c:"Vocabulary", ok:vocabOk, tip: vocabOk?`Good — try one or two more precise or topic-specific words.`:`You lean on simple words (e.g. "good", "nice", "very") ${basicWords} times — swap some for more precise vocabulary.`});
+  // Spelling & punctuation
+  const spellOk=(loneI===0)&&(noApos===0)&&!dblSpace&&endsOk;
+  const spIssues=[]; if(loneI)spIssues.push(`capitalise "I"`); if(noApos)spIssues.push(`add missing apostrophes (e.g. don't, wasn't)`); if(dblSpace)spIssues.push(`remove double spaces`); if(!endsOk)spIssues.push(`end with proper punctuation`);
+  tips.push({c:"Spelling & punctuation", ok:spellOk, tip: spellOk?`Looks clean — give it one more proofread for spelling.`:`Check: ${spIssues.join('; ')}.`});
+  const score=tips.filter(x=>x.ok).length;
+  return `<div class="card"><h3 style="margin:0 0 8px;font-size:1.15rem">📝 Instant feedback <span style="font-weight:400;color:var(--muted);font-size:.85rem">(automatic check against the 5 rubric areas)</span></h3>
+    <table class="fb-table"><tbody>${tips.map(x=>`<tr><td style="font-weight:600;white-space:nowrap">${x.c}</td><td>${ok(x.ok)}</td><td>${x.tip}</td></tr>`).join('')}</tbody></table>
+    <p style="margin:10px 0 0;color:var(--slate)"><b>${score} of 5 areas look on track.</b> This is an automatic check of the basics — use the rubric and the model answer to go further. ${score>=4?'Strong revision!':'Keep editing, then compare with the model.'}</p>
+    <p style="margin:6px 0 0;font-size:.82rem;color:var(--muted)">Teacher tip: live AI feedback can be connected later via the Apps Script proxy.</p></div>`;
+}
+function reviseGetFeedback(){
+  const t=REVISE_CUR; if(!t)return; const draft=document.getElementById('revDraft').value||'';
+  if(draft.trim().split(/\s+/).filter(Boolean).length<10){ document.getElementById('revFeedback').innerHTML=`<p class="note">Write a bit more first (at least a few sentences), then ask for feedback.</p>`; return; }
+  document.getElementById('revFeedback').innerHTML=reviseFeedback(draft,t);
+  const words=draft.trim().split(/\s+/).length;
+  if(SESSION&&SESSION.role==='student'){ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:"Writing",activity:"Revise & Edit: "+t.title,score:Math.min(words,t.minWords),max:t.minWords,percent:Math.min(100,Math.round(words/t.minWords*100)),detail:`Revision draft · ${words} words`}); }
+  document.getElementById('revFeedback').scrollIntoView({behavior:'smooth'});
+}
+function reviseReveal(){
+  const t=REVISE_CUR; if(!t)return;
+  document.getElementById('revModel').innerHTML=`<div class="card">
+    <h3 style="margin:0 0 6px;font-size:1.2rem">✅ Model answer <span style="font-weight:400;color:var(--muted);font-size:.85rem">(the excerpt corrected to roughly IELTS 6.5–7)</span></h3>
+    <div class="excerpt" style="background:#f0faf7;border-color:var(--teal)">${esc(t.model)}</div>
+    <h3 style="margin:16px 0 6px;font-size:1.15rem">🔧 What was corrected</h3>
+    <table class="corr-table"><thead><tr><th>Type</th><th>Before</th><th>After</th><th>Why</th></tr></thead><tbody>
+      ${t.corrections.map(c=>`<tr><td><span class="corr-tag">${c.t}</span></td><td class="was">${esc(c.b)}</td><td class="now">${esc(c.a)}</td><td>${esc(c.why)}</td></tr>`).join('')}
+    </tbody></table>
+    <p style="margin:12px 0 0;color:var(--slate)">Now compare the model with your own version. Which of these fixes did you make? Which will you watch for next time?</p>
+  </div>`;
+  document.getElementById('revModel').scrollIntoView({behavior:'smooth'});
 }
 
 /* boot */
