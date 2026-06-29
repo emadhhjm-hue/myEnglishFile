@@ -269,6 +269,10 @@ table.data tr:nth-child(even){background:#fff}
 .corr-table .was{color:#b00020; text-decoration:line-through}
 .corr-table .now{color:#0c8a72; font-weight:600}
 .corr-tag{font-size:.68rem; background:var(--ink); color:#fff; padding:2px 7px; border-radius:50px; white-space:nowrap}
+.mark-grid{display:grid; gap:8px; grid-template-columns:1fr; max-width:480px}
+.mark-row{display:flex; justify-content:space-between; align-items:center; gap:12px; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 12px}
+.mark-row span{font-weight:600; color:var(--ink); font-size:.92rem}
+.mark-row select{padding:5px 8px; border:1px solid var(--line); border-radius:6px; font-family:inherit; font-size:.95rem}
 </style>
 </head>
 <body>
@@ -1300,10 +1304,9 @@ const ROUTES = {
     app().innerHTML = `
     <div class="landing">
       <div class="landing-hero">
-        <div class="kicker">English skills · Grades 9–12</div>
-        <h1>You <span class="mark">can</span> read, write, listen &amp; speak with confidence.</h1>
-        <p>A practice space for reading, writing, listening and speaking — built for every learner, from those who need a little scaffolding to those chasing the hardest challenge.</p>
-        <div class="lh-chips"><span>📖 Reading</span><span>✍️ Writing</span><span>🎨 Design Studio</span><span>🧩 Grammar Lab</span><span>⌨️ Typing Tutor</span><span>🎓 Exams &amp; certificates</span></div>
+        <h1 class="rwd-title">RWD</h1>
+        <div class="rwd-sub">Read · Write · Design</div>
+        <p class="rwd-cap">A multiliteracies space for English — grades 9–12. Read to think, write to say it, design to share it.</p>
       </div>
       <div class="landing-roles">
         <div class="role" onclick="go('studentLogin')">
@@ -1554,6 +1557,40 @@ const ROUTES = {
   },
   reviseTask(id){ openReviseScreen(id); },
 
+  /* ---------------- WRITING STUDIO (Unit 4) ---------------- */
+  wstudio(){
+    const total=MARKING.length+REVISE.length+INFER.length+OREO.length;
+    const card=(onclick,title,sub)=>`<button onclick="${onclick}" style="text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:13px 15px;cursor:pointer"><b style="color:var(--ink)">${title}</b><br><span style="font-size:.8rem;color:var(--muted)">${sub}</span></button>`;
+    app().innerHTML=`
+    <div class="wrap screen">
+      <button class="back" onclick="go('writingCourse')">← Writing Course</button>
+      <div class="meta">Writing Course · Unit 4</div>
+      <h1 style="font-size:2.1rem">🧪 Writing Studio — analyse, mark &amp; improve</h1>
+      <p style="color:var(--muted);max-width:740px">Real exam responses across the full range of scores — from top marks to zero — plus inference and opinion practice. Mark them like an examiner, justify your decisions, rewrite weak ones, and only then compare with the model. <b>${total} practices</b> in total.</p>
+
+      <h2 style="font-family:'Fraunces';font-size:1.4rem;margin:22px 0 4px;color:var(--ink)">⚖️ Mark &amp; Justify <span style="font-weight:400;font-size:.9rem;color:var(--muted)">— you be the examiner</span></h2>
+      <p style="color:var(--muted);font-size:.86rem;margin:0 0 10px">Give the response a mark against the rubric and justify it. The examiner's real marks and reasoning appear only after you submit.</p>
+      <div class="grid c2">${MARKING.map(m=>card(`go('markTask','${m.id}')`, (m.zero?'🚫 ':'')+m.title, (m.real?'Real exam response · ':'')+(m.zero?'Why zero?':markBand(markTotal(m.scores))+' · /25'))).join('')}</div>
+
+      <h2 style="font-family:'Fraunces';font-size:1.4rem;margin:24px 0 4px;color:var(--ink)">✏️ Revise &amp; Edit</h2>
+      <p style="color:var(--muted);font-size:.86rem;margin:0 0 10px">Rewrite a flawed response so it scores well, get feedback, then (after you submit) see a corrected model.</p>
+      <div class="grid c2">${REVISE.map(t=>card(`go('reviseTask','${t.id}')`, t.title, t.level+' · '+t.minWords+'+ words')).join('')}</div>
+
+      <h2 style="font-family:'Fraunces';font-size:1.4rem;margin:24px 0 4px;color:var(--ink)">🔎 Infer &amp; Justify</h2>
+      <p style="color:var(--muted);font-size:.86rem;margin:0 0 10px">Read a short text, work out what is implied, and back it up with evidence.</p>
+      <div class="grid c2">${INFER.map(t=>card(`go('inferTask','${t.id}')`, t.title, 'Inference + evidence')).join('')}</div>
+
+      <h2 style="font-family:'Fraunces';font-size:1.4rem;margin:24px 0 4px;color:var(--ink)">🍪 OREO opinion writing</h2>
+      <p style="color:var(--muted);font-size:.86rem;margin:0 0 10px">Build a tight opinion paragraph: Opinion · Reason · Example · Opinion restated.</p>
+      <div class="grid c2">${OREO.map(t=>card(`go('oreoTask','${t.id}')`, t.title, 'OREO paragraph')).join('')}</div>
+
+      <p class="note" style="margin-top:16px">Teachers: more excerpts and model answers can be added to the <code>MARKING</code>, <code>INFER</code> and <code>OREO</code> lists (see the project reference). The marking rubric is the official EoT writing rubric.</p>
+    </div>`;
+  },
+  markTask(id){ markTask(id); },
+  inferTask(id){ inferTask(id); },
+  oreoTask(id){ oreoTask(id); },
+
   /* ---------------- READING LIST ---------------- */
   reading(){
     app().innerHTML = `
@@ -1759,8 +1796,8 @@ const ROUTES = {
       <button class="back" onclick="go('dashboard')">← Pathways</button>
       <h1 style="font-size:2.2rem">🎓 Writing Course</h1>
       <p style="color:var(--muted);max-width:680px">Learn writing step by step. Choose your level, then work through three units. Every lesson teaches a skill, gives you a prompt, marks your writing against a rubric, and shows a model answer. Build five new words into your <b>Vocabulary Bank</b> each lesson.</p>
-      <button onclick="go('revise')" style="width:100%;text-align:left;border:none;cursor:pointer;background:linear-gradient(135deg,#0c8a72,#8B5CF6);color:#fff;border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;margin:6px 0 14px">
-        <span><span style="font-size:1.05rem;font-weight:700">✏️ Revise &amp; Edit</span><br><span style="opacity:.9;font-size:.84rem">Improve real exam responses against the marking rubric, then compare with a model answer.</span></span>
+      <button onclick="go('wstudio')" style="width:100%;text-align:left;border:none;cursor:pointer;background:linear-gradient(135deg,#0c8a72,#8B5CF6);color:#fff;border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;margin:6px 0 14px">
+        <span><span style="font-size:1.05rem;font-weight:700">🧪 Unit 4 · Writing Studio</span><br><span style="opacity:.9;font-size:.84rem">Mark real exam responses like an examiner, revise &amp; edit, infer &amp; justify, and practise OREO opinions — 30+ practices.</span></span>
         <span style="background:rgba(255,255,255,.2);padding:6px 12px;border-radius:50px;font-weight:600;white-space:nowrap">Open →</span></button>
       <div class="lvl-tabs">
         ${Object.keys(WCOURSE).map(k=>`<button class="${WC_LEVEL===k?'on':''}" onclick="setWcLevel('${k}')">${WCOURSE[k].label} <span style="font-weight:400;opacity:.7">· ${WCOURSE[k].tag}</span></button>`).join('')}
@@ -1805,8 +1842,8 @@ const ROUTES = {
         <textarea id="wcText" style="min-height:200px" oninput="saveDraft('${id}')" placeholder="Start writing here…">${esc(draft)}</textarea>
         <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-top:4px"><span id="wcWords">0 words</span><span>Autosaved ✓</span></div>
       </div>
-      <button class="btn teal" onclick="getWcFeedback('${id}')">Get feedback →</button>
-      <button class="btn ghost" onclick="document.getElementById('modelBox').classList.toggle('hidden')">Show model answer</button>
+      <button class="btn teal" onclick="getWcFeedback('${id}')">Submit &amp; get feedback →</button>
+      <button class="btn ghost" id="wcModelBtn" style="display:none" onclick="document.getElementById('modelBox').classList.remove('hidden')">Show model answer</button>
       <div id="wcFeedback" style="margin-top:18px"></div>
       <div id="modelBox" class="card hidden" style="margin-top:14px;border-color:var(--teal)">
         <b style="color:var(--teal-dk)">Model answer — compare, don't copy</b>
@@ -2590,6 +2627,7 @@ function getWcFeedback(id){
   const f=findLesson(id); const text=(val('wcText')||"").trim();
   const box=document.getElementById('wcFeedback');
   if(text.split(/\s+/).filter(Boolean).length<8){ box.innerHTML=`<div class="feedback">Write a little more first — at least a couple of sentences — then ask for feedback.</div>`; return; }
+  const mb=document.getElementById('wcModelBtn'); if(mb)mb.style.display='inline-block';
   const r=wcFeedback(text, f.lesson);
   const bandLabel=["","Beginning","Developing","Good","Excellent"][Math.round(r.avg)];
   box.innerHTML=`
@@ -4093,7 +4131,7 @@ function openReviseScreen(id){
      <textarea id="revDraft" class="rev-draft" oninput="revWordCount()" placeholder="Type your improved version here…"></textarea>
      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-top:8px">
        <span style="color:var(--muted);font-size:.88rem"><b id="revWords">0</b> words · aim for at least ${t.minWords}</span>
-       <span><button class="btn" onclick="reviseGetFeedback()">Get feedback →</button> <button class="btn ghost" onclick="reviseReveal()">Show model &amp; corrections</button></span>
+       <span><button class="btn" onclick="reviseGetFeedback()">Submit &amp; get feedback →</button> <button class="btn ghost" id="revModelBtn" style="display:none" onclick="reviseReveal()">Show model &amp; corrections</button></span>
      </div>
      <div id="revFeedback" style="margin-top:14px"></div>
      <div id="revModel" style="margin-top:14px"></div>
@@ -4140,6 +4178,7 @@ function reviseGetFeedback(){
   const t=REVISE_CUR; if(!t)return; const draft=document.getElementById('revDraft').value||'';
   if(draft.trim().split(/\s+/).filter(Boolean).length<10){ document.getElementById('revFeedback').innerHTML=`<p class="note">Write a bit more first (at least a few sentences), then ask for feedback.</p>`; return; }
   document.getElementById('revFeedback').innerHTML=reviseFeedback(draft,t);
+  const mb=document.getElementById('revModelBtn'); if(mb)mb.style.display='inline-block';
   const words=draft.trim().split(/\s+/).length;
   if(SESSION&&SESSION.role==='student'){ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:"Writing",activity:"Revise & Edit: "+t.title,score:Math.min(words,t.minWords),max:t.minWords,percent:Math.min(100,Math.round(words/t.minWords*100)),detail:`Revision draft · ${words} words`}); }
   document.getElementById('revFeedback').scrollIntoView({behavior:'smooth'});
@@ -4156,6 +4195,228 @@ function reviseReveal(){
     <p style="margin:12px 0 0;color:var(--slate)">Now compare the model with your own version. Which of these fixes did you make? Which will you watch for next time?</p>
   </div>`;
   document.getElementById('revModel').scrollIntoView({behavior:'smooth'});
+}
+
+/* =========================================================================
+   WRITING STUDIO (Unit 4) — analyse, mark & improve real exam responses.
+   Activities: Mark & Justify (grade against the rubric, then see the
+   examiner's score), Infer & Justify, OREO opinion writing. Models are
+   GATED — students must submit their own attempt before any model shows.
+   Source: EoT writing standardisation set (real responses + examiner notes).
+   ========================================================================= */
+function markTotal(s){ return s.task+s.structure+s.grammar+s.vocab+s.spelling; }
+function markBand(total){ return total===0?"Zero":total>=20?"Strong":total>=14?"Competent":total>=8?"Developing":"Limited"; }
+const MARK_CRIT=[["task","Task completion"],["structure","Structure"],["grammar","Grammar"],["vocab","Vocabulary"],["spelling","Spelling & punctuation"]];
+const MARKING=[
+  // ---------- REAL responses from the exam set ----------
+  { id:"mk_space", real:true, title:"Space travel in the future", prompt:`Write about space travel in the future. Include: why people will go to space; why space travel is dangerous; why people might want to live on different planets. (≥100 words)`,
+    response:`Space is a planet beautful place there is a galxy and most people is discuvar new worlds so why one day we will living there, and planets and they will carry scietific experimnts, they will living on another planet, they will new life and exprienc, they will living there different from earth, all which of we will know in the future.`,
+    scores:{task:3,structure:2,grammar:2,vocab:4,spelling:3},
+    notes:`The response attempts the prompt but misses one area and is under the word count. It is really one long run-on sentence, so it can't be read as connected sentences. Grammar is basic with frequent errors. There is, however, some good topic vocabulary ("galaxy", "discover", "scientific experiments") despite the spelling, and commas are used to divide clauses.` },
+  { id:"mk_goodcountry", real:true, title:"\"It is a good country and I like it.\"", prompt:`Write about the end-of-term exam. Include: why we have it; what topics will be in the essay question; how to write a good essay. (≥100 words)`,
+    response:`It is a good country and I like it.`,
+    scores:{task:1,structure:2,grammar:2,vocab:1,spelling:3},
+    notes:`For a single sentence the spelling and punctuation are accurate, but the response does not address the task at all and is far below the word count, so no higher band can apply.` },
+  { id:"mk_phonetic", real:true, title:"An emerging writer", prompt:`Write about the end-of-term exam. Include: why we have it; what topics will be in the essay question; how to write a good essay. (≥100 words)`,
+    response:`sjfs canb exym writ cma gud cen muni
+gud
+gud tecr`,
+    scores:{task:1,structure:1,grammar:1,vocab:1,spelling:1},
+    notes:`No discernible grammatical structures or sentences can be identified. There is some phonemic awareness ("gud" = good, "muni" = money), which shows the very beginnings of writing, but the piece leans towards a 1 across the rubric.` },
+  { id:"mk_zero_climate", real:true, zero:true, title:"The 'climate change' essay", prompt:`Discuss a type of extreme weather. Include: a description of the extreme weather event; how scary you believe it can be; whether you have experienced one. (≥180 words)`,
+    response:`Climate change is an urgent and complex challenge facing our planet today. It refers to the long-term changes in global temperature, precipitation, and other weather patterns caused by human activities such as burning fossil fuels, deforestation, and industrial processes. The effects of climate change are already being felt across the world, from melting glaciers and rising sea levels to more frequent and severe weather events… (continues as a polished general essay).`,
+    scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
+    zeroReason:`Award ZERO — off-topic / pre-memorised. The English is professional, but the response bears no real relationship to the actual prompt (a specific extreme-weather event, how scary it is, and a personal experience). The pre-released coverage was "weather/climate", so a polished general essay on climate change strongly suggests a memorised or AI-generated answer rather than the student's own spontaneous writing. Action: flag as suspicious, award zero, and re-sit on a new topic under exam conditions.` },
+  { id:"mk_zero_plag", real:true, zero:true, title:"The 'public spending' essay", prompt:`In your opinion, how should countries spend their money? Include: the reasons for your choice; who the money will benefit; how the money will be used. (≥180 words)`,
+    response:`Public spending enables governments to produce and purchase goods and services, in order to fulfil their objectives — such as the provision of public goods or the redistribution of resources. In this entry we study public spending through the lens of aggregate cross-country data on government expenditures… (continues in an encyclopaedic register).`,
+    scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
+    zeroReason:`Award ZERO — plagiarism. The response is strangely over-technical for the prompt, and a search of the opening sentence shows it was lifted word-for-word from a public website. Evidential plagiarism scores 0; note the source URL on the paper as evidence. (If only part of an answer is copied, strike through the copied portion and mark the rest as if it were the whole response.)` },
+  // ---------- representative samples at each band ----------
+  { id:"mk_strong_eot", title:"End-of-term exam (strong)", prompt:`Write about the end-of-term exam. Include: why we have it; what topics will be in the essay question; how to write a good essay. (≥100 words)`,
+    response:`The end-of-term exam matters to us as students because it shows our teachers how much we have learned over the term and whether we are ready to move up. In the essay question, we can expect familiar topics such as technology, the environment, or social media. To write a good essay, I always plan first, organise my ideas into clear paragraphs, and use a range of linking words. Finally, I check my spelling and punctuation carefully before I hand it in, because small mistakes can cost easy marks.`,
+    scores:{task:5,structure:4,grammar:4,vocab:4,spelling:4},
+    notes:`A strong, on-task response that covers all three bullet points in clear paragraphs, with accurate grammar and good control. To reach the very top, the writer could vary sentence openings more and use one or two more sophisticated words.` },
+  { id:"mk_strong_weather", title:"Extreme weather (strong)", prompt:`Discuss a type of extreme weather. Include: a description of the event; how scary it can be; whether you have experienced one. (≥180 words)`,
+    response:`One of the most frightening kinds of extreme weather in our region is a sandstorm. The sky turns a thick orange, the wind howls, and within minutes you cannot see more than a few metres ahead. I will never forget the sandstorm that hit my city two years ago. The air grew heavy and warm, and a wall of dust rolled toward us like a moving mountain. We rushed inside, sealed the windows with wet towels, and still the fine sand crept under the doors. It was terrifying because everything familiar disappeared, and for an hour the whole city seemed to hold its breath. When it finally passed, a layer of dust covered every surface. That experience taught me how powerless we can feel against nature, and why we must respect the warnings the authorities give.`,
+    scores:{task:5,structure:5,grammar:4,vocab:4,spelling:4},
+    notes:`Fully on-task: it describes the event, conveys how frightening it is, and recounts a genuine personal experience, all in well-organised paragraphs. A couple of grammar slips and a little more precise weather vocabulary are all that separate this from a perfect script.` },
+  { id:"mk_strong_money", title:"How countries spend money (strong)", prompt:`In your opinion, how should countries spend their money? Include: reasons for your choice; who benefits; how the money is used. (≥180 words)`,
+    response:`In my opinion, countries should spend most of their money on education, because an educated population benefits everyone in the long run. When governments fund good schools, well-trained teachers and free resources, students from every background get a fair chance to succeed. This money is used to build classrooms, pay staff and provide technology, and the people who benefit are not only the students themselves but also businesses, which gain skilled workers, and society as a whole, which becomes healthier and more stable. Of course, health and infrastructure matter too, but I believe education is the foundation that makes all other progress possible. A country that invests in its young people is really investing in its own future.`,
+    scores:{task:4,structure:4,grammar:4,vocab:5,spelling:4},
+    notes:`A clear, well-argued opinion with reasons and examples, and a strong range of vocabulary. One or two comma splices are the main thing keeping grammar from full marks.` },
+  { id:"mk_strong_arch", title:"Architecture (strong)", prompt:`In your opinion, how does architecture influence people's lives? Include: what it means to you; its importance in the UAE; two examples. (≥200 words)`,
+    response:`Architecture shapes the way we feel about the places we live in. To me, it is much more than walls and roofs; it is the art of designing spaces that lift our mood and bring people together. In the UAE, architecture is especially important because our buildings are known all over the world. The Burj Khalifa, for example, is not only the tallest building on Earth but also a symbol of ambition that makes residents proud. The Louvre Abu Dhabi is another example: its huge silver dome lets light fall like rain, turning a museum visit into an experience. Both buildings show that thoughtful design can attract visitors, support the economy and give a city its identity. In my view, good architecture does not just give us shelter — it influences how we live, how we feel and how the world sees us.`,
+    scores:{task:5,structure:5,grammar:4,vocab:5,spelling:5},
+    notes:`Excellent: a personal definition, clear UAE focus, and two well-chosen examples, all in fluent paragraphs. To push grammar to 5, the writer could add a little more sentence variety.` },
+  { id:"mk_avg_space", title:"Space travel (average)", prompt:`Write about space travel in the future. Include: why people go to space; why it is dangerous; why people might live on other planets. (≥100 words)`,
+    response:`In the future many people will go to space because they want to discover new things. Space travel is dangerous because there is no air and the rockets can explode. Also the astronauts can get sick from the radiation. Some people want to live on other planets like Mars because the Earth is getting crowded and polluted. I think space travel is exciting but we need more technology to make it safe. Maybe one day normal people can travel to space too, not only astronauts.`,
+    scores:{task:3,structure:3,grammar:3,vocab:3,spelling:3},
+    notes:`An adequate response that covers the main points in simple paragraphs. The vocabulary and grammar are correct but stay basic; adding examples and more varied structures would lift it.` },
+  { id:"mk_avg_eot", title:"End-of-term exam (average)", prompt:`Write about the end-of-term exam. Include: why we have it; what topics; how to write a good essay. (≥100 words)`,
+    response:`We have the end of term exam to check what we learned. The teacher want to know if we understand the lessons. In the essay we can write about technology or environment. To write a good essay you should make paragraphs and use good grammar. You should also check the spelling. The exam is important so we must study hard and revise before it.`,
+    scores:{task:3,structure:3,grammar:2,vocab:3,spelling:3},
+    notes:`Covers most of the task in short paragraphs, but a little under length and with grammar slips ("the teacher want"). Clear enough to communicate, which fits the middle of the rubric.` },
+  { id:"mk_avg_social", title:"Social media (average)", prompt:`Discuss the effects of social media on young people. Include: one benefit; one problem; your own opinion. (≥150 words)`,
+    response:`Social media has many effects on young people. One benefit is that they can talk to their friends and family anytime and share photos. They can also learn new things from videos. But there is also a problem because some people spend too much time on their phone and they don't sleep well. Also there is cyberbullying which is very bad. In my opinion social media is good if we use it in a balanced way and not all the day.`,
+    scores:{task:3,structure:2,grammar:3,vocab:3,spelling:3},
+    notes:`The ideas address the prompt, but the response is written almost as one block with little paragraphing. Vocabulary and grammar are adequate but simple.` },
+  { id:"mk_avg_arch", title:"Architecture (average)", prompt:`In your opinion, how does architecture influence people's lives? Include: what it means to you; importance in the UAE; two examples. (≥200 words)`,
+    response:`Architecture means the design of buildings. It influences people because if the building is nice people feel happy and comfortable. In the UAE architecture is important because we have famous buildings. For example the Burj Khalifa is very tall and many tourists come to see it. Another example is the malls which are big and have nice design. So architecture is important for the country and for the people because it makes the city beautiful and brings money from tourists.`,
+    scores:{task:3,structure:3,grammar:3,vocab:3,spelling:4},
+    notes:`Covers the parts of the task with two examples, but the ideas stay general and the language is simple. Developing the examples and using richer vocabulary would move it up.` },
+  { id:"mk_low_weather", title:"Extreme weather (low)", prompt:`Discuss a type of extreme weather. Include: a description; how scary it is; a personal experience. (≥180 words)`,
+    response:`The rain is extreme weather. it is very strong and scary. one time it rain alot and the street is full of water. i was scared. the weather is dangerous sometimes.`,
+    scores:{task:2,structure:1,grammar:2,vocab:2,spelling:2},
+    notes:`Only a few short ideas, well under the word count, with little paragraphing and frequent errors (lower-case sentence starts, "rain alot", "i"). It touches the topic but does not develop it.` },
+  { id:"mk_low_eot", title:"End-of-term exam (low)", prompt:`Write about the end-of-term exam. Include: why we have it; what topics; how to write a good essay. (≥100 words)`,
+    response:`exam is important. we study for exam. the exam have many question. i like english exam. good essay need good writing and no mistake.`,
+    scores:{task:1,structure:1,grammar:2,vocab:2,spelling:2},
+    notes:`A few disconnected sentences that barely touch the task and miss most of its parts. Errors are frequent and there is no real structure.` },
+  { id:"mk_low_money", title:"How countries spend money (low)", prompt:`In your opinion, how should countries spend their money? Include: reasons; who benefits; how it is used. (≥180 words)`,
+    response:`country must spend money on good things. money is important for people. they spend on school and hospital. it is good for everyone. i think money help the country to be better.`,
+    scores:{task:2,structure:1,grammar:2,vocab:2,spelling:2},
+    notes:`Very short and general, missing most of the prompt's detail. The ideas are relevant but undeveloped, with frequent basic errors.` },
+  { id:"mk_zero_blank", zero:true, title:"No response", prompt:`Write about the end-of-term exam. (≥100 words)`,
+    response:`(The student left the answer space completely blank.)`,
+    scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
+    zeroReason:`Award ZERO — no response is attempted. Nothing is written, so there is no evidence of writing skill to assess against any criterion.` }
+];
+const INFER=[
+  { id:"inf1", title:"The late bus", text:`Maya checked her watch for the third time and sighed. The pavement was empty, the timetable on the pole was smudged with rain, and the next bus was not due for forty minutes. She pulled her thin jacket tighter and started to walk.`,
+    question:`How does Maya most likely feel, and what in the text tells you?`,
+    model:`She most likely feels frustrated and cold. Checking her watch "for the third time" and sighing suggests impatience; the empty pavement and the long wait ("forty minutes") explain the frustration; "pulled her thin jacket tighter" implies she is cold. Deciding to walk shows she has given up waiting.` },
+  { id:"inf2", title:"The empty plate", text:`When Dad came home, the kitchen smelled of his favourite meal. My little brother sat very straight, smiling too widely, with a suspiciously clean plate in front of him. The dog wagged its tail under the table.`,
+    question:`What can you infer has happened, and which details support your inference?`,
+    model:`We can infer that the brother gave his food to the dog rather than eating it. The "suspiciously clean plate", his "smiling too widely" (a sign he is hiding something), and the dog wagging its tail "under the table" all point to this. The writer never states it directly, but the details lead the reader there.` },
+  { id:"inf3", title:"The new student", text:`On her first day, Lena answered every question before the teacher finished asking it. By lunchtime, she was sitting alone, and the other students spoke to each other in low voices whenever she passed.`,
+    question:`Why might the other students be keeping their distance? Justify with evidence.`,
+    model:`They may feel she is showing off or making them look slow, because she "answered every question before the teacher finished." Their reaction — leaving her to sit "alone" and speaking "in low voices" as she passes — suggests resentment or unease rather than friendliness. The text implies a social consequence without stating it.` },
+  { id:"inf4", title:"The closed shop", text:`The bakery on the corner had been there for thirty years. This morning a handwritten sign hung in the dark window, and an elderly man stood outside for a long time before slowly walking away.`,
+    question:`What has probably happened, and how do you know?`,
+    model:`The bakery has probably closed down for good. The "dark window", the "handwritten sign", and the fact that it had been there "for thirty years" suggest an ending; the elderly man standing "for a long time" then "slowly walking away" implies sadness, as if he is saying goodbye to a familiar place.` },
+  { id:"inf5", title:"The text message", text:`Sam read the message twice, then put the phone face-down on the table. He pushed his dinner away, said he wasn't hungry, and went to his room without another word.`,
+    question:`What can you infer about the message? Support your answer.`,
+    model:`We can infer the message contained bad or upsetting news. Reading it "twice" suggests disbelief; turning the phone "face-down", losing his appetite, and going to his room "without another word" all show a strong negative reaction. The content is never revealed, but Sam's behaviour makes the inference clear.` },
+  { id:"inf6", title:"The proud coach", text:`The team lost the final by a single point. Afterwards, the coach gathered the players, and instead of frowning, she was smiling as she shook each player's hand.`,
+    question:`Why is the coach smiling despite the loss? Infer and justify.`,
+    model:`The coach is probably proud of how well the team played, not focused on the result. Losing "by a single point" shows they competed strongly, and shaking "each player's hand" while smiling suggests respect and pride in their effort. The writer contrasts the expected reaction ("instead of frowning") to highlight this.` }
+];
+const OREO=[
+  { id:"or1", title:"Phones in school", prompt:`Should students be allowed to use mobile phones during school hours? Write an OREO paragraph giving your opinion.`,
+    model:{o:"Students should not be allowed to use mobile phones during lessons.", r:"This is because phones are a major distraction that pulls attention away from learning.", e:"For example, a student who keeps checking messages misses the teacher's explanation and then struggles with the work.", o2:"For these reasons, keeping phones away during lessons helps everyone focus and learn more effectively."} },
+  { id:"or2", title:"School uniform", prompt:`Should schools require students to wear a uniform? Write an OREO paragraph.`,
+    model:{o:"I believe schools should require students to wear a uniform.", r:"A uniform reduces pressure around clothing and helps students feel equal.", e:"For instance, when everyone dresses the same, no one is judged for wearing cheaper or older clothes, and bullying about appearance decreases.", o2:"Therefore, a school uniform creates a fairer, calmer environment in which students can concentrate on learning."} },
+  { id:"or3", title:"A four-day school week", prompt:`Would a four-day school week be a good idea? Write an OREO paragraph.`,
+    model:{o:"In my opinion, a four-day school week would be a good idea.", r:"It would give students more time to rest and pursue hobbies, which improves wellbeing and motivation.", e:"For example, students could use the extra day for sports, family or part-time work, returning to class more focused.", o2:"For these reasons, a shorter week could make learning more efficient and students happier."} },
+  { id:"or4", title:"Homework", prompt:`Should homework be reduced? Write an OREO paragraph giving your view.`,
+    model:{o:"I think homework should be reduced, though not removed completely.", r:"Too much homework causes stress and leaves little time for rest or family.", e:"For example, students who study until late often arrive at school tired and unable to concentrate the next day.", o2:"Therefore, a smaller amount of meaningful homework would support learning without harming students' wellbeing."} },
+  { id:"or5", title:"Plastic bags", prompt:`Should single-use plastic bags be banned? Write an OREO paragraph.`,
+    model:{o:"Single-use plastic bags should be banned.", r:"They are used for only a few minutes but pollute the environment for hundreds of years.", e:"For instance, plastic bags often end up in the sea, where they harm turtles and other marine animals that mistake them for food.", o2:"For these reasons, banning single-use plastic bags is an important step toward protecting our environment."} },
+  { id:"or6", title:"Learning a second language", prompt:`Is it important to learn a second language? Write an OREO paragraph.`,
+    model:{o:"It is very important to learn a second language.", r:"Knowing another language opens doors to new cultures, friendships and job opportunities.", e:"For example, someone who speaks English and Arabic can work with people from many countries and understand different points of view.", o2:"Therefore, learning a second language is a valuable skill that benefits us throughout our lives."} }
+];
+let MARK_CUR=null, INFER_CUR=null, OREO_CUR=null;
+function markTask(id){
+  const m=MARKING.find(x=>x.id===id)||MARKING[0]; MARK_CUR=m;
+  app().innerHTML=`
+   <div class="wrap screen">
+     <button class="back" onclick="go('wstudio')">← Writing Studio</button>
+     <div class="meta">Mark &amp; Justify${m.real?' · real exam response':''}</div>
+     <h1 style="font-size:1.6rem">⚖️ ${m.title}</h1>
+     <div class="card"><b style="color:var(--ink)">The task</b><p style="color:var(--slate);margin:6px 0 0">${m.prompt}</p></div>
+     <div class="card"><b style="color:var(--ink)">The response</b><div class="excerpt">${esc(m.response)}</div></div>
+     <details class="card" style="cursor:pointer"><summary style="font-weight:700;color:var(--ink)">📋 Show the marking rubric</summary><p style="color:var(--muted);font-size:.85rem;margin:8px 0">${WRITING_RUBRIC.title}</p>${writingRubricHTML()}</details>
+     <h3 style="font-size:1.15rem;margin:16px 0 6px">You be the examiner</h3>
+     <p style="color:var(--muted);font-size:.9rem;margin:0 0 8px">Give each criterion a mark out of 5 using the rubric, then justify your decision. <b>The examiner's marks appear only after you submit.</b></p>
+     <div class="mark-grid">${MARK_CRIT.map(([k,label])=>`<label class="mark-row"><span>${label}</span>
+        <select id="mk_${k}">${[0,1,2,3,4,5].map(v=>`<option value="${v}">${v}</option>`).join('')}</select></label>`).join('')}</div>
+     <div class="field" style="margin-top:10px"><label>Your justification (why does it deserve these marks?)</label>
+       <textarea id="mkJust" style="min-height:90px" placeholder="Refer to the rubric: task completion, structure, grammar, vocabulary, spelling & punctuation…"></textarea></div>
+     <button class="btn" onclick="markSubmit()">Submit my marking →</button>
+     <div id="mkResult" style="margin-top:14px"></div>
+   </div>`;
+  window.scrollTo({top:0});
+}
+function markSubmit(){
+  const m=MARK_CUR; if(!m)return;
+  const mine={}; MARK_CRIT.forEach(([k])=>{ mine[k]=+(document.getElementById('mk_'+k).value); });
+  const myTotal=markTotal(mine); const just=(document.getElementById('mkJust').value||'').trim();
+  if(just.length<15){ document.getElementById('mkResult').innerHTML=`<p class="note">Write a short justification first (a sentence or two), then submit.</p>`; return; }
+  const exTotal=markTotal(m.scores); const band=m.zero?"Zero":markBand(exTotal);
+  if(SESSION&&SESSION.role==='student'){ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:"Writing",activity:"Mark & Justify: "+m.title,score:Math.max(0,25-Math.abs(myTotal-exTotal)),max:25,percent:Math.round(Math.max(0,25-Math.abs(myTotal-exTotal))/25*100),detail:`You: ${myTotal}/25 · Examiner: ${exTotal}/25`}); }
+  const rows=MARK_CRIT.map(([k,label])=>`<tr><td>${label}</td><td style="text-align:center">${mine[k]}</td><td style="text-align:center"><b>${m.scores[k]}</b></td></tr>`).join('');
+  const gap=Math.abs(myTotal-exTotal);
+  const verdict = gap<=3 ? "Your marking is very close to the examiner's — great rubric judgement!" : gap<=6 ? "You're in the right area — compare your reasons with the examiner's notes below." : "Quite a gap — read the examiner's notes and see which criteria you judged differently.";
+  document.getElementById('mkResult').innerHTML=`<div class="card">
+     <h3 style="margin:0 0 8px;font-size:1.15rem">Examiner's marks</h3>
+     <table class="corr-table"><thead><tr><th>Criterion</th><th>Your mark</th><th>Examiner</th></tr></thead><tbody>${rows}
+       <tr style="background:var(--mist)"><td><b>Total</b></td><td style="text-align:center"><b>${myTotal}/25</b></td><td style="text-align:center"><b>${exTotal}/25</b></td></tr></tbody></table>
+     <p style="margin:10px 0 4px"><b>${m.zero?'Result: ZERO':'Band: '+band+' ('+exTotal+'/25)'}.</b> ${verdict}</p>
+     <div class="feedbk"><b>Examiner's reasoning</b><p style="margin:6px 0 0;color:var(--slate)">${esc(m.zero?m.zeroReason:m.notes)}</p></div>
+     <div style="margin-top:10px"><button class="btn ghost sm" onclick="go('wstudio')">← More practices</button></div>
+   </div>`;
+  document.getElementById('mkResult').scrollIntoView({behavior:'smooth'});
+}
+function inferTask(id){
+  const it=INFER.find(x=>x.id===id)||INFER[0]; INFER_CUR=it;
+  app().innerHTML=`
+   <div class="wrap screen">
+     <button class="back" onclick="go('wstudio')">← Writing Studio</button>
+     <div class="meta">Infer &amp; Justify</div>
+     <h1 style="font-size:1.6rem">🔎 ${it.title}</h1>
+     <div class="card"><div class="excerpt">${esc(it.text)}</div></div>
+     <div class="card"><b style="color:var(--ink)">Question</b><p style="color:var(--slate);margin:6px 0 0">${it.question}</p></div>
+     <p style="color:var(--muted);font-size:.9rem;margin:0 0 6px">Write your inference <b>and the evidence</b> from the text that supports it. The model answer appears only after you submit.</p>
+     <textarea id="infDraft" class="rev-draft" style="min-height:120px" placeholder="I can infer that… The text shows this because…"></textarea>
+     <div style="margin-top:8px"><button class="btn" onclick="inferSubmit()">Submit my answer →</button></div>
+     <div id="infResult" style="margin-top:14px"></div>
+   </div>`;
+  window.scrollTo({top:0});
+}
+function inferSubmit(){
+  const it=INFER_CUR; if(!it)return; const v=(document.getElementById('infDraft').value||'').trim();
+  if(v.split(/\s+/).filter(Boolean).length<8){ document.getElementById('infResult').innerHTML=`<p class="note">Write a fuller answer first — an inference and the evidence for it.</p>`; return; }
+  if(SESSION&&SESSION.role==='student'){ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:"Reading",activity:"Infer & Justify: "+it.title,score:1,max:1,percent:100,detail:`Inference submitted`}); }
+  document.getElementById('infResult').innerHTML=`<div class="card"><h3 style="margin:0 0 6px;font-size:1.15rem">✅ A model answer</h3>
+     <p style="color:var(--slate);margin:0">${esc(it.model)}</p>
+     <p style="margin:10px 0 0;color:var(--slate)">Compare it with yours: did you name the inference <i>and</i> point to evidence? Strong answers always do both.</p>
+     <div style="margin-top:10px"><button class="btn ghost sm" onclick="go('wstudio')">← More practices</button></div></div>`;
+  document.getElementById('infResult').scrollIntoView({behavior:'smooth'});
+}
+function oreoTask(id){
+  const o=OREO.find(x=>x.id===id)||OREO[0]; OREO_CUR=o;
+  app().innerHTML=`
+   <div class="wrap screen">
+     <button class="back" onclick="go('wstudio')">← Writing Studio</button>
+     <div class="meta">OREO opinion writing</div>
+     <h1 style="font-size:1.6rem">🍪 ${o.title}</h1>
+     <div class="card"><b style="color:var(--ink)">The task</b><p style="color:var(--slate);margin:6px 0 0">${o.prompt}</p>
+       <p style="color:var(--muted);font-size:.85rem;margin:8px 0 0"><b>OREO</b> = <b>O</b>pinion · <b>R</b>eason · <b>E</b>xample · <b>O</b>pinion (paraphrased). Fill each part, then see a model.</p></div>
+     ${[["o","Opinion — state what you think"],["r","Reason — because…"],["e","Example — for instance…"],["o2","Opinion restated — in different words"]].map(([k,label])=>`<div class="field"><label>${label}</label><textarea id="or_${k}" style="min-height:60px"></textarea></div>`).join('')}
+     <button class="btn" onclick="oreoSubmit()">Submit my paragraph →</button>
+     <div id="orResult" style="margin-top:14px"></div>
+   </div>`;
+  window.scrollTo({top:0});
+}
+function oreoSubmit(){
+  const o=OREO_CUR; if(!o)return;
+  const parts=["o","r","e","o2"].map(k=>(document.getElementById('or_'+k).value||'').trim());
+  if(parts.filter(Boolean).length<3){ document.getElementById('orResult').innerHTML=`<p class="note">Try to complete at least the Opinion, Reason and Example first.</p>`; return; }
+  if(SESSION&&SESSION.role==='student'){ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:"Writing",activity:"OREO: "+o.title,score:parts.filter(Boolean).length,max:4,percent:Math.round(parts.filter(Boolean).length/4*100),detail:`OREO paragraph submitted`}); }
+  const yourPara=parts.filter(Boolean).join(' ');
+  const m=o.model;
+  document.getElementById('orResult').innerHTML=`<div class="card">
+     <h3 style="margin:0 0 6px;font-size:1.15rem">Your paragraph</h3><p class="excerpt">${esc(yourPara)}</p>
+     <h3 style="margin:14px 0 6px;font-size:1.15rem">✅ A model OREO paragraph</h3>
+     <table class="corr-table"><tbody>
+       <tr><td><span class="corr-tag">Opinion</span></td><td>${esc(m.o)}</td></tr>
+       <tr><td><span class="corr-tag">Reason</span></td><td>${esc(m.r)}</td></tr>
+       <tr><td><span class="corr-tag">Example</span></td><td>${esc(m.e)}</td></tr>
+       <tr><td><span class="corr-tag">Opinion</span></td><td>${esc(m.o2)}</td></tr>
+     </tbody></table>
+     <p style="margin:10px 0 0;color:var(--slate)">Notice how the final sentence restates the opinion in <i>different words</i> — that's what makes OREO feel complete.</p>
+     <div style="margin-top:10px"><button class="btn ghost sm" onclick="go('wstudio')">← More practices</button></div></div>`;
+  document.getElementById('orResult').scrollIntoView({behavior:'smooth'});
 }
 
 /* boot */
