@@ -209,13 +209,23 @@ table.data tr:nth-child(even){background:#fff}
 .stat .n{font-family:"Fraunces"; font-size:1.7rem; color:var(--ink); line-height:1}
 .stat .l{font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; margin-top:4px}
 .exam-timer{background:var(--ink); color:#fff; font-weight:700; padding:8px 16px; border-radius:50px; font-size:1.05rem; font-variant-numeric:tabular-nums; transition:background .4s}
-.hero{display:flex; justify-content:space-between; align-items:center; gap:18px; background:linear-gradient(120deg,#15183A 0%,#2b2f63 45%,#0c8a72 100%); color:#fff; border-radius:22px; padding:26px 28px; margin:6px 0 20px; box-shadow:0 12px 34px rgba(21,24,58,.22)}
-.hero-text h1{font-family:'Fraunces'; font-size:2.1rem; margin:0 0 6px; color:#fff}
-.hero-text p{margin:0; opacity:.9; font-size:.96rem; max-width:560px}
-.hero-text b{color:#fff}
-.hero-badge{font-family:'Fraunces'; font-weight:800; font-size:1.7rem; background:#FACC3D; color:#15183A; width:84px; height:84px; min-width:84px; border-radius:20px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.2); transform:rotate(-4deg)}
-@media(max-width:560px){ .hero-badge{display:none} .hero-text h1{font-size:1.7rem} }
-.type-target{background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:16px 18px; font-family:'Courier New',monospace; font-size:1.12rem; line-height:2.05; letter-spacing:.3px; margin:10px 0; color:var(--slate)}
+.dash-hero{display:flex; justify-content:space-between; align-items:center; gap:18px; background:linear-gradient(120deg,#15183A 0%,#2b2f63 45%,#0c8a72 100%); color:#fff; border-radius:22px; padding:26px 28px; margin:6px 0 20px; box-shadow:0 12px 34px rgba(21,24,58,.22)}
+.dash-hero-text h1{font-family:'Fraunces'; font-size:2.1rem; margin:0 0 6px; color:#fff}
+.dash-hero-text p{margin:0; opacity:.9; font-size:.96rem; max-width:560px}
+.dash-hero-text b{color:#fff}
+.dash-hero-badge{font-family:'Fraunces'; font-weight:800; font-size:1.7rem; background:#FACC3D; color:#15183A; width:84px; height:84px; min-width:84px; border-radius:20px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.2); transform:rotate(-4deg)}
+@media(max-width:560px){ .dash-hero-badge{display:none} .dash-hero-text h1{font-size:1.7rem} }
+.landing{min-height:100vh; display:flex; flex-direction:column}
+.landing-hero{background:linear-gradient(135deg,#15183A 0%,#2b2f63 50%,#0c8a72 100%); color:#fff; padding:64px 24px 78px; text-align:center}
+.landing-hero .kicker{font-family:"Lexend"; letter-spacing:.22em; text-transform:uppercase; font-size:.74rem; color:rgba(255,255,255,.75); margin-bottom:16px}
+.landing-hero h1{font-family:'Fraunces'; font-size:clamp(2.1rem,5.6vw,3.9rem); font-weight:600; color:#fff; line-height:1.06; margin:0; max-width:880px; margin-inline:auto}
+.landing-hero .mark{background:linear-gradient(transparent 58%, var(--hl) 58%); color:#fff; padding:0 .08em}
+.landing-hero p{color:rgba(255,255,255,.92); font-size:1.08rem; margin:22px auto 26px; max-width:600px}
+.lh-chips{display:flex; gap:10px; flex-wrap:wrap; justify-content:center}
+.lh-chips span{background:rgba(255,255,255,.13); border:1px solid rgba(255,255,255,.28); color:#fff; padding:7px 15px; border-radius:50px; font-size:.86rem; font-weight:500}
+.landing-roles{max-width:760px; width:100%; margin:-44px auto 0; padding:0 24px 60px; display:grid; gap:18px; grid-template-columns:1fr}
+@media(min-width:620px){ .landing-roles{grid-template-columns:1fr 1fr} }
+.type-target{background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:16px 18px; font-family:'Courier New',monospace; font-size:1.12rem; line-height:2.05; letter-spacing:.3px; margin:10px 0; color:var(--slate); white-space:pre-wrap; overflow-wrap:break-word; word-break:break-word}
 .type-target span.ok{color:var(--teal-dk)}
 .type-target span.bad{background:#ffd9d9; color:#b00020; border-radius:3px}
 .type-target span.cur{background:var(--ink); color:#fff; border-radius:3px}
@@ -230,6 +240,19 @@ table.data tr:nth-child(even){background:#fff}
 .cv-swatches{display:inline-flex; gap:5px; align-items:center}
 #cvColor{width:34px; height:30px; border:1px solid var(--line); border-radius:6px; background:#fff; cursor:pointer; padding:2px}
 #cvSize{width:90px}
+.grc-bar{display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; background:var(--mist); border:1px solid var(--line); border-radius:12px; padding:12px 16px; margin:14px 0; position:sticky; top:0; z-index:5}
+.grc-bar span{font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums}
+.grc-q{background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:14px 16px; margin:10px 0}
+.grc-q p{margin:0 0 8px}
+.grc-opts{display:grid; gap:6px}
+.grc-opt{display:flex; gap:9px; align-items:flex-start; padding:7px 10px; border:1px solid var(--line); border-radius:8px; cursor:pointer; font-size:.95rem; color:var(--slate)}
+.grc-opt:hover{border-color:var(--ink)}
+.grc-q.grc-ok{border-color:var(--teal); background:#f0faf7}
+.grc-q.grc-bad{border-color:#e6a3a8; background:#fdf2f2}
+.grc-key{margin-top:8px; font-size:.86rem; color:var(--slate); border-top:1px dashed var(--line); padding-top:7px}
+.feedbk{background:var(--mist); border:1px solid var(--line); border-left:4px solid var(--teal); border-radius:10px; padding:14px 16px; margin:14px 0}
+.res-card{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:14px 16px; margin:10px 0}
+.res-card .tag{font-size:.72rem; color:var(--teal-dk); background:#e6f4f0; padding:2px 9px; border-radius:50px; display:inline-block; margin-top:4px}
 </style>
 </head>
 <body>
@@ -279,6 +302,9 @@ table.data tr:nth-child(even){background:#fff}
    ========================================================================= */
 const CONFIG = {
   teacherCode: "iCAN2",      // <-- change this and keep it private
+  // Shown on certificates. Edit these to your school and your name.
+  schoolName: "iCAN English Practice",
+  teacherName: "Your Teacher",
   // Student access codes you hand out. Edit freely, or add them from the
   // Teacher dashboard (those are saved in this browser).
   classCodes: ["DEMO"],
@@ -1256,22 +1282,23 @@ const ROUTES = {
   /* ---------------- HOME ---------------- */
   home(){
     app().innerHTML = `
-    <div class="center">
-      <div class="hero">
+    <div class="landing">
+      <div class="landing-hero">
         <div class="kicker">English skills · Grades 9–12</div>
-        <h1>You <span class="mark">can</span> read, write, listen<br>&amp; speak with confidence.</h1>
+        <h1>You <span class="mark">can</span> read, write, listen &amp; speak with confidence.</h1>
         <p>A practice space for reading, writing, listening and speaking — built for every learner, from those who need a little scaffolding to those chasing the hardest challenge.</p>
-        <div class="role-grid">
-          <div class="role" onclick="go('studentLogin')">
-            <div class="ic">🎓</div>
-            <h3>I'm a student</h3>
-            <p>Enter the access code from your teacher and choose your pathway.</p>
-          </div>
-          <div class="role" onclick="go('teacherLogin')">
-            <div class="ic">📋</div>
-            <h3>I'm a teacher</h3>
-            <p>View results, leave feedback, plan interventions, export to Excel.</p>
-          </div>
+        <div class="lh-chips"><span>📖 Reading</span><span>✍️ Writing</span><span>🎨 Design Studio</span><span>🧩 Grammar Lab</span><span>⌨️ Typing Tutor</span><span>🎓 Exams &amp; certificates</span></div>
+      </div>
+      <div class="landing-roles">
+        <div class="role" onclick="go('studentLogin')">
+          <div class="ic">🎓</div>
+          <h3>I'm a student</h3>
+          <p>Enter the access code from your teacher and choose your pathway.</p>
+        </div>
+        <div class="role" onclick="go('teacherLogin')">
+          <div class="ic">📋</div>
+          <h3>I'm a teacher</h3>
+          <p>View results, leave feedback, plan interventions, manage content, export to Excel.</p>
         </div>
       </div>
     </div>`;
@@ -1315,12 +1342,12 @@ const ROUTES = {
   dashboard(){
     app().innerHTML = `
     <div class="wrap screen">
-      <div class="hero">
-        <div class="hero-text">
+      <div class="dash-hero">
+        <div class="dash-hero-text">
           <h1>Hello${SESSION&&SESSION.name?', '+esc(SESSION.name.split(' ')[0]):''} 👋</h1>
           <p>Welcome to <b>iCAN</b> — read, write, design, and grow your English. Start a <b>course</b>, take an <b>exam</b>, or build a skill below.</p>
         </div>
-        <div class="hero-badge">iCAN</div>
+        <div class="dash-hero-badge">iCAN</div>
       </div>
 
       <div style="display:flex;gap:12px;flex-wrap:wrap;margin:0 0 22px">
@@ -1356,6 +1383,10 @@ const ROUTES = {
         <button class="path listen" onclick="go('listening')"><div><div class="ic">🎧</div><h3>Listening</h3></div><span>Comprehension + timed spelling</span></button>
         <button class="path speak" onclick="go('speaking')"><div><div class="ic">🎤</div><h3>Speaking</h3></div><span>Prompts, debates & presentations</span></button>
       </div>
+
+      <div style="margin-top:18px"><button onclick="go('resources')" style="width:100%;text-align:left;border:1.5px dashed var(--line);background:#fff;border-radius:14px;padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px">
+        <span><b style="color:var(--ink)">🌐 Helpful resources</b><br><span style="font-size:.85rem;color:var(--muted)">Trusted sites for extra grammar, reading, writing, listening & speaking practice.</span></span>
+        <span class="btn sm ghost" style="white-space:nowrap">Open →</span></button></div>
 
       <div class="card" style="margin-top:24px">
         <h3 style="font-size:1.2rem">Your recent results</h3>
@@ -1436,13 +1467,23 @@ const ROUTES = {
       <button class="back" onclick="go('dashboard')">← Home</button>
       <h1 style="font-size:2.2rem">🧩 Grammar Lab</h1>
       <p style="color:var(--muted);max-width:680px">Short lessons on each grammar point: a clear explanation, examples, instant-feedback practice (multiple choice + gap-fill) and a printable worksheet. Grouped by level — start where you're comfortable.</p>
-      ${Object.keys(GRAMMAR).map(k=>{ const lv=GRAMMAR[k]; return `
+      ${Object.keys(GRAMMAR).map(k=>{ const lv=GRAMMAR[k]; const mix=GR_MIXED[k]||[]; return `
         <h2 style="font-family:'Fraunces';font-size:1.4rem;margin:24px 0 8px;color:var(--ink)">${lv.label}</h2>
         <div class="grid c2">
           ${lv.topics.map(t=>`<button onclick="go('grammarLesson','${t.id}')" style="text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer">
              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b style="color:var(--ink)">${t.title}</b>${done.includes(t.id)?'<span style="background:var(--teal);color:#fff;font-size:.68rem;padding:2px 8px;border-radius:50px;white-space:nowrap">✓ done</span>':''}</div>
              <span style="font-size:.82rem;color:var(--muted)">${t.questions.length} practice questions</span></button>`).join('')}
+          ${mix.map((seed,i)=>`<button onclick="startGrMixed('${k}',${seed},'${lv.label} mixed practice ${i+1}')" style="text-align:left;background:#fbf7ef;border:1.5px dashed var(--line);border-radius:12px;padding:14px 16px;cursor:pointer">
+             <b style="color:var(--ink)">Mixed practice ${i+1}</b><br><span style="font-size:.82rem;color:var(--muted)">12 questions · all points at this level</span></button>`).join('')}
         </div>`; }).join('')}
+
+      <h2 style="font-family:'Fraunces';font-size:1.5rem;margin:30px 0 4px;color:var(--ink)">🏁 Grammar Challenge</h2>
+      <p style="color:var(--muted);max-width:700px;margin:0 0 12px">Three long practices that pull together grammar points from across all levels, from explicit to implicit and easy to hard. Answers stay hidden until you submit; then you get your score, a certificate, and feedback on where to focus.</p>
+      <div class="grid c2">
+        ${GR_CHALLENGES.map(c=>`<button onclick="startGrChallenge(${c.id})" style="text-align:left;background:linear-gradient(135deg,#15183A,#8B5CF6);color:#fff;border:none;border-radius:12px;padding:16px 18px;cursor:pointer">
+           <b>${c.title.split(' · ')[0]}</b><br><span style="font-size:.85rem;opacity:.9">${c.title.split(' · ')[1]||''} · ${c.n} questions</span></button>`).join('')}
+      </div>
+      <p class="note" style="margin-top:14px">Looking for more practice? See the <a onclick="go('resources')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">Resources</a> page.</p>
     </div>`;
   },
   grammarLesson(id){
@@ -1464,6 +1505,21 @@ const ROUTES = {
       <div id="quizResult" style="margin-top:14px"></div>
     </div>`;
     renderQuiz(t.questions);
+  },
+
+  /* ---------------- EFL RESOURCES ---------------- */
+  resources(){
+    app().innerHTML=`
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Home</button>
+      <h1 style="font-size:2.1rem">🌐 Helpful resources</h1>
+      <p style="color:var(--muted);max-width:700px">Trusted external sites for extra practice across grammar, reading, writing, listening and speaking. They open in a new tab.</p>
+      ${EFL_RESOURCES.map(r=>`<div class="res-card">
+        <div><b style="color:var(--ink)">${r.name}</b><div style="font-size:.9rem;color:var(--slate);margin-top:2px">${r.use}</div><span class="tag">${r.tag}</span></div>
+        <a class="btn sm ghost" href="${r.url}" target="_blank" rel="noopener" style="white-space:nowrap">Open ↗</a>
+      </div>`).join('')}
+      <p class="note" style="margin-top:14px">Teachers: these are starting points — always preview a site before sharing it with a class.</p>
+    </div>`;
   },
 
   /* ---------------- READING LIST ---------------- */
@@ -3413,31 +3469,65 @@ function renderDiag(v){ runExam(DIAG[v], {key:'diag_'+v, minutes:35, backRoute:'
 function wsDiag(v){ wsExam(DIAG[v], 'diagnostic-'+v); }
 
 /* ---- certificate image (canvas → PNG, right-click or button to save) ---- */
-function makeCertificate(o){
-  const theme = o.band==="Outstanding" ? {a:"#b8860b",b:"#f3d98b",ink:"#5a4500",seal:"#caa12e"}
-              : o.band==="At-level"   ? {a:"#0c8a72",b:"#8fd6c6",ink:"#073d33",seal:"#0c8a72"}
-              :                          {a:"#2b5fa6",b:"#a9c6ec",ink:"#10294d",seal:"#2b5fa6"};
-  const W=1200,H=850,c=document.createElement('canvas'); c.width=W;c.height=H; const x=c.getContext('2d');
-  x.fillStyle="#fffdf7"; x.fillRect(0,0,W,H);
-  x.strokeStyle=theme.a; x.lineWidth=16; x.strokeRect(30,30,W-60,H-60);
-  x.strokeStyle=theme.b; x.lineWidth=4; x.strokeRect(54,54,W-108,H-108);
+function roundRect(x,X,Y,w,h,r){ x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+w,Y,X+w,Y+h,r); x.arcTo(X+w,Y+h,X,Y+h,r); x.arcTo(X,Y+h,X,Y,r); x.arcTo(X,Y,X+w,Y,r); x.closePath(); }
+function drawSeal(x,cx,cy,t){
+  // ribbon tails
+  x.fillStyle=t.b;
+  x.beginPath(); x.moveTo(cx-16,cy+26); x.lineTo(cx-34,cy+86); x.lineTo(cx-8,cy+72); x.lineTo(cx,cy+40); x.closePath(); x.fill();
+  x.beginPath(); x.moveTo(cx+16,cy+26); x.lineTo(cx+34,cy+86); x.lineTo(cx+8,cy+72); x.lineTo(cx,cy+40); x.closePath(); x.fill();
+  // scalloped outer
+  x.fillStyle=t.seal; x.beginPath();
+  for(let i=0;i<24;i++){ const a=i/24*Math.PI*2; const r=i%2?40:48; const px=cx+Math.cos(a)*r, py=cy+Math.sin(a)*r; i?x.lineTo(px,py):x.moveTo(px,py); }
+  x.closePath(); x.fill();
+  x.beginPath(); x.arc(cx,cy,40,0,Math.PI*2); x.fillStyle=t.seal; x.fill();
+  x.beginPath(); x.arc(cx,cy,33,0,Math.PI*2); x.strokeStyle="#fff"; x.lineWidth=2.5; x.stroke();
+  x.fillStyle="#fff"; x.textAlign="center"; x.font="bold 22px Georgia"; x.fillText("★",cx,cy-2);
+  x.font="bold 13px 'Lexend',sans-serif"; x.fillText("iCAN",cx,cy+18);
+}
+function drawCert(o){
+  const t=o.theme; const W=1240,H=880; const c=document.createElement('canvas'); c.width=W;c.height=H; const x=c.getContext('2d');
+  x.fillStyle="#fffef9"; x.fillRect(0,0,W,H);
+  x.fillStyle=t.soft; x.fillRect(60,60,W-120,H-120);
+  x.fillStyle="#fffef9"; x.fillRect(74,74,W-148,H-148);
+  x.strokeStyle=t.a; x.lineWidth=14; x.strokeRect(28,28,W-56,H-56);
+  x.strokeStyle=t.b; x.lineWidth=3; x.strokeRect(46,46,W-92,H-92);
+  const corner=(cx,cy,sx,sy)=>{ x.strokeStyle=t.a; x.lineWidth=4; x.beginPath(); x.moveTo(cx,cy+sy*56); x.lineTo(cx,cy); x.lineTo(cx+sx*56,cy); x.stroke();
+    x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(cx+sx*13,cy+sy*42); x.lineTo(cx+sx*13,cy+sy*13); x.lineTo(cx+sx*42,cy+sy*13); x.stroke(); };
+  corner(72,72,1,1); corner(W-72,72,-1,1); corner(72,H-72,1,-1); corner(W-72,H-72,-1,-1);
   x.textAlign="center";
-  x.fillStyle=theme.a; x.font="bold 34px Georgia"; x.fillText("iCAN · English Practice", W/2, 140);
-  x.fillStyle="#777"; x.font="italic 26px Georgia"; x.fillText("Certificate of Achievement", W/2, 185);
-  x.fillStyle=theme.a; x.font="bold 52px Georgia"; x.fillText(o.band.toUpperCase(), W/2, 270);
-  x.fillStyle="#555"; x.font="24px Georgia"; x.fillText("This certifies that", W/2, 350);
-  let nf=58; x.font="bold "+nf+"px Georgia"; while(x.measureText(o.name).width>W-200 && nf>26){ nf-=2; x.font="bold "+nf+"px Georgia"; }
-  x.fillStyle=theme.ink; x.fillText(o.name, W/2, 420);
-  x.strokeStyle=theme.b; x.lineWidth=2; x.beginPath(); x.moveTo(W/2-260,440); x.lineTo(W/2+260,440); x.stroke();
-  x.fillStyle="#555"; x.font="24px Georgia"; x.fillText("has completed", W/2, 490);
-  let tf=30; x.font="bold "+tf+"px Georgia"; while(x.measureText(o.title).width>W-260 && tf>18){ tf-=2; x.font="bold "+tf+"px Georgia"; }
-  x.fillStyle=theme.ink; x.fillText(o.title, W/2, 535);
-  x.fillStyle=theme.a; x.font="bold 30px Georgia"; x.fillText(`Score: ${o.percent}%   (${o.score}/${o.max})`, W/2, 600);
-  x.fillStyle="#777"; x.font="22px Georgia"; x.fillText(o.date, W/2, 650);
-  // seal
-  x.beginPath(); x.arc(W/2, 730, 46, 0, Math.PI*2); x.fillStyle=theme.seal; x.fill();
-  x.fillStyle="#fff"; x.font="bold 20px Georgia"; x.fillText("iCAN", W/2, 737);
+  x.fillStyle=t.ink; x.font="600 22px 'Lexend',Georgia,sans-serif"; x.fillText((CONFIG.schoolName||"iCAN English Practice").toUpperCase(), W/2, 122);
+  x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(W/2-130,136); x.lineTo(W/2+130,136); x.stroke();
+  x.fillStyle=t.a; x.font="bold 64px Georgia"; x.fillText("CERTIFICATE", W/2, 208);
+  x.fillStyle="#8a8a8a"; x.font="italic 26px Georgia"; x.fillText(o.subtitle, W/2, 248);
+  x.font="bold 24px Georgia"; const bw=x.measureText(o.band).width+64;
+  x.fillStyle=t.a; roundRect(x, W/2-bw/2, 278, bw, 46, 23); x.fill();
+  x.fillStyle="#fff"; x.fillText(o.band, W/2, 310);
+  x.fillStyle="#666"; x.font="22px Georgia"; x.fillText("This is proudly presented to", W/2, 386);
+  let nf=72; x.font="italic bold "+nf+"px Georgia"; while(x.measureText(o.name).width>W-280 && nf>30){ nf-=2; x.font="italic bold "+nf+"px Georgia"; }
+  x.fillStyle=t.ink; x.fillText(o.name, W/2, 470);
+  x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(W/2-300,492); x.lineTo(W/2+300,492); x.stroke();
+  x.fillStyle="#555"; x.font="22px Georgia"; x.fillText(o.line1, W/2, 538);
+  let tf=30; x.font="bold "+tf+"px Georgia"; while(x.measureText(o.titleText).width>W-340 && tf>17){ tf-=2; x.font="bold "+tf+"px Georgia"; }
+  x.fillStyle=t.ink; x.fillText(o.titleText, W/2, 578);
+  x.fillStyle=t.a; x.font="bold 30px Georgia"; x.fillText(o.statText, W/2, 640);
+  drawSeal(x, W/2, 706, t);
+  const yb=815; x.strokeStyle=t.ink; x.lineWidth=2;
+  x.beginPath(); x.moveTo(150,yb); x.lineTo(450,yb); x.stroke();
+  x.beginPath(); x.moveTo(W-450,yb); x.lineTo(W-150,yb); x.stroke();
+  x.fillStyle=t.ink; x.font="italic 24px Georgia"; x.fillText(CONFIG.teacherName||"Teacher", 300, yb-12);
+  x.font="bold 24px Georgia"; x.fillText(o.date, W-300, yb-12);
+  x.fillStyle="#999"; x.font="13px 'Lexend',sans-serif";
+  x.fillText("MENTORING TEACHER", 300, yb+24);
+  x.fillText("DATE", W-300, yb+24);
   return c.toDataURL("image/png");
+}
+function makeCertificate(o){
+  const theme = o.band==="Outstanding" ? {a:"#b8860b",b:"#e7c766",ink:"#5a4500",seal:"#caa12e",soft:"#fbf3da"}
+              : o.band==="At-level"   ? {a:"#0c8a72",b:"#7ec9b6",ink:"#073d33",seal:"#0c8a72",soft:"#e6f4f0"}
+              :                          {a:"#2b5fa6",b:"#9bbdee",ink:"#10294d",seal:"#2b5fa6",soft:"#e8f0fb"};
+  return drawCert({band:o.band.toUpperCase(), subtitle:"Certificate of Achievement", name:o.name||"Student",
+    line1:"has successfully completed", titleText:o.title||"an iCAN activity",
+    statText:`Score  ${o.percent}%   ·   ${o.score}/${o.max}`, date:o.date||new Date().toLocaleDateString(), theme});
 }
 function certificateHTML(o){
   let url; try{ url=makeCertificate(o); }catch(e){ return `<p class="note">Certificate image couldn't be generated in this browser.</p>`; }
@@ -3598,7 +3688,7 @@ const TYPING_TEXTS=[
 ];
 let TYPING=null;
 function typingBand(wpm){ return wpm>=90?"Fantastic":wpm>=61?"Advanced":wpm>=50?"Pre-advanced":wpm>=31?"Proficient":wpm>=10?"Emerging":"Struggling"; }
-function typingSpans(text){ return text.split('').map((c,i)=>`<span id="tc${i}">${c===' '?'&nbsp;':esc(c)}</span>`).join(''); }
+function typingSpans(text){ return text.split('').map((c,i)=>`<span id="tc${i}">${c===' '?' ':esc(c)}</span>`).join(''); }
 function startTyping(id){
   const t=TYPING_TEXTS.find(x=>x.id===id)||TYPING_TEXTS[0];
   TYPING={t, started:0, timer:null, done:false};
@@ -3650,26 +3740,11 @@ function typingFinish(){
   window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
 }
 function makeTypingCert(o){
-  const themes={Fantastic:{a:"#b8860b",b:"#f3d98b",ink:"#5a4500",seal:"#caa12e"},Advanced:{a:"#8B5CF6",b:"#cbb6f5",ink:"#3b2470",seal:"#8B5CF6"},"Pre-advanced":{a:"#0c8a72",b:"#8fd6c6",ink:"#073d33",seal:"#0c8a72"},Proficient:{a:"#2b5fa6",b:"#a9c6ec",ink:"#10294d",seal:"#2b5fa6"},Emerging:{a:"#d98324",b:"#f0c596",ink:"#5e3608",seal:"#d98324"},Struggling:{a:"#6b7280",b:"#cbd0d8",ink:"#2c333d",seal:"#6b7280"}};
+  const themes={Fantastic:{a:"#b8860b",b:"#e7c766",ink:"#5a4500",seal:"#caa12e",soft:"#fbf3da"},Advanced:{a:"#7c3aed",b:"#c3aef0",ink:"#3b2470",seal:"#7c3aed",soft:"#f1ebff"},"Pre-advanced":{a:"#0c8a72",b:"#7ec9b6",ink:"#073d33",seal:"#0c8a72",soft:"#e6f4f0"},Proficient:{a:"#2b5fa6",b:"#9bbdee",ink:"#10294d",seal:"#2b5fa6",soft:"#e8f0fb"},Emerging:{a:"#d98324",b:"#eebb86",ink:"#5e3608",seal:"#d98324",soft:"#fdf0e0"},Struggling:{a:"#6b7280",b:"#bcc3cd",ink:"#2c333d",seal:"#6b7280",soft:"#eef0f3"}};
   const t=themes[o.band]||themes.Emerging;
-  const W=1200,H=850,c=document.createElement('canvas'); c.width=W;c.height=H; const x=c.getContext('2d');
-  x.fillStyle="#fffdf7"; x.fillRect(0,0,W,H);
-  x.strokeStyle=t.a; x.lineWidth=16; x.strokeRect(30,30,W-60,H-60);
-  x.strokeStyle=t.b; x.lineWidth=4; x.strokeRect(54,54,W-108,H-108);
-  x.textAlign="center";
-  x.fillStyle=t.a; x.font="bold 34px Georgia"; x.fillText("iCAN · Typing Tutor", W/2, 140);
-  x.fillStyle="#777"; x.font="italic 26px Georgia"; x.fillText("Certificate of Typing Achievement", W/2, 185);
-  x.fillStyle=t.a; x.font="bold 50px Georgia"; x.fillText(o.band.toUpperCase(), W/2, 265);
-  x.fillStyle="#555"; x.font="24px Georgia"; x.fillText("Awarded to", W/2, 345);
-  let nf=56; x.font="bold "+nf+"px Georgia"; while(x.measureText(o.name).width>W-220 && nf>26){ nf-=2; x.font="bold "+nf+"px Georgia"; }
-  x.fillStyle=t.ink; x.fillText(o.name, W/2, 415);
-  x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(W/2-260,435); x.lineTo(W/2+260,435); x.stroke();
-  x.fillStyle=t.ink; x.font="bold 42px Georgia"; x.fillText(o.wpm+" words per minute", W/2, 505);
-  x.fillStyle="#555"; x.font="24px Georgia"; x.fillText("Accuracy "+o.acc+"%      ·      Time "+Math.round(o.secs)+" seconds", W/2, 555);
-  x.fillStyle="#777"; x.font="22px Georgia"; x.fillText(o.date, W/2, 615);
-  x.beginPath(); x.arc(W/2,710,46,0,Math.PI*2); x.fillStyle=t.seal; x.fill();
-  x.fillStyle="#fff"; x.font="bold 18px Georgia"; x.fillText("iCAN", W/2, 716);
-  return c.toDataURL("image/png");
+  return drawCert({band:o.band.toUpperCase(), subtitle:"Typing Achievement", name:o.name||"Student",
+    line1:"has demonstrated touch-typing at the level of", titleText:o.band+" typist",
+    statText:`${o.wpm} WPM   ·   ${o.acc}% accuracy   ·   ${Math.round(o.secs)}s`, date:o.date||new Date().toLocaleDateString(), theme:t});
 }
 function typingCertHTML(o){ let url; try{ url=makeTypingCert(o); }catch(e){ return `<p class="note">Certificate couldn't be generated in this browser.</p>`; }
   const fn=`iCAN-typing-${(o.name||'student').replace(/\s+/g,'-')}.png`;
@@ -3734,6 +3809,165 @@ function mountCanvas(containerId){
     } });
   function end(){ if(CANVAS_STATE){ CANVAS_STATE.drawing=false; ctx.globalAlpha=1; } }
   canvas.addEventListener('pointerup',end); canvas.addEventListener('pointerleave',end); canvas.addEventListener('pointercancel',end);
+}
+
+/* =========================================================================
+   EFL RESOURCES — curated external sites (open in a new tab)
+   ========================================================================= */
+const EFL_RESOURCES=[
+  {name:"Test-English", use:"Grammar points, graded exercises and level tests across all four skills (A1–C1).", url:"https://test-english.com/grammar-points/contents/", tag:"Grammar · all skills"},
+  {name:"E-Reading Worksheets", use:"Free reading and grammar worksheets, activities and answer keys.", url:"https://www.ereadingworksheets.com/", tag:"Grammar · reading"},
+  {name:"ReadWorks", use:"Reading passages with question sets and vocabulary, for building literacy.", url:"https://www.readworks.org/", tag:"Reading · literacy"},
+  {name:"Writable", use:"Process-based writing assignments, drafting and feedback.", url:"https://www.writable.com/", tag:"Writing"},
+  {name:"Class Companion", use:"AI-assisted, instantly-graded reading and writing practice.", url:"https://classcompanion.com/", tag:"AI · reading & writing"},
+  {name:"BBC Learning English", use:"Pronunciation, conversation, and speaking & listening practice.", url:"https://www.bbc.co.uk/learningenglish", tag:"Speaking · listening"},
+  {name:"ELLLO", use:"Hundreds of listening clips with transcripts and quizzes for speaking models.", url:"https://www.elllo.org/", tag:"Listening · speaking"}
+];
+
+/* =========================================================================
+   GRAMMAR POOL + CHALLENGE — large MCQ bank, mixed worksheets, and three
+   long "Challenge" practices (key hidden until submit → score + certificate
+   + appreciation + one feedback box pointing to study resources).
+   ========================================================================= */
+function GM(lvl,q,opts,ans,exp){ const m=MC(q,opts,ans,exp); m.lvl=lvl; return m; }
+const GBANK=[
+  // ---- beginner (b) ----
+  GM('b',"My sister ____ to music every evening.",["listen","listens","listening","is listen"],1,"He/she/it + -s in the present simple."),
+  GM('b',"Look! It ____ outside.",["snows","is snowing","snow","snowed"],1,"Happening now → present continuous."),
+  GM('b',"We ____ to the cinema yesterday.",["go","went","have gone","going"],1,"Finished past time → past simple."),
+  GM('b',"I have ____ finished my homework.",["yet","already","since","ago"],1,"'already' fits the present perfect."),
+  GM('b',"There ____ some milk in the fridge.",["are","is","be","were"],1,"'milk' is uncountable → 'is'."),
+  GM('b',"She is taller ____ her brother.",["then","than","that","as"],1,"Comparatives use 'than'."),
+  GM('b',"This is ____ interesting book.",["a","an","the","-"],1,"'interesting' starts with a vowel sound → 'an'."),
+  GM('b',"They ____ play tennis on Mondays.",["doesn't","don't","isn't","aren't"],1,"'they' → 'don't'."),
+  GM('b',"____ you like some tea?",["Do","Would","Are","Is"],1,"Polite offer → 'Would you like'."),
+  GM('b',"He can ____ very fast.",["runs","run","running","ran"],1,"After 'can' → base verb."),
+  GM('b',"I was born ____ May.",["on","at","in","by"],2,"Months take 'in'."),
+  GM('b',"The cat is ____ the table.",["in","under","at","of"],1,"Position beneath → 'under'."),
+  GM('b',"How ____ apples are there?",["much","many","some","any"],1,"Countable plural → 'many'."),
+  GM('b',"She ____ her keys this morning (and still can't find them).",["lost","has lost","loses","losing"],1,"Result matters now → present perfect."),
+  GM('b',"We ____ watching a film when the lights went out.",["were","was","are","be"],0,"'we' + past continuous → 'were'."),
+  GM('b',"This bag is ____ than that one.",["heavy","heavier","heaviest","more heavy"],1,"One-syllable adjective → '-er'."),
+  GM('b',"I ____ ever been to Japan.",["have never","haven't never","never have","didn't"],0,"Present perfect with 'never' → 'have never'."),
+  GM('b',"Please ____ the door.",["closing","to close","close","closes"],2,"Imperative → base verb."),
+  GM('b',"My birthday is ____ the 5th of June.",["in","on","at","by"],1,"Dates take 'on'."),
+  GM('b',"He doesn't have ____ money.",["some","any","much many","a"],1,"Negative → 'any'."),
+  // ---- intermediate (i) ----
+  GM('i',"If it rains tomorrow, we ____ inside.",["stay","will stay","would stay","stayed"],1,"First conditional → will + base."),
+  GM('i',"If I ____ rich, I would travel the world.",["am","were","will be","had been"],1,"Second conditional → 'were'."),
+  GM('i',"You ____ smoke here; it's a hospital.",["mustn't","don't have to","needn't","could"],0,"Prohibition → 'mustn't'."),
+  GM('i',"I look forward to ____ you soon.",["see","seeing","saw","seen"],1,"After 'look forward to' → -ing."),
+  GM('i',"She suggested ____ a break.",["take","to take","taking","took"],2,"After 'suggest' → -ing."),
+  GM('i',"He's the man ____ helped me.",["which","who","whose","whom"],1,"Person + subject → 'who'."),
+  GM('i',"The book ____ I bought is excellent.",["who","what","that","whose"],2,"Thing, defining → 'that'."),
+  GM('i',"By the time we arrived, the film ____.",["started","had started","has started","starts"],1,"Earlier past → past perfect."),
+  GM('i',"This report ____ by the manager last week.",["wrote","was written","has written","writes"],1,"Passive past → 'was written'."),
+  GM('i',"I'd rather you ____ smoke in here.",["don't","didn't","won't","not"],1,"'would rather you' + past → 'didn't'."),
+  GM('i',"We ____ better leave now or we'll miss it.",["had","would","have","should"],0,"Advice → 'had better'."),
+  GM('i',"Neither the teacher nor the students ____ ready.",["was","were","is","be"],1,"Agree with nearer subject (students)."),
+  GM('i',"He asked me where I ____.",["live","lived","do live","living"],1,"Reported speech → back-shift to 'lived'."),
+  GM('i',"It's the first time I ____ sushi.",["try","tried","have tried","am trying"],2,"'first time' + present perfect."),
+  GM('i',"She's used to ____ early.",["wake","waking","woke","wakes"],1,"'used to' (accustomed) + -ing."),
+  GM('i',"You ____ have told me earlier!",["should","must","can","will"],0,"Past criticism → 'should have'."),
+  GM('i',"The more you practise, ____ you become.",["the better","better","best","the best"],0,"'the + comparative, the + comparative'."),
+  GM('i',"I wish I ____ more time.",["have","had","will have","having"],1,"Wish about present → past tense 'had'."),
+  GM('i',"They made me ____ the whole story.",["repeat","to repeat","repeating","repeated"],0,"'make somebody' + base verb."),
+  GM('i',"Hardly ____ when the phone rang.",["I had sat","had I sat","I sat","did I sat"],1,"Inversion after 'Hardly' → 'had I sat'."),
+  // ---- advanced (a) ----
+  GM('a',"____ I known, I would have acted differently.",["Had","Has","If had","Have"],0,"Inverted third conditional → 'Had I known'."),
+  GM('a',"Not only ____ late, but he also forgot the keys.",["he was","was he","he is","is he"],1,"Inversion after 'Not only' → 'was he'."),
+  GM('a',"Rarely ____ such dedication.",["we see","do we see","we do see","seeing"],1,"Inversion after 'Rarely' → 'do we see'."),
+  GM('a',"It was her calm voice ____ reassured everyone.",["who","which","that","what"],2,"Cleft → 'that'."),
+  GM('a',"____ surprised us was the sudden silence.",["That","It","What","Which"],2,"What-cleft subject → 'What'."),
+  GM('a',"Had it not been ____ your help, we'd have failed.",["of","for","to","with"],1,"'Had it not been for' = without."),
+  GM('a',"The committee insisted that he ____ present.",["is","was","be","being"],2,"Subjunctive after 'insist that' → 'be'."),
+  GM('a',"Were I ____ you, I'd reconsider.",["being","be","in","as"],2,"Idiom 'if I were in your place'; 'Were I in your shoes/you'.","placeholder"),
+  GM('a',"Scarcely had the meeting begun ____ arguments broke out.",["than","when","that","then"],1,"'Scarcely … when …'."),
+  GM('a',"The ____ of the project surprised the board.",["succeed","successful","success","succeeding"],2,"Nominalisation → noun 'success'."),
+  GM('a',"Only after he left ____ the truth.",["I realised","did I realise","I did realise","realising"],1,"Inversion after 'Only after' → 'did I realise'."),
+  GM('a',"She would sooner resign ____ compromise her values.",["than","then","that","to"],0,"'would sooner … than …'."),
+  GM('a',"So complex was the issue ____ no one could solve it.",["as","that","than","so"],1,"'So + adj + was … that …'."),
+  GM('a',"He talks as though he ____ everything.",["knows","knew","had known","know"],1,"'as though' (unreal present) → past 'knew'."),
+  GM('a',"If I had studied medicine, I ____ a doctor now.",["would be","would have been","will be","am"],0,"Mixed conditional: past condition, present result → 'would be'."),
+  GM('a',"Little ____ that the deal had collapsed.",["they knew","did they know","they did know","knowing"],1,"Inversion after 'Little' → 'did they know'."),
+  GM('a',"The new policy, ____ was widely criticised, has been dropped.",["that","which","who","what"],1,"Non-defining clause about a thing → 'which'."),
+  GM('a',"On no account ____ this door be left open.",["should","should not","does","is"],0,"Inversion after 'On no account' → 'should this door'."),
+  GM('a',"He objected to ____ blamed for the error.",["be","being","been","is"],1,"After preposition 'to' (object) → -ing 'being'."),
+  GM('a',"Such was the demand ____ tickets sold out in minutes.",["that","than","as","so"],0,"'Such was … that …'.")
+];
+// fix one placeholder item cleanly
+GBANK[40]=GM('a',"Were I in your position, I ____ accept the offer.",["will","would","am","had"],1,"'Were I …' (formal second conditional) → 'would'.");
+function allGrammarMCQ(){ const pool=[]; Object.keys(GRAMMAR).forEach(k=>{ const tag=k[0]; GRAMMAR[k].topics.forEach(t=>t.questions.forEach(q=>{ if(q.type==='mcq'){ const c=Object.assign({},q); if(!c.lvl)c.lvl=tag; pool.push(c);} })); }); GBANK.forEach(q=>pool.push(q)); return pool; }
+function gPoolByLevel(tag){ return allGrammarMCQ().filter(q=>q.lvl===tag); }
+function gSeededShuffle(arr,seed){ const a=arr.slice(); let s=seed||1; for(let i=a.length-1;i>0;i--){ s=(s*9301+49297)%233280; const j=Math.floor(s/233280*(i+1)); const tmp=a[i]; a[i]=a[j]; a[j]=tmp; } return a; }
+const GR_MIXED={ beginner:[101,113,127,139,151,163], intermediate:[211,223,235,247,259,271], advanced:[307,319,331,343,355,367] };
+function grMixedQs(levelKey,seed){ const tag=levelKey[0]; let pool=gPoolByLevel(tag); if(pool.length<12) pool=allGrammarMCQ(); return gSeededShuffle(pool,seed).slice(0,12); }
+const GR_CHALLENGES=[
+  {id:1, title:"Grammar Challenge 1 · Foundations to fluency", seed:7, n:85},
+  {id:2, title:"Grammar Challenge 2 · Mixed mastery", seed:29, n:90},
+  {id:3, title:"Grammar Challenge 3 · The full gauntlet", seed:53, n:95}
+];
+function grChallengeQs(c){ const pool=allGrammarMCQ(); return gSeededShuffle(pool,c.seed).slice(0, Math.min(c.n, pool.length)); }
+let GRC=null;
+function startGrChallenge(id){
+  const c=GR_CHALLENGES.find(x=>x.id===id); if(!c){ go('grammar'); return; }
+  const qs=grChallengeQs(c); GRC={c, qs, answers:new Array(qs.length).fill(null), done:false};
+  app().innerHTML=`
+   <div class="wrap screen">
+     <button class="back" onclick="go('grammar')">← Grammar Lab</button>
+     <h1 style="font-size:1.7rem">🏁 ${c.title}</h1>
+     <p style="color:var(--muted);max-width:720px">${qs.length} multiple-choice questions covering grammar points from easy to challenging. <b>Answers stay hidden until you submit.</b> When you finish, you'll get your overall score, a certificate, and personalised feedback on where to focus next.</p>
+     <div class="grc-bar"><span id="grcProg">0 / ${qs.length} answered</span> <button class="btn" onclick="grcSubmit()">Submit &amp; see results →</button></div>
+     <div id="grcList">${qs.map((q,i)=>`<div class="grc-q" id="grcq${i}"><p style="font-weight:600;color:var(--ink)"><span style="color:var(--coral)">${i+1}.</span> ${q.q}</p>
+        <div class="grc-opts">${q.options.map((o,j)=>`<label class="grc-opt"><input type="radio" name="grc${i}" value="${j}" onchange="GRC.answers[${i}]=${j};grcProgress()"> <span>${esc(o)}</span></label>`).join('')}</div></div>`).join('')}</div>
+     <div class="grc-bar"><span id="grcProg2">0 / ${qs.length} answered</span> <button class="btn" onclick="grcSubmit()">Submit &amp; see results →</button></div>
+     <div id="grcResult"></div>
+   </div>`;
+  window.scrollTo({top:0});
+}
+function grcProgress(){ if(!GRC)return; const n=GRC.answers.filter(a=>a!==null).length; const t=GRC.qs.length; ['grcProg','grcProg2'].forEach(id=>{ const e=document.getElementById(id); if(e)e.textContent=`${n} / ${t} answered`; }); }
+function grcSubmit(){
+  if(!GRC||GRC.done)return; const {c,qs,answers}=GRC;
+  const blanks=answers.filter(a=>a===null).length;
+  if(blanks>0 && !confirm(blanks+" question(s) are still blank. They'll be marked wrong. Submit anyway?")) return;
+  GRC.done=true; let correct=0;
+  qs.forEach((q,i)=>{ const got=answers[i]===q.answer; if(got)correct++; const el=document.getElementById('grcq'+i); if(el){ el.classList.add(got?'grc-ok':'grc-bad'); el.insertAdjacentHTML('beforeend', `<div class="grc-key">${got?'✓ Correct.':'✗ Correct answer: <b>'+esc(q.options[q.answer])+'</b>.'} ${q.exp?esc(q.exp):''}</div>`); const inputs=el.querySelectorAll('input'); inputs.forEach(x=>x.disabled=true);} });
+  const pct=Math.round(correct/qs.length*100); const band=certBand(pct);
+  if(SESSION&&SESSION.role==='student'){ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:"Grammar",activity:c.title,score:correct,max:qs.length,percent:pct,detail:`Grammar Challenge · ${correct}/${qs.length} (${pct}%)`}); }
+  const praise = pct>=80 ? "Outstanding work — your grammar is strong and consistent across many points."
+              : pct>=50 ? "Well done — you have a solid grasp of the core grammar, with a few areas to sharpen."
+              : "Good effort for taking on the full challenge — this is exactly how you find what to work on next.";
+  const focus = pct>=80 ? "Keep your edge by reviewing the few items you missed and trying the next challenge."
+              : pct>=50 ? "Revisit the questions marked in red above, then practise those points in the Grammar Lab lessons."
+              : "Start with the Beginner and Intermediate lessons in the Grammar Lab, redo the red questions, and build up gradually.";
+  document.getElementById('grcResult').innerHTML=`<div class="card" style="margin-top:18px">
+     <div class="statline"><div class="stat"><div class="n">${pct}%</div><div class="l">overall</div></div><div class="stat"><div class="n">${correct}/${qs.length}</div><div class="l">correct</div></div><div class="stat"><div class="n" style="font-size:1rem;font-family:inherit;font-weight:700">${band}</div><div class="l">band</div></div></div>
+     <div class="feedbk">
+       <h3 style="margin:0 0 8px;font-size:1.1rem">📋 Your feedback</h3>
+       <p style="margin:4px 0"><b>What went well:</b> ${praise}</p>
+       <p style="margin:4px 0"><b>What to improve:</b> ${focus}</p>
+       <p style="margin:4px 0"><b>Where to study weak points:</b> Use <a href="https://test-english.com/grammar-points/contents/" target="_blank" rel="noopener">Test-English grammar points</a> for clear explanations and graded exercises, and the iCAN <a onclick="go('grammar')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">Grammar Lab</a> lessons. More resources are on the <a onclick="go('resources')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">Resources</a> page.</p>
+     </div>
+     <h3 style="font-size:1.15rem;margin-top:16px">🏆 Your certificate</h3>
+     ${certificateHTML({name:(SESSION&&SESSION.name)||'Student', title:c.title, score:correct, max:qs.length, percent:pct, band, date:new Date().toLocaleDateString()})}
+     <div style="margin-top:10px"><button class="btn ghost sm" onclick="go('grammar')">← Back to Grammar Lab</button></div>
+   </div>`;
+  document.getElementById('grcResult').scrollIntoView({behavior:'smooth'});
+}
+
+function startGrMixed(levelKey,seed,label){
+  const qs=grMixedQs(levelKey,seed); const id='mix_'+levelKey+'_'+seed;
+  app().innerHTML=`
+   <div class="wrap screen">
+     <button class="back" onclick="go('grammar')">← Grammar Lab</button>
+     <div class="meta">${(GRAMMAR[levelKey]&&GRAMMAR[levelKey].label)||''} · mixed practice</div>
+     <h1 style="font-size:1.7rem">🧩 ${label||'Mixed practice'}</h1>
+     <p style="color:var(--muted)">${qs.length} questions drawn from across the grammar points at this level. Get instant feedback when you check your answers.</p>
+     <div id="quiz"></div>
+     <button class="btn" id="submitQ" style="width:100%;margin-top:10px" onclick="markQuiz('${id}','Grammar','${escq(label||'Mixed practice')}')">Check answers →</button>
+     <div id="quizResult" style="margin-top:14px"></div>
+   </div>`;
+  renderQuiz(qs); window.scrollTo({top:0});
 }
 
 /* boot */
