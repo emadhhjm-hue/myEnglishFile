@@ -344,7 +344,9 @@ const CONFIG = {
   teacherCode: "iCAN2",      // <-- change this and keep it private
   // Shown on certificates. Edit these to your school and your name.
   schoolName: "iCAN English Practice",
-  teacherName: "Your Teacher",
+  teacherName: "Emad A. Mohamed",
+  teacherTitle: "PhD candidate",
+  tagline: "iCAN is an RWD-aligned project helping learners read to think, write to say it, and design to share it — for English proficiency.",
   // Student access codes you hand out. Edit freely, or add them from the
   // Teacher dashboard (those are saved in this browser).
   classCodes: ["DEMO"],
@@ -1565,6 +1567,39 @@ const ROUTES = {
     renderQuiz(t.questions);
   },
 
+  /* ---------------- CLASS ANALYTICS ---------------- */
+  analytics(){
+    const res=allResults(); const iv=buildIntervention(res); const students=summariseStudents(res);
+    const scored=students.filter(s=>s.avg!=='—');
+    const needs=scored.filter(s=>s.avg<60).sort((a,b)=>a.avg-b.avg);
+    const watch=scored.filter(s=>s.avg>=60&&s.avg<75).sort((a,b)=>a.avg-b.avg);
+    const chips=s=>`<button class="btn ghost sm" onclick="go('studentDetail','${s.key}')" style="margin:3px 4px 0 0">${esc(s.name||'—')} · ${s.avg}%</button>`;
+    app().innerHTML=`
+    <div class="wrap screen">
+      <div class="section-title">
+        <div><h1 style="font-size:2.1rem">📊 Class analytics &amp; intervention</h1>
+        <p style="color:var(--muted);margin:6px 0 0">${res.length} attempt(s) · ${students.length} student(s)</p></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn" onclick="downloadReport(null)">⬇ Class report (PDF)</button>
+          <button class="btn ghost" onclick="exportExcel()">⬇ Excel</button>
+          <button class="btn ghost" onclick="go('teacher')">← Dashboard</button>
+        </div>
+      </div>
+      <div class="card"><h3 style="font-size:1.2rem">Class average by skill</h3>
+        ${iv.groups.length? svgBars(iv.groups.map(g=>({label:g.label,pct:g.avg,color:g.color}))) : '<p class="note">No scored activities yet.</p>'}
+        <p style="font-size:.8rem;color:var(--muted);margin:6px 0 0">Based on auto-scored activities. Speaking and open writing may not carry a percentage.</p>
+      </div>
+      <div class="grid c2" style="margin-top:16px">
+        <div class="card" style="border-left:4px solid #E6464B"><h3 style="font-size:1.1rem">🔴 Needs attention (&lt; 60%)</h3>
+          ${needs.length? needs.map(chips).join(' ') : '<p style="color:var(--muted);font-size:.9rem">None below 60% — good news.</p>'}</div>
+        <div class="card" style="border-left:4px solid #d98324"><h3 style="font-size:1.1rem">🟠 Watch (60–74%)</h3>
+          ${watch.length? watch.map(chips).join(' ') : '<p style="color:var(--muted);font-size:.9rem">No one in this band.</p>'}</div>
+      </div>
+      <div class="card" style="margin-top:16px"><h3 style="font-size:1.2rem">🎯 Class intervention plan</h3>${interventionHTML(iv)}
+        <p style="font-size:.8rem;color:var(--muted);margin-top:8px">Open any student for an individual chart, plan and downloadable report.</p></div>
+    </div>`;
+  },
+
   /* ---------------- OBJECTIVES-ALIGNED PRACTICE ---------------- */
   align(){
     const back = (SESSION&&SESSION.role==='teacher')?'teacher':'dashboard';
@@ -2164,7 +2199,19 @@ const ROUTES = {
       </div>
 
       <div class="card" style="margin-top:16px">
-        <h3 style="font-size:1.2rem">Feedback &amp; intervention plan</h3>
+        <h3 style="font-size:1.2rem">📊 Skill profile</h3>
+        ${groupAverages(res).filter(g=>g.attempts>0).length? svgBars(groupAverages(res).filter(g=>g.attempts>0).map(g=>({label:g.label,pct:g.avg,color:g.color}))) : '<p class="note">No scored activities yet.</p>'}
+        <div style="margin-top:10px"><button class="btn sm" onclick="downloadReport('${key}')">⬇ Download report (PDF — chart + plan)</button></div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3 style="font-size:1.2rem">🎯 Suggested intervention plan</h3>
+        ${interventionHTML(buildIntervention(res))}
+        <p style="font-size:.8rem;color:var(--muted);margin-top:8px">Auto-suggested from scores. Refine it in your own words below and save.</p>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3 style="font-size:1.2rem">Feedback &amp; intervention notes</h3>
         <textarea id="fb_${key}" style="width:100%;min-height:80px;padding:10px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit" placeholder="Strengths, next steps, intervention plan…">${esc(getStudents()[key]?.feedback||'')}</textarea>
         <button class="btn sm teal" style="margin-top:8px" onclick="saveFeedback('${key}')">Save</button>
       </div>
@@ -2194,6 +2241,7 @@ const ROUTES = {
         <p style="color:var(--muted);margin:6px 0 0">${res.length} recorded attempt(s) · ${students.length} student(s) · ${online?'<span style="color:var(--teal-dk)">● online sync on</span>':'local only (this device)'}</p></div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn dark" onclick="go('content')">✏️ Manage content</button>
+          <button class="btn" onclick="go('analytics')">📊 Analytics</button>
           <button class="btn" onclick="go('align')">🎯 Aligned practice</button>
           <button class="btn" onclick="exportExcel()">⬇ Export to Excel</button>
           <button class="btn ghost" onclick="go('teacher')">↻ Refresh</button>
@@ -2611,6 +2659,15 @@ function exportExcel(){
   // 4) Vocabulary bank (local to this device)
   const vocabRows=getAllVocab().map(v=>({Student:v.name||'', Word:v.word, Sentence:v.sentence||'', Recorded:v.audioId?'yes':'no', Date:new Date(v.date).toLocaleString()}));
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(vocabRows.length?vocabRows:[{Student:'',Word:'',Sentence:'',Recorded:'',Date:''}]), "Vocabulary");
+  // 5) Per-skill analysis
+  const skillRows=groupAverages(res).map(g=>({Skill:g.key,Attempts:g.attempts,Avg_percent:g.avg==null?'':g.avg,Band:g.avg==null?'—':(g.avg>=80?'Strong':g.avg>=60?'On track':'Needs work')}));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(skillRows.length?skillRows:[{Skill:'',Attempts:'',Avg_percent:'',Band:''}]), "Skill analysis");
+  // 6) Intervention plan (per student, with month/semester/year goals)
+  const planRows=[];
+  summariseStudents(res).forEach(s=>{ const iv=buildIntervention(studentResults(s.key));
+    if(iv.goals.length){ iv.goals.forEach(g=>planRows.push({Name:s.name,Class:s.class,Overall_avg:s.avg,Focus:g.skill,Focus_avg:g.avg==null?'':g.avg,Goal_this_month:g.m,Goal_this_semester:g.s,Goal_this_year:g.y,Summary:iv.summary})); }
+    else planRows.push({Name:s.name,Class:s.class,Overall_avg:s.avg,Focus:'—',Focus_avg:'',Goal_this_month:'',Goal_this_semester:'',Goal_this_year:'',Summary:iv.summary}); });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(planRows.length?planRows:[{Name:'',Class:'',Overall_avg:'',Focus:'',Focus_avg:'',Goal_this_month:'',Goal_this_semester:'',Goal_this_year:'',Summary:''}]), "Intervention plan");
   XLSX.writeFile(wb, "iCAN-results-"+new Date().toISOString().slice(0,10)+".xlsx");
 }
 
@@ -3617,6 +3674,17 @@ function drawCert(o){
   x.fillStyle="#fffef9"; x.fillRect(0,0,W,H);
   x.fillStyle=t.soft; x.fillRect(60,60,W-120,H-120);
   x.fillStyle="#fffef9"; x.fillRect(74,74,W-148,H-148);
+  // ---- faint embedded iCAN logo watermark (behind all text) ----
+  x.save();
+  x.textAlign="center"; x.fillStyle="rgba(21,24,58,0.05)"; x.font="800 250px Georgia";
+  x.fillText("iCAN", W/2, H/2+88);
+  x.restore();
+  // vertical brand lockup down the left edge
+  x.save();
+  x.translate(108, H/2); x.rotate(-Math.PI/2); x.textAlign="center";
+  x.fillStyle="rgba(21,24,58,0.16)"; x.font="700 19px 'Lexend',sans-serif";
+  x.fillText("i · C · A · N    —    for English Proficiency", 0, 0);
+  x.restore();
   x.strokeStyle=t.a; x.lineWidth=14; x.strokeRect(28,28,W-56,H-56);
   x.strokeStyle=t.b; x.lineWidth=3; x.strokeRect(46,46,W-92,H-92);
   const corner=(cx,cy,sx,sy)=>{ x.strokeStyle=t.a; x.lineWidth=4; x.beginPath(); x.moveTo(cx,cy+sy*56); x.lineTo(cx,cy); x.lineTo(cx+sx*56,cy); x.stroke();
@@ -3638,15 +3706,20 @@ function drawCert(o){
   let tf=30; x.font="bold "+tf+"px Georgia"; while(x.measureText(o.titleText).width>W-340 && tf>17){ tf-=2; x.font="bold "+tf+"px Georgia"; }
   x.fillStyle=t.ink; x.fillText(o.titleText, W/2, 578);
   x.fillStyle=t.a; x.font="bold 30px Georgia"; x.fillText(o.statText, W/2, 640);
-  drawSeal(x, W/2, 706, t);
-  const yb=815; x.strokeStyle=t.ink; x.lineWidth=2;
-  x.beginPath(); x.moveTo(150,yb); x.lineTo(450,yb); x.stroke();
-  x.beginPath(); x.moveTo(W-450,yb); x.lineTo(W-150,yb); x.stroke();
-  x.fillStyle=t.ink; x.font="italic 24px Georgia"; x.fillText(CONFIG.teacherName||"Teacher", 300, yb-12);
-  x.font="bold 24px Georgia"; x.fillText(o.date, W-300, yb-12);
-  x.fillStyle="#999"; x.font="13px 'Lexend',sans-serif";
-  x.fillText("MENTORING TEACHER", 300, yb+24);
-  x.fillText("DATE", W-300, yb+24);
+  drawSeal(x, W/2, 700, t);
+  const yb=812; x.strokeStyle=t.ink; x.lineWidth=2;
+  x.beginPath(); x.moveTo(150,yb); x.lineTo(470,yb); x.stroke();
+  x.beginPath(); x.moveTo(W-470,yb); x.lineTo(W-150,yb); x.stroke();
+  x.textAlign="center";
+  x.fillStyle=t.ink; x.font="italic 27px Georgia"; x.fillText("Teacher: "+(CONFIG.teacherName||"Teacher"), 310, yb-12);
+  x.font="bold 24px Georgia"; x.fillText(o.date, W-310, yb-12);
+  x.fillStyle="#777"; x.font="13px 'Lexend',sans-serif";
+  x.fillText((CONFIG.teacherTitle||"Teacher").toUpperCase(), 310, yb+22);
+  x.fillText("DATE", W-310, yb+22);
+  // tagline footer
+  x.fillStyle="#9a9488"; x.font="italic 14px Georgia";
+  const tag=CONFIG.tagline||"iCAN — an RWD-aligned project for English proficiency.";
+  x.fillText(tag.length>120?tag.slice(0,118)+"…":tag, W/2, H-40);
   return c.toDataURL("image/png");
 }
 function makeCertificate(o){
@@ -4525,6 +4598,104 @@ function alignApply(){
      </div>`).join('')}</div>`;
 }
 function alignClear(){ document.querySelectorAll('.align-types input:checked').forEach(x=>x.checked=false); alignApply(); }
+
+/* =========================================================================
+   TEACHER ANALYTICS & INTERVENTION — group scores by skill, generate an
+   intervention plan (month / semester / year goals), draw charts (SVG in-app,
+   PNG for PDF), and export a PDF report + richer multi-sheet Excel.
+   ========================================================================= */
+const SKILL_GROUPS=[
+  {key:"Reading", label:"Reading", skills:["Reading","Reading Course"], color:"#2b5fa6"},
+  {key:"Writing", label:"Writing", skills:["Writing","Writing Course"], color:"#0c8a72"},
+  {key:"Design", label:"Design", skills:["Design"], color:"#E6464B"},
+  {key:"Grammar", label:"Grammar", skills:["Grammar"], color:"#d98324"},
+  {key:"Listening", label:"Listening", skills:["Listening"], color:"#12a585"},
+  {key:"Speaking", label:"Speaking", skills:["Speaking"], color:"#8B5CF6"},
+  {key:"Typing", label:"Typing", skills:["Typing"], color:"#2b2f63"},
+  {key:"Vocabulary", label:"Vocabulary", skills:["Vocabulary"], color:"#6f3fd6"}
+];
+const GOAL_TPL={
+  Reading:{m:"Complete 3 Reading Course lessons and 2 reading quizzes; practise True/False/Not-Given.", s:"Lift the reading average to 70%+ and read across at least 3 genres.", y:"Reach a steady 80%+ and handle advanced extended texts with inference."},
+  Writing:{m:"Do 2 Writing Course lessons and 1 Revise & Edit task; focus on paragraphing and punctuation.", s:"Raise writing to 70%+; master the 5 rubric criteria and the OREO structure.", y:"Achieve 80%+ and write confidently across genres with accurate grammar."},
+  Design:{m:"Complete 1 Design Studio challenge with the Creative Canvas, linked to a reading.", s:"Produce 3 designed artefacts that connect reading and writing.", y:"Build a small portfolio of multimodal designs."},
+  Grammar:{m:"Finish the lessons for weak points and 2 mixed-practice sets.", s:"Reach 70%+ and complete one Grammar Challenge.", y:"Reach 80%+ across all grammar points, including advanced structures."},
+  Listening:{m:"Do 2 listening comprehensions and 1 timed spelling.", s:"Reach 70%+ comprehension and steadier spelling accuracy.", y:"Follow extended talks and reach 80%+."},
+  Speaking:{m:"Record 2 speaking prompts and 1 short presentation.", s:"Take part in discussions/debates regularly to build fluency.", y:"Present confidently with clear pronunciation."},
+  Typing:{m:"Practise 10 minutes, 3×/week; reach the next band.", s:"Reach 40+ WPM at 90%+ accuracy.", y:"Reach 60+ WPM (Advanced) with high accuracy."},
+  Vocabulary:{m:"Add 5 new words per lesson with example sentences.", s:"Bank 60+ words and use them in writing.", y:"Use a wide, precise vocabulary across topics."},
+  _default:{m:"Complete targeted practice in this area each week.", s:"Reach 70%+ through regular practice.", y:"Reach a stable 80%+."}
+};
+function groupAverages(res){
+  return SKILL_GROUPS.map(g=>{ let c=0,n=0,att=0; res.forEach(r=>{ if(g.skills.includes(r.skill)){ att++; if(r.percent!=null){c+=r.percent;n++;} } });
+    return {key:g.key,label:g.label,color:g.color,avg:n?Math.round(c/n):null,attempts:att}; });
+}
+function buildIntervention(res){
+  const groups=groupAverages(res).filter(g=>g.attempts>0);
+  const weak=groups.filter(g=>g.avg!=null&&g.avg<60);
+  const watch=groups.filter(g=>g.avg!=null&&g.avg>=60&&g.avg<75);
+  const strong=groups.filter(g=>g.avg!=null&&g.avg>=80);
+  const focus=[...weak,...watch];
+  const goals=focus.map(g=>{ const t=GOAL_TPL[g.key]||GOAL_TPL._default; return {skill:g.label, avg:g.avg, m:t.m, s:t.s, y:t.y}; });
+  let summary;
+  if(!groups.length) summary="No scored activities yet — assign a diagnostic to establish a baseline.";
+  else if(!focus.length) summary="Performing well across the board — extend with challenge tasks and richer genres.";
+  else summary=`Priority focus: ${focus.map(g=>g.key).join(', ')}.${strong.length?' Strengths: '+strong.map(g=>g.key).join(', ')+'.':''}`;
+  return {groups,weak,watch,strong,goals,summary};
+}
+function svgBars(rows){
+  const W=540, rowH=34, pad=120, top=8, H=top+rows.length*rowH+8;
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px" xmlns="http://www.w3.org/2000/svg" font-family="Lexend,system-ui,sans-serif">
+    ${rows.map((r,i)=>{ const y=top+i*rowH; const fullW=W-pad-34; const v=Math.max(0,Math.min(100,r.pct||0)); return `
+      <text x="0" y="${y+21}" font-size="13" fill="#15183A">${r.label}</text>
+      <rect x="${pad}" y="${y+7}" width="${fullW}" height="18" rx="9" fill="#eef0f3"/>
+      <rect x="${pad}" y="${y+7}" width="${fullW*v/100}" height="18" rx="9" fill="${r.color||'#0c8a72'}"/>
+      <text x="${W-28}" y="${y+21}" font-size="12" fill="#5b6473" text-anchor="end">${r.pct==null?'—':r.pct+'%'}</text>`; }).join('')}
+  </svg>`;
+}
+function chartPNG(rows,title){
+  const W=900,rowH=46,pad=210,top=64,H=top+rows.length*rowH+24;
+  const c=document.createElement('canvas'); c.width=W;c.height=H; const x=c.getContext('2d');
+  x.fillStyle="#fff"; x.fillRect(0,0,W,H);
+  x.fillStyle="#15183A"; x.font="bold 22px Helvetica"; x.textAlign="left"; x.fillText(title,30,38);
+  rows.forEach((r,i)=>{ const y=top+i*rowH; x.fillStyle="#15183A"; x.font="16px Helvetica"; x.textAlign="left"; x.fillText(r.label,30,y+24);
+    const bx=pad, bw=W-pad-90; x.fillStyle="#eef0f3"; x.fillRect(bx,y+8,bw,22);
+    const v=Math.max(0,Math.min(100,r.pct||0)); x.fillStyle=r.color||"#0c8a72"; x.fillRect(bx,y+8,bw*v/100,22);
+    x.fillStyle="#333"; x.fillText(r.pct==null?'—':r.pct+'%', bx+bw+10, y+24); });
+  return {url:c.toDataURL("image/png"), w:W, h:H};
+}
+function interventionHTML(iv){
+  if(!iv.goals.length) return `<p style="color:var(--slate);margin:0">${iv.summary}</p>`;
+  return `<p style="color:var(--slate);margin:0 0 8px">${iv.summary}</p>
+   <table class="corr-table"><thead><tr><th>Focus</th><th>This month</th><th>This semester</th><th>This year</th></tr></thead><tbody>
+   ${iv.goals.map(g=>`<tr><td><b>${g.skill}</b>${g.avg==null?'':`<br><span style="font-size:.74rem;color:var(--muted)">${g.avg}%</span>`}</td><td>${g.m}</td><td>${g.s}</td><td>${g.y}</td></tr>`).join('')}
+   </tbody></table>`;
+}
+function downloadReport(key){
+  if(!(window.jspdf&&window.jspdf.jsPDF)){ alert("PDF library is still loading — please try again in a moment."); return; }
+  const doc=new window.jspdf.jsPDF('p','pt','a4'); const PW=doc.internal.pageSize.getWidth();
+  const res = key? studentResults(key) : allResults();
+  const who = key? ((res[0]&&res[0].name)||'Student') : 'Whole class';
+  const iv=buildIntervention(res); let y=48;
+  doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.setTextColor(21,24,58); doc.text('iCAN — Progress & Intervention Report',40,y); y+=22;
+  doc.setFont('helvetica','normal'); doc.setFontSize(12); doc.setTextColor(90,90,90); doc.text(who+'   ·   '+new Date().toLocaleDateString(),40,y); y+=18;
+  const rows=iv.groups.map(g=>({label:g.label,pct:g.avg,color:g.color}));
+  if(rows.length){ const ch=chartPNG(rows, key?'Average score by skill':'Class average by skill'); const w=PW-80, h=w*ch.h/ch.w; doc.addImage(ch.url,'PNG',40,y,w,h); y+=h+18; }
+  doc.setTextColor(21,24,58); doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.text('Summary',40,y); y+=16;
+  doc.setFont('helvetica','normal'); doc.setFontSize(11); doc.setTextColor(50,50,50);
+  doc.splitTextToSize(iv.summary,PW-80).forEach(l=>{ doc.text(l,40,y); y+=15; }); y+=8;
+  if(iv.goals.length){ doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(21,24,58); doc.text('Intervention goals',40,y); y+=18;
+    iv.goals.forEach(g=>{ if(y>760){doc.addPage();y=48;} doc.setFont('helvetica','bold'); doc.setFontSize(11); doc.setTextColor(12,138,114); doc.text(g.skill+(g.avg==null?'':' ('+g.avg+'%)'),40,y); y+=15;
+      doc.setFont('helvetica','normal'); doc.setTextColor(50,50,50);
+      [['Month',g.m],['Semester',g.s],['Year',g.y]].forEach(([lab,txt])=>{ doc.splitTextToSize('• '+lab+': '+txt, PW-100).forEach(l=>{ if(y>790){doc.addPage();y=48;} doc.text(l,54,y); y+=14; }); }); y+=8; });
+  }
+  if(!key){ const sts=summariseStudents(res).filter(s=>s.avg!=='—').sort((a,b)=>a.avg-b.avg);
+    if(sts.length){ if(y>680){doc.addPage();y=48;} doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(21,24,58); doc.text('Students by average (lowest first)',40,y); y+=16;
+      doc.setFont('helvetica','normal'); doc.setFontSize(11); doc.setTextColor(50,50,50);
+      sts.forEach(s=>{ if(y>800){doc.addPage();y=48;} doc.splitTextToSize(`${s.name||'—'} (${s.class||'—'}) — ${s.avg}% · ${s.attempts} attempts · ${s.skills.join(', ')}`,PW-80).forEach(l=>{doc.text(l,40,y);y+=14;}); }); }
+  }
+  doc.setFontSize(9); doc.setTextColor(150,150,150); doc.text(CONFIG.tagline||"iCAN",40, doc.internal.pageSize.getHeight()-24);
+  doc.save('iCAN-report-'+(key?who.replace(/\s+/g,'-'):'class')+'-'+new Date().toISOString().slice(0,10)+'.pdf');
+}
 
 /* boot */
 go('home');
