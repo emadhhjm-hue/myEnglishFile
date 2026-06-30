@@ -1558,7 +1558,7 @@ const ROUTES = {
     <div class="wrap screen">
       <button class="back" onclick="go('dashboard')">← Home</button>
       <h1 style="font-size:2.2rem">🎓 Full-length exams</h1>
-      <p style="color:var(--muted);max-width:700px">Complete, timed exams covering all four skills — <b>Vocabulary, Grammar, Reading</b> and <b>Writing</b> — with a wide range of grammar and topics. Each exam is <b>40 minutes</b> and auto-submits when time runs out. Finish to earn a <b>certificate</b> (Emerging · At-level · Outstanding).</p>
+      <p style="color:var(--muted);max-width:700px">Complete, timed exams covering all four skills — <b>Vocabulary, Grammar, Reading</b> and <b>Writing</b> — with a wide range of grammar and topics. Each question has <b>three options (a / b / c)</b> in the MoE style, and on submit you see the correct answer with a short <b>“Why”</b> hint. Each exam is <b>40 minutes</b> and auto-submits when time runs out. Finish to earn a <b>certificate</b> (Emerging · At-level · Outstanding).</p>
       <div class="grid c2" style="margin-top:14px">
         ${EXAMS.map((e,i)=>`
           <div class="card">
@@ -3139,11 +3139,26 @@ function shuffleMCQ(q){
   return Object.assign({}, q, { options: order.map(j=>q.options[j]), answer: order.indexOf(q.answer) });
 }
 function shuffleMCQs(arr){ return Array.isArray(arr)? arr.map(shuffleMCQ) : arr; }
+/* Exam MCQs follow the MoE three-option (a/b/c) standard: keep the correct
+   answer plus two distractors, then shuffle order and remap the answer. */
+function examMCQ(q){
+  if(!q || q.type==="tfng" || !Array.isArray(q.options) || typeof q.answer!=="number") return q;
+  const opts=q.options, ans=q.answer;
+  if(opts.length>3){
+    const correct=opts[ans];
+    const others=shuffle(opts.filter((_,j)=>j!==ans)).slice(0,2);
+    const three=shuffle([correct,...others]);
+    return Object.assign({}, q, { options: three, answer: three.indexOf(correct) });
+  }
+  const order=opts.map((_,j)=>j); shuffle(order);
+  return Object.assign({}, q, { options: order.map(j=>opts[j]), answer: order.indexOf(ans) });
+}
+function examMCQs(arr){ return Array.isArray(arr)? arr.map(examMCQ) : arr; }
 function shuffleExam(ex){
   const e=Object.assign({}, ex);
-  e.vocab=shuffleMCQs(ex.vocab); e.grammar=shuffleMCQs(ex.grammar);
-  if(ex.readingA){ e.readingA=Object.assign({}, ex.readingA, {questions:shuffleMCQs(ex.readingA.questions)}); }
-  if(ex.readingB){ e.readingB=Object.assign({}, ex.readingB, {questions:shuffleMCQs(ex.readingB.questions)}); }
+  e.vocab=examMCQs(ex.vocab); e.grammar=examMCQs(ex.grammar);
+  if(ex.readingA){ e.readingA=Object.assign({}, ex.readingA, {questions:examMCQs(ex.readingA.questions)}); }
+  if(ex.readingB){ e.readingB=Object.assign({}, ex.readingB, {questions:examMCQs(ex.readingB.questions)}); }
   return e;
 }
 /* Spell & Drill: serve genuinely fresh items each round, cycling through the
@@ -3753,11 +3768,105 @@ const EXAMS=[
      ]},
    writing:{ prompt:"Should the world try to keep many different languages alive, or is it better to share a few global languages? Discuss both views and give your opinion.", minWords:150, points:["Why keep many different languages alive?","Why might a few shared global languages be better?","What do you think is best, and why?"],
      tips:["Introduce the issue in one sentence.","Give one argument for each side.","Use comparison language: whereas, on the other hand.","State your opinion in the conclusion."] }
+ },
+ { label:"Foundation · Set A-3", level:"Core", topic:"Health · Lifestyle",
+   vocab:[
+     MC("Food that gives your body what it needs is ____.",["nutritious","noticeable","numerous"],0,"'Nutritious' food nourishes the body."),
+     MC("Regular ____ keeps the heart strong.",["exercise","excuse","example"],0,"'Exercise' = physical activity."),
+     MC("A person who reacts badly to a certain food may be ____ to it.",["allergic","athletic","ancient"],0,"An 'allergic' reaction."),
+     MC("To stop an illness before it begins is to ____ it.",["prevent","present","pretend"],0,"'Prevent' = stop in advance."),
+     MC("Feeling worried and under pressure is feeling ____.",["stressed","strict","strange"],0,"We feel 'stressed'."),
+     MC("The opposite of 'healthy' is ____.",["wealthy","unhealthy","heavy"],1,"'Unhealthy' is the opposite."),
+     MC("Around eight hours of ____ helps you focus.",["sleep","slope","speech"],0,"Enough 'sleep' aids concentration."),
+     MC("A ____ diet includes many food groups.",["balanced","bored","brave"],0,"A 'balanced' diet is varied."),
+     MC("Water that is safe to drink is ____.",["polluted","drinkable","frozen"],1,"'Drinkable' water is safe."),
+     MC("To get well after being ill is to ____.",["recover","relax","remove"],0,"'Recover' = get better.")
+   ],
+   grammar:[
+     MC("I ____ to the gym three times a week.",["go","goes","going"],0,"Present simple 'I go'."),
+     MC("She has been jogging ____ an hour.",["since","for","during"],1,"'For' + a period of time."),
+     MC("If you ____ enough water, you will feel better.",["drink","will drink","drank"],0,"First conditional: present simple after 'if'."),
+     MC("You ____ eat so much sugar; it harms your teeth.",["shouldn't","mustn't to","not should"],0,"'Shouldn't' for advice."),
+     MC("The patient ____ by the nurse at the moment.",["is treated","is being treated","treats"],1,"Present continuous passive."),
+     MC("He finally gave up ____.",["smoke","to smoke","smoking"],2,"'Give up' + -ing form."),
+     MC("This medicine ____ be taken twice a day.",["should","would","could"],0,"'Should' for instruction."),
+     MC("I feel ____ today than I did yesterday.",["good","better","best"],1,"Comparative 'better'."),
+     MC("Neither the doctor ____ the nurse was free.",["or","nor","and"],1,"'Neither ... nor'."),
+     MC("By June, she ____ her treatment.",["will finish","will have finished","finishes"],1,"Future perfect 'will have finished'."),
+     MC("The more you exercise, ____ you sleep.",["the better","better","the best"],0,"'The more ..., the better ...'."),
+     MC("During the outbreak we ____ wear masks.",["had to","must to","have"],0,"'Had to' = past obligation.")
+   ],
+   readingA:{ title:"Why sleep matters", topic:"Health — daily habits",
+     text:`<p>Many teenagers treat sleep as something they can skip. They stay up late on their phones, then struggle to wake for school. Yet sleep is not wasted time: it is when the body repairs itself and the brain stores what it has learned.</p><p>Research shows that students who sleep well remember more and concentrate better in class. Those who sleep too little are more likely to feel low, to snack on sugary food, and to fall ill. The effects build up quietly, night after night.</p><p>The good news is that small changes help. Going to bed at a regular time, keeping screens out of the bedroom, and avoiding late caffeine can all improve sleep. Rest, it turns out, is one of the cheapest ways to stay healthy.</p>`,
+     questions:[
+       MC("What is the main idea of the text?",["Sleep is wasted time","Good sleep keeps the body and mind healthy","Teenagers sleep too much","Phones improve sleep"],1,"Sleep repairs the body and helps the brain store learning."),
+       MC("Students who sleep too little are more likely to ____.",["remember more","feel low and fall ill","concentrate better","eat less sugar"],1,"The text lists feeling low, sugary snacks and illness."),
+       MC("Which change does the text suggest?",["keep screens out of the bedroom","drink coffee late at night","study until morning","skip breakfast"],0,"It suggests a regular bedtime, no screens and no late caffeine."),
+       MC("'The effects build up quietly' suggests the harm is ____.",["sudden and obvious","gradual and easy to miss","imaginary","helpful"],1,"They build night after night, not all at once.")
+     ]},
+   readingB:{ title:"The truth about fast food", topic:"Health — diet", genre:"Opinion article",
+     text:`<p>Fast food is popular for good reasons: it is quick, cheap and tasty. After a long day, few people want to spend an hour cooking. A burger and chips can be bought in minutes and eaten on the move.</p><p>The problem is not an occasional meal but a daily habit. Most fast food is high in salt, sugar and fat, and low in the fibre and vitamins the body needs. Eaten often, it is linked to weight gain and to illnesses such as heart disease and diabetes.</p><p>Some companies have responded by adding salads, fruit and grilled options to their menus, and by printing the number of calories beside each item. Critics argue these changes are small, and that advertising still pushes the least healthy choices, especially towards children.</p><p>In the end, fast food is not poison, but nor is it fuel for every day. Eaten now and then, it is a harmless treat; relied on, it slowly works against the very energy it seems to provide.</p>`,
+     questions:[
+       MC("Why is fast food popular, according to the text?",["it is slow and expensive","it is quick, cheap and tasty","it is very healthy","it is hard to find"],1,"Stated in the first paragraph."),
+       MC("The real problem with fast food is ____.",["eating it once","eating it as a daily habit","its low price","its taste"],1,"'Not an occasional meal but a daily habit.'"),
+       TF("Some companies have added healthier options to their menus.","True","The third paragraph mentions salads, fruit and grilled options."),
+       TF("The writer says fast food is poison.","False","The text says it is 'not poison' but not everyday fuel."),
+       TF("Fast food advertising is banned in most countries.","Not Given","The text mentions advertising but says nothing about a ban.")
+     ]},
+   writing:{ prompt:"Some people say that young people today live less healthy lives than in the past. What can teenagers do to be healthier?", minWords:150, points:["Which unhealthy habits are common among teenagers today?","What practical things can a teenager do to be healthier?","Whose responsibility is it - the teenager, the family, or the school?"],
+     tips:["State your opinion clearly at the start.","Give two ideas with examples.","Use linking words: firstly, also, however.","End with a conclusion."] }
+ },
+ { label:"Advanced Challenge · Set B-3", level:"Challenge", topic:"Work · The future",
+   vocab:[
+     MC("Doing tasks by machine instead of by people is ____.",["automation","admiration","adaptation"],0,"'Automation' = machines doing the work."),
+     MC("Work done from home using the internet is ____ work.",["remote","remorse","removed"],0,"'Remote' work is done away from the office."),
+     MC("Skills that stay useful across many jobs are ____.",["obsolete","transferable","temporary"],1,"'Transferable' skills carry across roles."),
+     MC("Someone who starts their own business is an ____.",["employee","entrepreneur","employer"],1,"An 'entrepreneur' founds a business."),
+     MC("To make a process simpler and faster is to ____ it.",["streamline","strain","scatter"],0,"'Streamline' = make efficient."),
+     MC("A job that feels meaningful is ____.",["fulfilling","filling","faltering"],0,"'Fulfilling' = satisfying and meaningful."),
+     MC("The ability to adapt easily to change is ____.",["rigidity","flexibility","fragility"],1,"'Flexibility' = ability to adapt."),
+     MC("Short-term, task-based jobs make up the ____ economy.",["gig","grid","grip"],0,"The 'gig' economy = short contracts."),
+     MC("Learning new skills throughout life is ____ learning.",["lifelong","lifeless","likely"],0,"'Lifelong' learning continues for life."),
+     MC("When machines replace workers, the result may be ____.",["employment","unemployment","enjoyment"],1,"'Unemployment' = loss of jobs.")
+   ],
+   grammar:[
+     MC("Not only ____ jobs, but it also creates new ones.",["automation removes","does automation remove","automation does remove"],1,"Inversion after 'Not only': 'does automation remove'."),
+     MC("____ I you, I would learn to code now.",["Was","Were","Had"],1,"'Were I you' = if I were you (inversion)."),
+     MC("It is adaptability ____ matters most in future careers.",["who","that","what"],1,"It-cleft sentence uses 'that'."),
+     MC("Hardly ____ the factory opened when robots arrived.",["had","has","did"],0,"'Hardly had ... when ...'."),
+     MC("The role, ____ requires no degree, pays well.",["that","which","who"],1,"Non-defining clause about a thing uses 'which'."),
+     MC("I wish I ____ a second language at school.",["have learned","had learned","would learn"],1,"Wish + past perfect for a past regret."),
+     MC("By 2040, many of today's jobs ____.",["will disappear","will have disappeared","disappear"],1,"Future perfect with 'by 2040'."),
+     MC("Such ____ the pace of change that few can keep up.",["is","are","be"],0,"'Such is the pace ...' (singular)."),
+     MC("Only after losing his job ____ the value of new skills.",["he understood","did he understand","he did understand"],1,"Inversion after 'Only after ...'."),
+     MC("The firm insists that every employee ____ retrained.",["is","be","was"],1,"Subjunctive after 'insist that' uses the base form 'be'."),
+     MC("____ working longer hours, the team's output did not rise.",["Despite","Although","However"],0,"'Despite' + -ing/noun phrase."),
+     MC("If automation ____ faster, millions would need new jobs.",["spreads","spread","had spread"],1,"Second conditional uses past simple 'spread'.")
+   ],
+   readingA:{ title:"Will robots take our jobs?", topic:"Work — automation",
+     text:`<p>Every wave of new technology brings the same fear: that machines will leave people with nothing to do. When cash machines first appeared, many predicted the end of bank workers. Instead, banks opened more branches and staff moved to new kinds of work.</p><p>Today the worry has returned, sharper than ever, because software can now do tasks once thought to be safely human - reading documents, answering customers, even writing simple reports. Some jobs really will shrink, and the change may come faster than before.</p><p>Yet most economists expect machines to transform jobs rather than simply erase them. The routine parts of a role are automated, while the human parts - judgement, creativity, dealing with people - become more valuable. The danger is less that work disappears than that workers are not helped to learn the new skills it demands.</p>`,
+     questions:[
+       MC("What happened after cash machines appeared?",["all bank workers lost their jobs","banks opened more branches and staff did new work","banks closed down","customers stopped using banks"],1,"Staff moved to new kinds of work."),
+       MC("Why is the worry 'sharper than ever' today?",["software can now do once-human tasks","machines are cheaper","people work fewer hours","banks have closed"],0,"Software can read, answer customers and write reports."),
+       MC("Most economists expect machines to ____ jobs.",["erase","transform","ignore","double"],1,"They expect machines to transform rather than erase jobs."),
+       MC("According to the text, the real danger is that ____.",["work vanishes completely","workers are not helped to learn new skills","machines feel emotions","creativity becomes useless"],1,"The danger is the lack of retraining.")
+     ]},
+   readingB:{ title:"The four-day week", topic:"Work — the future", genre:"News feature",
+     text:`<p>What if everyone worked four days instead of five, for the same pay? Once dismissed as a fantasy, the idea has been tested by real companies in several countries, and the early results have surprised many employers.</p><p>In the largest trial so far, dozens of firms gave staff an extra day off for six months. Most reported that productivity stayed the same or even rose, while stress and sick days fell. At the end, the great majority of these companies chose to keep the shorter week.</p><p>Supporters argue that a focused four-day week cuts out wasted meetings and tired, unproductive hours. Workers, they say, return rested and more committed. Critics reply that the model may suit offices but not hospitals, shops or factories, where someone must always be present.</p><p>Whether or not it becomes normal, the experiment has changed the conversation. For the first time in a century, the question is no longer only how much we work, but whether the old five-day pattern was ever the best one.</p>`,
+     questions:[
+       MC("In the trial, what happened to productivity?",["it collapsed","it stayed the same or rose","it could not be measured","it always fell"],1,"Productivity stayed the same or even rose."),
+       MC("What do critics say about the four-day week?",["it suits every workplace","it may not suit hospitals, shops or factories","it lowers pay","it increases sick days"],1,"Some workplaces need someone present at all times."),
+       TF("Most companies in the trial kept the four-day week afterwards.","True","The great majority chose to keep the shorter week."),
+       TF("The four-day week trial reduced workers' pay.","False","Staff worked four days 'for the same pay'."),
+       TF("The four-day week is now law in most countries.","Not Given","The text never says it has become law.")
+     ]},
+   writing:{ prompt:"Some experts predict that machines will do many of today's jobs in the near future. Is this mainly a threat or an opportunity for young people?", minWords:150, points:["Which jobs are most likely to change or disappear?","What new opportunities could technology create?","How should young people prepare for the future of work?"],
+     tips:["State your position clearly at the start.","Discuss both the threat and the opportunity.","Support each point with an example.","End with a reasoned conclusion."] }
  }
 ];
 let CURRENT_EXAM=null, EXAM_TIMER=null;
 function diagMCQ(q,n,name){ const opts=q.type==="tfng"?TFNG:q.options; const tag=q.type==="tfng"?` <span style="font-size:.72rem;color:var(--muted);font-weight:400">— True / False / Not Given</span>`:"";
-  return `<div class="q"><div class="qhead">${n}. ${q.q}${tag}</div>${opts.map((o,j)=>`<label class="opt"><input type="radio" name="${name}" value="${j}"><span>${o}</span></label>`).join('')}</div>`; }
+  return `<div class="q"><div class="qhead">${n}. ${q.q}${tag}</div>${opts.map((o,j)=>`<label class="opt"><input type="radio" name="${name}" value="${j}"><span><b style="color:var(--muted);margin-right:7px">${LET[j].toLowerCase()})</b>${o}</span></label>`).join('')}</div>`; }
 function diagRadio(name){ const el=document.querySelector(`input[name="${name}"]:checked`); return el?+el.value:-1; }
 function diagScore(arr,prefix){ let c=0; const rev=arr.map((q,i)=>{ const ans=ansIdx(q); const got=diagRadio(prefix+i); const ok=got===ans; if(ok)c++; const opts=q.type==="tfng"?TFNG:q.options; return {q:q.q, your:got>=0?opts[got]:"(blank)", correct:opts[ans], exp:q.exp, ok}; }); return {c, max:arr.length, rev}; }
 function certBand(p){ return p>=80?"Outstanding":p>=50?"At-level":"Emerging"; }
@@ -3819,7 +3928,7 @@ function gradeExam(){
 }
 function showExamResults(ex,ctx,r){
   const bar=(label,c,m,color)=>{ const p=m?Math.round(c/m*100):0; return `<div class="prow"><div class="lab"><b>${label}</b><span>${c}/${m} · ${p}%</span></div><div class="pbar"><span style="width:${p}%;background:${color}"></span></div></div>`; };
-  const review=(title,s)=>`<h4 style="margin:14px 0 6px">${title}</h4>`+s.rev.map((x,i)=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div style="font-size:.9rem">${x.ok?'✅':'❌'} ${i+1}. ${x.q}</div><div style="font-size:.82rem;color:var(--muted)">Your answer: ${esc(x.your)} · Correct: <b>${esc(x.correct)}</b>. ${x.exp||''}</div></div>`).join('');
+  const review=(title,s)=>`<h4 style="margin:14px 0 6px">${title}</h4>`+s.rev.map((x,i)=>`<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div style="font-size:.9rem">${x.ok?'✅':'❌'} ${i+1}. ${x.q}</div><div style="font-size:.82rem;color:var(--muted)">Your answer: ${esc(x.your)} · Correct: <b>${esc(x.correct)}</b>${x.exp?` · <b>Why:</b> ${x.exp}`:''}</div></div>`).join('');
   const band=certBand(r.pct);
   const cert = ctx.cert ? `<div class="card" style="margin-top:16px"><h3 style="font-size:1.15rem">🏆 Your certificate — ${band}</h3>
      <p style="font-size:.85rem;color:var(--muted);margin:0 0 10px">Auto-scored sections only. ${SESSION&&SESSION.name?'':'<b>Log in with your full name to personalise the certificate.</b>'}</p>
