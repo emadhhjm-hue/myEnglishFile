@@ -308,14 +308,14 @@ table.data tr:nth-child(even){background:#fff}
 .frame li{margin:3px 0}
 .checklist{display:flex; flex-direction:column; gap:7px; margin:8px 0 14px}
 .checklist label{display:flex; gap:9px; align-items:flex-start; font-size:.92rem; color:var(--ink); cursor:pointer}
-.hub{background:radial-gradient(circle at 50% 40%, #232a63 0%, #14173a 58%, #0b0d20 100%); border-radius:24px; padding:20px 14px 16px; margin:0 0 24px; box-shadow:0 18px 44px rgba(0,0,0,.28)}
-.hub-greet{color:#cfd3e6; text-align:center; font-size:.95rem; max-width:580px; margin:2px auto 8px}
+.hub{background:linear-gradient(180deg,#0f1f4d 0%,#19357f 42%,#9c531a 60%,#6f3a0e 100%); border-radius:24px; padding:20px 14px 16px; margin:0 0 24px; box-shadow:0 18px 44px rgba(0,0,0,.32)}
+.hub-greet{color:#eaf0ff; text-align:center; font-size:.95rem; max-width:580px; margin:2px auto 8px}
 .hub-greet b{color:#fff}
 .hub-map{display:block; width:100%; max-width:740px; margin:0 auto; height:auto}
 .hub-c, .hub-s{cursor:pointer}
 .hub-c text, .hub-s text{pointer-events:none}
 .hub-c:hover circle, .hub-s:hover circle{filter:brightness(1.14)}
-.hub-foot{text-align:center; color:#8a90b5; font-size:.78rem; margin-top:6px}
+.hub-foot{text-align:center; color:#fff3e2; font-size:.82rem; margin-top:6px; font-weight:500}
 </style>
 </head>
 <body>
@@ -731,11 +731,11 @@ const LISTEN_COMP = [
 ];
 
 /* ---- Listening B: spelling & dictation. Timed, two attempts, big bank, fresh each round ---- */
-const SPELL_TIME   = { word:{a1:10,a2:6}, phrase:{a1:14,a2:8}, sentence:{a1:22,a2:14} };
+const SPELL_TIME   = { word:{a1:20,a2:12}, phrase:{a1:22,a2:13}, sentence:{a1:30,a2:18} };
 function spellTime(type, attempt, text){
   if(type==="sentence"){
     const words=(text||"").trim().split(/\s+/).filter(Boolean).length;
-    const a1=Math.min(40, Math.max(22, Math.round(words*2.2)));  // 22s floor, ~2.2s/word, 40s cap
+    const a1=Math.min(50, Math.max(30, Math.round(words*2.6)));  // 30s floor, ~2.6s/word, 50s cap
     return attempt===1 ? a1 : Math.round(a1*0.65);
   }
   if(type==="phrase"){
@@ -1424,6 +1424,17 @@ const ROUTES = {
       <div class="hub">
         <div class="hub-greet">Hello ${SESSION&&SESSION.name?esc(SESSION.name.split(' ')[0]):'there'} 👋 — tap a circle to begin. <b>Read · Write · Design</b> sit at the core; more practice orbits around.</div>
         <svg class="hub-map" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Lexend,system-ui,sans-serif">
+          <defs>
+            <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#fff7e0" stop-opacity="0.95"/>
+              <stop offset="34%" stop-color="#ffe39a" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#ffe39a" stop-opacity="0"/>
+            </radialGradient>
+            <linearGradient id="ribbonGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#12a585"/><stop offset="50%" stop-color="#e6464b"/><stop offset="100%" stop-color="#8B5CF6"/>
+            </linearGradient>
+          </defs>
+          <path d="M110 235 C 260 175, 640 175, 790 235" fill="none" stroke="url(#ribbonGrad)" stroke-width="34" stroke-linecap="round" opacity="0.5"/>
           <g stroke="rgba(255,255,255,.16)" stroke-width="1.4" fill="none">
             <line x1="450" y1="260" x2="450" y2="46"/>
             <line x1="450" y1="260" x2="135" y2="115"/><line x1="450" y1="260" x2="765" y2="115"/>
@@ -1443,14 +1454,15 @@ const ROUTES = {
             <circle cx="450" cy="356" r="120" fill="rgba(139,92,246,.82)"/>
             <text x="450" y="408" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-weight="700" font-size="30">Design</text>
             <text x="450" y="428" text-anchor="middle" fill="#f1eaff" font-size="13">to share it</text></g>
-          <circle cx="450" cy="260" r="68" fill="#0e1130" stroke="rgba(255,255,255,.55)" stroke-width="2"/>
+          <circle cx="450" cy="260" r="120" fill="url(#coreGlow)"/>
+          <circle cx="450" cy="260" r="68" fill="#0e1130" stroke="rgba(255,255,255,.9)" stroke-width="2.5"/>
           <text x="450" y="270" text-anchor="middle" font-family="Fraunces,serif" font-weight="800" font-size="34">
             <tspan fill="#ffffff">i</tspan><tspan fill="#ff5a5f">C</tspan><tspan fill="#34d39a">A</tspan><tspan fill="#5b8def">N</tspan></text>
           ${[["spelldrill","🐝","Spell & Drill",450,46],["grammar","🧩","Grammar",135,115],["vocab","📚","Vocabulary",765,115],["typing","⌨️","Type",135,450],["diagnostic","🧭","Diagnostic",765,450],["exams","🎓","Exams",450,515]].map(([r,ic,lab,cx,cy])=>`
           <g class="hub-s" onclick="go('${r}')">
-            <circle cx="${cx}" cy="${cy}" r="44" fill="#1b1f47" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
-            <text x="${cx}" y="${cy-2}" text-anchor="middle" font-size="22">${ic}</text>
-            <text x="${cx}" y="${cy+22}" text-anchor="middle" fill="#cfd3e6" font-size="12" font-weight="600">${lab}</text></g>`).join('')}
+            <circle cx="${cx}" cy="${cy}" r="46" fill="#15183a" stroke="rgba(255,255,255,.65)" stroke-width="2"/>
+            <text x="${cx}" y="${cy-3}" text-anchor="middle" font-size="23">${ic}</text>
+            <text x="${cx}" y="${cy+23}" text-anchor="middle" fill="#ffffff" font-size="15" font-weight="700">${lab}</text></g>`).join('')}
         </svg>
         <div class="hub-foot">The full Exam hub is coming next.</div>
       </div>
@@ -1852,23 +1864,43 @@ const ROUTES = {
   },
   spellQuiz(key){ spellLaunch(key,'listening'); },
   spelldrill(){
+    const tb=textbookDrills();
     app().innerHTML=`
     <div class="wrap screen">
       <button class="back" onclick="go('dashboard')">← Home</button>
       <div class="meta">Spell &amp; Drill</div>
       <h1 style="font-size:2.1rem">🐝 Spell &amp; Drill</h1>
-      <p style="color:var(--muted);max-width:720px">Hear a word, read its meaning, and type it before the timer runs out. Two attempts each; miss both and the spelling is shown. Pick a set to start — a quick warm-up any time, with no need to browse the language sections.</p>
+      <p style="color:var(--muted);max-width:720px">Hear a word, read its meaning, and type it before the timer runs out. Two attempts each; miss both and the spelling is shown.</p>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0">
         <span style="font-size:.85rem;color:var(--muted)">Words per round:</span>
         ${[10,20,30].map(n=>`<button class="chip ${SPELL_ROUND_SIZE===n?'on':''}" onclick="SPELL_ROUND_SIZE=${n};go('spelldrill')">${n}</button>`).join('')}
       </div>
+
+      <h2 class="sub" style="margin-top:14px">📘 Standard</h2>
+      <p style="color:var(--muted);margin-top:0">The core bank of common words. Each round gives <b>10 fresh words</b> — keep going and you'll work through the whole bank (${STANDARD_WORDS.length} words) without repeats.</p>
+      <div class="card" style="max-width:560px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <span style="color:var(--ink)"><b>Common words</b><br><span style="font-size:.82rem;color:var(--muted)">${STANDARD_WORDS.length} words · rounds of ${SPELL_ROUND_SIZE}</span></span>
+        <button class="btn teal" onclick="standardSpellStart()">Start a round →</button>
+      </div>
+
+      <h2 class="sub" style="margin-top:22px">✨ Extra spelling</h2>
+      <p style="color:var(--muted);margin-top:0">Targeted sets: tricky words, vowel teams, homophones, idioms &amp; phrases, and full sentences.</p>
       <div class="grid c2">
         ${Object.keys(SPELL_BANK).map(k=>{ const c=SPELL_BANK[k]; return `<div class="item-row" style="flex-direction:column;align-items:flex-start">
-          <h3 style="font-size:1.15rem;margin:2px 0">${c.label}</h3>
-          <div class="meta">${c.sub?c.sub+' · ':''}${c.items.length} words · ${c.type}</div>
-          <button class="btn sm teal" style="margin-top:10px" onclick="spellLaunch('${k}','spelldrill')">Start →</button>
+          <h3 style="font-size:1.1rem;margin:2px 0">${c.label}</h3>
+          <div class="meta">${c.sub?c.sub+' · ':''}${c.items.length} items · ${c.type}</div>
+          <button class="btn sm" style="margin-top:10px" onclick="spellLaunch('${k}','spelldrill')">Start →</button>
         </div>`; }).join('')}
       </div>
+
+      <h2 class="sub" style="margin-top:22px">📗 Textbook spelling</h2>
+      <p style="color:var(--muted);margin-top:0">Word lists your teacher adds from the curriculum.</p>
+      ${tb.length? `<div class="grid c2">${tb.map((d,i)=>`<div class="item-row" style="flex-direction:column;align-items:flex-start">
+          <h3 style="font-size:1.1rem;margin:2px 0">${esc(d.title||'Spelling list')}</h3>
+          <div class="meta">${(d.words||[]).length} words${d.type&&d.type!=='word'?' · '+d.type:''}</div>
+          <button class="btn sm" style="margin-top:10px" onclick="textbookStart(${i})">Start →</button>
+        </div>`).join('')}</div>`
+        : `<p class="note">No textbook drills yet — your teacher can add curriculum word lists here.</p>`}
     </div>`;
   },
   listenComp(id){
@@ -2395,6 +2427,7 @@ function doTeacherLogin(){
 const TFNG=["True","False","Not Given"];
 function ansIdx(q){ if(q.type==="tfng"){ return typeof q.answer==="number"?q.answer:TFNG.indexOf(q.answer); } return q.answer; }
 function renderQuiz(qs){
+  qs = qs.map(shuffleMCQ);
   const box=document.getElementById('quiz');
   box.innerHTML = qs.map((q,i)=>{
     if(q.type==="mcq"){
@@ -2622,8 +2655,43 @@ function finishSpell(){
 
 function spellBack(){ return (SPELLSTATE&&SPELLSTATE.back)||'listening'; }
 function spellBackLabel(){ return spellBack()==='spelldrill'?'Spell &amp; Drill':'Listening'; }
-function spellLaunch(key, back){ const cat=SPELL_BANK[key]; if(!cat)return; const items=shuffle(cat.items.slice()).slice(0, Math.min(SPELL_ROUND_SIZE, cat.items.length)); SPELLSTATE={ key, back:back||'listening', type:cat.type, label:cat.label, items, i:0, attempt:1, first:0, second:0, missed:0, log:[] }; renderSpell(); }
+function spellLaunch(key, back){ const cat=SPELL_BANK[key]; if(!cat)return; const items=spellPick(cat.items, SPELL_ROUND_SIZE, 'bank_'+key); SPELLSTATE={ key, back:back||'listening', type:cat.type, label:cat.label, items, i:0, attempt:1, first:0, second:0, missed:0, log:[] }; renderSpell(); }
 function spellNewRound(){ const s=SPELLSTATE; if(!s)return; spellLaunch(s.key, s.back); }
+
+/* Standard Spell & Drill — a bank of common words, served 10 fresh per round
+   until the whole bank is covered. Extend this list toward 500 over time. */
+const STANDARD_WORDS = [
+ "because","friend","beautiful","important","different","necessary","probably","favourite","tomorrow","weather",
+ "interesting","believe","received","separate","definitely","environment","government","business","decision","experience",
+ "knowledge","language","library","measure","minute","modern","natural","opinion","picture","possible",
+ "practice","prepare","present","problem","promise","question","reason","remember","sentence","special",
+ "station","strange","student","success","suddenly","together","tonight","trouble","usually","village",
+ "weight","whether","window","without","wonderful","yesterday","accident","address","afternoon","already",
+ "although","amount","animal","answer","appear","attention","available","beginning","behaviour","benefit",
+ "calendar","careful","century","certain","chocolate","comfortable","community","complete","computer","continue",
+ "country","courage","customer","dangerous","daughter","describe","develop","disappear","discover","distance",
+ "double","during","effort","either","electric","enough","especially","example","excellent","exercise",
+ "famous","finally","foreign","forward","general","grammar","grateful","health","heavy","history",
+ "holiday","honest","hospital","however","hundred","imagine","increase","instead","journey","kitchen",
+ "laughter","listen","machine","material","medicine","message","mountain","neighbour","nervous","nothing",
+ "ordinary","parent","perhaps","popular","position","powerful","quarter","quiet","really","restaurant",
+ "science","season","serious","several","shoulder","similar","simple","society","soldier","stomach",
+ "stranger","stretch","studied","surprise","thought","through","tongue","towards","traffic","treasure",
+ "uniform","useful","vegetable","voyage","welcome","whisper","writing","beneath","bicycle","breakfast"
+];
+function standardSpellStart(){
+  const items=spellPick(STANDARD_WORDS.map(w=>({t:w})), SPELL_ROUND_SIZE, 'standard');
+  SPELLSTATE={ key:'standard', back:'spelldrill', type:'word', label:'Standard spelling', items, i:0, attempt:1, first:0, second:0, missed:0, log:[] };
+  renderSpell();
+}
+function standardRemaining(){ const q=SPELL_QUEUE['standard']; return q? q.length : STANDARD_WORDS.length; }
+function textbookDrills(){ return Store.get('ican_spell_textbook')||[]; }
+function textbookStart(i){
+  const d=textbookDrills()[i]; if(!d||!Array.isArray(d.words)||!d.words.length)return;
+  const items=spellPick(d.words.map(w=>({t:w})), SPELL_ROUND_SIZE, 'tb_'+i);
+  SPELLSTATE={ key:'tb_'+i, back:'spelldrill', type:d.type||'word', label:d.title||'Textbook spelling', items, i:0, attempt:1, first:0, second:0, missed:0, log:[] };
+  renderSpell();
+}
 
 /* =========================================================================
    SPEAKING
@@ -3020,6 +3088,29 @@ const IDB = {
 function val(id){ const e=document.getElementById(id); return e?e.value:""; }
 function escq(s){ return (s||"").replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
 function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+/* Shuffle an MCQ's option order and remap its answer index, so the correct
+   answer is never stuck in one position (e.g. always "B"). */
+function shuffleMCQ(q){
+  if(!q || q.type!=="mcq" || !Array.isArray(q.options) || typeof q.answer!=="number") return q;
+  const order=q.options.map((_,j)=>j); shuffle(order);
+  return Object.assign({}, q, { options: order.map(j=>q.options[j]), answer: order.indexOf(q.answer) });
+}
+function shuffleMCQs(arr){ return Array.isArray(arr)? arr.map(shuffleMCQ) : arr; }
+function shuffleExam(ex){
+  const e=Object.assign({}, ex);
+  e.vocab=shuffleMCQs(ex.vocab); e.grammar=shuffleMCQs(ex.grammar);
+  if(ex.readingA){ e.readingA=Object.assign({}, ex.readingA, {questions:shuffleMCQs(ex.readingA.questions)}); }
+  if(ex.readingB){ e.readingB=Object.assign({}, ex.readingB, {questions:shuffleMCQs(ex.readingB.questions)}); }
+  return e;
+}
+/* Spell & Drill: serve genuinely fresh items each round, cycling through the
+   whole set before any repeat. */
+const SPELL_QUEUE={};
+function spellPick(items, n, key){
+  const all=items||[]; if(all.length<=n) return shuffle(all.slice());
+  if(!SPELL_QUEUE[key] || SPELL_QUEUE[key].length<n){ SPELL_QUEUE[key]=shuffle(all.slice()); }
+  return SPELL_QUEUE[key].splice(0, n);
+}
 
 /* =========================================================================
    TEACHER CONTENT PANEL — author readings, lessons, design briefs, prompts
@@ -3641,6 +3732,7 @@ function startCountdown(minutes, onZero){
 
 /* ---- generic exam runner (used by diagnostic and full-length exams) ---- */
 function runExam(ex, ctx){
+  ex = shuffleExam(ex);
   CURRENT_EXAM={ex,ctx}; clearExamTimer();
   const sec=(t,sub)=>`<h2 style="font-family:'Fraunces';font-size:1.45rem;margin:26px 0 4px;color:var(--ink)">${t}</h2><p style="color:var(--muted);font-size:.88rem;margin:0 0 12px">${sub}</p>`;
   const qh=(arr,prefix)=>arr.map((q,i)=>diagMCQ(q,i+1,prefix+i)).join('');
@@ -3661,6 +3753,7 @@ function runExam(ex, ctx){
      ${qh(ex.readingB.questions,'d_rb_')}
      ${sec('4 · Writing','Plan briefly, then write your essay in the box.')}
      <div class="card"><p style="font-weight:600;margin:0 0 6px">${ex.writing.prompt}</p>
+       <p style="font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 2px">Tips for a strong answer</p>
        <ul style="color:var(--muted);font-size:.86rem;margin:0 0 10px;padding-left:18px">${ex.writing.tips.map(t=>`<li>${t}</li>`).join('')}</ul>
        <textarea id="diagEssay" style="width:100%;min-height:180px;padding:12px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit" placeholder="Write about ${ex.writing.minWords} words…" oninput="document.getElementById('diagWC').textContent=this.value.trim().split(/\\s+/).filter(Boolean).length"></textarea>
        <p style="font-size:.82rem;color:var(--muted);margin:6px 0 0"><span id="diagWC">0</span> words · aim for about ${ex.writing.minWords}</p></div>
