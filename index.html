@@ -43,6 +43,9 @@ button{font-family:inherit; cursor:pointer; font-size:1rem}
 .brand{display:flex; align-items:center; gap:10px; font-family:"Fraunces"; font-weight:700; font-size:1.35rem; color:var(--ink)}
 .brand .dot{display:inline-block; background:var(--amber); border-radius:4px; padding:0 .25em; box-shadow:inset 0 -6px 0 rgba(0,0,0,.06)}
 .brand small{font-family:"Lexend"; font-weight:400; color:var(--muted); font-size:.7rem; letter-spacing:.18em; text-transform:uppercase}
+.ican-mark{display:inline-flex; align-items:center; background:#15183A; border-radius:9px; padding:4px 11px; font-family:'Fraunces',Georgia,serif; font-weight:800; font-size:1.55rem; line-height:1; letter-spacing:.01em; box-shadow:0 3px 8px rgba(0,0,0,.2)}
+.ican-mark b{padding:0 1px; font-weight:800}
+.l-i{color:#ffffff}.l-c{color:#ff5a5f}.l-a{color:#34d39a}.l-n{color:#5b8def}
 .who{display:flex; align-items:center; gap:12px; font-size:.85rem; color:var(--muted)}
 .who b{color:var(--ink)}
 
@@ -222,7 +225,8 @@ table.data tr:nth-child(even){background:#fff}
 .rwd-logo{width:104px; height:auto; flex:none; filter:drop-shadow(0 8px 14px rgba(0,0,0,.2))}
 .rwd-title{font-family:'Fraunces'; font-weight:800; font-size:clamp(3.4rem,9vw,5.6rem); line-height:.88; color:#15183A; margin:0; letter-spacing:.02em}
 .rwd-sub{font-family:'Lexend',sans-serif; font-weight:700; letter-spacing:.2em; color:#7a4d05; font-size:clamp(.78rem,2.1vw,1.02rem); margin-top:8px}
-.rwd-cap{color:#5a3c08; font-size:1.1rem; line-height:1.55; max-width:440px; margin:22px 0 28px; font-weight:500}
+.rwd-cap{color:#5a3c08; font-size:1.1rem; line-height:1.55; max-width:440px; margin:22px 0 14px; font-weight:500}
+.rwd-slogan{font-family:'Fraunces',Georgia,serif; font-style:italic; color:#7a4d05; font-size:1.18rem; line-height:1.4; margin:0 0 26px; font-weight:600}
 .lr-roles{display:flex; gap:14px; flex-wrap:wrap}
 .lr-role{display:inline-flex; align-items:center; gap:10px; border:none; cursor:pointer; font-family:inherit; font-weight:700; font-size:1.02rem; padding:14px 24px; border-radius:50px; transition:.15s; box-shadow:0 6px 16px rgba(0,0,0,.16)}
 .lr-role .lr-ic{font-size:1.2rem}
@@ -293,6 +297,25 @@ table.data tr:nth-child(even){background:#fff}
 .align-card{background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:14px}
 .align-obj{font-size:.78rem; background:#e6f4f0; color:var(--teal-dk); padding:3px 10px; border-radius:50px; font-weight:600}
 .align-tag{font-size:.72rem; background:var(--mist); color:var(--slate); padding:3px 9px; border-radius:50px; margin-left:4px}
+.obj-banner{background:#eef6f3; border:1px solid #cfe7df; color:#0a5f4f; border-radius:10px; padding:10px 14px; margin:10px 0 4px; font-size:.92rem}
+.stage{position:relative; margin-top:16px}
+.stage-tag{display:inline-block; font-weight:700; font-size:.8rem; letter-spacing:.04em; padding:4px 12px; border-radius:50px; color:#fff; margin-bottom:8px}
+.s-study{background:#2b5fa6}.s-drill{background:#0c8a72}.s-task{background:#d23b41}.s-chal{background:#6f3fd6}
+.stage-sub{color:var(--slate); font-size:.92rem; margin:0 0 10px}
+.notice{background:#fff8e6; border-left:3px solid #FACC3D; padding:8px 12px; border-radius:0 8px 8px 0; font-size:.88rem; color:#6b5a16; margin:10px 0 0}
+.model-show{background:var(--mist); border:1px solid var(--line); border-radius:10px; padding:12px 14px; color:var(--slate)}
+.frame{margin:0 0 10px; padding-left:18px; color:var(--slate); font-size:.9rem}
+.frame li{margin:3px 0}
+.checklist{display:flex; flex-direction:column; gap:7px; margin:8px 0 14px}
+.checklist label{display:flex; gap:9px; align-items:flex-start; font-size:.92rem; color:var(--ink); cursor:pointer}
+.hub{background:radial-gradient(circle at 50% 40%, #232a63 0%, #14173a 58%, #0b0d20 100%); border-radius:24px; padding:20px 14px 16px; margin:0 0 24px; box-shadow:0 18px 44px rgba(0,0,0,.28)}
+.hub-greet{color:#cfd3e6; text-align:center; font-size:.95rem; max-width:580px; margin:2px auto 8px}
+.hub-greet b{color:#fff}
+.hub-map{display:block; width:100%; max-width:740px; margin:0 auto; height:auto}
+.hub-c, .hub-s{cursor:pointer}
+.hub-c text, .hub-s text{pointer-events:none}
+.hub-c:hover circle, .hub-s:hover circle{filter:brightness(1.14)}
+.hub-foot{text-align:center; color:#8a90b5; font-size:.78rem; margin-top:6px}
 </style>
 </head>
 <body>
@@ -300,8 +323,8 @@ table.data tr:nth-child(even){background:#fff}
 <!-- ============ TOP BAR ============ -->
 <div class="topbar">
   <div class="brand" onclick="go('home')" style="cursor:pointer">
-    <span>i<span class="dot">CAN</span></span>
-    <small>English Practice</small>
+    <span class="ican-mark"><b class="l-i">i</b><b class="l-c">C</b><b class="l-a">A</b><b class="l-n">N</b></span>
+    <small>my English File</small>
   </div>
   <div class="who" id="whoBar"></div>
 </div>
@@ -346,7 +369,7 @@ const CONFIG = {
   schoolName: "iCAN English Practice",
   teacherName: "Emad A. Mohamed",
   teacherTitle: "PhD candidate",
-  tagline: "iCAN is an RWD-aligned project helping learners read to think, write to say it, and design to share it — for English proficiency.",
+  tagline: "iCAN — where learners belong, where learners grow.",
   // Student access codes you hand out. Edit freely, or add them from the
   // Teacher dashboard (those are saved in this browser).
   classCodes: ["DEMO"],
@@ -1345,6 +1368,7 @@ const ROUTES = {
         <div class="lr-left">
           <div class="lr-brand">${tree}<div><h1 class="rwd-title">RWD</h1><div class="rwd-sub">READ · WRITE · DESIGN</div></div></div>
           <p class="rwd-cap">A multiliteracies space for English, Grades 9–12. Read to think, write to say it, design to share it.</p>
+          <p class="rwd-slogan">iCAN.<br>Where learners belong.<br>Where learners grow.</p>
           <div class="lr-roles">
             <button class="lr-role role-student" onclick="go('studentLogin')"><span class="lr-ic">🎓</span> I'm a student</button>
             <button class="lr-role role-teacher" onclick="go('teacherLogin')"><span class="lr-ic">📋</span> I'm a teacher</button>
@@ -1397,37 +1421,38 @@ const ROUTES = {
   dashboard(){
     app().innerHTML = `
     <div class="wrap screen">
-      <div class="dash-hero">
-        <div class="dash-hero-text">
-          <h1>Hello${SESSION&&SESSION.name?', '+esc(SESSION.name.split(' ')[0]):''} 👋</h1>
-          <p>Welcome to <b>iCAN</b> — read, write, design, and grow your English. Start a <b>course</b>, take an <b>exam</b>, or build a skill below.</p>
-        </div>
-        <div class="dash-hero-badge">iCAN</div>
-      </div>
-
-      <div style="display:flex;gap:12px;flex-wrap:wrap;margin:0 0 22px">
-        <button onclick="go('diagnostic')" style="flex:1;min-width:200px;text-align:left;border:none;cursor:pointer;background:linear-gradient(135deg,#15183A,#0c8a72);color:#fff;border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px">
-          <span><span style="font-size:1.05rem;font-weight:700">🧭 Diagnostic</span><br><span style="opacity:.85;font-size:.82rem">Check your level</span></span>
-          <span style="background:rgba(255,255,255,.2);padding:6px 12px;border-radius:50px;font-weight:600;white-space:nowrap">Take →</span>
-        </button>
-        <button onclick="go('exams')" style="flex:1;min-width:200px;text-align:left;border:none;cursor:pointer;background:linear-gradient(135deg,#8B5CF6,#E6464B);color:#fff;border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px">
-          <span><span style="font-size:1.05rem;font-weight:700">🎓 Full exams</span><br><span style="opacity:.85;font-size:.82rem">Timed · with certificate</span></span>
-          <span style="background:rgba(255,255,255,.2);padding:6px 12px;border-radius:50px;font-weight:600;white-space:nowrap">Start →</span>
-        </button>
-        <button onclick="go('typing')" style="flex:1;min-width:200px;text-align:left;border:none;cursor:pointer;background:linear-gradient(135deg,#0c8a72,#2b5fa6);color:#fff;border-radius:16px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px">
-          <span><span style="font-size:1.05rem;font-weight:700">⌨️ Typing Tutor</span><br><span style="opacity:.85;font-size:.82rem">Speed · accuracy · certificate</span></span>
-          <span style="background:rgba(255,255,255,.2);padding:6px 12px;border-radius:50px;font-weight:600;white-space:nowrap">Type →</span>
-        </button>
-      </div>
-
-      <h2 style="font-family:'Fraunces';font-size:1.6rem;margin:6px 0 2px;color:var(--ink)">Your RWD journey — courses</h2>
-      <p style="color:var(--muted);margin:0 0 14px;font-size:.92rem">Read → Write → Design, with teaching, model answers and instant feedback. Reading feeds Writing; Writing becomes a designed artefact.</p>
-      <div class="grid c4">
-        <button class="path" style="background:linear-gradient(135deg,#2b2f63,#0c8a72)" onclick="go('readingCourse')"><div><div class="ic">🔭</div><h3>Reading Course</h3></div><span>The R · ${rcLessonCount()} levelled texts</span></button>
-        <button class="path" style="background:linear-gradient(135deg,#0c8a72,#15183A)" onclick="go('writingCourse')"><div><div class="ic">🎓</div><h3>Writing Course</h3></div><span>The W · ${wcLessonCount()} lessons</span></button>
-        <button class="path" style="background:linear-gradient(135deg,#E6464B,#8B5CF6)" onclick="go('dstudio')"><div><div class="ic">🎨</div><h3>Design Studio</h3></div><span>The bridge · ${allChallenges().length} make-it challenges</span></button>
-        <button class="path" style="background:linear-gradient(135deg,#8B5CF6,#E6464B)" onclick="go('vocab')"><div><div class="ic">📚</div><h3>Vocabulary Bank</h3></div><span>${myVocab().length} words · build 5 per lesson</span></button>
-        <button class="path" style="background:linear-gradient(135deg,#d98324,#15183A)" onclick="go('grammar')"><div><div class="ic">🧩</div><h3>Grammar Lab</h3></div><span>${grLessonCount()} lessons · all levels</span></button>
+      <div class="hub">
+        <div class="hub-greet">Hello ${SESSION&&SESSION.name?esc(SESSION.name.split(' ')[0]):'there'} 👋 — tap a circle to begin. <b>Read · Write · Design</b> sit at the core; more practice orbits around.</div>
+        <svg class="hub-map" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" font-family="Lexend,system-ui,sans-serif">
+          <g stroke="rgba(255,255,255,.16)" stroke-width="1.4" fill="none">
+            <line x1="450" y1="260" x2="450" y2="46"/>
+            <line x1="450" y1="260" x2="135" y2="115"/><line x1="450" y1="260" x2="765" y2="115"/>
+            <line x1="450" y1="260" x2="135" y2="450"/><line x1="450" y1="260" x2="765" y2="450"/>
+            <line x1="450" y1="260" x2="450" y2="515"/>
+            <path d="M450 46 L765 115 L765 450 L450 515 L135 450 L135 115 Z"/>
+          </g>
+          <g class="hub-c" onclick="go('readingCourse')">
+            <circle cx="372" cy="208" r="120" fill="rgba(18,165,133,.82)"/>
+            <text x="318" y="170" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-weight="700" font-size="30">Read</text>
+            <text x="318" y="190" text-anchor="middle" fill="#eafff7" font-size="13">to think</text></g>
+          <g class="hub-c" onclick="go('writingCourse')">
+            <circle cx="528" cy="208" r="120" fill="rgba(230,70,75,.82)"/>
+            <text x="582" y="170" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-weight="700" font-size="30">Write</text>
+            <text x="582" y="190" text-anchor="middle" fill="#ffeceb" font-size="13">to say it</text></g>
+          <g class="hub-c" onclick="go('dstudio')">
+            <circle cx="450" cy="356" r="120" fill="rgba(139,92,246,.82)"/>
+            <text x="450" y="408" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-weight="700" font-size="30">Design</text>
+            <text x="450" y="428" text-anchor="middle" fill="#f1eaff" font-size="13">to share it</text></g>
+          <circle cx="450" cy="260" r="68" fill="#0e1130" stroke="rgba(255,255,255,.55)" stroke-width="2"/>
+          <text x="450" y="270" text-anchor="middle" font-family="Fraunces,serif" font-weight="800" font-size="34">
+            <tspan fill="#ffffff">i</tspan><tspan fill="#ff5a5f">C</tspan><tspan fill="#34d39a">A</tspan><tspan fill="#5b8def">N</tspan></text>
+          ${[["spelldrill","🐝","Spell & Drill",450,46],["grammar","🧩","Grammar",135,115],["vocab","📚","Vocabulary",765,115],["typing","⌨️","Type",135,450],["diagnostic","🧭","Diagnostic",765,450],["exams","🎓","Exams",450,515]].map(([r,ic,lab,cx,cy])=>`
+          <g class="hub-s" onclick="go('${r}')">
+            <circle cx="${cx}" cy="${cy}" r="44" fill="#1b1f47" stroke="rgba(255,255,255,.4)" stroke-width="1.5"/>
+            <text x="${cx}" y="${cy-2}" text-anchor="middle" font-size="22">${ic}</text>
+            <text x="${cx}" y="${cy+22}" text-anchor="middle" fill="#cfd3e6" font-size="12" font-weight="600">${lab}</text></g>`).join('')}
+        </svg>
+        <div class="hub-foot">The full Exam hub is coming next.</div>
       </div>
 
       <h2 style="font-family:'Fraunces';font-size:1.6rem;margin:30px 0 2px;color:var(--ink)">Quizzes — differentiated practice</h2>
@@ -1825,11 +1850,26 @@ const ROUTES = {
       </div>
     </div>`;
   },
-  spellQuiz(key){
-    const cat = SPELL_BANK[key];
-    const items = shuffle(cat.items.slice()).slice(0, Math.min(SPELL_ROUND_SIZE, cat.items.length));
-    SPELLSTATE = { key, type:cat.type, label:cat.label, items, i:0, attempt:1, first:0, second:0, missed:0, log:[] };
-    renderSpell();
+  spellQuiz(key){ spellLaunch(key,'listening'); },
+  spelldrill(){
+    app().innerHTML=`
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Home</button>
+      <div class="meta">Spell &amp; Drill</div>
+      <h1 style="font-size:2.1rem">🐝 Spell &amp; Drill</h1>
+      <p style="color:var(--muted);max-width:720px">Hear a word, read its meaning, and type it before the timer runs out. Two attempts each; miss both and the spelling is shown. Pick a set to start — a quick warm-up any time, with no need to browse the language sections.</p>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0">
+        <span style="font-size:.85rem;color:var(--muted)">Words per round:</span>
+        ${[10,20,30].map(n=>`<button class="chip ${SPELL_ROUND_SIZE===n?'on':''}" onclick="SPELL_ROUND_SIZE=${n};go('spelldrill')">${n}</button>`).join('')}
+      </div>
+      <div class="grid c2">
+        ${Object.keys(SPELL_BANK).map(k=>{ const c=SPELL_BANK[k]; return `<div class="item-row" style="flex-direction:column;align-items:flex-start">
+          <h3 style="font-size:1.15rem;margin:2px 0">${c.label}</h3>
+          <div class="meta">${c.sub?c.sub+' · ':''}${c.items.length} words · ${c.type}</div>
+          <button class="btn sm teal" style="margin-top:10px" onclick="spellLaunch('${k}','spelldrill')">Start →</button>
+        </div>`; }).join('')}
+      </div>
+    </div>`;
   },
   listenComp(id){
     const c = LISTEN_COMP.find(x=>x.id===id); CURRENT_COMP = c;
@@ -1912,31 +1952,60 @@ const ROUTES = {
     const {lesson:l, unit:u, level:lv}=f;
     const draft=getDraft(id);
     const vcount=lessonVocabCount(id);
+    const g=grmFor(l);
     app().innerHTML = `
     <div class="wrap screen">
       <button class="back" onclick="go('writingCourse')">← ${lv.label} course</button>
       <div class="ty" style="color:var(--coral-dk);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600">${lv.label} · ${u.title.replace(/^Unit \d+ · /,'')} · ${l.type}</div>
       <h1 style="font-size:2rem">${l.title}</h1>
+      <div class="obj-banner">🎯 <b>Objective:</b> ${objectiveFor(l)}</div>
 
       <div class="teach">
         <b style="color:var(--teal-dk)">How to do it</b>
         <ul>${l.teach.map(t=>`<li>${t}</li>`).join('')}</ul>
       </div>
 
-      <div class="card" style="border-color:var(--coral)"><p style="margin:0"><b>✍️ Your task.</b> ${l.prompt}</p>
-        <p style="margin:8px 0 0;font-size:.82rem;color:var(--muted)">Suggested length: about ${l.minWords}+ words.</p></div>
-      <button class="btn ghost sm" style="margin-top:10px" onclick="wsWritingLesson('${id}')">📄 Worksheet (PDF)</button>
-
-      <div class="field" style="margin-top:14px"><label>Write your response (it saves automatically)</label>
-        <textarea id="wcText" style="min-height:200px" oninput="saveDraft('${id}')" placeholder="Start writing here…">${esc(draft)}</textarea>
-        <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-top:4px"><span id="wcWords">0 words</span><span>Autosaved ✓</span></div>
+      <div class="card stage"><div class="stage-tag s-study">📘 Study</div>
+        <p class="stage-sub">A worked model — study it before you try.</p>
+        <div class="model-show">${g.study.model}</div>
+        <p class="notice">👀 ${g.study.notice}</p>
       </div>
-      <button class="btn teal" onclick="getWcFeedback('${id}')">Submit &amp; get feedback →</button>
-      <button class="btn ghost" id="wcModelBtn" style="display:none" onclick="document.getElementById('modelBox').classList.remove('hidden')">Show model answer</button>
-      <div id="wcFeedback" style="margin-top:18px"></div>
-      <div id="modelBox" class="card hidden" style="margin-top:14px;border-color:var(--teal)">
-        <b style="color:var(--teal-dk)">Model answer — compare, don't copy</b>
-        <div style="margin-top:8px">${l.model}</div>
+
+      <div class="card stage"><div class="stage-tag s-drill">✏️ Drill</div>
+        <p class="stage-sub">Guided practice. ${g.drill.task}</p>
+        <ul class="frame">${g.drill.frame.map(fr=>`<li>${fr}</li>`).join('')}</ul>
+        <textarea id="drillText" class="rev-draft" style="min-height:80px" placeholder="Have a quick go here…"></textarea>
+        <div style="margin-top:8px"><button class="btn ghost sm" onclick="drillReveal()">Show a sample</button> <span id="drillMsg" style="font-size:.8rem;color:var(--muted)"></span></div>
+        <div id="drillSample" class="feedbk hidden" style="margin-top:10px"><b>A sample</b><p style="margin:6px 0 0;color:var(--slate)">${g.drill.sample}</p></div>
+      </div>
+
+      <div class="card stage" style="border-color:var(--coral)"><div class="stage-tag s-task">✅ Self-Checked Practice</div>
+        <p style="margin:0"><b>Your task.</b> ${l.prompt}</p>
+        <p style="margin:8px 0 0;font-size:.82rem;color:var(--muted)">Suggested length: about ${l.minWords}+ words.</p>
+        <button class="btn ghost sm" style="margin-top:10px" onclick="wsWritingLesson('${id}')">📄 Worksheet (PDF)</button>
+        <div class="field" style="margin-top:14px"><label>Write your response (it saves automatically)</label>
+          <textarea id="wcText" style="min-height:200px" oninput="saveDraft('${id}')" placeholder="Start writing here…">${esc(draft)}</textarea>
+          <div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-top:4px"><span id="wcWords">0 words</span><span>Autosaved ✓</span></div>
+        </div>
+        <button class="btn teal" onclick="getWcFeedback('${id}')">Submit &amp; get feedback →</button>
+        <button class="btn ghost" id="wcModelBtn" style="display:none" onclick="document.getElementById('modelBox').classList.remove('hidden')">Show model answer</button>
+        <div id="wcFeedback" style="margin-top:18px"></div>
+        <div id="modelBox" class="card hidden" style="margin-top:14px;border-color:var(--teal)">
+          <b style="color:var(--teal-dk)">Model answer — compare, don't copy</b>
+          <div style="margin-top:8px">${l.model}</div>
+        </div>
+      </div>
+
+      <div class="card stage"><div class="stage-tag s-chal">🤝 peer-reviewed Challenge</div>
+        <p class="stage-sub">Polish the task above, self-check it, then swap with a partner for review.</p>
+        <b style="color:var(--ink)">1 · Self-check</b>
+        <div class="checklist">${(g.checklist||[]).map((c,i)=>`<label><input type="checkbox" id="ck_${i}"> ${c}</label>`).join('')}</div>
+        <b style="color:var(--ink)">2 · Peer review</b>
+        <p style="font-size:.9rem;color:var(--slate);margin:4px 0 8px">Find a partner. Swap work and give each other one ⭐ <i>strength</i> and one 🔧 <i>fix</i>, using the checklist above as your guide.</p>
+        <textarea id="peerNotes" class="rev-draft" style="min-height:70px" placeholder="Write the feedback your partner gave you — one strength and one fix…"></textarea>
+        <b style="color:var(--ink);display:block;margin-top:10px">3 · Final submission</b>
+        <div style="margin-top:6px"><button class="btn dark" onclick="challengeSubmit('${id}')">Submit final version →</button></div>
+        <div id="challengeMsg" style="margin-top:10px"></div>
       </div>
 
       <div class="vocab-mini">
@@ -2474,8 +2543,8 @@ function renderSpell(){
   const t=spellTime(s.type, s.attempt, s.items[s.i].t);
   app().innerHTML=`
   <div class="wrap screen">
-    <button class="back" onclick="go('listening')">← Listening</button>
-    <h1 style="font-size:1.7rem">🎧 ${s.label}</h1>
+    <button class="back" onclick="go(spellBack())">← ${spellBackLabel()}</button>
+    <h1 style="font-size:1.7rem">${s.back==='spelldrill'?'🐝':'🎧'} ${s.label}</h1>
     <p style="color:var(--muted)">Item ${s.i+1} of ${s.items.length} · Correct so far: ${s.first+s.second}</p>
     <div class="card" style="max-width:620px">
       <div class="spell-timer"><div class="spell-bar" id="spellBar"></div><span id="spellCount">${t}</span></div>
@@ -2521,7 +2590,7 @@ function submitSpell(timedOut){
 }
 function revealSpell(correct){
   clearSpellTimer();
-  app().innerHTML=`<div class="wrap screen"><button class="back" onclick="go('listening')">← Listening</button>
+  app().innerHTML=`<div class="wrap screen"><button class="back" onclick="go(spellBack())">← ${spellBackLabel()}</button>
     <div class="card" style="max-width:620px;text-align:center;margin-top:10px">
       <p style="color:var(--coral-dk);font-weight:600;margin:0">The correct spelling was:</p>
       <div class="dictate-display">${esc(correct)}</div>
@@ -2536,20 +2605,25 @@ function finishSpell(){
   clearSpellTimer();
   const s=SPELLSTATE; const N=s.items.length;
   const pct=Math.round((s.first + 0.5*s.second)/N*100);
-  app().innerHTML=`<div class="wrap screen"><button class="back" onclick="go('listening')">← Listening</button>
+  app().innerHTML=`<div class="wrap screen"><button class="back" onclick="go(spellBack())">← ${spellBackLabel()}</button>
     <div class="scorebox" style="max-width:520px;margin:24px auto"><div class="big">${pct}%</div>
       <div>${s.first} right first try · ${s.second} on the second · ${s.missed} missed</div>
-      <div style="opacity:.85;font-size:.9rem;margin-top:6px">${pct>=80?'Excellent — that bank is getting easy. Try a longer round!':pct>=50?'Good progress. Run it again for fresh items.':'Keep going — every round pulls new words.'}</div></div>
+      <div style="opacity:.85;font-size:.9rem;margin-top:6px">${pct>=80?'Excellent — that set is getting easy. Try a longer round!':pct>=50?'Good progress. Run it again for fresh items.':'Keep going — every round pulls new words.'}</div></div>
     <div style="text-align:center;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <button class="btn" onclick="go('spellQuiz','${s.key}')">New round (fresh items)</button>
-      <button class="btn ghost" onclick="go('listening')">Back to listening</button>
+      <button class="btn" onclick="spellNewRound()">New round (fresh items)</button>
+      <button class="btn ghost" onclick="go(spellBack())">Back to ${spellBackLabel()}</button>
     </div></div>`;
   if(SESSION&&SESSION.role==="student"){
     saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,
-      skill:"Listening",activity:s.label+" (spelling round)",score:(s.first+s.second),max:N,percent:pct,
+      skill:(s.back==='spelldrill'?"Spelling":"Listening"),activity:s.label+" (spelling round)",score:(s.first+s.second),max:N,percent:pct,
       detail:`first-try ${s.first}, second-try ${s.second}, missed ${s.missed}`});
   }
 }
+
+function spellBack(){ return (SPELLSTATE&&SPELLSTATE.back)||'listening'; }
+function spellBackLabel(){ return spellBack()==='spelldrill'?'Spell &amp; Drill':'Listening'; }
+function spellLaunch(key, back){ const cat=SPELL_BANK[key]; if(!cat)return; const items=shuffle(cat.items.slice()).slice(0, Math.min(SPELL_ROUND_SIZE, cat.items.length)); SPELLSTATE={ key, back:back||'listening', type:cat.type, label:cat.label, items, i:0, attempt:1, first:0, second:0, missed:0, log:[] }; renderSpell(); }
+function spellNewRound(){ const s=SPELLSTATE; if(!s)return; spellLaunch(s.key, s.back); }
 
 /* =========================================================================
    SPEAKING
@@ -4695,6 +4769,68 @@ function downloadReport(key){
   }
   doc.setFontSize(9); doc.setTextColor(150,150,150); doc.text(CONFIG.tagline||"iCAN",40, doc.internal.pageSize.getHeight()-24);
   doc.save('iCAN-report-'+(key?who.replace(/\s+/g,'-'):'class')+'-'+new Date().toISOString().slice(0,10)+'.pdf');
+}
+
+/* =========================================================================
+   GRADUAL RELEASE scaffolds for writing lessons, keyed by rubricKey, so every
+   lesson gains type-appropriate modelling + guided drill + self-check without
+   per-lesson authoring. Stage labels: Study · Drill · Self-Checked Practice ·
+   peer-reviewed Challenge. A lesson may override via lesson.objective etc.
+   ========================================================================= */
+const GRM={
+  freewrite:{ objective:"Generate and organise ideas freely before drafting.",
+    study:{model:"<p><i>Prompt: a food I love.</i></p><p><i>Brainstorm:</i> mango · summer · grandma · yellow · sticky · happy.</p><p><i>Free-write:</i> Mangoes taste like summer to me. The moment I peel one, the sweet smell takes me straight back to my grandmother's garden…</p>", notice:"The writer jots words first, then writes without stopping to fix anything."},
+    drill:{task:"Brainstorm 6 quick words about “a sound you love”, then write 2 sentences using any of them — don't stop to edit.", frame:["The sound I love is …","It reminds me of …","Whenever I hear it, I …"], sample:"The sound I love is rain on the window. It reminds me of lazy weekend mornings, and whenever I hear it I feel calm and safe."},
+    checklist:["I brainstormed before writing","I kept going without stopping to fix mistakes","I stayed on the topic","The ideas are my own, not copied"] },
+  sentence:{ objective:"Write complete, correctly punctuated sentences with a clear subject and verb.",
+    study:{model:"<p>Run-on: <s>i went to the shop it was closed</s></p><p>Fixed: <b>I went to the shop, but it was closed.</b></p>", notice:"A capital letter, the joining word “but”, and a full stop turn two ideas into one clear sentence."},
+    drill:{task:"Fix these into correct sentences: (1) my brother play football every day  (2) we was late for class", frame:["Capital letter at the start?","A subject and a verb?","Correct end punctuation?"], sample:"1) My brother plays football every day. 2) We were late for class."},
+    checklist:["Each sentence starts with a capital","Each has a subject and a verb","Each ends with . ? or !","One clear idea per sentence"] },
+  paragraph:{ objective:"Build a cohesive paragraph: topic sentence, supporting detail, and a closing sentence.",
+    study:{model:"<p><b>Topic sentence:</b> Cycling to school is the best way to start my day. <b>Support:</b> First, the morning air wakes me up; in addition, it saves bus fare. <b>Closing:</b> By the time I arrive, I feel ready to learn.</p>", notice:"Topic sentence → linked supporting details → a closing sentence that wraps up."},
+    drill:{task:"Write a topic sentence and ONE supporting sentence about “a place you like to study”.", frame:["Topic sentence: … is …","One reason: First, …","Add a detail: For example, …"], sample:"The library is my favourite place to study. First, it is quiet, so I can concentrate without any distractions."},
+    checklist:["Clear topic sentence with a controlling idea","At least two supporting details","Linking words connect the ideas","A closing sentence (not just a stop)"] },
+  email:{ objective:"Write a message with a suitable greeting, clear purpose and sign-off in the right register.",
+    study:{model:"<p>Hi Sara,</p><p>Thanks for lending me your notes — they really helped before the test. Could I keep them until Sunday? See you in class!</p><p>Best, Maya</p>", notice:"Greeting, one clear purpose, a polite request, and a friendly sign-off."},
+    drill:{task:"Write a greeting and one clear sentence asking a friend to meet after school.", frame:["Greeting: Hi …,","Purpose: I wanted to ask if …","Sign-off: See you! / Thanks, …"], sample:"Hi Omar, I wanted to ask if you can meet after school to finish the project. Let me know!"},
+    checklist:["Suitable greeting","Clear purpose/message","Right level of formality (register)","Friendly, correct sign-off"] },
+  opinion:{ objective:"State a clear opinion and support it with reasons and examples (OREO).",
+    study:{model:"<p><b>Opinion:</b> Schools should start later. <b>Reason:</b> Teenagers need more sleep to focus. <b>Example:</b> When my school shifted its start time, fewer students fell asleep in class. <b>Opinion restated:</b> A later start would help us learn better.</p>", notice:"The OREO shape: Opinion → Reason → Example → Opinion restated."},
+    drill:{task:"Write your opinion sentence + one reason about “homework on weekends”.", frame:["In my opinion, …","This is because …","For example, …"], sample:"In my opinion, there should be no homework on weekends, because students need time to rest and recharge for the week ahead."},
+    checklist:["A clear opinion is stated","At least one reason","A specific example","Opinion restated at the end"] },
+  argumentative:{ objective:"Build an arguable thesis, support it with evidence and reasoning, and address a counterargument.",
+    study:{model:"<p><b>Thesis:</b> Single-use plastics should be banned. <b>Evidence + reasoning:</b> They take centuries to break down, so each bag pollutes long after its few minutes of use. <b>Counter + rebuttal:</b> Some say bans are inconvenient, but reusable bags quickly become a habit.</p>", notice:"An arguable claim, evidence linked by reasoning, and a fairly-handled counterargument."},
+    drill:{task:"Write an arguable thesis + one piece of evidence about “phones in classrooms”.", frame:["Thesis (arguable): …","Evidence: …","This matters because …"], sample:"Phones should be kept in lockers during lessons. Even a silent phone on the desk lowers concentration — and attention is what turns teaching into learning."},
+    checklist:["Thesis is arguable (not an obvious fact)","Evidence supports the claim","Reasoning links evidence to the claim","A counterargument is acknowledged"] },
+  informational:{ objective:"Explain a topic clearly and objectively with logical organisation.",
+    study:{model:"<p><b>Definition:</b> A solar eclipse happens when the Moon passes between the Sun and Earth. <b>How it works:</b> the Moon blocks the Sun's light, casting a shadow on Earth. <b>Detail:</b> a total eclipse lasts only a few minutes.</p>", notice:"A neutral, explaining tone — it informs, it doesn't argue."},
+    drill:{task:"Explain in 2 sentences how to make tea, in a clear, neutral order.", frame:["First, …","Then, …","Finally, …"], sample:"First, boil water and pour it over a tea bag in a cup. Then let it steep for a few minutes before removing the bag and adding milk or sugar if you like."},
+    checklist:["Topic clearly introduced","Logical order (first / then / finally)","Neutral, objective tone","Accurate, relevant details"] },
+  instructional:{ objective:"Give clear, step-by-step instructions a reader can follow.",
+    study:{model:"<p><b>Goal:</b> how to back up your phone. <b>Steps:</b> 1) Connect to Wi-Fi. 2) Open Settings. 3) Tap “Backup”. 4) Wait for it to finish. <b>Tip:</b> do this weekly.</p>", notice:"A clear goal, numbered steps in order, and command verbs (Connect, Open, Tap)."},
+    drill:{task:"Write the first 3 steps for “how to plant a seed”, using command verbs.", frame:["1) Verb …","2) Verb …","3) Verb …"], sample:"1) Fill a small pot with soil. 2) Push the seed gently under the surface. 3) Water it lightly and place it in the sun."},
+    checklist:["A clear goal/title","Steps in a logical order","Command (imperative) verbs","Numbered or clearly sequenced"] },
+  _default:{ objective:"Practise and strengthen this writing skill.",
+    study:{model:"<p>Read the model in “How to do it” closely before you try your own.</p>", notice:"Notice the structure and the language choices the writer makes."},
+    drill:{task:"Write one or two sentences as a quick warm-up before the full task.", frame:["Start with a clear first sentence…","Add one supporting detail…"], sample:"(Compare your warm-up with the model above.)"},
+    checklist:["I addressed the task","My writing is organised","I used accurate grammar and punctuation","The ideas are my own"] }
+};
+function grmFor(l){ return (l&&GRM[l.rubricKey])||GRM._default; }
+function objectiveFor(l){ return (l&&l.objective)||grmFor(l).objective; }
+function drillReveal(){ const t=(val('drillText')||'').trim(); const el=document.getElementById('drillSample'); if(!el)return;
+  if(t.split(/\s+/).filter(Boolean).length<4){ const m=document.getElementById('drillMsg'); if(m)m.textContent='Have a quick go first — even one sentence — then check the sample.'; return; }
+  el.classList.remove('hidden'); const m=document.getElementById('drillMsg'); if(m)m.textContent=''; }
+function challengeSubmit(id){
+  const f=findLesson(id); if(!f)return; const l=f.lesson; const g=grmFor(l);
+  const msg=document.getElementById('challengeMsg'); if(!msg)return;
+  const list=g.checklist||[]; let checked=0; list.forEach((c,i)=>{ const b=document.getElementById('ck_'+i); if(b&&b.checked)checked++; });
+  const peer=(val('peerNotes')||'').trim();
+  const text=(val('wcText')||'').trim(); const words=text?text.split(/\s+/).filter(Boolean).length:0;
+  const need=l.minWords?Math.min(l.minWords,24):18;
+  if(words<need){ msg.innerHTML='<p class="note">Write your task in the Self-Checked Practice box above first — that becomes the final version you submit here.</p>'; return; }
+  if(SESSION&&SESSION.role==='student'){ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:"Writing Course",activity:"Challenge: "+l.title,score:checked,max:list.length,percent:Math.round(checked/Math.max(1,list.length)*100),detail:`Self-check ${checked}/${list.length}; peer notes: ${peer.slice(0,200)}`}); }
+  msg.innerHTML=`<div class="feedbk"><b>✅ Final version submitted.</b><p style="margin:6px 0 0;color:var(--slate)">Self-check: ${checked}/${list.length} ticked.${peer?' Your partner\'s feedback has been saved for your teacher.':' Tip: add your partner\'s feedback next time for a fuller review.'}</p></div>`;
+  msg.scrollIntoView({behavior:'smooth'});
 }
 
 /* boot */
