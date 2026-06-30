@@ -308,6 +308,14 @@ table.data tr:nth-child(even){background:#fff}
 .frame li{margin:3px 0}
 .checklist{display:flex; flex-direction:column; gap:7px; margin:8px 0 14px}
 .checklist label{display:flex; gap:9px; align-items:flex-start; font-size:.92rem; color:var(--ink); cursor:pointer}
+.wex-grid{display:grid; grid-template-columns:1fr; gap:14px; margin:0 0 10px}
+@media(min-width:620px){ .wex-grid{grid-template-columns:1fr 1fr} }
+.wex-h{font-size:.74rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); margin:0 0 4px}
+.wex-h-pts{color:var(--coral-dk)}
+.wex-col ul{margin:0; padding-left:18px}
+.wex-col li{margin:4px 0}
+.wex-pts li{color:var(--ink); font-size:.95rem; font-weight:500}
+.wex-tips li{color:var(--muted); font-size:.86rem}
 .hub{background:linear-gradient(180deg,#0e3a33 0%,#15614a 45%,#2f7d33 100%); border-radius:24px; padding:20px 14px 16px; margin:0 0 24px; box-shadow:0 18px 44px rgba(0,0,0,.3)}
 .hub-greet{color:#eaf0ff; text-align:center; font-size:.95rem; max-width:580px; margin:2px auto 8px}
 .hub-greet b{color:#fff}
@@ -749,6 +757,36 @@ const SPELL_REVEAL = 5;            // seconds the correct spelling is shown afte
 let   SPELL_ROUND_SIZE = 10;       // items per round (student can pick 10 / 20 / 30)
 
 const SPELL_BANK = {
+  silent:{ label:"Silent letters", sub:"words with letters you don't say", type:"word", items:[
+    {t:"subtle",hint:"the 'b' is silent"},{t:"doubt",hint:"the 'b' is silent"},{t:"debt",hint:"the 'b' is silent"},
+    {t:"climb",hint:"the 'b' is silent"},{t:"comb",hint:"the 'b' is silent"},{t:"lamb",hint:"the 'b' is silent"},
+    {t:"thumb",hint:"the 'b' is silent"},{t:"tomb",hint:"the 'b' is silent"},{t:"plumber",hint:"the 'b' is silent"},
+    {t:"knee",hint:"the 'k' is silent"},{t:"knife",hint:"the 'k' is silent"},{t:"knight",hint:"the 'k' is silent"},
+    {t:"knock",hint:"the 'k' is silent"},{t:"know",hint:"the 'k' is silent"},{t:"knuckle",hint:"the 'k' is silent"},
+    {t:"knowledge",hint:"the 'k' is silent"},{t:"write",hint:"the 'w' is silent"},{t:"wrong",hint:"the 'w' is silent"},
+    {t:"wrist",hint:"the 'w' is silent"},{t:"wrap",hint:"the 'w' is silent"},{t:"wreck",hint:"the 'w' is silent"},
+    {t:"wrestle",hint:"the 'w' is silent"},{t:"island",hint:"the 's' is silent"},{t:"isle",hint:"the 's' is silent"},
+    {t:"aisle",hint:"the 's' is silent"},{t:"debris",hint:"the 's' is silent"},{t:"castle",hint:"the 't' is silent"},
+    {t:"listen",hint:"the 't' is silent"},{t:"fasten",hint:"the 't' is silent"},{t:"whistle",hint:"the 't' is silent"},
+    {t:"often",hint:"the 't' can be silent"},{t:"Christmas",hint:"the 't' is silent"},{t:"ballet",hint:"the 't' is silent (French)"},
+    {t:"bouquet",hint:"the 't' is silent (French)"},{t:"guess",hint:"the 'u' is silent"},{t:"guitar",hint:"the 'u' is silent"},
+    {t:"guide",hint:"the 'u' is silent"},{t:"guard",hint:"the 'u' is silent"},{t:"sign",hint:"the 'g' is silent"},
+    {t:"foreign",hint:"the 'g' is silent"},{t:"reign",hint:"the 'g' is silent"},{t:"design",hint:"the 'g' is silent"},
+    {t:"champagne",hint:"the 'g' is silent"},{t:"gnome",hint:"the 'g' is silent"},{t:"gnaw",hint:"the 'g' is silent"},
+    {t:"psychology",hint:"the 'p' is silent"},{t:"pseudonym",hint:"the 'p' is silent"},{t:"psalm",hint:"the 'p' is silent"},
+    {t:"pneumonia",hint:"the 'p' is silent"},{t:"honest",hint:"the 'h' is silent"},{t:"honour",hint:"the 'h' is silent"},
+    {t:"hour",hint:"the 'h' is silent"},{t:"heir",hint:"the 'h' is silent"},{t:"rhyme",hint:"the 'h' is silent"},
+    {t:"rhythm",hint:"the 'h' is silent"},{t:"ghost",hint:"the 'h' is silent"},{t:"vehicle",hint:"the 'h' is silent"},
+    {t:"scissors",hint:"the 'c' is silent"},{t:"science",hint:"the 'c' is silent"},{t:"muscle",hint:"the 'c' is silent"},
+    {t:"scene",hint:"the 'c' is silent"},{t:"autumn",hint:"the 'n' is silent"},{t:"column",hint:"the 'n' is silent"},
+    {t:"condemn",hint:"the 'n' is silent"},{t:"hymn",hint:"the 'n' is silent"},{t:"solemn",hint:"the 'n' is silent"},
+    {t:"calm",hint:"the 'l' is silent"},{t:"half",hint:"the 'l' is silent"},{t:"walk",hint:"the 'l' is silent"},
+    {t:"talk",hint:"the 'l' is silent"},{t:"would",hint:"the 'l' is silent"},{t:"should",hint:"the 'l' is silent"},
+    {t:"salmon",hint:"the 'l' is silent"},{t:"yolk",hint:"the 'l' is silent"},{t:"handkerchief",hint:"the 'd' is silent"},
+    {t:"Wednesday",hint:"the first 'd' is silent"},{t:"handsome",hint:"the 'd' is silent"},{t:"light",hint:"'gh' is silent"},
+    {t:"night",hint:"'gh' is silent"},{t:"thought",hint:"'gh' is silent"},{t:"daughter",hint:"'gh' is silent"},
+    {t:"height",hint:"'gh' is silent"},{t:"weight",hint:"'gh' is silent"},{t:"straight",hint:"'gh' is silent"}
+  ] },
   advanced:{ label:"Advanced & tricky words", sub:"long, foreign-origin, silent letters", type:"word", items:[
     {t:"bureaucracy"},{t:"entrepreneur"},{t:"rendezvous"},{t:"liaison"},{t:"silhouette"},{t:"connoisseur"},
     {t:"conscientious"},{t:"mischievous"},{t:"pronunciation"},{t:"accommodate"},{t:"questionnaire"},{t:"Wednesday"},
@@ -1855,7 +1893,7 @@ const ROUTES = {
       <p style="color:var(--muted);margin-top:0">Listen, then type exactly what you hear. You get <b>two attempts</b> per item (the second is faster). Miss both and the correct spelling shows for ${SPELL_REVEAL} seconds. Each round pulls fresh items from a large bank, so it's different every time.</p>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0">
         <span style="font-size:.85rem;color:var(--muted)">Items per round:</span>
-        ${[10,20,30].map(n=>`<button class="chip ${SPELL_ROUND_SIZE===n?'on':''}" onclick="setRoundSize(${n})">${n}</button>`).join('')}
+        ${[10,20,30,50].map(n=>`<button class="chip ${SPELL_ROUND_SIZE===n?'on':''}" onclick="setRoundSize(${n})">${n}</button>`).join('')}
       </div>
       <div class="grid c2" style="margin-top:6px">
         ${Object.keys(SPELL_BANK).map(k=>spellTile(k)).join('')}
@@ -1873,7 +1911,7 @@ const ROUTES = {
       <p style="color:var(--muted);max-width:720px">Hear a word, read its meaning, and type it before the timer runs out. Two attempts each; miss both and the spelling is shown.</p>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0">
         <span style="font-size:.85rem;color:var(--muted)">Words per round:</span>
-        ${[10,20,30].map(n=>`<button class="chip ${SPELL_ROUND_SIZE===n?'on':''}" onclick="SPELL_ROUND_SIZE=${n};go('spelldrill')">${n}</button>`).join('')}
+        ${[10,20,30,50].map(n=>`<button class="chip ${SPELL_ROUND_SIZE===n?'on':''}" onclick="SPELL_ROUND_SIZE=${n};go('spelldrill')">${n}</button>`).join('')}
       </div>
 
       <h2 class="sub" style="margin-top:14px">📘 Standard</h2>
@@ -2117,7 +2155,7 @@ const ROUTES = {
   },
   rcLesson(id){
     const f=findRc(id); if(!f){ go('readingCourse'); return; }
-    const {lesson:l, level:lv}=f; RC_STATE={lessonId:id, selfMarks:{}, graded:false};
+    const {lesson:l, level:lv}=f; RC_STATE={lessonId:id, selfMarks:{}, graded:false, mcqs:l.mcqs.map(shuffleMCQ)};
     app().innerHTML = `
     <div class="wrap screen">
       <button class="back" onclick="go('readingCourse')">← ${lv.label} reading</button>
@@ -2150,7 +2188,7 @@ const ROUTES = {
       </div>
     </div>`;
     // render MCQs
-    document.getElementById('rcMcq').innerHTML = l.mcqs.map((q,i)=>{
+    document.getElementById('rcMcq').innerHTML = RC_STATE.mcqs.map((q,i)=>{
       const opts = q.type==="tfng" ? TFNG : q.options;
       const tag = q.type==="tfng" ? ` <span style="font-size:.72rem;color:var(--muted);font-weight:400">— True / False / Not Given</span>` : '';
       return `<div class="q" data-i="${i}"><div class="qhead">${i+1}. ${q.q}${tag}</div>
@@ -2582,7 +2620,8 @@ function renderSpell(){
     <div class="card" style="max-width:620px">
       <div class="spell-timer"><div class="spell-bar" id="spellBar"></div><span id="spellCount">${t}</span></div>
       <p style="text-align:center;font-weight:600;color:${s.attempt===2?'var(--coral-dk)':'var(--muted)'}">${s.attempt===1?'Attempt 1 of 2':'Attempt 2 — be quick!'}</p>
-      <div style="text-align:center;margin:10px 0"><button class="btn dark" onclick="speakItem()">🔊 Play again</button></div>
+      <p style="text-align:center;font-size:.85rem;color:var(--ink);font-weight:600;margin:4px 0">🗣️ Say it → ✍️ Spell it → 🗣️ Say it again — then type.</p>
+      <div style="text-align:center;margin:10px 0"><button class="btn dark" onclick="speakItem()">🔊 Hear it</button></div>
       ${item.hint?`<p class="note" style="text-align:center">Meaning: ${item.hint}</p>`:''}
       ${isSentence?`<p style="text-align:center;font-size:.82rem;color:var(--muted)">Capital letters and punctuation count.</p>`:''}
       <div class="field"><label>Type exactly what you hear</label>
@@ -2656,7 +2695,11 @@ function finishSpell(){
 function spellBack(){ return (SPELLSTATE&&SPELLSTATE.back)||'listening'; }
 function spellBackLabel(){ return spellBack()==='spelldrill'?'Spell &amp; Drill':'Listening'; }
 function spellLaunch(key, back){ const cat=SPELL_BANK[key]; if(!cat)return; const items=spellPick(cat.items, SPELL_ROUND_SIZE, 'bank_'+key); SPELLSTATE={ key, back:back||'listening', type:cat.type, label:cat.label, items, i:0, attempt:1, first:0, second:0, missed:0, log:[] }; renderSpell(); }
-function spellNewRound(){ const s=SPELLSTATE; if(!s)return; spellLaunch(s.key, s.back); }
+function spellNewRound(){ const s=SPELLSTATE; if(!s)return;
+  if(s.key==='standard'){ standardSpellStart(); return; }
+  if(typeof s.key==='string' && s.key.indexOf('tb_')===0){ textbookStart(+s.key.slice(3)); return; }
+  spellLaunch(s.key, s.back);
+}
 
 /* Standard Spell & Drill — a bank of common words, served 10 fresh per round
    until the whole bank is covered. Extend this list toward 500 over time. */
@@ -2929,7 +2972,7 @@ function markRcDone(id){ const all=Store.get("ican_rc_done")||{}; const arr=all[
 function gradeRc(id){
   const f=findRc(id); const l=f.lesson;
   let correct=0;
-  l.mcqs.forEach((q,i)=>{
+  RC_STATE.mcqs.forEach((q,i)=>{
     const qEl=document.querySelector(`#rcMcq .q[data-i="${i}"]`); const fb=qEl.querySelector('.feedback');
     fb.classList.remove('hidden');
     const ans=ansIdx(q);
@@ -2938,7 +2981,7 @@ function gradeRc(id){
     if(chosen===ans){ correct++; fb.classList.add('good'); fb.textContent="✓ Correct. "+q.exp; }
     else fb.textContent=(chosen===-1?"No answer chosen. ":"Not quite. ")+(q.type==="tfng"?`Answer: ${TFNG[ans]}. `:"")+q.exp;
   });
-  const mtot=l.mcqs.length, mpct=Math.round(correct/mtot*100);
+  const mtot=RC_STATE.mcqs.length, mpct=Math.round(correct/mtot*100);
   // reveal self-check models + grading
   l.selfcheck.forEach((q,i)=>{
     const qEl=document.querySelector(`#rcSelf .q[data-si="${i}"]`);
@@ -3091,7 +3134,7 @@ function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.rand
 /* Shuffle an MCQ's option order and remap its answer index, so the correct
    answer is never stuck in one position (e.g. always "B"). */
 function shuffleMCQ(q){
-  if(!q || q.type!=="mcq" || !Array.isArray(q.options) || typeof q.answer!=="number") return q;
+  if(!q || q.type==="tfng" || !Array.isArray(q.options) || typeof q.answer!=="number") return q;
   const order=q.options.map((_,j)=>j); shuffle(order);
   return Object.assign({}, q, { options: order.map(j=>q.options[j]), answer: order.indexOf(q.answer) });
 }
@@ -3426,7 +3469,7 @@ const DIAG={
         TF("Scientists believe animal communication is exactly the same as human language.","False","The text says most scientists are careful — it is not the same."),
         TF("Whales communicate using signature whistles.","Not Given","The text mentions dolphins, not whales.")
       ]},
-    writing:{ prompt:"Technology in education: does it help or harm students? Give your opinion with clear reasons and examples.", minWords:150,
+    writing:{ prompt:"Technology in education: does it help or harm students? Give your opinion with clear reasons and examples.", minWords:150, points:["How does technology help students learn?","What problems can it cause for students?","What is your own opinion, with an example?"],
       tips:["State your opinion clearly in the first sentence.","Give two reasons, each with an example.","Use linking words: firstly, however, for example, in conclusion.","Finish with a short conclusion."] }
   },
   post:{
@@ -3472,7 +3515,7 @@ const DIAG={
         TF("The writer advises students to fear AI and avoid using it.","False","The writer urges working alongside AI, not fearing it."),
         TF("AI has already replaced most doctors.","Not Given","The text says a doctor may spend less time on scans, not that doctors are replaced.")
       ]},
-    writing:{ prompt:"Heritage homes and modern cities: should old houses be protected as cities grow, or replaced with modern buildings? Compare both sides and give your own view.", minWords:150,
+    writing:{ prompt:"Heritage homes and modern cities: should old houses be protected as cities grow, or replaced with modern buildings? Compare both sides and give your own view.", minWords:150, points:["Why might people want to protect old houses?","Why might others prefer modern buildings?","What is your own view, and why?"],
       tips:["Introduce the issue in one sentence.","Give one argument for protecting old homes and one for modern buildings.","Use comparison language: whereas, on the other hand, similarly.","State your own opinion in the conclusion."] }
   },
   mid:{
@@ -3518,7 +3561,7 @@ const DIAG={
         TF("The writer claims crows think in exactly the same way as humans.","False","The text warns against reading human motives into animal behaviour."),
         TF("Crows are the most intelligent animals on Earth.","Not Given","The text says they are among the most intelligent, not the single most intelligent.")
       ]},
-    writing:{ prompt:"Animals are far more intelligent than people once believed. Should this change how we treat them? Give your opinion with reasons and examples.", minWords:150,
+    writing:{ prompt:"Animals are far more intelligent than people once believed. Should this change how we treat them? Give your opinion with reasons and examples.", minWords:150, points:["What shows that animals are intelligent?","How should this change the way we treat them?","What do you think, and why?"],
       tips:["State your opinion at the start.","Give two reasons, each with an example.","Use linking words: firstly, however, for example.","End with a conclusion."] }
   }
 };
@@ -3567,7 +3610,7 @@ const EXAMS=[
        TF("Everyone immediately believed Leeuwenhoek's discovery.","False","‘Few believed him at first.’"),
        TF("Louis Pasteur invented the first microscope.","Not Given","The text credits early microscopes to the 17th century and Leeuwenhoek, not Pasteur.")
      ]},
-   writing:{ prompt:"Many environmental problems are global, but some people say change must start locally. Explain whether you think individuals can make a real difference to the environment.", minWords:150,
+   writing:{ prompt:"Many environmental problems are global, but some people say change must start locally. Explain whether you think individuals can make a real difference to the environment.", minWords:150, points:["What can an individual actually do for the environment?","Why do some people think only large-scale action matters?","Can one person make a real difference? Why / why not?"],
      tips:["State your opinion clearly at the start.","Give two reasons with examples.","Use linking words: firstly, however, for example.","End with a conclusion."] }
  },
  { label:"Advanced Challenge · Set B-1", level:"Challenge", topic:"Heritage · Language",
@@ -3614,7 +3657,7 @@ const EXAMS=[
        TF("Children learn language only by copying adults exactly.","False","The text says they produce forms they could never have heard."),
        TF("Girls learn to speak faster than boys.","Not Given","The text does not compare girls and boys.")
      ]},
-   writing:{ prompt:"Some people argue that we should protect local traditions, while others say we should focus on global progress. Discuss both views and give your own opinion.", minWords:150,
+   writing:{ prompt:"Some people argue that we should protect local traditions, while others say we should focus on global progress. Discuss both views and give your own opinion.", minWords:150, points:["Why is protecting local traditions important?","Why do some people focus on global progress instead?","Which matters more to you, and why?"],
      tips:["Introduce the issue in one sentence.","Give one argument for each side.","Use comparison language: whereas, on the other hand.","State your opinion in the conclusion."] }
  },
  { label:"Foundation · Set A-2", level:"Core", topic:"Technology · Social media",
@@ -3661,7 +3704,7 @@ const EXAMS=[
        TF("The researchers claim the experiment would work everywhere.","False","They warn that a small, close-knit village differs from a busy city."),
        TF("Visitors who join the experiment are paid to attend.","Not Given","The text says visitors arrive, but never mentions payment.")
      ]},
-   writing:{ prompt:"Social media: does it bring people closer together or push them apart? Give your opinion with reasons and examples.", minWords:150,
+   writing:{ prompt:"Social media: does it bring people closer together or push them apart? Give your opinion with reasons and examples.", minWords:150, points:["How can social media bring people closer?","How can it push people apart?","What is your own opinion, with an example?"],
      tips:["State your opinion clearly at the start.","Give two reasons with examples.","Use linking words.","End with a conclusion."] }
  },
  { label:"Advanced Challenge · Set B-2", level:"Challenge", topic:"Communication · Local vs global",
@@ -3708,7 +3751,7 @@ const EXAMS=[
        TF("Sperm whale calves learn their local coda style from adults.","True","The text says calves learn the local style, so it is cultural."),
        TF("Dolphins were the first animals found to have accents.","Not Given","The article discusses whales and sparrows, not which animal was 'first'.")
      ]},
-   writing:{ prompt:"Should the world try to keep many different languages alive, or is it better to share a few global languages? Discuss both views and give your opinion.", minWords:150,
+   writing:{ prompt:"Should the world try to keep many different languages alive, or is it better to share a few global languages? Discuss both views and give your opinion.", minWords:150, points:["Why keep many different languages alive?","Why might a few shared global languages be better?","What do you think is best, and why?"],
      tips:["Introduce the issue in one sentence.","Give one argument for each side.","Use comparison language: whereas, on the other hand.","State your opinion in the conclusion."] }
  }
 ];
@@ -3752,9 +3795,11 @@ function runExam(ex, ctx){
      <div class="card"><div class="meta" style="margin-bottom:4px">Part B · ${ex.readingB.topic} · ${ex.readingB.genre}</div><h3 style="font-size:1.15rem;margin:0 0 8px">${ex.readingB.title}</h3>${ex.readingB.text}</div>
      ${qh(ex.readingB.questions,'d_rb_')}
      ${sec('4 · Writing','Plan briefly, then write your essay in the box.')}
-     <div class="card"><p style="font-weight:600;margin:0 0 6px">${ex.writing.prompt}</p>
-       <p style="font-size:.74rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 2px">Tips for a strong answer</p>
-       <ul style="color:var(--muted);font-size:.86rem;margin:0 0 10px;padding-left:18px">${ex.writing.tips.map(t=>`<li>${t}</li>`).join('')}</ul>
+     <div class="card"><p style="font-weight:600;margin:0 0 12px">${ex.writing.prompt}</p>
+       <div class="wex-grid">
+         ${ex.writing.points?`<div class="wex-col"><p class="wex-h wex-h-pts">Points to address</p><ul class="wex-pts">${ex.writing.points.map(p=>`<li>${p}</li>`).join('')}</ul></div>`:''}
+         <div class="wex-col"><p class="wex-h">Tips for a strong answer</p><ul class="wex-tips">${ex.writing.tips.map(t=>`<li>${t}</li>`).join('')}</ul></div>
+       </div>
        <textarea id="diagEssay" style="width:100%;min-height:180px;padding:12px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit" placeholder="Write about ${ex.writing.minWords} words…" oninput="document.getElementById('diagWC').textContent=this.value.trim().split(/\\s+/).filter(Boolean).length"></textarea>
        <p style="font-size:.82rem;color:var(--muted);margin:6px 0 0"><span id="diagWC">0</span> words · aim for about ${ex.writing.minWords}</p></div>
      <button class="btn" style="width:100%;margin-top:18px" onclick="gradeExam()">Submit test →</button>
@@ -3809,7 +3854,9 @@ function wsExam(ex, fileTag){ if(!pdfReady())return noPdf(); const p=pdfDoc("Ful
   ex.readingA.questions.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); (q.type==="tfng"?TFNG:q.options).forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); p.gap(2); });
   p.gap(4); p.text(`Part B — ${ex.readingB.title} (${ex.readingB.topic})`,{style:"bold",gap:2}); p.text(htmlToText(ex.readingB.text),{gap:4});
   ex.readingB.questions.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); (q.type==="tfng"?TFNG:q.options).forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); p.gap(2); });
-  p.h2("Section 4 · Writing"); p.text(ex.writing.prompt,{style:"bold",gap:3}); p.text(`Write about ${ex.writing.minWords} words.`,{size:10,color:90,gap:4}); p.lines(14);
+  p.h2("Section 4 · Writing"); p.text(ex.writing.prompt,{style:"bold",gap:3});
+  if(ex.writing.points){ p.text("Points to address:",{size:10,color:90,gap:2}); ex.writing.points.forEach(pt=>p.text("•  "+pt,{size:10,gap:2})); }
+  p.text(`Write about ${ex.writing.minWords} words.`,{size:10,color:90,gap:4}); p.lines(14);
   p.newpage(); p.h1("Answer key");
   const key=(t,arr)=>{ p.h2(t); arr.forEach((q,i)=>{ const a=ansIdx(q); const opts=q.type==="tfng"?TFNG:q.options; p.text(`${i+1}.  ${LET[a]} — ${opts[a]}`,{style:"bold"}); if(q.exp)p.text(`     ${q.exp}`,{size:10,color:90}); }); };
   key("Vocabulary",ex.vocab); key("Grammar",ex.grammar); key("Reading — Part A",ex.readingA.questions); key("Reading — Part B",ex.readingB.questions);
