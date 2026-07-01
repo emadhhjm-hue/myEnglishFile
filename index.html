@@ -324,6 +324,8 @@ table.data tr:nth-child(even){background:#fff}
 .hub-c text, .hub-s text{pointer-events:none}
 .hub-c:hover circle, .hub-s:hover circle{filter:brightness(1.14)}
 .hub-foot{text-align:center; color:#fff3e2; font-size:.82rem; margin-top:6px; font-weight:500}
+.hub-bee{ filter: drop-shadow(0 0 9px rgba(255,210,63,.7)); transform-box: fill-box; transform-origin: center; animation: beePulse 2.6s ease-in-out infinite}
+@keyframes beePulse{ 0%,100%{ transform: scale(1) } 50%{ transform: scale(1.06) } }
 </style>
 </head>
 <body>
@@ -1496,11 +1498,14 @@ const ROUTES = {
           <circle cx="450" cy="260" r="68" fill="#0e1130" stroke="rgba(255,255,255,.9)" stroke-width="2.5"/>
           <text x="450" y="270" text-anchor="middle" font-family="Fraunces,serif" font-weight="800" font-size="34">
             <tspan fill="#ffffff">i</tspan><tspan fill="#ff5a5f">C</tspan><tspan fill="#34d39a">A</tspan><tspan fill="#5b8def">N</tspan></text>
-          ${[["spelldrill","🐝","Spell & Drill",450,60],["grammar","🧩","Grammar",130,118],["vocab","📚","Vocabulary",770,118],["typing","⌨️","Type",130,455],["diagnostic","🧭","Diagnostic",770,455],["exams","🎓","Exams",450,525]].map(([r,ic,lab,cx,cy])=>`
-          <g class="hub-s" onclick="go('${r}')">
-            <circle cx="${cx}" cy="${cy}" r="55" fill="#13322c" stroke="rgba(255,255,255,.8)" stroke-width="2.5"/>
-            <text x="${cx}" y="${cy-7}" text-anchor="middle" font-size="27">${ic}</text>
-            <text x="${cx}" y="${cy+22}" text-anchor="middle" fill="#ffffff" font-size="18" font-weight="700">${lab}</text></g>`).join('')}
+          ${[["spelldrill","🐝","Spell & Drill",450,60],["grammar","🧩","Grammar",130,118],["vocab","📚","Vocabulary",770,118],["typing","⌨️","Type",130,455],["diagnostic","🧭","Diagnostic",770,455],["exams","🎓","Exams",450,525]].map(([r,ic,lab,cx,cy])=>{
+            const bee = r==='spelldrill';
+            const rad = bee?60:55;
+            return `<g class="hub-s${bee?' hub-bee':''}" onclick="go('${r}')">
+            <circle cx="${cx}" cy="${cy}" r="${rad}" fill="${bee?'#3a2a06':'#13322c'}" stroke="${bee?'#ffd23f':'rgba(255,255,255,.8)'}" stroke-width="${bee?'4':'2.5'}"/>
+            <text x="${cx}" y="${cy-(bee?9:7)}" text-anchor="middle" font-size="${bee?34:27}">${ic}</text>
+            <text x="${cx}" y="${cy+(bee?18:22)}" text-anchor="middle" fill="#ffffff" font-size="${bee?19:18}" font-weight="700">${lab}</text>
+            ${bee?`<text x="${cx}" y="${cy+38}" text-anchor="middle" fill="#ffe39a" font-size="11" font-weight="700" letter-spacing="0.03em">Say · Spell · Say</text>`:''}</g>`; }).join('')}
         </svg>
         <div class="hub-foot">The full Exam hub is coming next.</div>
       </div>
@@ -2282,7 +2287,7 @@ const ROUTES = {
       <h1 style="font-size:2.2rem">✏️ Manage content</h1>
       <p style="color:var(--muted);max-width:700px">Add your own readings, design briefs, writing lessons and speaking prompts — no code needed. They appear for students inside the matching course (under a “Teacher-added” section). Saved on this device; use <b>Publish / Backup</b> to share them or move them between devices.</p>
       <div class="tabs">
-        ${[["reading","📖 Readings"],["writing","✍️ Writing lessons"],["design","🎨 Design briefs"],["speaking","🎤 Speaking prompts"],["share","☁️ Publish / Backup"]]
+        ${[["reading","📖 Readings"],["writing","✍️ Writing lessons"],["design","🎨 Design briefs"],["speaking","🎤 Speaking prompts"],["spelling","📗 Textbook spelling"],["share","☁️ Publish / Backup"]]
           .map(([k,l])=>`<button class="${tab===k?'on':''}" onclick="go('content',{tab:'${k}'})">${l}</button>`).join('')}
       </div>
       <div id="contentBody"></div>
@@ -2646,6 +2651,7 @@ function submitSpell(timedOut){
   if(checkSpelling(item.t, got, s.type)){
     if(s.attempt===1) s.first++; else s.second++;
     s.log.push({t:item.t, got, ok:true, attempt:s.attempt});
+    logSpellVocab(item.t);
     if(fb){ fb.style.color="var(--teal-dk)"; fb.textContent="✓ Correct!"; }
     setTimeout(nextSpell, 800);
     return;
@@ -2657,6 +2663,7 @@ function submitSpell(timedOut){
   } else {
     s.missed++;
     s.log.push({t:item.t, got, ok:false, attempt:2});
+    logSpellVocab(item.t);
     revealSpell(item.t);
   }
 }
@@ -2673,6 +2680,20 @@ function revealSpell(correct){
   _spellTimer=setInterval(()=>{ left--; const c=document.getElementById('revCount'); if(c)c.textContent=Math.max(left,0); if(left<=0){ clearSpellTimer(); nextSpell(); } },1000);
 }
 function nextSpell(){ clearSpellTimer(); const s=SPELLSTATE; if(!s)return; s.i++; s.attempt=1; renderSpell(); }
+/* Auto-add a practised word to the student's vocabulary bank (words only,
+   de-duplicated), so spelling practice builds a running vocabulary log. */
+function logSpellVocab(word){
+  try{
+    if(!word) return;
+    const st=SPELLSTATE; if(st && st.type && st.type!=='word') return;   // words only, not sentences
+    if(!(SESSION && SESSION.role==='student')) return;
+    const w=(''+word).trim(); if(!w) return;
+    const id=sid(); const all=getAllVocab();
+    if(all.some(v=>v.sid===id && (v.word||'').toLowerCase()===w.toLowerCase())) return;  // no duplicates
+    all.push({ id:"v"+Date.now()+Math.random().toString(36).slice(2,6), sid:id, name:SESSION?SESSION.name:"", word:w, sentence:"", source:"spelling", date:Date.now() });
+    Store.set("ican_vocab", all);
+  }catch(e){}
+}
 function finishSpell(){
   clearSpellTimer();
   const s=SPELLSTATE; const N=s.items.length;
@@ -3105,7 +3126,7 @@ function renderVocabList(list){
   if(!list.length) return `<p class="note">No words yet. Add your first one above — try a word you met in a lesson.</p>`;
   return list.slice().reverse().map(v=>`
     <div class="vocab-card">
-      <div><div class="w">${esc(v.word)}</div>${v.sentence?`<div class="s">“${esc(v.sentence)}”</div>`:''}</div>
+      <div><div class="w">${esc(v.word)}${v.source==='spelling'?' <span style="font-size:.62rem;background:#fff3d6;color:#8a6d1a;border-radius:6px;padding:1px 6px;vertical-align:middle;font-weight:600">🐝 spelling</span>':''}</div>${v.sentence?`<div class="s">“${esc(v.sentence)}”</div>`:''}</div>
       <div style="display:flex;gap:6px;flex-shrink:0">
         ${v.audioId?`<button class="btn ghost sm" onclick="playStoredAudio('${v.audioId}')">▶ Mine</button>`:''}
         <button class="btn ghost sm" onclick="speak('${escq(v.word)}')">🔊 Model</button>
@@ -3188,7 +3209,42 @@ function cMsg(t, ok){ const m=document.getElementById('cMsg'); if(m){ m.style.co
 
 function renderContentTab(tab){
   const b=document.getElementById('contentBody'); if(!b)return;
-  b.innerHTML = tab==='reading'?readingEditor() : tab==='writing'?writingEditor() : tab==='design'?designEditor() : tab==='speaking'?speakingEditor() : shareEditor();
+  b.innerHTML = tab==='reading'?readingEditor() : tab==='writing'?writingEditor() : tab==='design'?designEditor() : tab==='speaking'?speakingEditor() : tab==='spelling'?spellingEditor() : shareEditor();
+}
+function spellingEditor(){
+  const list=textbookDrills();
+  return `<div class="card">
+    <h3 style="font-size:1.2rem">Add a textbook spelling list</h3>
+    <p style="color:var(--muted);font-size:.9rem;margin-top:0">Create a word list from your curriculum. It appears for students under <b>Spell &amp; Drill → Textbook</b>, with the same Say · Spell · Say practice, and the words are added to their vocabulary bank as they practise.</p>
+    <div class="ed-field"><label>List title</label><input id="tb_title" placeholder="e.g. Unit 3 key words"></div>
+    <div class="ed-grid two">
+      <div class="ed-field"><label>Type</label><select id="tb_type"><option value="word">Words</option><option value="sentence">Sentences</option></select></div>
+      <div class="ed-field"><label>&nbsp;</label><div style="font-size:.8rem;color:var(--muted)">Sentences are timed a little longer and count capitals &amp; punctuation.</div></div>
+    </div>
+    <div class="ed-field"><label>Words or sentences — one per line, or separated by commas</label>
+      <textarea id="tb_words" style="min-height:120px" placeholder="necessary, rhythm, environment, government, …"></textarea></div>
+    <div id="tb_msg" style="font-size:.9rem;margin:6px 0"></div>
+    <button class="btn" onclick="saveTextbookSpelling()">Add list</button>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3 style="font-size:1.2rem">Your spelling lists (${list.length})</h3>
+    ${list.length? list.map((d,i)=>`<div class="item-row"><div><b>${esc(d.title||'Untitled')}</b><div class="meta">${(d.words||[]).length} ${d.type==='sentence'?'sentences':'words'}</div></div><button class="btn ghost sm" onclick="deleteTextbookSpelling(${i})">✕ Remove</button></div>`).join('')
+      : `<p class="note">No lists yet. Add one above — it appears for your students straight away.</p>`}
+  </div>`;
+}
+function saveTextbookSpelling(){
+  const title=(val('tb_title')||'').trim();
+  const type=(val('tb_type')||'word');
+  const raw=(val('tb_words')||'').trim();
+  const msg=document.getElementById('tb_msg');
+  const words=raw.split(/[\n,]+/).map(w=>w.trim()).filter(Boolean);
+  if(!title){ if(msg){ msg.style.color='var(--coral-dk)'; msg.textContent='Please give the list a title.'; } return; }
+  if(!words.length){ if(msg){ msg.style.color='var(--coral-dk)'; msg.textContent='Please add at least one word.'; } return; }
+  const all=textbookDrills(); all.push({title, type, words}); Store.set('ican_spell_textbook', all);
+  renderContentTab('spelling');
+}
+function deleteTextbookSpelling(i){
+  const all=textbookDrills(); if(i<0||i>=all.length)return; all.splice(i,1); Store.set('ican_spell_textbook', all); renderContentTab('spelling');
 }
 
 function readingEditor(){
