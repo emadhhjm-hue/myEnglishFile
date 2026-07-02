@@ -310,6 +310,22 @@ table.data tr:nth-child(even){background:#fff}
 .coach-input input{flex:1; border:1px solid var(--line); border-radius:10px; padding:8px 10px; font:inherit; font-size:.85rem}
 .coach-input button{border:none; background:#3a63c8; color:#fff; border-radius:10px; padding:0 14px; cursor:pointer; font-weight:600}
 .coach-btn{border:none; background:#3a63c8; color:#fff; border-radius:8px; padding:6px 12px; cursor:pointer; font-weight:600; font-size:.82rem}
+.tools-overlay{position:fixed; inset:0; background:rgba(15,20,45,.55); z-index:120; display:flex; align-items:center; justify-content:center; padding:20px}
+.tools-overlay.hidden{display:none}
+.tools-box{background:#fff; width:640px; max-width:94vw; max-height:86vh; border-radius:20px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 30px 80px rgba(10,20,50,.45)}
+.tools-head{display:flex; align-items:center; gap:12px; padding:14px 18px; background:linear-gradient(140deg,#15183A,#2a3170); color:#fff; flex:none}
+.tools-head b{display:block; font-size:1.05rem}
+.tools-head small{opacity:.8; font-size:.76rem}
+.tools-head .coach-x{margin-left:auto}
+.tools-body{padding:14px 18px; overflow:auto}
+.tools-cat{margin:0 0 14px}
+.tools-cat h4{margin:0 0 8px; font-size:.95rem; color:var(--ink)}
+.tools-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:8px}
+.tool-link{display:block; text-decoration:none; border:1.5px solid var(--line); border-radius:12px; padding:9px 11px; background:#fbfcff; transition:.12s}
+.tool-link:hover{border-color:#5b8def; background:#eef3ff; transform:translateY(-1px)}
+.tool-link b{display:block; font-size:.86rem; color:var(--ink)}
+.tool-link span{font-size:.72rem; color:var(--muted); line-height:1.35; display:block; margin-top:2px}
+.tools-note{flex:none; margin:0; padding:10px 18px 14px; font-size:.74rem; color:var(--muted); border-top:1px solid var(--line)}
 @media (prefers-reduced-motion: reduce){ .coach-fab{animation:none} }
 .type-target{background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:16px 18px; font-family:'Courier New',monospace; font-size:1.12rem; line-height:2.05; letter-spacing:.3px; margin:10px 0; color:var(--slate); white-space:pre-wrap; overflow-wrap:break-word; word-break:break-word}
 .type-target span.ok{color:var(--teal-dk)}
@@ -437,6 +453,15 @@ table.data tr:nth-child(even){background:#fff}
 
 <!-- ============ SCREENS MOUNT ============ -->
 <main id="app"></main>
+
+<!-- ============ CREATION TOOLS POP-UP ============ -->
+<div id="toolsModal" class="tools-overlay hidden" onclick="if(event.target===this)closeTools()">
+  <div class="tools-box">
+    <div class="tools-head"><span style="font-size:1.4rem">🧰</span><div><b>Digital Content Creation Tools</b><small>Free tools to help you write, design and share — the RWD way</small></div><button class="coach-x" onclick="closeTools()" aria-label="Close">✕</button></div>
+    <div class="tools-body" id="toolsBody"></div>
+    <p class="tools-note">These are external websites — they open in a new tab. Some may ask you to create a free account. Always follow your school's guidance when using AI tools, and say when AI helped you.</p>
+  </div>
+</div>
 
 <!-- ============ COACH / ASK (guide on every page) ============ -->
 <div id="coach" class="coach">
@@ -1617,6 +1642,9 @@ const ROUTES = {
       </div>
 
       <div class="grid c2" style="margin-top:18px">
+        <button onclick="openTools()" style="text-align:left;border:1.5px dashed var(--line);background:#fff;border-radius:14px;padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <span><b style="color:var(--ink)">🧰 Creation tools</b><br><span style="font-size:.85rem;color:var(--muted)">Free writing, design, video and AI tools for your RWD projects.</span></span>
+          <span class="btn sm ghost" style="white-space:nowrap">Open →</span></button>
         <button onclick="go('resources')" style="text-align:left;border:1.5px dashed var(--line);background:#fff;border-radius:14px;padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px">
           <span><b style="color:var(--ink)">🌐 Helpful resources</b><br><span style="font-size:.85rem;color:var(--muted)">Trusted sites for extra grammar, reading, writing, listening & speaking practice.</span></span>
           <span class="btn sm ghost" style="white-space:nowrap">Open →</span></button>
@@ -2312,6 +2340,7 @@ const ROUTES = {
     <div class="wrap screen">
       <button class="back" onclick="go('dashboard')">← Pathways</button>
       <h1 style="font-size:2.2rem">🎨 Design Studio</h1>
+      <div style="margin:4px 0 10px"><button class="btn sm teal" onclick="openTools()">🧰 Digital Content Creation Tools</button></div>
       <p style="color:var(--muted);max-width:700px"><b>Design is the bridge.</b> Here you turn what you've <i>read</i> and <i>written</i> into something you <i>make</i>. Each challenge guides you: read & research, plan, design (with suggested tools), make it, then reflect. Find a purpose for reading — and end up creating something real.</p>
       <p class="note" style="max-width:700px">The suggested tools are external websites/apps. Check your school's policy, any age limits, and current availability first, and use AI tools only with your teacher's permission.</p>
       <div class="grid c2" style="margin-top:12px">
@@ -2471,6 +2500,44 @@ const ROUTES = {
   },
 
   /* ---------------- TEACHER DASHBOARD ---------------- */
+  apprcert(){ if(!requireTeacher())return;
+    app().innerHTML=`
+    <div class="wrap screen">
+      <button class="back" onclick="go('teacher')">← Teacher dashboard</button>
+      <h1 style="font-size:2.1rem">🏅 Certificates of Appreciation</h1>
+      <p style="color:var(--muted);max-width:720px">A printable RWD certificate. Edit the details, preview, and download — or paste your class name-list to generate one per student.</p>
+      <div class="grid c2" style="align-items:start">
+        <div class="card">
+          <div class="ed-grid two">
+            <div class="ed-field"><label>School name</label><input id="ap_school" value="Al Dhannah School"></div>
+            <div class="ed-field"><label>School line 2</label><input id="ap_schoolsub" value="Cycle 2 &amp; 3, Boys"></div>
+          </div>
+          <div class="ed-field"><label>Tagline</label><input id="ap_tagline" value="When Readers are Designers"></div>
+          <div class="ed-grid two">
+            <div class="ed-field"><label>Participant name (editable)</label><input id="ap_name" placeholder="e.g. Ahmed Ali" value="Student Name"></div>
+            <div class="ed-field"><label>Honor line</label><input id="ap_role" value="RWD Star Producer"></div>
+          </div>
+          <div class="ed-field"><label>Body text</label><textarea id="ap_body" style="min-height:80px">This certificate honors your dedication and achievement in the Read, Write, Design initiative, enhancing 21st-century new literacies. Your effort truly stands out.</textarea></div>
+          <div class="ed-field"><label>Footer line (optional)</label><input id="ap_footer" value="RWD Trophy Winner — ${new Date().toLocaleString('en',{month:'short',year:'numeric'})}"></div>
+          <div class="ed-grid two">
+            <div class="ed-field"><label>Left signature — name</label><input id="ap_sig1" value="${esc(CONFIG.teacherName||'')}"></div>
+            <div class="ed-field"><label>Left signature — title</label><input id="ap_sig1t" value="Project Developer"></div>
+          </div>
+          <div class="ed-grid two">
+            <div class="ed-field"><label>Right signature — name</label><input id="ap_sig2" placeholder="e.g. Principal's name"></div>
+            <div class="ed-field"><label>Right signature — title</label><input id="ap_sig2t" value="School Principal"></div>
+          </div>
+          <button class="btn" onclick="apprPreview()">Preview certificate</button>
+          <hr style="border:none;border-top:1px solid var(--line);margin:16px 0">
+          <div class="ed-field"><label>Batch: paste names (one per line)</label><textarea id="ap_names" style="min-height:90px" placeholder="Ahmed Ali&#10;Saif Mohamed&#10;Khalid Hassan"></textarea></div>
+          <button class="btn dark" onclick="apprBatch()">Generate for all names</button>
+          <div id="apprBatchOut" style="margin-top:10px"></div>
+        </div>
+        <div><div id="apprOut"><p class="note">Press <b>Preview certificate</b> to see it here.</p></div></div>
+      </div>
+    </div>`;
+    apprPreview();
+  },
   teacher(){ if(!requireTeacher())return;
     const res = allResults();
     const students = summariseStudents(res);
@@ -2482,6 +2549,7 @@ const ROUTES = {
         <p style="color:var(--muted);margin:6px 0 0">${res.length} recorded attempt(s) · ${students.length} student(s) · ${online?'<span style="color:var(--teal-dk)">● online sync on</span>':'local only (this device)'}</p></div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button class="btn dark" onclick="go('content')">✏️ Manage content</button>
+          <button class="btn" onclick="go('apprcert')">🏅 Certificates</button>
           <button class="btn" onclick="go('analytics')">📊 Analytics</button>
           <button class="btn" onclick="go('align')">🎯 Aligned practice</button>
           <button class="btn" onclick="exportExcel()">⬇ Export to Excel</button>
@@ -5313,6 +5381,149 @@ function coachAsk(){
   if(!key && /how|use|start|begin|guide|help|where|tip/.test(t)) key='start';
   if(key){ coachTip(key); }
   else { b.innerHTML=`<div class="cbot">I can explain any of these — just tap a topic below, or ask “how do I…”. I can help with Reading, Writing, Spell &amp; Drill, Exams, Grammar, Vocabulary, Diagnostic, Design, Typing.</div>`; renderCoachTopics(); }
+}
+
+/* ===================== CREATION TOOLS POP-UP ===================== */
+const CREATION_TOOLS=[
+  { cat:"✍️ Writing & AI writing assistants", items:[
+    ["Grammarly","https://www.grammarly.com","Checks grammar, spelling and tone as you write."],
+    ["QuillBot","https://quillbot.com","Paraphrase, summarise and improve sentences."],
+    ["ChatGPT","https://chat.openai.com","Brainstorm ideas, outlines and feedback on drafts."],
+    ["Google Docs","https://docs.google.com","Write and share documents; built-in voice typing."],
+    ["Hemingway Editor","https://hemingwayapp.com","Shows long or unclear sentences to simplify."]
+  ]},
+  { cat:"🎨 Design & presentations", items:[
+    ["Canva","https://www.canva.com","Posters, infographics, slides — free education designs."],
+    ["Prezi","https://prezi.com","Zooming, story-style presentations."],
+    ["Google Slides","https://slides.google.com","Simple, shareable slide decks."],
+    ["Adobe Express","https://www.adobe.com/express/","Quick graphics, flyers and web pages."],
+    ["Figma","https://www.figma.com","Design layouts and mock-ups together."]
+  ]},
+  { cat:"🎬 Video, audio & AI studios", items:[
+    ["CapCut","https://www.capcut.com","Free video editor with captions and effects."],
+    ["Clipchamp","https://clipchamp.com","Browser video editor with recorder."],
+    ["Fliki","https://fliki.ai","Turn text into narrated AI video."],
+    ["Descript","https://www.descript.com","Edit audio/video by editing the text."],
+    ["Podcastle","https://podcastle.ai","Record and polish podcasts online."]
+  ]},
+  { cat:"🖼️ Images & AI art", items:[
+    ["Bing Image Creator","https://www.bing.com/create","Create AI images from a description."],
+    ["Ideogram","https://ideogram.ai","AI images that can include clear text."],
+    ["Unsplash","https://unsplash.com","Free high-quality photos to use in designs."],
+    ["Pixabay","https://pixabay.com","Free photos, vectors and illustrations."]
+  ]},
+  { cat:"📚 Books & publishing", items:[
+    ["Book Creator","https://bookcreator.com","Make and publish your own e-books."],
+    ["StoryJumper","https://www.storyjumper.com","Write and illustrate storybooks."],
+    ["Padlet","https://padlet.com","Pin and share your work on a class wall."]
+  ]}
+];
+function openTools(){
+  const b=document.getElementById('toolsBody');
+  if(b) b.innerHTML=CREATION_TOOLS.map(c=>`<div class="tools-cat"><h4>${c.cat}</h4><div class="tools-grid">${c.items.map(([n,u,d])=>`<a class="tool-link" href="${u}" target="_blank" rel="noopener noreferrer"><b>${n} ↗</b><span>${d}</span></a>`).join('')}</div></div>`).join('');
+  const m=document.getElementById('toolsModal'); if(m)m.classList.remove('hidden');
+}
+function closeTools(){ const m=document.getElementById('toolsModal'); if(m)m.classList.add('hidden'); }
+
+/* ===================== APPRECIATION CERTIFICATE (teacher) ===================== */
+function apprCurvedText(ctx,text,cx,cy,r,a0,a1,font,fill){
+  ctx.save(); ctx.font=font; ctx.fillStyle=fill;
+  const total=a1-a0;
+  for(let i=0;i<text.length;i++){
+    const a=a0+total*(i/(text.length-1||1));
+    ctx.save(); ctx.translate(cx+r*Math.cos(a), cy+r*Math.sin(a));
+    ctx.rotate(a+Math.PI/2); ctx.textAlign='center'; ctx.fillText(text[i],0,0); ctx.restore();
+  }
+  ctx.restore();
+}
+function drawApprCert(o){
+  const W=1122,H=794, cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+  const x=cv.getContext('2d');
+  x.fillStyle='#ffffff'; x.fillRect(0,0,W,H);
+  // border waves (top-left sweep)
+  function wave(color, pts){ x.beginPath(); x.moveTo(pts[0][0],pts[0][1]); for(let i=1;i<pts.length-2;i+=3){ x.bezierCurveTo(pts[i][0],pts[i][1],pts[i+1][0],pts[i+1][1],pts[i+2][0],pts[i+2][1]); } x.closePath(); x.fillStyle=color; x.fill(); }
+  wave('#2BA84F', [[0,0],[W*0.45,60],[W*0.75,-30],[W,40],[W,0],[0,0],[0,0],[0,0],[0,0]]);
+  wave('#2b6cb0', [[0,0],[W*0.35,86],[W*0.7,-6],[W,66],[W,28],[W*0.6,-14],[W*0.3,70],[0,16],[0,0]]);
+  wave('#F5C518', [[0,26],[W*0.3,96],[W*0.65,10],[W,84],[W,60],[W*0.62,4],[W*0.32,86],[0,44],[0,26]]);
+  x.save(); x.translate(W,H); x.rotate(Math.PI);
+  wave('#2BA84F', [[0,0],[W*0.45,60],[W*0.75,-30],[W,40],[W,0],[0,0],[0,0],[0,0],[0,0]]);
+  wave('#2b6cb0', [[0,0],[W*0.35,86],[W*0.7,-6],[W,66],[W,28],[W*0.6,-14],[W*0.3,70],[0,16],[0,0]]);
+  wave('#F5C518', [[0,26],[W*0.3,96],[W*0.65,10],[W,84],[W,60],[W*0.62,4],[W*0.32,86],[0,44],[0,26]]);
+  x.restore();
+  // RWD triad (left)
+  const tx=170,ty=225;
+  apprCurvedText(x,'READ to WRITE to DESIGN and back again',tx,ty,118,-Math.PI*0.96,-Math.PI*0.04,'700 15px Georgia','#444');
+  apprCurvedText(x,'The Iterative Multiliteracies process',tx,ty,118,Math.PI*0.9,Math.PI*0.1,'700 13px Georgia','#e07a1f');
+  x.globalAlpha=.95;
+  x.fillStyle='#E0403F'; x.beginPath(); x.arc(tx-42,ty-28,46,0,7); x.fill();
+  x.fillStyle='#2BA84F'; x.beginPath(); x.arc(tx+46,ty-24,46,0,7); x.fill();
+  x.fillStyle='#7A2FD0'; x.beginPath(); x.arc(tx+2,ty+46,46,0,7); x.fill();
+  x.globalAlpha=1;
+  x.strokeStyle='#F5C518'; x.lineWidth=7; x.beginPath(); x.arc(tx,ty+2,24,-2.4,2.2); x.stroke();
+  x.fillStyle='#fff'; x.textAlign='center'; x.font='700 15px Georgia';
+  x.fillText('READ',tx-42,ty-24); x.fillText('WRITE',tx+46,ty-20); x.fillText('DESIGN',tx+2,ty+50);
+  // book + learners mark under triad
+  const bx=170,by=430;
+  x.fillStyle='#2b6cb0';
+  x.beginPath(); x.moveTo(bx-64,by); x.quadraticCurveTo(bx-30,by-18,bx,by-6); x.lineTo(bx,by+22); x.quadraticCurveTo(bx-32,by+8,bx-64,by+20); x.closePath(); x.fill();
+  x.beginPath(); x.moveTo(bx+64,by); x.quadraticCurveTo(bx+30,by-18,bx,by-6); x.lineTo(bx,by+22); x.quadraticCurveTo(bx+32,by+8,bx+64,by+20); x.closePath(); x.fill();
+  x.fillStyle='#e07a1f';
+  [[-26,-34],[0,-44],[26,-34]].forEach(([dx,dy],i)=>{ x.beginPath(); x.arc(bx+dx,by+dy,7,0,7); x.fill(); x.beginPath(); x.moveTo(bx+dx,by+dy+6); x.lineTo(bx+dx-11,by+dy+26); x.lineTo(bx+dx+11,by+dy+26); x.closePath(); x.fill(); });
+  // headers (centre)
+  const cx2=W*0.56;
+  x.textAlign='center';
+  x.font='800 26px Georgia';
+  x.fillStyle='#E0403F'; x.fillText('R',cx2-158,120); x.fillStyle='#2BA84F'; x.fillText('W',cx2-138,120); x.fillStyle='#7A2FD0'; x.fillText('D',cx2-114,120);
+  x.fillStyle='#D4A017'; x.fillText(' MULTILITERACIES',cx2+18,120);
+  x.font='italic 700 17px Georgia'; x.fillStyle='#7a4d05'; x.fillText(o.tagline||'When Readers are Designers',cx2,146);
+  x.font='800 64px Georgia'; x.fillStyle='#15183A'; x.fillText('Certificate',cx2,225);
+  x.font='700 30px Georgia'; x.fillText('Of Appreciation',cx2,262);
+  x.font='500 19px Georgia'; x.fillStyle='#333'; x.fillText('has been conferred to',cx2,308);
+  x.font='800 44px Georgia'; x.fillStyle='#D4A017'; x.fillText(o.name||'Student Name',cx2,360);
+  x.strokeStyle='#e6d9b8'; x.lineWidth=1.4; x.beginPath(); x.moveTo(cx2-250,374); x.lineTo(cx2+250,374); x.stroke();
+  x.font='700 19px Georgia'; x.fillStyle='#8a5a10'; x.fillText(o.role||'RWD Star Producer',cx2,404);
+  // body
+  x.font='400 15px Georgia'; x.fillStyle='#555';
+  const body=o.body||'This certificate honors your dedication and achievement in the Read, Write, Design initiative, enhancing 21st-century new literacies. Your effort truly stands out.';
+  const words=body.split(' '); let line='',ly=444; const maxw=470;
+  words.forEach(w=>{ const t=line?line+' '+w:w; if(x.measureText(t).width>maxw){ x.fillText(line,cx2,ly); ly+=22; line=w; } else line=t; });
+  if(line) x.fillText(line,cx2,ly);
+  if(o.footer){ x.font='600 13.5px Georgia'; x.fillStyle='#666'; x.fillText(o.footer,cx2,ly+34); }
+  // school (top right)
+  x.font='800 26px Georgia'; x.fillStyle='#15183A'; x.textAlign='right'; x.fillText(o.school||'', W-64, 118);
+  if(o.schoolSub){ x.font='600 17px Georgia'; x.fillStyle='#333'; x.fillText(o.schoolSub, W-64, 144); }
+  // trophy
+  x.textAlign='center'; x.font='86px serif'; x.fillText('🏆', cx2, 620);
+  // signatures
+  function sig(px,name,title){ x.font='700 19px Georgia'; x.fillStyle='#15183A'; x.fillText(name,px,660); x.strokeStyle='#999'; x.lineWidth=1.2; x.beginPath(); x.moveTo(px-120,676); x.lineTo(px+120,676); x.stroke(); x.font='500 14px Georgia'; x.fillStyle='#555'; x.fillText(title,px,696); }
+  sig(W*0.3, o.sig1||'', o.sig1t||'Project Developer');
+  sig(W*0.82, o.sig2||'', o.sig2t||'School Principal');
+  return cv.toDataURL('image/png');
+}
+function apprFields(){
+  return {
+    school:val('ap_school'), schoolSub:val('ap_schoolsub'), tagline:val('ap_tagline'),
+    name:(val('ap_name')||'').trim(), role:val('ap_role'), body:val('ap_body'), footer:val('ap_footer'),
+    sig1:val('ap_sig1'), sig1t:val('ap_sig1t'), sig2:val('ap_sig2'), sig2t:val('ap_sig2t')
+  };
+}
+function apprPreview(){
+  const o=apprFields(); const box=document.getElementById('apprOut'); if(!box)return;
+  try{ const url=drawApprCert(o);
+    box.innerHTML=`<img src="${url}" alt="Certificate preview" style="width:100%;border:1px solid var(--line);border-radius:12px">
+      <div style="text-align:center;margin-top:10px"><a class="btn" download="${(o.name||'certificate').replace(/\s+/g,'_')}-RWD-certificate.png" href="${url}">⬇️ Download PNG</a></div>`;
+  }catch(e){ box.innerHTML=`<p class="note">Certificate couldn't be generated in this browser.</p>`; }
+}
+function apprBatch(){
+  const names=(val('ap_names')||'').split(/\n+/).map(s=>s.trim()).filter(Boolean);
+  const box=document.getElementById('apprBatchOut'); if(!box)return;
+  if(!names.length){ box.innerHTML=`<p class="note">Paste one name per line above, then press Generate.</p>`; return; }
+  const base=apprFields();
+  box.innerHTML=names.map((n,i)=>{
+    try{ const url=drawApprCert(Object.assign({},base,{name:n}));
+      return `<div class="item-row"><div><b>${esc(n)}</b></div><a class="btn sm" download="${n.replace(/\s+/g,'_')}-RWD-certificate.png" href="${url}">⬇️ Download</a></div>`;
+    }catch(e){ return `<div class="item-row"><b>${esc(n)}</b><span class="note">failed</span></div>`; }
+  }).join('');
 }
 
 /* boot */
