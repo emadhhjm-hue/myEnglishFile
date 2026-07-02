@@ -5718,18 +5718,15 @@ function drawEarnedCert(cert){
   x.beginPath(); x.moveTo(rX+rW,rY+rH/2); x.lineTo(rX+rW+24,rY+rH+8); x.lineTo(rX+rW,rY+rH); x.closePath(); x.fill();
   // ribbon text
   x.fillStyle='#fff'; x.font='800 24px Georgia'; x.textAlign='center';
-  x.fillText(('Certificate of '+tier).toUpperCase(), W/2, rY+rH/2+9);
-  // activity subtitle
-  x.fillStyle=pal.primary; x.font='italic 500 20px Georgia';
-  x.fillText(cert.activity||'RWD Activity', W/2, rY+rH+40);
+  x.fillText('CERTIFICATE OF ACHIEVEMENT', W/2, rY+rH/2+9);
   // presented to
   x.fillStyle='#555'; x.font='500 20px Georgia';
-  x.fillText('This certificate is proudly presented to', W/2, rY+rH+80);
+  x.fillText('This certificate of achievement is awarded to', W/2, rY+rH+56);
   // student name — italic cursive-ish
   x.fillStyle=pal.primary; x.font='italic 700 62px "Snell Roundhand","Brush Script MT",Georgia,serif';
-  x.fillText(cert.name||'Student Name', W/2, rY+rH+155);
+  x.fillText(cert.name||'Student Name', W/2, rY+rH+130);
   // dot divider
-  const dY=rY+rH+195;
+  const dY=rY+rH+170;
   x.strokeStyle=pal.gold; x.lineWidth=1;
   x.beginPath(); x.moveTo(W/2-200,dY); x.lineTo(W/2-30,dY); x.moveTo(W/2+30,dY); x.lineTo(W/2+200,dY); x.stroke();
   x.fillStyle=pal.gold; [-24,-8,8,24].forEach(dx=>{ x.beginPath(); x.arc(W/2+dx,dY,3,0,7); x.fill(); });
