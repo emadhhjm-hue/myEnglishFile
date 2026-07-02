@@ -1745,7 +1745,7 @@ const ROUTES = {
   },
 
   /* ---------------- CLASS ANALYTICS ---------------- */
-  analytics(){
+  analytics(){ if(!requireTeacher())return;
     const res=allResults(); const iv=buildIntervention(res); const students=summariseStudents(res);
     const scored=students.filter(s=>s.avg!=='—');
     const needs=scored.filter(s=>s.avg<60).sort((a,b)=>a.avg-b.avg);
@@ -2375,7 +2375,7 @@ const ROUTES = {
   },
 
   /* ---------------- TEACHER CONTENT PANEL ---------------- */
-  content(arg){
+  content(arg){ if(!requireTeacher())return;
     const tab = (arg&&arg.tab) || CONTENT_TAB || "reading";
     CONTENT_TAB = tab;
     app().innerHTML = `
@@ -2393,7 +2393,7 @@ const ROUTES = {
   },
 
   /* ---------------- STUDENT PROGRESS (teacher view) ---------------- */
-  studentDetail(key){
+  studentDetail(key){ if(!requireTeacher())return;
     const res = studentResults(key);
     const name = res.length? res[0].name : (key.split('::')[1]||key);
     const cls = res.length? res[0].class : '';
@@ -2471,7 +2471,7 @@ const ROUTES = {
   },
 
   /* ---------------- TEACHER DASHBOARD ---------------- */
-  teacher(){
+  teacher(){ if(!requireTeacher())return;
     const res = allResults();
     const students = summariseStudents(res);
     const online = !!cloudUrl();
@@ -5255,6 +5255,12 @@ const COACH_HELP={
   teacher: {t:"👩‍🏫 For teachers", route:"teacher", m:"From your dashboard: open <b>Manage content</b> to add readings, writing lessons, speaking prompts and textbook spelling lists; use <b>Analytics</b> to see each student's skills and an intervention plan; share access codes so students can log in."}
 };
 function coachLoggedIn(){ return (typeof SESSION!=='undefined') && SESSION && !!SESSION.role; }
+/* Access control: teacher-only screens must never open for a student. */
+function requireTeacher(){
+  if(SESSION && SESSION.role==='teacher') return true;
+  go(SESSION && SESSION.role==='student' ? 'dashboard' : 'home');
+  return false;
+}
 function toggleCoach(){
   const p=document.getElementById('coachPanel'); if(!p)return;
   const opening=p.classList.contains('hidden');
@@ -5268,7 +5274,8 @@ function coachGreet(){
 }
 function renderCoachTopics(){
   const q=document.getElementById('coachTopics'); if(!q)return;
-  q.innerHTML=Object.keys(COACH_HELP).map(k=>`<button onclick="coachTip('${k}')">${COACH_HELP[k].t}</button>`).join('');
+  const isTeacher = coachLoggedIn() && SESSION.role==='teacher';
+  q.innerHTML=Object.keys(COACH_HELP).filter(k=>k!=='teacher'||isTeacher).map(k=>`<button onclick="coachTip('${k}')">${COACH_HELP[k].t}</button>`).join('');
 }
 function renderCoachQuick(){
   const q=document.getElementById('coachQuick'); if(!q)return;
@@ -5276,11 +5283,13 @@ function renderCoachQuick(){
 }
 function coachTip(key){
   const h=COACH_HELP[key]; const b=document.getElementById('coachBody'); if(!h||!b)return;
-  b.innerHTML=`<div class="cbot"><b>${h.t}</b><br>${h.m}${h.route?`<div class="cgo"><button class="coach-btn" onclick="coachGo('${h.route}')">Take me there →</button></div>`:''}</div>`;
+  const canGo = h.route && !(h.route==='teacher' && !(coachLoggedIn() && SESSION.role==='teacher'));
+  b.innerHTML=`<div class="cbot"><b>${h.t}</b><br>${h.m}${canGo?`<div class="cgo"><button class="coach-btn" onclick="coachGo('${h.route}')">Take me there →</button></div>`:''}</div>`;
 }
 function coachGo(route){
   const b=document.getElementById('coachBody');
   if(!coachLoggedIn()){ if(b)b.innerHTML=`<div class="cbot">First choose <b>I'm a student</b> or <b>I'm a teacher</b> on the home screen — I'll be right here after you sign in!</div>`; go('home'); return; }
+  if(route==='teacher' && SESSION.role!=='teacher'){ if(b)b.innerHTML=`<div class="cbot">The <b>Teacher Dashboard</b> is for teachers only. To open it, sign out and sign in with a teacher access code from the home page.</div>`; return; }
   const p=document.getElementById('coachPanel'); if(p)p.classList.add('hidden');
   go(route);
 }
