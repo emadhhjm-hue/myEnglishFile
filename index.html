@@ -404,7 +404,7 @@ table.data tr:nth-child(even){background:#fff}
 .hub{background:linear-gradient(180deg,#0e3a33 0%,#15614a 45%,#2f7d33 100%); border-radius:24px; padding:20px 14px 16px; margin:0 0 24px; box-shadow:0 18px 44px rgba(0,0,0,.3)}
 .hub-greet{color:#eaf0ff; text-align:center; font-size:.95rem; max-width:580px; margin:2px auto 8px}
 .hub-greet b{color:#fff}
-.hub-map{display:block; width:100%; max-width:740px; margin:0 auto; height:auto}
+.hub-map{display:block; width:100%; max-width:960px; margin:0 auto; height:auto}
 .hub-c, .hub-s{cursor:pointer}
 .hub-c text, .hub-s text{pointer-events:none}
 .hub-c:hover circle, .hub-s:hover circle{filter:brightness(1.14)}
@@ -510,7 +510,14 @@ const Store = {
 };
 function getResults(){ return Store.get("ican_results")||[]; }
 function getCodes(){ const stored=Store.get("ican_codes")||[]; return Array.from(new Set([...(CONFIG.classCodes||[]), ...stored])); }
-function saveResult(r){ const a=getResults(); a.push(r); Store.set("ican_results",a); cloudSave(r); }
+function saveResult(r){
+  const a=getResults(); a.push(r); Store.set("ican_results",a); cloudSave(r);
+  try{
+    if(SESSION && SESSION.role==='student' && !r.noCert && typeof r.max==='number' && r.max>0 && typeof r.percent==='number'){
+      mintCert({skill:r.skill, activity:r.activity, score:r.score, max:r.max, percent:r.percent, detail:r.detail});
+    }
+  }catch(e){}
+}
 function getStudents(){ return Store.get("ican_students")||{}; }
 function setStudent(id,o){ const s=getStudents(); s[id]=Object.assign(s[id]||{},o); Store.set("ican_students",s); }
 
@@ -1620,7 +1627,7 @@ const ROUTES = {
           <circle cx="450" cy="260" r="68" fill="#0e1130" stroke="rgba(255,255,255,.9)" stroke-width="2.5"/>
           <text x="450" y="270" text-anchor="middle" font-family="Fraunces,serif" font-weight="800" font-size="34">
             <tspan fill="#ffffff">i</tspan><tspan fill="#ff5a5f">C</tspan><tspan fill="#34d39a">A</tspan><tspan fill="#5b8def">N</tspan></text>
-          ${[["spelldrill","🐝","Spell & Drill",450,60],["grammar","🧩","Grammar",130,118],["vocab","📚","Vocabulary",770,118],["typing","⌨️","Type",130,455],["diagnostic","🧭","Diagnostic",770,455],["exams","🎓","Exams",450,525]].map(([r,ic,lab,cx,cy])=>{
+          ${[["spelldrill","🐝","Spell & Drill",450,60],["grammar","🧩","Grammar",130,118],["mycerts","🏅","My Certificates",770,118],["typing","⌨️","Type",130,455],["diagnostic","🧭","Diagnostic",770,455],["exams","🎓","Exams & Quizzes",450,525]].map(([r,ic,lab,cx,cy])=>{
             const bee = r==='spelldrill';
             const rad = bee?60:55;
             return `<g class="hub-s${bee?' hub-bee':''}" onclick="go('${r}')">
@@ -1629,32 +1636,22 @@ const ROUTES = {
             <text x="${cx}" y="${cy+(bee?18:22)}" text-anchor="middle" fill="#ffffff" font-size="${bee?19:18}" font-weight="700">${lab}</text>
             ${bee?`<text x="${cx}" y="${cy+38}" text-anchor="middle" fill="#ffe39a" font-size="11" font-weight="700" letter-spacing="0.03em">Say · Spell · Say</text>`:''}</g>`; }).join('')}
         </svg>
-        <div class="hub-foot">The full Exam hub is coming next.</div>
+        <div class="hub-foot">Tap any circle to begin. Tap 🎓 <b>Exams &amp; Quizzes</b> for full-length exams and differentiated practice.</div>
       </div>
 
-      <h2 style="font-family:'Fraunces';font-size:1.6rem;margin:30px 0 2px;color:var(--ink)">Quizzes — differentiated practice</h2>
-      <p style="color:var(--muted);margin:0 0 14px;font-size:.92rem">Stand-alone practice with the <b>Standard ⇄ Supported</b> slider. Every activity has an <b>online</b> version and a printable <b>📄 PDF worksheet</b> for paper-based practice.</p>
-      <div class="grid c4">
-        <button class="path read" onclick="go('reading')"><div><div class="ic">📖</div><h3>Reading</h3></div><span>${READING.length} texts · articles, blogs, data</span></button>
-        <button class="path write" onclick="go('writing')"><div><div class="ic">✍️</div><h3>Writing</h3></div><span>${WRITING.length} multimodal tasks</span></button>
-        <button class="path listen" onclick="go('listening')"><div><div class="ic">🎧</div><h3>Listening</h3></div><span>Comprehension + timed spelling</span></button>
-        <button class="path speak" onclick="go('speaking')"><div><div class="ic">🎤</div><h3>Speaking</h3></div><span>Prompts, debates & presentations</span></button>
-      </div>
-
-      <div class="grid c2" style="margin-top:18px">
-        <button onclick="openTools()" style="text-align:left;border:1.5px dashed var(--line);background:#fff;border-radius:14px;padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px">
-          <span><b style="color:var(--ink)">🧰 Creation tools</b><br><span style="font-size:.85rem;color:var(--muted)">Free writing, design, video and AI tools for your RWD projects.</span></span>
-          <span class="btn sm ghost" style="white-space:nowrap">Open →</span></button>
-        <button onclick="go('resources')" style="text-align:left;border:1.5px dashed var(--line);background:#fff;border-radius:14px;padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px">
-          <span><b style="color:var(--ink)">🌐 Helpful resources</b><br><span style="font-size:.85rem;color:var(--muted)">Trusted sites for extra grammar, reading, writing, listening & speaking practice.</span></span>
+      <div class="grid c2" style="margin-top:22px">
+        <button onclick="go('toolsRes')" style="text-align:left;border:1.5px dashed var(--line);background:#fff;border-radius:14px;padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px">
+          <span><b style="color:var(--ink)">🧰 Tools &amp; Resources</b><br><span style="font-size:.85rem;color:var(--muted)">AI creation tools and trusted online literacy resources (incl. IELTS).</span></span>
           <span class="btn sm ghost" style="white-space:nowrap">Open →</span></button>
         <button onclick="go('align')" style="text-align:left;border:1.5px dashed var(--line);background:#fff;border-radius:14px;padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px">
           <span><b style="color:var(--ink)">🎯 Aligned practice</b><br><span style="font-size:.85rem;color:var(--muted)">Find practice that matches a type of assessment and its objective.</span></span>
           <span class="btn sm ghost" style="white-space:nowrap">Open →</span></button>
       </div>
 
+      <div style="margin-top:14px;font-size:.86rem;color:var(--muted)">Looking for your saved words? Open your <a onclick="go('vocab')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">📚 Vocabulary bank</a>.</div>
+
       <div class="card" style="margin-top:24px">
-        <h3 style="font-size:1.2rem">Your recent results</h3>
+        <h3 style="font-size:1.2rem">My recent results</h3>
         ${myResultsTable()}
       </div>
     </div>`;
@@ -1687,7 +1684,18 @@ const ROUTES = {
     app().innerHTML=`
     <div class="wrap screen">
       <button class="back" onclick="go('dashboard')">← Home</button>
-      <h1 style="font-size:2.2rem">🎓 Full-length exams</h1>
+      <h1 style="font-size:2.2rem">🎓 Exams & Quizzes</h1>
+      <div class="card" style="background:#fbfcff;border:1.5px dashed var(--line);padding:14px 16px;margin:8px 0 18px">
+        <h3 style="font-size:1.05rem;margin:0 0 4px">Quizzes — differentiated practice</h3>
+        <p style="color:var(--muted);margin:0 0 10px;font-size:.88rem">Stand-alone practice with the <b>Standard ⇄ Supported</b> slider. Every activity has an <b>online</b> version and a printable <b>📄 PDF worksheet</b>.</p>
+        <div class="grid c4">
+          <button class="path read" onclick="go('reading')"><div><div class="ic">📖</div><h3>Reading</h3></div><span>${READING.length} texts</span></button>
+          <button class="path write" onclick="go('writing')"><div><div class="ic">✍️</div><h3>Writing</h3></div><span>${WRITING.length} multimodal tasks</span></button>
+          <button class="path listen" onclick="go('listening')"><div><div class="ic">🎧</div><h3>Listening</h3></div><span>Comprehension + spelling</span></button>
+          <button class="path speak" onclick="go('speaking')"><div><div class="ic">🎤</div><h3>Speaking</h3></div><span>Prompts & debates</span></button>
+        </div>
+      </div>
+      <h2 style="font-family:'Fraunces';font-size:1.4rem;margin:8px 0 6px;color:var(--ink)">📝 Full-length exams</h2>
       <p style="color:var(--muted);max-width:700px">Complete, timed exams covering all four skills — <b>Vocabulary, Grammar, Reading</b> and <b>Writing</b> — with a wide range of grammar and topics. Each question has <b>three options (a / b / c)</b> in the MoE style, and on submit you see the correct answer with a short <b>“Why”</b> hint. Each exam is <b>40 minutes</b> and auto-submits when time runs out. Finish to earn a <b>certificate</b> (Emerging · At-level · Outstanding).</p>
       <div class="grid c2" style="margin-top:14px">
         ${EXAMS.map((e,i)=>`
@@ -2500,6 +2508,39 @@ const ROUTES = {
   },
 
   /* ---------------- TEACHER DASHBOARD ---------------- */
+  toolsRes(){
+    let tab = (SESSION && SESSION.__toolsTab) || 'tools';
+    const toolsBtn = `<button class="chip ${tab==='tools'?'on':''}" onclick="SESSION.__toolsTab='tools';go('toolsRes')">🧰 AI &amp; Creation Tools</button>`;
+    const resBtn   = `<button class="chip ${tab==='res'?'on':''}"   onclick="SESSION.__toolsTab='res';go('toolsRes')">🌐 Online Literacy Resources</button>`;
+    const toolsHTML = CREATION_TOOLS.map(c=>`<div class="tools-cat"><h4>${c.cat}</h4><div class="tools-grid">${c.items.map(([n,u,d])=>`<a class="tool-link" href="${u}" target="_blank" rel="noopener noreferrer"><b>${n} ↗</b><span>${d}</span></a>`).join('')}</div></div>`).join('');
+    const resHTML   = LITERACY_RESOURCES.map(c=>`<div class="tools-cat"><h4>${c.cat}</h4><div class="tools-grid">${c.items.map(([n,u,d])=>`<a class="tool-link" href="${u}" target="_blank" rel="noopener noreferrer"><b>${n} ↗</b><span>${d}</span></a>`).join('')}</div></div>`).join('');
+    app().innerHTML=`
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Home</button>
+      <h1 style="font-size:2.1rem">🧰 Tools &amp; Resources</h1>
+      <p style="color:var(--muted);max-width:720px">Two curated shelves: free AI &amp; creation tools for your projects, and reliable online literacy resources (including IELTS).</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px">${toolsBtn}${resBtn}</div>
+      <div class="card">${tab==='res'?resHTML:toolsHTML}</div>
+      <p style="font-size:.78rem;color:var(--muted);margin-top:8px">External sites open in a new tab. Some may ask you to create a free account. When using AI, follow your school's policy and say when AI helped you.</p>
+    </div>`;
+  },
+  mycerts(){
+    const list=myCerts();
+    app().innerHTML=`
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Home</button>
+      <h1 style="font-size:2.1rem">🏅 My Certificates</h1>
+      <p style="color:var(--muted);max-width:720px">Certificates are generated automatically when you finish a practice, exam, spelling round or lesson. Each shows your <b>level</b> (F → A+), what went well, and what to work on next.</p>
+      ${list.length? `<div class="grid c2" style="margin-top:14px">${list.map(c=>`<div class="card" style="padding:14px">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+          <div><div style="font-size:.78rem;color:var(--muted)">${new Date(c.date).toLocaleDateString('en')} · ${c.skill}</div>
+            <div style="font-weight:700;font-size:1.02rem;margin:2px 0">${esc(c.activity)}</div>
+            <div style="font-size:.86rem;color:var(--muted)">Level <b style="color:${c.levelColor}">${c.level}</b> · ${c.tier}${c.score!=null?` · ${c.score}/${c.max} (${c.percent}%)`:''}</div></div>
+          <button class="btn sm" onclick="openEarnedCert('${c.id}')">Open</button>
+        </div>
+      </div>`).join('')}</div>` : `<p class="note">No certificates yet — finish an activity to earn your first one!</p>`}
+    </div>`;
+  },
   apprcert(){ if(!requireTeacher())return;
     app().innerHTML=`
     <div class="wrap screen">
@@ -5424,6 +5465,15 @@ function openTools(){
   const m=document.getElementById('toolsModal'); if(m)m.classList.remove('hidden');
 }
 function closeTools(){ const m=document.getElementById('toolsModal'); if(m)m.classList.add('hidden'); }
+function openEarnedCert(id){
+  const c = allCerts().find(x=>x.id===id); if(!c) return;
+  let url; try{ url = drawEarnedCert(c); }catch(e){ alert('Certificate could not be generated in this browser.'); return; }
+  const body=document.getElementById('toolsBody'); const head=document.querySelector('#toolsModal .tools-head');
+  if(head) head.innerHTML=`<span style="font-size:1.4rem">🏅</span><div><b>${esc(c.activity)}</b><small>${c.skill} · Level ${c.level} · ${new Date(c.date).toLocaleDateString('en')}</small></div><button class="coach-x" onclick="closeTools()" aria-label="Close">✕</button>`;
+  if(body) body.innerHTML=`<img src="${url}" alt="Certificate" style="width:100%;border:1px solid var(--line);border-radius:12px">
+    <div style="text-align:center;margin-top:10px"><a class="btn" download="${(c.name||'certificate').replace(/\s+/g,'_')}-${c.level}-certificate.png" href="${url}">⬇️ Download PNG</a></div>`;
+  const m=document.getElementById('toolsModal'); if(m)m.classList.remove('hidden');
+}
 
 /* ===================== APPRECIATION CERTIFICATE (teacher) ===================== */
 function apprCurvedText(ctx,text,cx,cy,r,a0,a1,font,fill){
@@ -5525,6 +5575,174 @@ function apprBatch(){
     }catch(e){ return `<div class="item-row"><b>${esc(n)}</b><span class="note">failed</span></div>`; }
   }).join('');
 }
+
+/* ===================== EARNED CERTIFICATES ===================== */
+const CERT_LADDER = ['F','D','C-','C+','B-','B+','A-','A+'];
+function levelBand(pct){
+  if(pct>=90) return {code:'A+', tier:'Advanced',           color:'#059669', desc:'Outstanding — consistent mastery across the task.'};
+  if(pct>=80) return {code:'A-', tier:'Advanced',           color:'#10b981', desc:'Excellent — strong command of the skill.'};
+  if(pct>=70) return {code:'B+', tier:'Pre-advanced',       color:'#3b82f6', desc:'Very good — approaching advanced level.'};
+  if(pct>=60) return {code:'B-', tier:'Pre-advanced',       color:'#6366f1', desc:'Good — solid grasp with a little polish to do.'};
+  if(pct>=50) return {code:'C+', tier:'Upper-intermediate', color:'#f59e0b', desc:'On track — most of the skill is in place.'};
+  if(pct>=40) return {code:'C-', tier:'Upper-intermediate', color:'#f97316', desc:'Developing — some areas still to strengthen.'};
+  if(pct>=25) return {code:'D',  tier:'Emerging',           color:'#ef4444', desc:'Emerging — keep practising the basics.'};
+  return              {code:'F', tier:'Not yet passed',     color:'#7f1d1d', desc:'Try again — review the tips and retry.'};
+}
+const CERT_PALETTES = {
+  'Full exam':  {name:'emerald', primary:'#059669', dark:'#0a3a2c', gold:'#d4af37', accent:'#10b981', orient:'landscape'},
+  'Diagnostic': {name:'sapphire',primary:'#2563eb', dark:'#0a1f44', gold:'#d4af37', accent:'#3b82f6', orient:'landscape'},
+  'Reading':    {name:'coral',   primary:'#e07a1f', dark:'#7c2d12', gold:'#d4af37', accent:'#f97316', orient:'portrait'},
+  'Writing':    {name:'rose',    primary:'#e0403f', dark:'#7f1d1d', gold:'#d4af37', accent:'#f77378', orient:'portrait'},
+  'Writing Course':{name:'rose', primary:'#e0403f', dark:'#7f1d1d', gold:'#d4af37', accent:'#f77378', orient:'portrait'},
+  'Spelling':   {name:'honey',   primary:'#d4af37', dark:'#422a00', gold:'#f5c518', accent:'#facc15', orient:'portrait'},
+  'Grammar':    {name:'teal',    primary:'#0e5e4e', dark:'#0a3a2c', gold:'#d4af37', accent:'#1e8a76', orient:'portrait'},
+  'Listening':  {name:'sky',     primary:'#1d3a8a', dark:'#0f172a', gold:'#d4af37', accent:'#2563eb', orient:'portrait'},
+  'Design':     {name:'plum',    primary:'#7A2FD0', dark:'#3d1a68', gold:'#d4af37', accent:'#a884f7', orient:'portrait'},
+  'default':    {name:'default', primary:'#15183A', dark:'#0f172a', gold:'#d4af37', accent:'#5b8def', orient:'landscape'}
+};
+function allCerts(){ return Store.get('ican_certificates')||[]; }
+function myCerts(){ const id=sid(); return allCerts().filter(c=>c.sid===id).sort((a,b)=>b.date-a.date); }
+function honoraryFor(skill,pct){ if(pct>=80) return `In recognition of outstanding achievement in ${skill}.`; if(pct>=50) return `In recognition of solid progress in ${skill}.`; return `For engaging with and completing the ${skill} task.`; }
+function wentWellFor(skill,pct,detail){ if(pct>=80) return 'Accurate answers and consistent effort throughout the task.'; if(pct>=50) return 'Several correct answers and steady work through the questions.'; return 'Completing the task and staying with the questions.'; }
+function needsImproveFor(skill,pct){ if(pct>=90) return 'Extend yourself with a harder set to keep growing.'; if(pct>=70) return 'Review any missed items and try one more run for full mastery.'; if(pct>=50) return 'Read the "Why" hints on missed items and retry the task.'; return 'Revisit the tips, retry, and ask your teacher for support.'; }
+
+function mintCert(o){
+  if(!(SESSION && SESSION.role==='student')) return null;
+  const pct = (typeof o.percent==='number') ? o.percent : (o.max>0 ? Math.round((o.score/o.max)*100) : 0);
+  const lvl = levelBand(pct);
+  const skill = o.skill || 'RWD';
+  const pal   = CERT_PALETTES[skill] || CERT_PALETTES['default'];
+  const cert = {
+    id:'c'+Date.now()+Math.random().toString(36).slice(2,6),
+    sid: sid(), name: SESSION.name||'Student', firstName: SESSION.first||'', middleName: SESSION.middle||'', lastName: SESSION.last||'',
+    skill, activity: o.activity||skill, score: (typeof o.score==='number'?o.score:null), max: (typeof o.max==='number'?o.max:null), percent: pct,
+    level: lvl.code, tier: lvl.tier, levelColor: lvl.color, levelDesc: lvl.desc,
+    honorary: o.honorary || honoraryFor(skill,pct),
+    wentWell: o.wentWell || wentWellFor(skill,pct,o.detail),
+    needsImprove: o.needsImprove || needsImproveFor(skill,pct),
+    palette: pal.name, orientation: pal.orient, date: Date.now()
+  };
+  const all = allCerts(); all.push(cert); Store.set('ican_certificates', all);
+  return cert;
+}
+function certWrap(x,text,cx,cy,maxW,lh){
+  const words=(text||'').split(/\s+/); let line='', y=cy;
+  words.forEach(w=>{ const t=line?line+' '+w:w; if(x.measureText(t).width>maxW){ x.fillText(line,cx,y); y+=lh; line=w; } else line=t; });
+  if(line) x.fillText(line,cx,y); return y;
+}
+function drawEarnedCert(cert){
+  const pal = CERT_PALETTES[cert.skill] || CERT_PALETTES['default'];
+  const landscape = (cert.orientation||pal.orient)==='landscape';
+  const W = landscape?1200:850, H = landscape?850:1200;
+  const cv = document.createElement('canvas'); cv.width=W; cv.height=H;
+  const x = cv.getContext('2d');
+  // background + top band
+  x.fillStyle='#fdfaf3'; x.fillRect(0,0,W,H);
+  x.fillStyle=pal.dark; x.fillRect(0,0,W,Math.round(H*0.17));
+  x.fillStyle=pal.primary; x.fillRect(0,Math.round(H*0.155),W,6);
+  x.fillStyle=pal.gold;    x.fillRect(0,Math.round(H*0.172),W,3);
+  // title
+  x.textAlign='center'; x.fillStyle='#fff'; x.font='800 44px Georgia';
+  x.fillText('Certificate of Achievement', W/2, H*0.083);
+  x.font='italic 500 16px Georgia'; x.fillStyle=pal.gold;
+  x.fillText('iCAN — Read · Write · Design', W/2, H*0.122);
+  // participant
+  x.fillStyle='#555'; x.font='500 16px Georgia';
+  x.fillText('This certificate is proudly awarded to', W/2, H*0.245);
+  x.fillStyle=pal.dark; x.font='800 46px Georgia';
+  x.fillText(cert.name, W/2, H*0.315);
+  x.strokeStyle=pal.gold; x.lineWidth=2; x.beginPath(); x.moveTo(W*0.16,H*0.335); x.lineTo(W*0.84,H*0.335); x.stroke();
+  // honorary line
+  x.fillStyle='#555'; x.font='italic 500 18px Georgia';
+  certWrap(x, cert.honorary, W/2, H*0.375, W*0.72, 26);
+  // activity
+  x.fillStyle=pal.primary; x.font='700 22px Georgia';
+  x.fillText(cert.activity, W/2, H*0.44);
+  // LEVEL — big
+  const bY = H*0.545;
+  x.fillStyle=cert.levelColor; x.font='900 96px Georgia';
+  x.fillText(cert.level, W/2, bY);
+  x.fillStyle='#555'; x.font='700 16px Georgia';
+  x.fillText(cert.tier, W/2, bY+30);
+  // level ladder bar
+  const bar = { w: W*0.72, h: 22 }; bar.x = (W-bar.w)/2; bar.y = bY+58;
+  x.fillStyle='#eef2f7'; x.fillRect(bar.x, bar.y, bar.w, bar.h);
+  const step = bar.w / CERT_LADDER.length;
+  const idx = CERT_LADDER.indexOf(cert.level);
+  if(idx>=0){
+    const grad=x.createLinearGradient(bar.x, bar.y, bar.x+bar.w, bar.y);
+    grad.addColorStop(0, '#d5f1e6'); grad.addColorStop(1, cert.levelColor);
+    x.fillStyle=grad; x.fillRect(bar.x, bar.y, (idx+1)*step, bar.h);
+  }
+  CERT_LADDER.forEach((lab,i)=>{
+    x.fillStyle='#334'; x.font='700 12px Georgia'; x.textAlign='center';
+    x.fillText(lab, bar.x+i*step+step/2, bar.y+bar.h+16);
+  });
+  // triangle marker at achieved band
+  if(idx>=0){
+    const tx = bar.x + idx*step + step/2;
+    x.fillStyle=cert.levelColor;
+    x.beginPath(); x.moveTo(tx, bar.y-4); x.lineTo(tx-9, bar.y-18); x.lineTo(tx+9, bar.y-18); x.closePath(); x.fill();
+  }
+  // level description
+  x.fillStyle='#333'; x.font='italic 500 14px Georgia'; x.textAlign='center';
+  certWrap(x, cert.levelDesc, W/2, bar.y+bar.h+42, W*0.78, 20);
+  // strengths + improvements — landscape two columns, portrait stacked
+  const goodY = landscape? H*0.76 : H*0.78;
+  x.textAlign='left';
+  x.fillStyle=pal.primary; x.font='700 15px Georgia';
+  x.fillText('What went well', W*0.09, goodY);
+  x.fillStyle='#333'; x.font='500 13.5px Georgia';
+  const goodEnd = certWrap(x, cert.wentWell, W*0.09, goodY+20, W*(landscape?0.36:0.82), 18);
+  const impX = landscape? W*0.53 : W*0.09;
+  const impY = landscape? goodY : goodEnd+22;
+  x.fillStyle=pal.primary; x.font='700 15px Georgia';
+  x.fillText('What to work on', impX, impY);
+  x.fillStyle='#333'; x.font='500 13.5px Georgia';
+  certWrap(x, cert.needsImprove, impX, impY+20, W*(landscape?0.36:0.82), 18);
+  // score / date
+  if(cert.score!=null && cert.max!=null){
+    x.fillStyle=pal.dark; x.textAlign='right'; x.font='700 15px Georgia';
+    x.fillText(`Score: ${cert.score}/${cert.max} (${cert.percent}%)`, W-40, H*0.905);
+  }
+  x.fillStyle='#555'; x.textAlign='left'; x.font='500 13px Georgia';
+  x.fillText(new Date(cert.date).toLocaleDateString('en'), 40, H*0.905);
+  // bottom band
+  x.fillStyle=pal.dark; x.fillRect(0, H*0.94, W, H*0.06);
+  x.fillStyle=pal.gold; x.font='italic 600 12px Georgia'; x.textAlign='center';
+  x.fillText('iCAN — where learners belong, where learners grow.', W/2, H*0.977);
+  return cv.toDataURL('image/png');
+}
+
+/* ===================== ONLINE LITERACY RESOURCES ===================== */
+const LITERACY_RESOURCES = [
+  { cat:"🌐 General English practice", items:[
+    ["Test-English","https://test-english.com","Grammar, reading, listening at every level, with answer keys."],
+    ["British Council LearnEnglish","https://learnenglish.britishcouncil.org","Lessons, videos, and skills practice from the British Council."],
+    ["BBC Learning English","https://www.bbc.co.uk/learningenglish","Free lessons across grammar, vocabulary, pronunciation and news."]
+  ]},
+  { cat:"🎓 IELTS practice", items:[
+    ["Writing9 — IELTS writing","https://writing9.com","Sample essays and instant feedback on IELTS writing tasks."],
+    ["IELTS-Up","https://ielts-up.com","Free full IELTS reading, listening, writing and speaking practice."],
+    ["IELTS Liz","https://ieltsliz.com","Free tips, model answers and lessons for IELTS."],
+    ["IELTS Buddy","https://www.ieltsbuddy.com","Practice tests and IELTS writing samples with feedback."],
+    ["Cambridge IELTS Practice","https://www.cambridgeenglish.org/exams-and-tests/ielts/preparation","Official Cambridge IELTS preparation materials."]
+  ]},
+  { cat:"📖 Reading", items:[
+    ["Newsela","https://newsela.com","Real news articles at different reading levels."],
+    ["ReadTheory","https://readtheory.org","Adaptive reading comprehension exercises."],
+    ["Project Gutenberg","https://www.gutenberg.org","Free classic e-books for extensive reading."]
+  ]},
+  { cat:"🎧 Listening & speaking", items:[
+    ["ELLLO","https://elllo.org","Short listening clips with transcripts and quizzes."],
+    ["Randall's ESL Cyber Listening Lab","https://www.esl-lab.com","Graded listening practice with quizzes."],
+    ["ESL Fast — Conversations","https://www.eslfast.com","Dialogues for everyday English practice."]
+  ]},
+  { cat:"📚 Vocabulary", items:[
+    ["Vocabulary.com","https://www.vocabulary.com","Adaptive vocabulary learning with example sentences."],
+    ["Quizlet","https://quizlet.com","Flashcards and games for word study."]
+  ]}
+];
 
 /* boot */
 go('home');
