@@ -2535,7 +2535,8 @@ const ROUTES = {
         <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
           <div><div style="font-size:.78rem;color:var(--muted)">${new Date(c.date).toLocaleDateString('en')} · ${c.skill}</div>
             <div style="font-weight:700;font-size:1.02rem;margin:2px 0">${esc(c.activity)}</div>
-            <div style="font-size:.86rem;color:var(--muted)">Level <b style="color:${c.levelColor}">${c.level}</b> · ${c.tier}${c.score!=null?` · ${c.score}/${c.max} (${c.percent}%)`:''}</div></div>
+            <div style="font-size:.86rem;color:var(--muted)">${c.tier||''} · Level <b style="color:${c.levelColor}">${c.level}</b>${c.score!=null?` · ${c.score}/${c.max} (${c.percent}%)`:''}</div>
+            ${c.serial?`<div style="font-size:.72rem;color:var(--muted);margin-top:4px">No. ${c.serial}</div>`:''}</div>
           <button class="btn sm" onclick="openEarnedCert('${c.id}')">Open</button>
         </div>
       </div>`).join('')}</div>` : `<p class="note">No certificates yet — finish an activity to earn your first one!</p>`}
@@ -5602,26 +5603,55 @@ const CERT_PALETTES = {
 };
 function allCerts(){ return Store.get('ican_certificates')||[]; }
 function myCerts(){ const id=sid(); return allCerts().filter(c=>c.sid===id).sort((a,b)=>b.date-a.date); }
-function honoraryFor(skill,pct){ if(pct>=80) return `In recognition of outstanding achievement in ${skill}.`; if(pct>=50) return `In recognition of solid progress in ${skill}.`; return `For engaging with and completing the ${skill} task.`; }
-function wentWellFor(skill,pct,detail){ if(pct>=80) return 'Accurate answers and consistent effort throughout the task.'; if(pct>=50) return 'Several correct answers and steady work through the questions.'; return 'Completing the task and staying with the questions.'; }
-function needsImproveFor(skill,pct){ if(pct>=90) return 'Extend yourself with a harder set to keep growing.'; if(pct>=70) return 'Review any missed items and try one more run for full mastery.'; if(pct>=50) return 'Read the "Why" hints on missed items and retry the task.'; return 'Revisit the tips, retry, and ask your teacher for support.'; }
-
+function certTier(level){
+  if(level==='A+') return 'Beyond Distinction';
+  if(level==='A-') return 'Distinction';
+  if(level==='B+'||level==='B-') return 'Merit';
+  if(level==='C+'||level==='C-') return 'Achievement';
+  return 'Participation';
+}
+function tierPalette(tier){
+  if(tier==='Beyond Distinction') return {primary:'#2d6e4f', dark:'#0e3a24', gold:'#c9a14a', bg:'#fafcf7', accent:'#e6f2ea'};
+  if(tier==='Distinction')        return {primary:'#a17825', dark:'#5a3f0c', gold:'#d4af37', bg:'#fefaf0', accent:'#f7ecd0'};
+  if(tier==='Merit')              return {primary:'#2b6cb0', dark:'#0f2f5a', gold:'#c9a14a', bg:'#f7faff', accent:'#e6eefb'};
+  if(tier==='Achievement')        return {primary:'#5a5a5a', dark:'#2b2b2b', gold:'#c9a14a', bg:'#fafafa', accent:'#ececec'};
+  return                          {primary:'#2d6e4f', dark:'#0e3a24', gold:'#c9a14a', bg:'#fafcf7', accent:'#e6f2ea'};
+}
+function honoraryFor(skill,pct){ return 'in recognition of consistent effort and progress in this activity.'; } /* legacy stub */
+function honoraryV2(cert){
+  const act = cert.activity || cert.skill;
+  const tier = (cert.tier||'').toLowerCase();
+  const sc = (cert.score!=null && cert.max!=null) ? ` having achieved ${cert.score} of ${cert.max} (${cert.percent}%)` : '';
+  return `in recognition of ${tier?tier+' performance and effort':'consistent effort'} in the ${act},${sc} and contributing to the iCAN Read \u00b7 Write \u00b7 Design journey.`;
+}
+function certInitials(name){ if(!name)return ''; const p=(''+name).trim().split(/\s+/); return p.slice(0,2).map(w=>w[0]).join('.').toUpperCase()+'.'; }
+function makeSerial(){
+  const A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s=''; for(let i=0;i<4;i++) s+=A[Math.floor(Math.random()*A.length)];
+  const now=Date.now().toString().slice(-5);
+  const y=new Date().getFullYear();
+  return `iCAN-${y}-${s}-${now}`;
+}
 function mintCert(o){
   if(!(SESSION && SESSION.role==='student')) return null;
   const pct = (typeof o.percent==='number') ? o.percent : (o.max>0 ? Math.round((o.score/o.max)*100) : 0);
   const lvl = levelBand(pct);
+  const tier= certTier(lvl.code);
   const skill = o.skill || 'RWD';
-  const pal   = CERT_PALETTES[skill] || CERT_PALETTES['default'];
+  const pal = tierPalette(tier);
   const cert = {
     id:'c'+Date.now()+Math.random().toString(36).slice(2,6),
-    sid: sid(), name: SESSION.name||'Student', firstName: SESSION.first||'', middleName: SESSION.middle||'', lastName: SESSION.last||'',
+    serial: makeSerial(),
+    sid: sid(), name: SESSION.name||'Student', firstName:SESSION.first||'', middleName:SESSION.middle||'', lastName:SESSION.last||'',
     skill, activity: o.activity||skill, score: (typeof o.score==='number'?o.score:null), max: (typeof o.max==='number'?o.max:null), percent: pct,
-    level: lvl.code, tier: lvl.tier, levelColor: lvl.color, levelDesc: lvl.desc,
-    honorary: o.honorary || honoraryFor(skill,pct),
-    wentWell: o.wentWell || wentWellFor(skill,pct,o.detail),
-    needsImprove: o.needsImprove || needsImproveFor(skill,pct),
-    palette: pal.name, orientation: pal.orient, date: Date.now()
+    level: lvl.code, tier, levelColor: lvl.color,
+    honorary: '', // filled below
+    palette: pal.primary, orientation:'landscape', date: Date.now(),
+    school: (CONFIG.schoolName || CONFIG.school || 'Al-Dhannah School Cycle 2-3, Boys'),
+    sig1: CONFIG.teacherName || 'Teacher / Mentor', sig1t: CONFIG.teacherTitle || 'Teacher / Mentor',
+    sig2: CONFIG.principalName || '', sig2t: 'Principal'
   };
+  cert.honorary = honoraryV2(cert);
   const all = allCerts(); all.push(cert); Store.set('ican_certificates', all);
   return cert;
 }
@@ -5631,86 +5661,112 @@ function certWrap(x,text,cx,cy,maxW,lh){
   if(line) x.fillText(line,cx,y); return y;
 }
 function drawEarnedCert(cert){
-  const pal = CERT_PALETTES[cert.skill] || CERT_PALETTES['default'];
-  const landscape = (cert.orientation||pal.orient)==='landscape';
-  const W = landscape?1200:850, H = landscape?850:1200;
-  const cv = document.createElement('canvas'); cv.width=W; cv.height=H;
+  const tier = cert.tier || certTier(cert.level) || 'Participation';
+  const pal  = tierPalette(tier);
+  const W=1400, H=990;
+  const cv=document.createElement('canvas'); cv.width=W; cv.height=H;
   const x = cv.getContext('2d');
-  // background + top band
-  x.fillStyle='#fdfaf3'; x.fillRect(0,0,W,H);
-  x.fillStyle=pal.dark; x.fillRect(0,0,W,Math.round(H*0.17));
-  x.fillStyle=pal.primary; x.fillRect(0,Math.round(H*0.155),W,6);
-  x.fillStyle=pal.gold;    x.fillRect(0,Math.round(H*0.172),W,3);
-  // title
-  x.textAlign='center'; x.fillStyle='#fff'; x.font='800 44px Georgia';
-  x.fillText('Certificate of Achievement', W/2, H*0.083);
-  x.font='italic 500 16px Georgia'; x.fillStyle=pal.gold;
-  x.fillText('iCAN — Read · Write · Design', W/2, H*0.122);
-  // participant
-  x.fillStyle='#555'; x.font='500 16px Georgia';
-  x.fillText('This certificate is proudly awarded to', W/2, H*0.245);
-  x.fillStyle=pal.dark; x.font='800 46px Georgia';
-  x.fillText(cert.name, W/2, H*0.315);
-  x.strokeStyle=pal.gold; x.lineWidth=2; x.beginPath(); x.moveTo(W*0.16,H*0.335); x.lineTo(W*0.84,H*0.335); x.stroke();
-  // honorary line
-  x.fillStyle='#555'; x.font='italic 500 18px Georgia';
-  certWrap(x, cert.honorary, W/2, H*0.375, W*0.72, 26);
-  // activity
-  x.fillStyle=pal.primary; x.font='700 22px Georgia';
-  x.fillText(cert.activity, W/2, H*0.44);
-  // LEVEL — big
-  const bY = H*0.545;
-  x.fillStyle=cert.levelColor; x.font='900 96px Georgia';
-  x.fillText(cert.level, W/2, bY);
-  x.fillStyle='#555'; x.font='700 16px Georgia';
-  x.fillText(cert.tier, W/2, bY+30);
-  // level ladder bar
-  const bar = { w: W*0.72, h: 22 }; bar.x = (W-bar.w)/2; bar.y = bY+58;
-  x.fillStyle='#eef2f7'; x.fillRect(bar.x, bar.y, bar.w, bar.h);
-  const step = bar.w / CERT_LADDER.length;
-  const idx = CERT_LADDER.indexOf(cert.level);
-  if(idx>=0){
-    const grad=x.createLinearGradient(bar.x, bar.y, bar.x+bar.w, bar.y);
-    grad.addColorStop(0, '#d5f1e6'); grad.addColorStop(1, cert.levelColor);
-    x.fillStyle=grad; x.fillRect(bar.x, bar.y, (idx+1)*step, bar.h);
-  }
-  CERT_LADDER.forEach((lab,i)=>{
-    x.fillStyle='#334'; x.font='700 12px Georgia'; x.textAlign='center';
-    x.fillText(lab, bar.x+i*step+step/2, bar.y+bar.h+16);
+  // background
+  x.fillStyle=pal.bg; x.fillRect(0,0,W,H);
+  // watermark
+  x.save(); x.translate(W/2,H/2); x.rotate(-Math.PI/9); x.textAlign='center';
+  x.fillStyle=pal.primary; x.globalAlpha=0.06; x.font='900 200px Georgia';
+  x.fillText((cert.skill||'READING').toUpperCase(),0,-40);
+  x.fillText('EXCELLENCE',0,150);
+  x.restore();
+  // double border + corner circles
+  x.strokeStyle=pal.gold; x.lineWidth=2; x.strokeRect(30,30,W-60,H-60);
+  x.strokeStyle=pal.primary; x.lineWidth=3; x.strokeRect(50,50,W-100,H-100);
+  [[50,50],[W-50,50],[50,H-50],[W-50,H-50]].forEach(([cx,cy])=>{
+    x.fillStyle=pal.primary; x.beginPath(); x.arc(cx,cy,12,0,7); x.fill();
+    x.strokeStyle=pal.gold; x.lineWidth=2; x.beginPath(); x.arc(cx,cy,12,0,7); x.stroke();
   });
-  // triangle marker at achieved band
-  if(idx>=0){
-    const tx = bar.x + idx*step + step/2;
-    x.fillStyle=cert.levelColor;
-    x.beginPath(); x.moveTo(tx, bar.y-4); x.lineTo(tx-9, bar.y-18); x.lineTo(tx+9, bar.y-18); x.closePath(); x.fill();
-  }
-  // level description
-  x.fillStyle='#333'; x.font='italic 500 14px Georgia'; x.textAlign='center';
-  certWrap(x, cert.levelDesc, W/2, bar.y+bar.h+42, W*0.78, 20);
-  // strengths + improvements — landscape two columns, portrait stacked
-  const goodY = landscape? H*0.76 : H*0.78;
-  x.textAlign='left';
-  x.fillStyle=pal.primary; x.font='700 15px Georgia';
-  x.fillText('What went well', W*0.09, goodY);
-  x.fillStyle='#333'; x.font='500 13.5px Georgia';
-  const goodEnd = certWrap(x, cert.wentWell, W*0.09, goodY+20, W*(landscape?0.36:0.82), 18);
-  const impX = landscape? W*0.53 : W*0.09;
-  const impY = landscape? goodY : goodEnd+22;
-  x.fillStyle=pal.primary; x.font='700 15px Georgia';
-  x.fillText('What to work on', impX, impY);
-  x.fillStyle='#333'; x.font='500 13.5px Georgia';
-  certWrap(x, cert.needsImprove, impX, impY+20, W*(landscape?0.36:0.82), 18);
-  // score / date
-  if(cert.score!=null && cert.max!=null){
-    x.fillStyle=pal.dark; x.textAlign='right'; x.font='700 15px Georgia';
-    x.fillText(`Score: ${cert.score}/${cert.max} (${cert.percent}%)`, W-40, H*0.905);
-  }
-  x.fillStyle='#555'; x.textAlign='left'; x.font='500 13px Georgia';
-  x.fillText(new Date(cert.date).toLocaleDateString('en'), 40, H*0.905);
-  // bottom band
-  x.fillStyle=pal.dark; x.fillRect(0, H*0.94, W, H*0.06);
-  x.fillStyle=pal.gold; x.font='italic 600 12px Georgia'; x.textAlign='center';
-  x.fillText('iCAN — where learners belong, where learners grow.', W/2, H*0.977);
+  // Header text
+  x.textAlign='center'; x.fillStyle=pal.primary;
+  x.font='600 22px Georgia'; x.fillText('UAE MINISTRY OF EDUCATION', W/2, 110);
+  x.font='800 30px Georgia'; x.fillText((cert.school||'AL-DHANNAH SCHOOL').toUpperCase(), W/2, 152);
+  // gold dot divider
+  x.strokeStyle=pal.gold; x.lineWidth=2;
+  x.beginPath(); x.moveTo(W/2-60,168); x.lineTo(W/2-8,168); x.moveTo(W/2+8,168); x.lineTo(W/2+60,168); x.stroke();
+  x.fillStyle=pal.gold; x.beginPath(); x.arc(W/2,168,4,0,7); x.fill();
+  // Circular seal
+  const sX=W/2, sY=248, sR=54;
+  x.fillStyle=pal.primary; x.beginPath(); x.arc(sX,sY,sR,0,7); x.fill();
+  x.strokeStyle=pal.gold; x.lineWidth=3; x.beginPath(); x.arc(sX,sY,sR+3,0,7); x.stroke();
+  x.strokeStyle=pal.gold; x.lineWidth=2; x.beginPath(); x.arc(sX,sY,sR-6,0,7); x.stroke();
+  // Book on seal (open V)
+  x.fillStyle='#fff';
+  x.beginPath();
+  x.moveTo(sX-24,sY+3); x.lineTo(sX,sY-9); x.lineTo(sX+24,sY+3);
+  x.lineTo(sX+24,sY+20); x.lineTo(sX,sY+8); x.lineTo(sX-24,sY+20); x.closePath(); x.fill();
+  x.strokeStyle=pal.primary; x.lineWidth=1.4; x.beginPath(); x.moveTo(sX,sY-9); x.lineTo(sX,sY+8); x.stroke();
+  // Quill (diagonal above)
+  x.strokeStyle=pal.gold; x.lineWidth=3.5;
+  x.beginPath(); x.moveTo(sX+8,sY-30); x.lineTo(sX-6,sY-6); x.stroke();
+  x.fillStyle=pal.gold;
+  x.beginPath(); x.moveTo(sX+8,sY-30); x.lineTo(sX+20,sY-40); x.lineTo(sX+14,sY-22); x.closePath(); x.fill();
+  // Ribbon
+  const rW=580, rH=60, rX=(W-rW)/2, rY=sY+sR+18;
+  x.fillStyle=pal.primary;
+  x.beginPath();
+  x.moveTo(rX+28,rY); x.lineTo(rX+rW-28,rY); x.lineTo(rX+rW,rY+rH/2);
+  x.lineTo(rX+rW-28,rY+rH); x.lineTo(rX+28,rY+rH); x.lineTo(rX,rY+rH/2); x.closePath();
+  x.fill(); x.strokeStyle=pal.gold; x.lineWidth=2; x.stroke();
+  // ribbon tails (small triangles at sides)
+  x.fillStyle=pal.dark;
+  x.beginPath(); x.moveTo(rX,rY+rH/2); x.lineTo(rX-24,rY+rH+8); x.lineTo(rX,rY+rH); x.closePath(); x.fill();
+  x.beginPath(); x.moveTo(rX+rW,rY+rH/2); x.lineTo(rX+rW+24,rY+rH+8); x.lineTo(rX+rW,rY+rH); x.closePath(); x.fill();
+  // ribbon text
+  x.fillStyle='#fff'; x.font='800 24px Georgia'; x.textAlign='center';
+  x.fillText(('Certificate of '+tier).toUpperCase(), W/2, rY+rH/2+9);
+  // activity subtitle
+  x.fillStyle=pal.primary; x.font='italic 500 20px Georgia';
+  x.fillText(cert.activity||'RWD Activity', W/2, rY+rH+40);
+  // presented to
+  x.fillStyle='#555'; x.font='500 20px Georgia';
+  x.fillText('This certificate is proudly presented to', W/2, rY+rH+80);
+  // student name — italic cursive-ish
+  x.fillStyle=pal.primary; x.font='italic 700 62px "Snell Roundhand","Brush Script MT",Georgia,serif';
+  x.fillText(cert.name||'Student Name', W/2, rY+rH+155);
+  // dot divider
+  const dY=rY+rH+195;
+  x.strokeStyle=pal.gold; x.lineWidth=1;
+  x.beginPath(); x.moveTo(W/2-200,dY); x.lineTo(W/2-30,dY); x.moveTo(W/2+30,dY); x.lineTo(W/2+200,dY); x.stroke();
+  x.fillStyle=pal.gold; [-24,-8,8,24].forEach(dx=>{ x.beginPath(); x.arc(W/2+dx,dY,3,0,7); x.fill(); });
+  // recognition paragraph
+  x.fillStyle='#333'; x.font='500 18px Georgia';
+  certWrap(x, cert.honorary||honoraryV2(cert), W/2, dY+40, W*0.72, 28);
+  // motivational quote
+  x.fillStyle=pal.primary; x.font='italic 500 18px Georgia';
+  x.fillText('A reader today is a leader tomorrow.', W/2, H-215);
+  // awarded on
+  x.fillStyle='#666'; x.font='italic 500 14px Georgia'; x.fillText('Awarded on', W/2, H-165);
+  x.fillStyle=pal.primary; x.font='700 18px Georgia';
+  const d=new Date(cert.date); const dateStr=d.toLocaleDateString('en',{weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  x.fillText(dateStr, W/2, H-138);
+  x.strokeStyle=pal.gold; x.lineWidth=1.5; x.beginPath(); x.moveTo(W/2-100,H-125); x.lineTo(W/2+100,H-125); x.stroke();
+  // Left signature
+  const sL=270;
+  x.fillStyle=pal.primary; x.font='italic 700 44px "Snell Roundhand","Brush Script MT",cursive';
+  x.textAlign='center'; x.fillText(certInitials(cert.sig1)||'—', sL, H-150);
+  x.strokeStyle='#444'; x.lineWidth=1; x.beginPath(); x.moveTo(sL-110,H-125); x.lineTo(sL+110,H-125); x.stroke();
+  x.fillStyle=pal.primary; x.font='700 14px Georgia'; x.fillText((cert.sig1||'').toUpperCase(), sL, H-104);
+  x.fillStyle='#666'; x.font='500 12px Georgia'; x.fillText(cert.sig1t||'Teacher / Mentor', sL, H-84);
+  // Right signature
+  const sR2=W-270;
+  x.fillStyle=pal.primary; x.font='italic 700 44px "Snell Roundhand","Brush Script MT",cursive';
+  x.fillText(certInitials(cert.sig2)||'—', sR2, H-150);
+  x.strokeStyle='#444'; x.lineWidth=1; x.beginPath(); x.moveTo(sR2-110,H-125); x.lineTo(sR2+110,H-125); x.stroke();
+  x.fillStyle=pal.primary; x.font='700 14px Georgia'; x.fillText((cert.sig2||'').toUpperCase(), sR2, H-104);
+  x.fillStyle='#666'; x.font='500 12px Georgia'; x.fillText(cert.sig2t||'Principal', sR2, H-84);
+  // Bottom footer with serial (aside)
+  x.strokeStyle=pal.primary; x.lineWidth=1;
+  x.beginPath(); x.moveTo(60,H-45); x.lineTo(W-60,H-45); x.stroke();
+  x.fillStyle='#666'; x.font='600 12px Georgia'; x.textAlign='left';
+  x.fillText((cert.activity||'iCAN')+' \u00b7 iCAN Read \u00b7 Write \u00b7 Design', 60, H-25);
+  x.textAlign='right';
+  x.fillStyle=pal.primary; x.font='700 13px Georgia';
+  x.fillText(`No. ${cert.serial||''}`, W-60, H-25);
   return cv.toDataURL('image/png');
 }
 
