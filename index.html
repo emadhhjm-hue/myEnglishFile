@@ -218,8 +218,21 @@ table.data tr:nth-child(even){background:#fff}
 .dash-hero-text b{color:#fff}
 .dash-hero-badge{font-family:'Fraunces'; font-weight:800; font-size:1.7rem; background:#FACC3D; color:#15183A; width:84px; height:84px; min-width:84px; border-radius:20px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.2); transform:rotate(-4deg)}
 @media(max-width:560px){ .dash-hero-badge{display:none} .dash-hero-text h1{font-size:1.7rem} }
-.landing-rwd{min-height:100vh; width:100%; box-sizing:border-box; background:radial-gradient(circle at 50% 42%, #2a1d08 0%, #140d04 70%, #0c0802 100%); display:flex; align-items:center; justify-content:center; padding:44px 24px}
-.lr-grid{width:100%; max-width:1060px; display:grid; grid-template-columns:1fr; gap:40px; align-items:center; background:linear-gradient(140deg,#FBD75A 0%,#F4B72A 55%,#E89B12 100%); border-radius:28px; padding:46px 42px; box-sizing:border-box; box-shadow:0 30px 90px rgba(0,0,0,.55), 0 0 120px rgba(247,183,42,.22)}
+.landing-rwd{position:relative; overflow:hidden; min-height:100vh; width:100%; box-sizing:border-box; background:linear-gradient(180deg,#6fb7ea 0%,#9ed4f2 34%,#cfeafb 66%,#eaf7ff 100%); display:flex; align-items:center; justify-content:center; padding:44px 24px}
+.sky{position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden}
+.sun{position:absolute; top:-70px; right:9%; width:190px; height:190px; border-radius:50%; background:radial-gradient(circle,#fff7cf 0%,#ffe98a 42%,rgba(255,233,138,0) 72%); animation:sunPulse 6s ease-in-out infinite}
+.sun::after{content:''; position:absolute; inset:-40px; border-radius:50%; background:conic-gradient(from 0deg, rgba(255,240,170,.0) 0deg, rgba(255,240,170,.35) 18deg, rgba(255,240,170,0) 36deg, rgba(255,240,170,0) 60deg, rgba(255,240,170,.35) 78deg, rgba(255,240,170,0) 96deg, rgba(255,240,170,0) 120deg, rgba(255,240,170,.35) 138deg, rgba(255,240,170,0) 156deg, rgba(255,240,170,0) 180deg, rgba(255,240,170,.35) 198deg, rgba(255,240,170,0) 216deg, rgba(255,240,170,0) 240deg, rgba(255,240,170,.35) 258deg, rgba(255,240,170,0) 276deg, rgba(255,240,170,0) 300deg, rgba(255,240,170,.35) 318deg, rgba(255,240,170,0) 336deg, rgba(255,240,170,0) 360deg); animation:raySpin 60s linear infinite}
+@keyframes sunPulse{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.07);opacity:1}}
+@keyframes raySpin{to{transform:rotate(360deg)}}
+.cloud{position:absolute; height:40px; background:#fff; border-radius:100px; opacity:.9; box-shadow:0 8px 20px rgba(120,160,190,.18)}
+.cloud::before,.cloud::after{content:''; position:absolute; background:#fff; border-radius:50%}
+.cloud::before{width:52px; height:52px; top:-22px; left:18px}
+.cloud::after{width:38px; height:38px; top:-14px; left:56px}
+.cloud1{top:13%; width:110px; animation:drift 46s linear infinite}
+.cloud2{top:30%; width:80px; opacity:.7; animation:drift 64s linear infinite; animation-delay:-24s}
+.cloud3{top:66%; width:140px; opacity:.6; animation:drift 80s linear infinite; animation-delay:-40s}
+@keyframes drift{from{transform:translateX(-30vw)}to{transform:translateX(130vw)}}
+.lr-grid{position:relative; z-index:1; width:100%; max-width:1060px; display:grid; grid-template-columns:1fr; gap:40px; align-items:center; background:linear-gradient(140deg,#FBD75A 0%,#F4B72A 55%,#E89B12 100%); border-radius:28px; padding:46px 42px; box-sizing:border-box; box-shadow:0 30px 90px rgba(30,60,90,.35), 0 0 120px rgba(247,183,42,.25)}
 @media(min-width:880px){ .lr-grid{grid-template-columns:1.05fr .95fr; gap:56px} }
 .lr-brand{display:flex; align-items:center; gap:18px}
 .rwd-logo{width:104px; height:auto; flex:none; filter:drop-shadow(0 8px 14px rgba(0,0,0,.2))}
@@ -233,15 +246,42 @@ table.data tr:nth-child(even){background:#fff}
 .role-student{background:#15183A; color:#fff}
 .role-teacher{background:#fff; color:#15183A}
 .lr-role:hover{transform:translateY(-2px)}
-.lr-circles{display:flex; gap:22px; justify-content:center; flex-wrap:wrap}
-.lr-circle{width:clamp(132px,20vw,178px); height:clamp(132px,20vw,178px); border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; text-align:center; box-shadow:0 16px 32px rgba(0,0,0,.22); border:5px solid rgba(255,255,255,.55)}
-.lr-circle .lr-emoji{font-size:2rem; margin-bottom:4px}
-.lr-circle .lr-word{font-family:'Fraunces'; font-weight:700; font-size:1.55rem; line-height:1}
-.lr-circle .lr-desc{font-size:.85rem; opacity:.92; margin-top:3px}
-.c-read{background:linear-gradient(150deg,#12a585,#0a6e5a)}
-.c-write{background:linear-gradient(150deg,#f0686d,#d23b41)}
-.c-design{background:linear-gradient(150deg,#9b6ff5,#6f3fd6)}
-@media(max-width:540px){ .lr-circle{width:118px; height:118px} .lr-circle .lr-word{font-size:1.25rem} .lr-brand{flex-direction:column; text-align:center; align-items:center} .rwd-cap{margin-inline:auto} }
+.lr-web{position:relative; width:min(340px,78vw); height:320px; margin:0 auto}
+.lr-circle{position:absolute; width:172px; height:172px; border-radius:50%; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; text-align:center; box-shadow:0 16px 30px rgba(30,60,90,.28); border:4px solid rgba(255,255,255,.7); will-change:transform}
+.lr-circle .lr-emoji{font-size:1.9rem; margin-bottom:2px}
+.lr-circle .lr-word{font-family:'Fraunces'; font-weight:700; font-size:1.5rem; line-height:1}
+.lr-circle .lr-desc{font-size:.82rem; opacity:.92; margin-top:2px}
+.c-read{background:linear-gradient(150deg,#16c39a,#0a6e5a); left:2px; top:12px; animation:floatA 5s ease-in-out infinite}
+.c-write{background:linear-gradient(150deg,#f77378,#d23b41); right:2px; top:12px; z-index:2; animation:floatB 5.6s ease-in-out infinite; animation-delay:-1.2s}
+.c-design{background:linear-gradient(150deg,#a884f7,#6f3fd6); left:50%; margin-left:-86px; top:140px; z-index:3; animation:floatC 6.2s ease-in-out infinite; animation-delay:-2.4s}
+@keyframes floatA{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-12px) rotate(1.5deg)}}
+@keyframes floatB{0%,100%{transform:translateY(0) rotate(1.5deg)}50%{transform:translateY(-14px) rotate(-2deg)}}
+@keyframes floatC{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-10px) rotate(2deg)}}
+@media(max-width:540px){ .lr-web{width:280px; height:270px} .lr-circle{width:142px; height:142px} .lr-circle .lr-word{font-size:1.25rem} .c-design{margin-left:-71px; top:118px} .lr-brand{flex-direction:column; text-align:center; align-items:center} .rwd-cap{margin-inline:auto} }
+@media (prefers-reduced-motion: reduce){ .cloud,.sun,.sun::after,.lr-circle{animation:none!important} }
+.coach{position:fixed; right:0; top:44%; z-index:95; font-family:'Lexend',system-ui,sans-serif}
+.coach-fab{display:flex; align-items:center; gap:8px; border:none; cursor:pointer; background:#fff; color:#1f2a44; box-shadow:0 8px 22px rgba(20,40,90,.28); font-size:.96rem; font-weight:700; padding:11px 16px 11px 14px; border-radius:24px 0 0 24px; border:1px solid var(--line); border-right:none; animation:coachBob 3.4s ease-in-out infinite}
+.coach-fab .coach-ava{font-size:1.25rem}
+.coach-fab .coach-lbl{white-space:nowrap}
+@keyframes coachBob{0%,100%{transform:translateX(0)}50%{transform:translateX(-4px)}}
+.coach-panel{position:fixed; right:14px; top:74px; width:330px; max-width:82vw; max-height:calc(100vh - 150px); display:flex; flex-direction:column; background:#fff; border:1px solid var(--line); border-radius:18px; box-shadow:0 22px 60px rgba(20,30,60,.32); overflow:hidden}
+.coach-head{display:flex; align-items:center; gap:10px; padding:12px 14px; background:linear-gradient(150deg,#5b8def,#3a63c8); color:#fff; flex:none}
+.coach-head .coach-ava{font-size:1.5rem}
+.coach-id b{display:block; font-size:1rem; line-height:1.1}
+.coach-id small{opacity:.85; font-size:.72rem}
+.coach-x{margin-left:auto; background:rgba(255,255,255,.2); border:none; color:#fff; width:26px; height:26px; border-radius:50%; cursor:pointer; font-size:.85rem}
+.coach-body{padding:12px 14px; font-size:.9rem; color:var(--ink); overflow:auto; flex:1}
+.coach-body .cbot{background:#eef3ff; border-radius:10px; padding:9px 11px; margin:0 0 6px; line-height:1.5}
+.coach-body .cgo{margin-top:8px}
+.coach-sec{font-size:.7rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); margin:8px 14px 4px}
+.coach-quick{display:flex; flex-wrap:wrap; gap:6px; padding:0 14px 10px; flex:none}
+.coach-quick button{font-size:.76rem; border:1px solid var(--line); background:#fff; border-radius:20px; padding:5px 10px; cursor:pointer; color:var(--ink)}
+.coach-quick button:hover{background:#eef3ff}
+.coach-input{display:flex; gap:6px; padding:10px 12px; border-top:1px solid var(--line)}
+.coach-input input{flex:1; border:1px solid var(--line); border-radius:10px; padding:8px 10px; font:inherit; font-size:.85rem}
+.coach-input button{border:none; background:#3a63c8; color:#fff; border-radius:10px; padding:0 14px; cursor:pointer; font-weight:600}
+.coach-btn{border:none; background:#3a63c8; color:#fff; border-radius:8px; padding:6px 12px; cursor:pointer; font-weight:600; font-size:.82rem}
+@media (prefers-reduced-motion: reduce){ .coach-fab{animation:none} }
 .type-target{background:#fff; border:1.5px solid var(--line); border-radius:12px; padding:16px 18px; font-family:'Courier New',monospace; font-size:1.12rem; line-height:2.05; letter-spacing:.3px; margin:10px 0; color:var(--slate); white-space:pre-wrap; overflow-wrap:break-word; word-break:break-word}
 .type-target span.ok{color:var(--teal-dk)}
 .type-target span.bad{background:#ffd9d9; color:#b00020; border-radius:3px}
@@ -368,6 +408,20 @@ table.data tr:nth-child(even){background:#fff}
 
 <!-- ============ SCREENS MOUNT ============ -->
 <main id="app"></main>
+
+<!-- ============ COACH / ASK (guide on every page) ============ -->
+<div id="coach" class="coach">
+  <div class="coach-panel hidden" id="coachPanel">
+    <div class="coach-head"><span class="coach-ava">🦉</span><div class="coach-id"><b>Ask Ollie</b><small>how-to & tips for any activity</small></div><button class="coach-x" onclick="toggleCoach()" aria-label="Close">✕</button></div>
+    <div class="coach-body" id="coachBody"></div>
+    <div class="coach-sec" id="coachSecTopics">Tips for each activity</div>
+    <div class="coach-quick" id="coachTopics"></div>
+    <div class="coach-sec">Take me to…</div>
+    <div class="coach-quick" id="coachQuick"></div>
+    <div class="coach-input"><input id="coachIn" placeholder="Ask… e.g. how do I use Spell & Drill?" onkeydown="if(event.key==='Enter'){coachAsk();}"><button onclick="coachAsk()">Ask</button></div>
+  </div>
+  <button class="coach-fab" onclick="toggleCoach()" aria-label="Ask Ollie for help and tips"><span class="coach-ava">🦉</span><span class="coach-lbl">Ask</span></button>
+</div>
 
 <script>
 /* =========================================================================
@@ -1404,6 +1458,10 @@ const ROUTES = {
     </svg>`;
     app().innerHTML = `
     <div class="landing-rwd">
+      <div class="sky" aria-hidden="true">
+        <div class="sun"></div>
+        <div class="cloud cloud1"></div><div class="cloud cloud2"></div><div class="cloud cloud3"></div>
+      </div>
       <div class="lr-grid">
         <div class="lr-left">
           <div class="lr-brand">${tree}<div><h1 class="rwd-title">RWD</h1><div class="rwd-sub">READ · WRITE · DESIGN</div></div></div>
@@ -1414,7 +1472,7 @@ const ROUTES = {
             <button class="lr-role role-teacher" onclick="go('teacherLogin')"><span class="lr-ic">📋</span> I'm a teacher</button>
           </div>
         </div>
-        <div class="lr-circles">
+        <div class="lr-web">
           <div class="lr-circle c-read"><span class="lr-emoji">📖</span><span class="lr-word">Read</span><span class="lr-desc">to think</span></div>
           <div class="lr-circle c-write"><span class="lr-emoji">✍️</span><span class="lr-word">Write</span><span class="lr-desc">to say it</span></div>
           <div class="lr-circle c-design"><span class="lr-emoji">🎨</span><span class="lr-word">Design</span><span class="lr-desc">to share it</span></div>
@@ -5136,6 +5194,77 @@ function challengeSubmit(id){
   if(SESSION&&SESSION.role==='student'){ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:"Writing Course",activity:"Challenge: "+l.title,score:checked,max:list.length,percent:Math.round(checked/Math.max(1,list.length)*100),detail:`Self-check ${checked}/${list.length}; peer notes: ${peer.slice(0,200)}`}); }
   msg.innerHTML=`<div class="feedbk"><b>✅ Final version submitted.</b><p style="margin:6px 0 0;color:var(--slate)">Self-check: ${checked}/${list.length} ticked.${peer?' Your partner\'s feedback has been saved for your teacher.':' Tip: add your partner\'s feedback next time for a fuller review.'}</p></div>`;
   msg.scrollIntoView({behavior:'smooth'});
+}
+
+/* ===================== ASK OLLIE (help + tips) ===================== */
+const COACH_NAV=[
+  ["📝 Exams","exams"],["📖 Reading","readingCourse"],["✍️ Writing","writingCourse"],
+  ["🐝 Spell & Drill","spelldrill"],["📚 Vocabulary","vocab"],["🧩 Grammar","grammar"],
+  ["🧭 Diagnostic","diagnostic"],["🎨 Design","dstudio"],["⌨️ Typing","typing"]
+];
+const COACH_HELP={
+  start:   {t:"How to use iCAN", m:"Sign in with your name, then tap any circle on your hub. <b>Read · Write · Design</b> sit in the middle; Spell & Drill, Grammar, Vocabulary, Diagnostic, Type and Exams orbit around them. Everything you finish is saved for your teacher."},
+  reading: {t:"📖 Reading", route:"readingCourse", m:"Open a text, use <b>▶ Read to me</b> if you like, then answer the comprehension for an instant score. <b>Tip:</b> slide to the <b>Supported</b> version if a text feels hard, and always do the self-check to think a little deeper."},
+  writing: {t:"✍️ Writing", route:"writingCourse", m:"Each lesson runs Study → Drill → Practice → Challenge. <b>Tip:</b> write your own attempt <i>before</i> revealing the model, then use the checklist to improve a second draft."},
+  spelling:{t:"🐝 Spell & Drill", route:"spelldrill", m:"Hear the word, then <b>Say · Spell · Say</b> before you type. <b>Tip:</b> start with <b>Standard</b> (10 fresh words each round) and use <b>Extra</b> for silent letters and homophones. Words you practise are saved to your vocabulary bank automatically."},
+  exams:   {t:"📝 Exams", route:"exams", m:"Full 40-minute tests in three-option (a/b/c) format. <b>Tip:</b> watch the timer, answer every question (guessing costs nothing), and read the <b>“Why”</b> hint on each answer in your results."},
+  grammar: {t:"🧩 Grammar", route:"grammar", m:"Do the topic quizzes, then the mixed set, then the challenges. <b>Tip:</b> read the explanation after every answer — that's where the real learning happens."},
+  vocab:   {t:"📚 Vocabulary", route:"vocab", m:"Save new words with an example sentence and even a recording. <b>Tip:</b> your spelling practice adds words here for you — review the list once a week to make them stick."},
+  diagnostic:{t:"🧭 Diagnostic", route:"diagnostic", m:"Take the <b>pre</b>-test to find your level, the <b>mid</b>-test to check progress, and the <b>post</b>-test at the end. <b>Tip:</b> don't revise first — it's meant to show your true starting point."},
+  design:  {t:"🎨 Design", route:"dstudio", m:"Create a poster or artefact on the canvas and share it. <b>Tip:</b> match your design to its <b>audience and purpose</b>, and follow the brief's checklist."},
+  typing:  {t:"⌨️ Typing", route:"typing", m:"Build speed and accuracy. <b>Tip:</b> keep your eyes on the text, not the keys — accuracy first, and speed follows."},
+  teacher: {t:"👩‍🏫 For teachers", route:"teacher", m:"From your dashboard: open <b>Manage content</b> to add readings, writing lessons, speaking prompts and textbook spelling lists; use <b>Analytics</b> to see each student's skills and an intervention plan; share access codes so students can log in."}
+};
+function coachLoggedIn(){ return (typeof SESSION!=='undefined') && SESSION && !!SESSION.role; }
+function toggleCoach(){
+  const p=document.getElementById('coachPanel'); if(!p)return;
+  const opening=p.classList.contains('hidden');
+  p.classList.toggle('hidden');
+  if(opening) coachGreet();
+}
+function coachGreet(){
+  const b=document.getElementById('coachBody');
+  if(b) b.innerHTML=`<div class="cbot">Hi! I'm <b>Ollie</b> 🦉. Ask me <b>how to use anything</b> here, or tap a topic for quick tips. ${coachLoggedIn()?'':'<br>First choose <b>I\'m a student</b> or <b>I\'m a teacher</b> to begin.'}</div>`;
+  renderCoachTopics(); renderCoachQuick();
+}
+function renderCoachTopics(){
+  const q=document.getElementById('coachTopics'); if(!q)return;
+  q.innerHTML=Object.keys(COACH_HELP).map(k=>`<button onclick="coachTip('${k}')">${COACH_HELP[k].t}</button>`).join('');
+}
+function renderCoachQuick(){
+  const q=document.getElementById('coachQuick'); if(!q)return;
+  q.innerHTML=COACH_NAV.map(([lab,r])=>`<button onclick="coachGo('${r}')">${lab}</button>`).join('');
+}
+function coachTip(key){
+  const h=COACH_HELP[key]; const b=document.getElementById('coachBody'); if(!h||!b)return;
+  b.innerHTML=`<div class="cbot"><b>${h.t}</b><br>${h.m}${h.route?`<div class="cgo"><button class="coach-btn" onclick="coachGo('${h.route}')">Take me there →</button></div>`:''}</div>`;
+}
+function coachGo(route){
+  const b=document.getElementById('coachBody');
+  if(!coachLoggedIn()){ if(b)b.innerHTML=`<div class="cbot">First choose <b>I'm a student</b> or <b>I'm a teacher</b> on the home screen — I'll be right here after you sign in!</div>`; go('home'); return; }
+  const p=document.getElementById('coachPanel'); if(p)p.classList.add('hidden');
+  go(route);
+}
+function coachAsk(){
+  const inp=document.getElementById('coachIn'); const b=document.getElementById('coachBody');
+  if(!inp||!b)return; const t=(inp.value||'').toLowerCase().trim(); if(!t)return; inp.value='';
+  if(/cert/.test(t)){ b.innerHTML=`<div class="cbot">Finish an exam, diagnostic or drill and you'll earn a certificate you can download. 🏆</div>`; return; }
+  const rules=[
+    [/exam|test|full-?length/,"exams"],
+    [/read/,"reading"],
+    [/writ|essay|paragraph/,"writing"],
+    [/spell|dictation|bee/,"spelling"],
+    [/vocab|word bank|dictionary/,"vocab"],
+    [/grammar/,"grammar"],
+    [/diagnos|placement|level/,"diagnostic"],
+    [/design|poster|canvas/,"design"],
+    [/typ|keyboard/,"typing"],
+    [/teacher|manage|analytic|class code/,"teacher"]
+  ];
+  let key=null; for(const [re,k] of rules){ if(re.test(t)){ key=k; break; } }
+  if(!key && /how|use|start|begin|guide|help|where|tip/.test(t)) key='start';
+  if(key){ coachTip(key); }
+  else { b.innerHTML=`<div class="cbot">I can explain any of these — just tap a topic below, or ask “how do I…”. I can help with Reading, Writing, Spell &amp; Drill, Exams, Grammar, Vocabulary, Diagnostic, Design, Typing.</div>`; renderCoachTopics(); }
 }
 
 /* boot */
