@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>iCAN · English Practice</title>
+<title>iCAN Academy · English Practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -426,7 +426,7 @@ table.data tr:nth-child(even){background:#fff}
 <div class="topbar">
   <div class="brand" onclick="go('home')" style="cursor:pointer">
     <span class="ican-mark"><b class="l-i">i</b><b class="l-c">C</b><b class="l-a">A</b><b class="l-n">N</b></span>
-    <small>my English File</small>
+    <small>Academy</small>
   </div>
   <div class="who" id="whoBar"></div>
 </div>
@@ -494,6 +494,8 @@ const CONFIG = {
   schoolName: "iCAN English Practice",
   teacherName: "Emad A. Mohamed",
   teacherTitle: "PhD candidate",
+  teacherCredit: "Owner and Developer of the RWD-operated iCAN Academy",
+  qaWhatsApp: "",           // e.g. "9715XXXXXXXX" — enables the live Q&A (WhatsApp) button
   tagline: "iCAN — where learners belong, where learners grow.",
   // Student access codes you hand out. Edit freely, or add them from the
   // Teacher dashboard (those are saved in this browser).
@@ -1484,7 +1486,14 @@ let CURRENT_SCREEN = "home", CURRENT_ARG = null;
 function go(screen, arg){
   CURRENT_SCREEN = screen; CURRENT_ARG = arg;
   stopSpeak(); turnOffHighlighter(); clearSpellTimer(); clearExamTimer(); window.scrollTo(0,0);
+  /* Teacher-activated access: gated activities open only when the teacher
+     has activated them (typing and other engagements stay open). */
+  if(SESSION && SESSION.role==='student'){
+    const _gk = gateKeyOf(screen);
+    if(_gk && !gateOpen(_gk)){ renderLocked(_gk); updateWho(); requestAnimationFrame(positionKnobs); return; }
+  }
   ROUTES[screen](arg); updateWho();
+  if(typeof injectBars==='function') injectBars(screen);
   requestAnimationFrame(positionKnobs);
 }
 function positionKnobs(){
@@ -4370,10 +4379,12 @@ function drawCert(o){
   x.fillStyle="#777"; x.font="13px 'Lexend',sans-serif";
   x.fillText((CONFIG.teacherTitle||"Teacher").toUpperCase(), 310, yb+22);
   x.fillText("DATE", W-310, yb+22);
+  x.fillStyle="#999"; x.font="10px 'Lexend',sans-serif";
+  x.fillText(CONFIG.teacherCredit||"Owner and Developer of the RWD-operated iCAN Academy", 310, yb+38);
   // tagline footer
   x.fillStyle="#9a9488"; x.font="italic 14px Georgia";
   const tag=CONFIG.tagline||"iCAN — an RWD-aligned project for English proficiency.";
-  x.fillText(tag.length>120?tag.slice(0,118)+"…":tag, W/2, H-40);
+  x.fillText(tag.length>120?tag.slice(0,118)+"…":tag, W/2, H-14);
   return c.toDataURL("image/png");
 }
 function makeCertificate(o){
@@ -5615,7 +5626,9 @@ function drawApprCert(o){
   x.textAlign='center'; x.font='86px serif'; x.fillText('🏆', cx2, 620);
   // signatures
   function sig(px,name,title){ x.font='700 19px Georgia'; x.fillStyle='#15183A'; x.fillText(name,px,660); x.strokeStyle='#999'; x.lineWidth=1.2; x.beginPath(); x.moveTo(px-120,676); x.lineTo(px+120,676); x.stroke(); x.font='500 14px Georgia'; x.fillStyle='#555'; x.fillText(title,px,696); }
-  sig(W*0.3, o.sig1||'', o.sig1t||'Project Developer');
+  sig(W*0.3, 'Teacher: '+(o.sig1||CONFIG.teacherName||''), (o.sig1t||CONFIG.teacherTitle||'Project Developer').toUpperCase());
+  x.textAlign='center'; x.font='500 11px Georgia'; x.fillStyle='#8a8a8a';
+  x.fillText(CONFIG.teacherCredit||'Owner and Developer of the RWD-operated iCAN Academy', W*0.3, 714);
   sig(W*0.82, o.sig2||'', o.sig2t||'School Principal');
   return cv.toDataURL('image/png');
 }
@@ -5672,25 +5685,33 @@ const CERT_PALETTES = {
 function allCerts(){ return Store.get('ican_certificates')||[]; }
 function myCerts(){ const id=sid(); return allCerts().filter(c=>c.sid===id).sort((a,b)=>b.date-a.date); }
 function certTier(level){
-  if(level==='A+') return 'Beyond Distinction';
-  if(level==='A-') return 'Distinction';
-  if(level==='B+'||level==='B-') return 'Merit';
-  if(level==='C+'||level==='C-') return 'Achievement';
+  /* Only two award tiers are conferred (at- or above-expectation):
+     Distinction (A+/A-) and Standard (B/C bands). Anything below
+     receives a Certificate of Participation only. */
+  if(level==='A+'||level==='A-') return 'Distinction';
+  if(level==='B+'||level==='B-'||level==='C+'||level==='C-') return 'Standard';
+  return 'Participation';
+}
+function normTier(t){
+  /* Normalise legacy tiers stored on older certificates. */
+  if(t==='Beyond Distinction'||t==='Distinction') return 'Distinction';
+  if(t==='Merit'||t==='Achievement'||t==='Standard') return 'Standard';
   return 'Participation';
 }
 function tierPalette(tier){
-  if(tier==='Beyond Distinction') return {primary:'#2d6e4f', dark:'#0e3a24', gold:'#c9a14a', bg:'#fafcf7', accent:'#e6f2ea'};
-  if(tier==='Distinction')        return {primary:'#a17825', dark:'#5a3f0c', gold:'#d4af37', bg:'#fefaf0', accent:'#f7ecd0'};
-  if(tier==='Merit')              return {primary:'#2b6cb0', dark:'#0f2f5a', gold:'#c9a14a', bg:'#f7faff', accent:'#e6eefb'};
-  if(tier==='Achievement')        return {primary:'#5a5a5a', dark:'#2b2b2b', gold:'#c9a14a', bg:'#fafafa', accent:'#ececec'};
-  return                          {primary:'#2d6e4f', dark:'#0e3a24', gold:'#c9a14a', bg:'#fafcf7', accent:'#e6f2ea'};
+  const t = normTier(tier);
+  if(t==='Distinction') return {primary:'#a17825', dark:'#5a3f0c', gold:'#d4af37', bg:'#fefaf0', accent:'#f7ecd0'};
+  if(t==='Standard')    return {primary:'#2b6cb0', dark:'#0f2f5a', gold:'#c9a14a', bg:'#f7faff', accent:'#e6eefb'};
+  return                       {primary:'#2d6e4f', dark:'#0e3a24', gold:'#c9a14a', bg:'#fafcf7', accent:'#e6f2ea'};
 }
 function honoraryFor(skill,pct){ return 'in recognition of consistent effort and progress in this activity.'; } /* legacy stub */
 function honoraryV2(cert){
   const act = cert.activity || cert.skill;
-  const tier = (cert.tier||'').toLowerCase();
+  const tier = normTier(cert.tier || certTier(cert.level));
   const sc = (cert.score!=null && cert.max!=null) ? ` having achieved ${cert.score} of ${cert.max} (${cert.percent}%)` : '';
-  return `in recognition of ${tier?tier+' performance and effort':'consistent effort'} in the ${act},${sc} and contributing to the iCAN Read \u00b7 Write \u00b7 Design journey.`;
+  if(tier==='Participation')
+    return `in recognition of active participation and continued effort in the ${act},${sc} and contributing to the iCAN Read \u00b7 Write \u00b7 Design journey.`;
+  return `in recognition of ${tier.toLowerCase()} performance in the ${act},${sc} and contributing to the iCAN Read \u00b7 Write \u00b7 Design journey.`;
 }
 function certInitials(name){ if(!name)return ''; const p=(''+name).trim().split(/\s+/); return p.slice(0,2).map(w=>w[0]).join('.').toUpperCase()+'.'; }
 function makeSerial(){
@@ -5729,7 +5750,7 @@ function certWrap(x,text,cx,cy,maxW,lh){
   if(line) x.fillText(line,cx,y); return y;
 }
 function drawEarnedCert(cert){
-  const tier = cert.tier || certTier(cert.level) || 'Participation';
+  const tier = normTier(cert.tier || certTier(cert.level));
   const pal  = tierPalette(tier);
   const W=1400, H=990;
   const cv=document.createElement('canvas'); cv.width=W; cv.height=H;
@@ -5786,10 +5807,10 @@ function drawEarnedCert(cert){
   x.beginPath(); x.moveTo(rX+rW,rY+rH/2); x.lineTo(rX+rW+24,rY+rH+8); x.lineTo(rX+rW,rY+rH); x.closePath(); x.fill();
   // ribbon text
   x.fillStyle='#fff'; x.font='800 24px Georgia'; x.textAlign='center';
-  x.fillText('CERTIFICATE OF ACHIEVEMENT', W/2, rY+rH/2+9);
+  x.fillText(tier==='Participation' ? 'CERTIFICATE OF PARTICIPATION' : 'CERTIFICATE OF ACHIEVEMENT', W/2, rY+rH/2+9);
   // presented to
   x.fillStyle='#555'; x.font='500 20px Georgia';
-  x.fillText('This certificate of achievement is awarded to', W/2, rY+rH+56);
+  x.fillText(tier==='Participation' ? 'This certificate of participation is awarded to' : 'This certificate of achievement is awarded to', W/2, rY+rH+56);
   // student name — italic cursive-ish
   x.fillStyle=pal.primary; x.font='italic 700 62px "Snell Roundhand","Brush Script MT",Georgia,serif';
   x.fillText(cert.name||'Student Name', W/2, rY+rH+130);
@@ -5800,7 +5821,7 @@ function drawEarnedCert(cert){
   x.fillStyle=pal.gold; [-24,-8,8,24].forEach(dx=>{ x.beginPath(); x.arc(W/2+dx,dY,3,0,7); x.fill(); });
   // recognition paragraph
   x.fillStyle='#333'; x.font='500 18px Georgia';
-  certWrap(x, cert.honorary||honoraryV2(cert), W/2, dY+40, W*0.72, 28);
+  certWrap(x, honoraryV2(Object.assign({}, cert, {tier:tier})), W/2, dY+40, W*0.72, 28);
   // motivational quote
   x.fillStyle=pal.primary; x.font='italic 500 18px Georgia';
   x.fillText('A reader today is a leader tomorrow.', W/2, H-215);
@@ -5815,8 +5836,9 @@ function drawEarnedCert(cert){
   x.fillStyle=pal.primary; x.font='italic 700 44px "Snell Roundhand","Brush Script MT",cursive';
   x.textAlign='center'; x.fillText(certInitials(cert.sig1)||'—', sL, H-150);
   x.strokeStyle='#444'; x.lineWidth=1; x.beginPath(); x.moveTo(sL-110,H-125); x.lineTo(sL+110,H-125); x.stroke();
-  x.fillStyle=pal.primary; x.font='700 14px Georgia'; x.fillText((cert.sig1||'').toUpperCase(), sL, H-104);
-  x.fillStyle='#666'; x.font='500 12px Georgia'; x.fillText(cert.sig1t||'Teacher / Mentor', sL, H-84);
+  x.fillStyle=pal.primary; x.font='italic 700 17px Georgia'; x.fillText('Teacher: '+(cert.sig1||CONFIG.teacherName||''), sL, H-104);
+  x.fillStyle='#666'; x.font='600 11px Georgia'; x.fillText((cert.sig1t||CONFIG.teacherTitle||'Teacher').toUpperCase(), sL, H-86);
+  x.fillStyle='#8a8a8a'; x.font='500 10px Georgia'; x.fillText(CONFIG.teacherCredit||'', sL, H-70);
   // Right signature
   const sR2=W-270;
   x.fillStyle=pal.primary; x.font='italic 700 44px "Snell Roundhand","Brush Script MT",cursive';
@@ -5887,6 +5909,670 @@ const LITERACY_RESOURCES = [
     ["ESL Fast — Conversations","https://www.eslfast.com","Dialogues for everyday English practice."]
   ]}
 ];
+
+/* =========================================================================
+   iCAN ACADEMY EXTENSIONS — injected block
+   ========================================================================= */
+/* =========================================================================
+   iCAN ACADEMY EXTENSIONS
+   1) Teacher-activated access (gating) for courses, quizzes and tests
+   2) Homepage vertical bar: RWD Specs · Teacher Aids · Student Aids ·
+      Parent Consent · User Guide · Q&A Tutor
+   3) Teacher mini-bar + dashboard cards: Activation, Initiatives,
+      Consent log, Q&A inbox
+   4) Student mini-bar: quick moves, engagement log, certificates,
+      initiatives
+   5) Downloadable/printable documents (Word-compatible .doc)
+   ========================================================================= */
+
+/* ---------- one-time migration: legacy certificate tiers ---------- */
+(function migrateCertTiers(){
+  try{
+    const all = Store.get('ican_certificates')||[]; let changed=false;
+    all.forEach(c=>{ const n=normTier(c.tier); if(c.tier!==n){ c.tier=n; c.honorary=''; changed=true; } });
+    if(changed) Store.set('ican_certificates', all);
+  }catch(e){}
+})();
+
+/* ================================ GATING ================================ */
+function gateDefs(){ return [
+  {key:'readCourse', icon:'📖', label:'Reading Course'},
+  {key:'writeCourse',icon:'✍️', label:'Writing Course'},
+  {key:'design',     icon:'🎨', label:'Design Studio (DST challenges)'},
+  {key:'readLib',    icon:'📚', label:'Reading practice library'},
+  {key:'writeLib',   icon:'📝', label:'Writing practice tasks'},
+  {key:'wstudio',    icon:'🖊️', label:'Writing Studio (mark · infer · OREO)'},
+  {key:'revise',     icon:'🔁', label:'Revision tasks'},
+  {key:'grammar',    icon:'🧩', label:'Grammar lessons & quizzes'},
+  {key:'spelling',   icon:'🐝', label:'Spelling quizzes'},
+  {key:'listenQuiz', icon:'🎧', label:'Listening comprehension quizzes'},
+  {key:'diag',       icon:'🧭', label:'Diagnostic test'},
+  {key:'exams',      icon:'🎓', label:'Exams, quizzes & mock tests'}
+];}
+function gateKeyOf(screen){
+  return ({
+    reading:'readLib', readItem:'readLib',
+    writing:'writeLib', writeItem:'writeLib',
+    readingCourse:'readCourse', rcLesson:'readCourse',
+    writingCourse:'writeCourse', wcLesson:'writeCourse',
+    dstudio:'design', dChallenge:'design',
+    exams:'exams', examTest:'exams',
+    diagnostic:'diag', diagTest:'diag', diagResult:'diag',
+    grammar:'grammar', grammarLesson:'grammar',
+    revise:'revise', reviseTask:'revise',
+    wstudio:'wstudio', markTask:'wstudio', inferTask:'wstudio', oreoTask:'wstudio',
+    listenComp:'listenQuiz', spellQuiz:'spelling'
+  })[screen]||null;
+}
+function gates(){ return Store.get('ican_gates')||{}; }
+function gateOpen(k){ return !!gates()[k]; }
+function setGate(k,v){ const g=gates(); g[k]=!!v; Store.set('ican_gates',g); paintGates(); if(CURRENT_SCREEN==='dashboard') injectBars('dashboard'); }
+function setAllGates(v){ const g={}; gateDefs().forEach(d=>g[d.key]=!!v); Store.set('ican_gates',g); paintGates(); }
+function gateLabel(k){ const d=gateDefs().find(d=>d.key===k); return d? d.icon+' '+d.label : 'this activity'; }
+function renderLocked(k){
+  app().innerHTML = `
+  <div class="wrap screen"><div class="card locked-card">
+    <div class="locked-ic">🔒</div>
+    <h2 style="margin:6px 0 4px">Not activated yet</h2>
+    <p style="max-width:520px;margin:0 auto;color:var(--muted)"><b>${esc(gateLabel(k))}</b> hasn't been opened for your class yet.
+    Your teacher activates activities step by step, so you can focus on what matters now instead of facing everything at once.
+    Check back soon — or ask your teacher when it opens.</p>
+    <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn dark" onclick="go('dashboard')">← Back to my dashboard</button>
+      <button class="btn ghost" onclick="go('typing')">⌨️ Practise typing (always open)</button>
+    </div>
+  </div></div>`;
+}
+
+/* ============================ BAR INJECTION ============================ */
+function injectBars(screen){
+  document.querySelectorAll('.ican-sidebar,.mini-bar').forEach(e=>e.remove());
+  if(screen==='home') injectHomeSidebar();
+  if(screen==='teacher'){ injectTeacherCards(); injectTeacherBar(); }
+  if(screen==='dashboard'){ injectStudentBar(); annotateLocks(); }
+}
+
+/* ---------- homepage vertical bar (numbered tiles) ---------- */
+function injectHomeSidebar(){
+  const items=[
+    ['spec','📘','RWD Specs','The framework, phase by phase'],
+    ['taids','🧑‍🏫','Teacher Aids','Plans, rubrics & tips (teachers)'],
+    ['saids','🎒','Student Aids','Checklists & how-to help'],
+    ['consent','📝','Parent Consent','Read, sign online or print'],
+    ['guide','🦉','User Guide','How to use iCAN Academy'],
+    ['qa','💬','Q&A Tutor','Ask the teacher — parents & students']
+  ];
+  const nav=document.createElement('nav');
+  nav.className='ican-sidebar'; nav.setAttribute('aria-label','iCAN Academy sections');
+  nav.innerHTML = items.map((it,i)=>`
+    <button class="isb-item" onclick="${it[0]==='guide'?'toggleCoach()':`openBarPanel('${it[0]}')`}" title="${esc(it[3])}">
+      <span class="isb-num">0${i+1}</span>
+      <span class="isb-ic">${it[1]}</span>
+      <span class="isb-lab">${esc(it[2])}</span>
+    </button>`).join('');
+  document.body.appendChild(nav);
+}
+
+/* ---------- teacher mini-bar + dashboard cards ---------- */
+function injectTeacherBar(){
+  const wrap=document.querySelector('#app .wrap'); if(!wrap) return;
+  const bar=document.createElement('div'); bar.className='mini-bar';
+  bar.innerHTML = `
+    <span class="mb-title">Teacher tools</span>
+    <button class="chip" onclick="document.getElementById('gateCard').scrollIntoView({behavior:'smooth'})">🔓 Activation</button>
+    <button class="chip" onclick="document.getElementById('initCard').scrollIntoView({behavior:'smooth'})">🚀 Initiatives</button>
+    <button class="chip" onclick="openBarPanel('taids')">🧑‍🏫 Lesson plans & AI aids</button>
+    <button class="chip" onclick="openBarPanel('kp')">🧠 RWD grounding (KP)</button>
+    <button class="chip" onclick="document.getElementById('consentCard').scrollIntoView({behavior:'smooth'})">📝 Consent log</button>
+    <button class="chip" onclick="document.getElementById('qaCard').scrollIntoView({behavior:'smooth'})">💬 Q&A inbox</button>`;
+  const st=wrap.querySelector('.section-title');
+  (st||wrap.firstElementChild).insertAdjacentElement('afterend', bar);
+}
+function injectTeacherCards(){
+  const wrap=document.querySelector('#app .wrap'); if(!wrap) return;
+  const anchor=wrap.querySelector('.card'); if(!anchor) return;
+  anchor.insertAdjacentHTML('afterend', gateCardHTML()+initCardHTML()+consentCardHTML()+qaCardHTML());
+  paintGates(); paintInits(); paintConsents(); paintQA();
+}
+
+/* ---------- Activation manager ---------- */
+function gateCardHTML(){ return `
+  <div class="card" id="gateCard" style="margin-bottom:22px">
+    <h3 style="font-size:1.2rem">🔓 Activity activation <span class="pill">teacher-controlled access</span></h3>
+    <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Students only see what you've activated — courses, quizzes and tests stay locked until you open them, so no one feels overloaded. Typing and other light engagements are always open. Toggle any module below; changes apply instantly on this device (and on students' devices using this browser profile / kiosk setup).</p>
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <button class="btn sm teal" onclick="setAllGates(true)">Activate all</button>
+      <button class="btn sm ghost" onclick="setAllGates(false)">Lock all</button>
+    </div>
+    <div class="gate-grid" id="gateGrid"></div>
+  </div>`;}
+function paintGates(){
+  const g=document.getElementById('gateGrid'); if(!g) return;
+  g.innerHTML = gateDefs().map(d=>{
+    const on=gateOpen(d.key);
+    return `<div class="gate-item ${on?'on':''}">
+      <span class="gi-ic">${d.icon}</span>
+      <span class="gi-lab">${esc(d.label)}</span>
+      <span class="gi-status">${on?'ACTIVE':'LOCKED'}</span>
+      <button class="btn sm ${on?'ghost':'teal'}" onclick="setGate('${d.key}',${on?'false':'true'})">${on?'Deactivate':'Activate'}</button>
+    </div>`; }).join('');
+}
+
+/* ---------- Initiatives ---------- */
+function getInits(){ return Store.get('ican_initiatives')||[]; }
+function initCardHTML(){ return `
+  <div class="card" id="initCard" style="margin-bottom:22px">
+    <h3 style="font-size:1.2rem">🚀 Initiatives</h3>
+    <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Create an initiative with its timeframe, specifications, target students and planned interventions. Published initiatives appear (by title) in students' dashboards; unpublished ones stay private to you. If consent is required, share the online consent link or print the form.</p>
+    <div class="grid c2" style="gap:10px">
+      <div class="ed-field"><label>Title</label><input id="in_title" placeholder="e.g. Reader is Designer — Term 1"></div>
+      <div class="ed-field"><label>Target students / grades</label><input id="in_target" placeholder="e.g. Grade 10 Advanced, G11 General"></div>
+      <div class="ed-field"><label>From</label><input id="in_from" type="date"></div>
+      <div class="ed-field"><label>To</label><input id="in_to" type="date"></div>
+    </div>
+    <div class="ed-field"><label>Specifications (what students will do)</label><textarea id="in_spec" rows="3" placeholder="Phases, tasks, outputs, publishing venue…"></textarea></div>
+    <div class="ed-field"><label>Planning & interventions</label><textarea id="in_plan" rows="2" placeholder="Checkpoints, differentiation, support for struggling learners…"></textarea></div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;margin:6px 0 10px"><input type="checkbox" id="in_consent"> Parent consent required</label>
+    <button class="btn teal" onclick="addInitiative()">＋ Add initiative</button>
+    <div id="initList" style="margin-top:14px"></div>
+  </div>`;}
+function addInitiative(){
+  const t=(val('in_title')||'').trim(); if(!t){ alert('Give the initiative a title.'); return; }
+  const list=getInits();
+  list.push({ id:'i'+Date.now(), title:t, target:val('in_target')||'', from:val('in_from')||'', to:val('in_to')||'',
+    spec:val('in_spec')||'', plan:val('in_plan')||'', consent:!!document.getElementById('in_consent').checked,
+    published:false, date:Date.now() });
+  Store.set('ican_initiatives', list); paintInits();
+  ['in_title','in_target','in_from','in_to','in_spec','in_plan'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
+}
+function pubInit(id,v){ const l=getInits(); const it=l.find(x=>x.id===id); if(it){ it.published=v; Store.set('ican_initiatives',l); paintInits(); } }
+function delInit(id){ if(!confirm('Delete this initiative?')) return; Store.set('ican_initiatives', getInits().filter(x=>x.id!==id)); paintInits(); }
+function consentLink(){ return location.href.split('#')[0] + '#consent'; }
+function copyConsentLink(){ const l=consentLink();
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(l).then(()=>alert('Consent link copied:\n'+l)); }
+  else prompt('Copy this consent link:', l);
+}
+function paintInits(){
+  const box=document.getElementById('initList'); if(!box) return;
+  const l=getInits();
+  box.innerHTML = l.length ? l.slice().reverse().map(it=>`
+    <div class="init-row">
+      <div style="flex:1;min-width:220px">
+        <b>${esc(it.title)}</b> ${it.published?'<span class="pill done">published</span>':'<span class="pill">draft</span>'}${it.consent?' <span class="pill" style="background:#fef3c7;color:#92400e">consent required</span>':''}
+        <div style="font-size:.8rem;color:var(--muted)">${esc(it.target||'All students')} · ${esc(it.from||'…')} → ${esc(it.to||'…')}</div>
+        ${it.spec?`<div style="font-size:.82rem;margin-top:4px">${esc(it.spec)}</div>`:''}
+        ${it.plan?`<div style="font-size:.78rem;color:var(--muted);margin-top:2px"><b>Plan:</b> ${esc(it.plan)}</div>`:''}
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start">
+        <button class="btn sm ${it.published?'ghost':'teal'}" onclick="pubInit('${it.id}',${it.published?'false':'true'})">${it.published?'Unpublish':'Publish'}</button>
+        ${it.consent?`<button class="btn sm" onclick="copyConsentLink()">🔗 Consent link</button>`:''}
+        <button class="btn sm ghost" onclick="delInit('${it.id}')">🗑</button>
+      </div>
+    </div>`).join('') : `<p class="note">No initiatives yet — add your first one above.</p>`;
+}
+
+/* ---------- Consent log (teacher) ---------- */
+function getConsents(){ return Store.get('ican_consents')||[]; }
+function consentCardHTML(){ return `
+  <div class="card" id="consentCard" style="margin-bottom:22px">
+    <h3 style="font-size:1.2rem">📝 Parent consent</h3>
+    <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Parents can sign online (share the link below — it opens the consent form directly) or on paper (print / download the form). Online signatures are collected in the log and export to Excel with one click. <b>Note:</b> online entries are stored in the browser where the form was signed; with the Google-Sheet sync connected they are also posted to your sheet.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+      <button class="btn sm" onclick="copyConsentLink()">🔗 Copy online-sign link</button>
+      <button class="btn sm" onclick="printConsent()">🖨 Print form</button>
+      <button class="btn sm" onclick="dlConsentDoc()">⬇ Word form (EN + AR)</button>
+      <button class="btn sm teal" onclick="exportConsents()">⬇ Export log to Excel</button>
+    </div>
+    <div id="consentList" style="overflow:auto"></div>
+  </div>`;}
+function paintConsents(){
+  const box=document.getElementById('consentList'); if(!box) return;
+  const l=getConsents();
+  box.innerHTML = l.length ? `<table class="data">
+    <tr><th>Date</th><th>Parent</th><th>Child</th><th>Class / grade</th><th>Initiative</th><th>Signature</th></tr>
+    ${l.slice().reverse().map(c=>`<tr><td style="font-size:.78rem">${new Date(c.date).toLocaleString()}</td><td>${esc(c.parent)}</td><td>${esc(c.child)}</td><td>${esc(c.klass)}</td><td style="font-size:.8rem">${esc(c.initiative||'—')}</td><td style="font-family:Georgia;font-style:italic">${esc(c.sig)}</td></tr>`).join('')}
+  </table>` : `<p class="note">No online signatures collected on this device yet.</p>`;
+}
+function exportConsents(){
+  const l=getConsents();
+  if(!l.length){ alert('No consent entries to export yet.'); return; }
+  const rows=l.map(c=>({ Date:new Date(c.date).toLocaleString(), Parent:c.parent, Child:c.child, Class:c.klass, Initiative:c.initiative||'', Signature:c.sig, Agreed:'YES' }));
+  try{
+    const ws=XLSX.utils.json_to_sheet(rows); const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Consents');
+    XLSX.writeFile(wb, 'iCAN-parent-consents-'+new Date().toISOString().slice(0,10)+'.xlsx');
+  }catch(e){
+    const csv='Date,Parent,Child,Class,Initiative,Signature,Agreed\n'+rows.map(r=>[r.Date,r.Parent,r.Child,r.Class,r.Initiative,r.Signature,'YES'].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download='iCAN-parent-consents.csv'; a.click();
+  }
+}
+
+/* ---------- Q&A inbox (teacher) ---------- */
+function getQA(){ return Store.get('ican_qa')||[]; }
+function qaCardHTML(){ return `
+  <div class="card" id="qaCard" style="margin-bottom:22px">
+    <h3 style="font-size:1.2rem">💬 Q&A Tutor — inbox</h3>
+    <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Questions from parents and students land here. Reply asynchronously below — your reply appears in the asker's Q&A panel on the same device (or set your WhatsApp number in the configuration to also take questions live).</p>
+    <div id="qaInbox"></div>
+  </div>`;}
+function paintQA(){
+  const box=document.getElementById('qaInbox'); if(!box) return;
+  const l=getQA();
+  box.innerHTML = l.length ? l.slice().reverse().map((q,ri)=>{
+    const i=l.length-1-ri;
+    return `<div class="qa-row ${q.done?'qa-done':''}">
+      <div style="flex:1;min-width:220px">
+        <div style="font-size:.78rem;color:var(--muted)">${new Date(q.date).toLocaleString()} · <b>${esc(q.name||'Anonymous')}</b> (${esc(q.role)})</div>
+        <div style="margin:3px 0">${esc(q.q)}</div>
+        ${q.reply?`<div class="qa-reply">↳ ${esc(q.reply)}</div>`:''}
+        <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
+          <input id="qar_${i}" placeholder="Type a reply…" value="${esc(q.reply||'')}" style="flex:1;min-width:180px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:.82rem">
+          <button class="btn sm teal" onclick="saveQAReply(${i})">Reply</button>
+          <button class="btn sm ghost" onclick="toggleQADone(${i})">${q.done?'Reopen':'Mark answered'}</button>
+        </div>
+      </div>
+    </div>`; }).join('') : `<p class="note">No questions yet. Parents and students can ask from the 💬 Q&A Tutor on the homepage bar.</p>`;
+}
+function saveQAReply(i){ const l=getQA(); if(!l[i]) return; const e=document.getElementById('qar_'+i); l[i].reply=(e&&e.value||'').trim(); l[i].done=!!l[i].reply; Store.set('ican_qa',l); paintQA(); }
+function toggleQADone(i){ const l=getQA(); if(!l[i]) return; l[i].done=!l[i].done; Store.set('ican_qa',l); paintQA(); }
+
+/* ---------- student mini-bar ---------- */
+function injectStudentBar(){
+  const wrap=document.querySelector('#app .wrap'); if(!wrap) return;
+  const lk=k=>gateOpen(k)?'':' <span class="mb-lock">🔒</span>';
+  const pubInits=getInits().filter(i=>i.published);
+  const bar=document.createElement('div'); bar.className='mini-bar student';
+  bar.innerHTML = `
+    <span class="mb-title">Quick moves</span>
+    <button class="chip" onclick="go('readingCourse')">📖 Reading Course${lk('readCourse')}</button>
+    <button class="chip" onclick="go('writingCourse')">✍️ Writing Course${lk('writeCourse')}</button>
+    <button class="chip" onclick="go('dstudio')">🎨 Design Studio${lk('design')}</button>
+    <button class="chip" onclick="go('exams')">🎓 Exams & Quizzes${lk('exams')}</button>
+    <button class="chip" onclick="go('typing')">⌨️ Typing</button>
+    <button class="chip" onclick="go('mycerts')">🏅 My certificates</button>
+    <button class="chip" onclick="var c=document.querySelectorAll('#app .wrap > .card'); if(c.length) c[c.length-1].scrollIntoView({behavior:'smooth'})">📒 Engagement log</button>
+    <button class="chip${pubInits.length?' chip-hot':''}" onclick="openBarPanel('inits')">🚀 Initiatives${pubInits.length?' ('+pubInits.length+')':''}</button>`;
+  wrap.insertAdjacentElement('afterbegin', bar);
+}
+/* lock badges on the dashboard hub circles */
+function annotateLocks(){
+  try{
+    document.querySelectorAll('#app .hub-map g[onclick]').forEach(g=>{
+      const m=(g.getAttribute('onclick')||'').match(/go\('([^']+)'/); if(!m) return;
+      const k=gateKeyOf(m[1]); if(!k||gateOpen(k)) return;
+      const c=g.querySelector('circle'); if(!c) return;
+      const cx=+c.getAttribute('cx'), cy=+c.getAttribute('cy'), r=+c.getAttribute('r');
+      const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+      t.setAttribute('x',cx+r*0.55); t.setAttribute('y',cy-r*0.55); t.setAttribute('font-size','24'); t.setAttribute('text-anchor','middle');
+      t.textContent='🔒'; g.appendChild(t);
+    });
+  }catch(e){}
+}
+
+/* ============================ PANELS (modal) ============================ */
+function barModal(){
+  let m=document.getElementById('barModal');
+  if(!m){
+    m=document.createElement('div'); m.id='barModal'; m.className='tools-overlay hidden';
+    m.onclick=e=>{ if(e.target===m) closeBarPanel(); };
+    m.innerHTML=`<div class="tools-box"><div class="tools-head" id="barHead"></div><div class="tools-body" id="barBody"></div></div>`;
+    document.body.appendChild(m);
+  }
+  return m;
+}
+function closeBarPanel(){ const m=document.getElementById('barModal'); if(m) m.classList.add('hidden'); }
+function openBarPanel(key){
+  const m=barModal();
+  const head=document.getElementById('barHead'), body=document.getElementById('barBody');
+  const H=(ic,t,s)=>`<span style="font-size:1.4rem">${ic}</span><div><b>${t}</b><small>${s}</small></div><button class="coach-x" onclick="closeBarPanel()" aria-label="Close">✕</button>`;
+
+  if(key==='taids' && !(SESSION&&SESSION.role==='teacher')){
+    const c=prompt('Teacher Aids are for teachers only.\nEnter the teacher code:');
+    if(c===null) return;
+    if(c!==CONFIG.teacherCode){ alert('That code is not correct.'); return; }
+  }
+
+  if(key==='spec'){ head.innerHTML=H('📘','RWD Project Specifications','Read → Write → Design … and back again'); body.innerHTML=specPanelHTML(); }
+  else if(key==='taids'){ head.innerHTML=H('🧑‍🏫','Teacher Aids','printable plans, rubrics, tips & differentiation'); body.innerHTML=taidsPanelHTML(); }
+  else if(key==='saids'){ head.innerHTML=H('🎒','Student Aids','checklists, storyboards & always-open practice'); body.innerHTML=saidsPanelHTML(); }
+  else if(key==='consent'){ head.innerHTML=H('📝','Declaration for Parents','sign online, or print and return'); body.innerHTML=consentPanelHTML(); }
+  else if(key==='qa'){ head.innerHTML=H('💬','Q&A Tutor','ask the teacher — replies come back here'); body.innerHTML=qaPanelHTML(); }
+  else if(key==='kp'){ head.innerHTML=H('🧠','RWD Pedagogical Grounding','multiliteracies knowledge processes'); body.innerHTML=kpPanelHTML(); }
+  else if(key==='inits'){ head.innerHTML=H('🚀','Initiatives','published by your teacher'); body.innerHTML=initsPanelHTML(); }
+  else return;
+  m.classList.remove('hidden');
+}
+
+/* ---------- panel contents ---------- */
+function specPanelHTML(){ return `
+  <div class="spec-grid">
+    <div class="spec-phase" style="--pc:#E0403F">
+      <b>1 · READ <span>(view)</span></b>
+      <p>Learners read and <i>view</i> purposefully: build comprehension, grow vocabulary, and notice the choices authors and designers make — what the text says, how it says it, and why. Expected evidence: annotated reading, discussion of model texts, comprehension checks.</p>
+    </div>
+    <div class="spec-phase" style="--pc:#2BA84F">
+      <b>2 · WRITE <span>(represent)</span></b>
+      <p>Learners transform understanding into their own written meaning: plan, draft, get feedback, and revise. Writing here is representation — saying it in your own words for a real purpose. Expected evidence: plans, drafts with visible revision, final compositions.</p>
+    </div>
+    <div class="spec-phase" style="--pc:#7A2FD0">
+      <b>3 · DESIGN <span>(DST)</span></b>
+      <p>Learners <i>redesign</i> their writing multimodally — digital storytelling that combines words, images, layout and sound for a real audience. Design decisions push learners back into the text: to re-read for accuracy and re-write for clarity. Expected evidence: storyboard, published multimodal artefact, reflection.</p>
+    </div>
+  </div>
+  <div class="spec-loop">
+    <b>… and back again — why the loop matters</b>
+    <p>RWD is recursive, not linear. Designing exposes gaps that send learners back to reading; audience feedback sends them back to writing. Each pass through the cycle deepens comprehension, sharpens expression, and builds 21st-century multiliteracies — treating <b>Design as a third literacy</b>, co-equal with Reading and Writing (adapted from Cope &amp; Kalantzis, 2009, 2023, 2025). One iteration is a lesson; repeated iterations are a pedagogy.</p>
+  </div>
+  <p class="tools-note" style="margin:10px 0 0">Works in any subject: replace the model text with a science article, a history source or a maths explanation — the Read → Write → Design loop stays the same.</p>`;}
+
+function taidsPanelHTML(){ return `
+  <p style="font-size:.9rem;color:var(--muted);margin:0 0 12px">Download, open in Word, adapt to your class, print. Each document is curriculum-flexible — usable for EFL or any subject.</p>
+  <div class="dl-grid">
+    <button class="dl-tile" onclick="dlLessonPlan()"><span>📋</span><b>RWD Lesson Plan</b><small>phase-by-phase template with objectives, KP links & reflection</small></button>
+    <button class="dl-tile" onclick="dlRubric()"><span>✅</span><b>Multimodal Assessment & Marking Rubric</b><small>criteria for reading, writing, design & iteration (4→1 bands)</small></button>
+    <button class="dl-tile" onclick="dlTips()"><span>💡</span><b>Tips for Teachers</b><small>implementation guide, phase-based iterative timeline & tools</small></button>
+    <button class="dl-tile" onclick="dlDiff()"><span>🧩</span><b>Differentiation Plan</b><small>time-paced support for struggling & emerging performers (unit / month / semester)</small></button>
+    <button class="dl-tile" onclick="dlKPPlan()"><span>🧠</span><b>Knowledge-Processes Plan</b><small>experiencing · conceptualising · analysing · applying — mapped to RWD</small></button>
+  </div>
+  <p class="tools-note" style="margin:12px 0 0">Tip: pair these with the 🧰 Digital Content Creation Tools (in Design Studio) when planning the Design phase.</p>`;}
+
+function saidsPanelHTML(){ return `
+  <div class="dl-grid">
+    <button class="dl-tile" onclick="dlChecklist()"><span>☑️</span><b>My RWD Checklist</b><small>what to do in each phase — and when to loop back</small></button>
+    <button class="dl-tile" onclick="dlStoryboard()"><span>🎬</span><b>DST Storyboard</b><small>6-panel planner for your digital story</small></button>
+  </div>
+  <div style="margin-top:14px">
+    <b style="font-size:.95rem">Always-open practice</b>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      <button class="chip" onclick="closeBarPanel();go('studentLogin')">⌨️ Typing</button>
+      <button class="chip" onclick="closeBarPanel();go('studentLogin')">🐝 Spell & Drill</button>
+      <button class="chip" onclick="closeBarPanel();go('studentLogin')">🗣 Speaking</button>
+      <button class="chip" onclick="closeBarPanel();go('studentLogin')">📚 Vocabulary bank</button>
+    </div>
+    <p style="font-size:.82rem;color:var(--muted);margin-top:8px">Courses, quizzes and tests open when your teacher activates them — so you can give your best to what's in front of you now.</p>
+  </div>`;}
+
+function consentPanelHTML(){
+  const inits=getInits().filter(i=>i.published&&i.consent);
+  const mine=getConsents();
+  return `
+  <div class="consent-text">
+    <p><b>Dear Parent / Guardian,</b> your child is invited to take part in the <b>iCAN Academy EFL File</b> — a Read · Write · Design (RWD) multiliteracies programme in which learners read purposefully, write to represent their ideas, and design digital stories to share them. Participation involves classroom activities on the iCAN platform, teacher-guided practice, and the award of certificates for standard and distinction performance. Work samples are used for learning purposes within the school.</p>
+    <p style="direction:rtl;text-align:right;font-family:Georgia,serif"><b>ولي الأمر الكريم،</b> يسرّنا دعوة ابنكم للمشاركة في ملف اللغة الإنجليزية ضمن أكاديمية iCAN، وهو برنامج قائم على منهجية «اقرأ · اكتب · صمّم» حيث يقرأ المتعلم بوعي، ويكتب ليعبّر عن أفكاره، ثم يصمّم قصصًا رقمية لمشاركتها. تشمل المشاركة أنشطة صفية عبر المنصة بإشراف المعلم، وتُمنح شهادات للأداء القياسي والمتميّز، وتُستخدم نماذج الأعمال لأغراض تعليمية داخل المدرسة فقط.</p>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px">
+    <button class="btn sm" onclick="printConsent()">🖨 Print form</button>
+    <button class="btn sm" onclick="dlConsentDoc()">⬇ Download Word form (EN + AR)</button>
+  </div>
+  <div class="card" style="background:#fbfaf6">
+    <b>Sign online</b>
+    <div class="grid c2" style="gap:10px;margin-top:8px">
+      <div class="ed-field"><label>Parent / guardian full name</label><input id="cs_parent"></div>
+      <div class="ed-field"><label>Child's full name</label><input id="cs_child"></div>
+      <div class="ed-field"><label>Class / grade</label><input id="cs_class" placeholder="e.g. Grade 10-A"></div>
+      <div class="ed-field"><label>Initiative</label>
+        <select id="cs_init"><option value="">General participation (EFL File)</option>${inits.map(i=>`<option>${esc(i.title)}</option>`).join('')}</select></div>
+    </div>
+    <label style="display:flex;align-items:flex-start;gap:8px;font-size:.88rem;margin:8px 0"><input type="checkbox" id="cs_agree" style="margin-top:3px"> I have read the declaration above and I <b>consent</b> to my child's participation.</label>
+    <div class="ed-field"><label>Type your full name as signature</label><input id="cs_sig" style="font-family:Georgia;font-style:italic"></div>
+    <button class="btn teal" style="margin-top:8px" onclick="saveConsent()">✍️ Submit consent</button>
+    <div id="cs_msg" style="font-size:.85rem;margin-top:8px;color:var(--teal-dk)"></div>
+  </div>
+  ${mine.length?`<p style="font-size:.8rem;color:var(--muted);margin-top:10px">Signed on this device: ${mine.map(c=>esc(c.child)).join(', ')}.</p>`:''}`;
+}
+function saveConsent(){
+  const parent=(val('cs_parent')||'').trim(), child=(val('cs_child')||'').trim(), klass=(val('cs_class')||'').trim(), sig=(val('cs_sig')||'').trim();
+  const agree=document.getElementById('cs_agree').checked, init=val('cs_init')||'';
+  const msg=document.getElementById('cs_msg');
+  if(!parent||!child||!sig||!agree){ if(msg) msg.innerHTML='<span style="color:var(--coral-dk)">Please fill your name, your child\u2019s name, tick the consent box, and sign.</span>'; return; }
+  const rec={ type:'consent', date:Date.now(), parent, child, klass, initiative:init, sig };
+  const l=getConsents(); l.push(rec); Store.set('ican_consents', l);
+  try{ cloudSave(rec); }catch(e){}
+  if(msg) msg.textContent='Thank you — your consent has been recorded. ✔';
+  ['cs_parent','cs_child','cs_class','cs_sig'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
+  document.getElementById('cs_agree').checked=false;
+}
+
+function qaPanelHTML(){
+  const l=getQA();
+  const wa=(CONFIG.qaWhatsApp||'').replace(/[^0-9]/g,'');
+  return `
+  <p style="font-size:.9rem;color:var(--muted);margin:0 0 10px">Parents and students can ask anything about iCAN Academy or its activities. The teacher replies here (asynchronously)${wa?' — or tap the WhatsApp button to ask live':''}.</p>
+  <div class="grid c2" style="gap:10px">
+    <div class="ed-field"><label>I am a…</label><select id="qa_role"><option>parent</option><option>student</option></select></div>
+    <div class="ed-field"><label>Name (optional)</label><input id="qa_name"></div>
+  </div>
+  <div class="ed-field"><label>My question</label><textarea id="qa_q" rows="3" placeholder="Type your question…"></textarea></div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
+    <button class="btn teal" onclick="askQA()">📨 Send to teacher</button>
+    ${wa?`<a class="btn" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent('Question about iCAN Academy: ')}">🟢 Ask live on WhatsApp</a>`:''}
+  </div>
+  <div id="qa_msg" style="font-size:.85rem;margin-top:8px;color:var(--teal-dk)"></div>
+  ${l.length?`<div style="margin-top:14px"><b style="font-size:.95rem">Questions asked on this device</b>
+    ${l.slice().reverse().map(q=>`<div class="qa-row"><div>
+      <div style="font-size:.78rem;color:var(--muted)">${new Date(q.date).toLocaleString()} · ${esc(q.name||'Anonymous')} (${esc(q.role)})</div>
+      <div style="margin:2px 0">${esc(q.q)}</div>
+      ${q.reply?`<div class="qa-reply">↳ <b>Teacher:</b> ${esc(q.reply)}</div>`:'<div style="font-size:.78rem;color:var(--muted)">Awaiting reply…</div>'}
+    </div></div>`).join('')}</div>`:''}`;
+}
+function askQA(){
+  const q=(val('qa_q')||'').trim(); const msg=document.getElementById('qa_msg');
+  if(!q){ if(msg) msg.innerHTML='<span style="color:var(--coral-dk)">Type a question first.</span>'; return; }
+  const rec={ type:'question', date:Date.now(), role:val('qa_role')||'parent', name:(val('qa_name')||'').trim(), q, reply:'', done:false };
+  const l=getQA(); l.push(rec); Store.set('ican_qa', l);
+  try{ cloudSave(rec); }catch(e){}
+  if(msg) msg.textContent='Sent — the teacher will reply here. ✔';
+  const e=document.getElementById('qa_q'); if(e) e.value='';
+}
+
+function kpPanelHTML(){ return `
+  <p style="font-size:.9rem;margin:0 0 10px">The RWD cycle operationalises the multiliteracies <b>knowledge processes</b> (Cope &amp; Kalantzis). Use this mapping when planning — every lesson should touch at least two processes.</p>
+  <table class="data" style="width:100%">
+    <tr><th>Knowledge process</th><th>What learners do</th><th>RWD phase</th></tr>
+    <tr><td><b>Experiencing</b> (the known / the new)</td><td>Connect texts to lived experience; meet unfamiliar texts and contexts</td><td style="color:#E0403F"><b>Read</b></td></tr>
+    <tr><td><b>Conceptualising</b> (by naming / with theory)</td><td>Name text and design features; build metalanguage and genre knowledge</td><td style="color:#E0403F"><b>Read → Write</b></td></tr>
+    <tr><td><b>Analysing</b> (functionally / critically)</td><td>Examine how choices create meaning; question purpose, audience, power</td><td style="color:#2BA84F"><b>Write</b></td></tr>
+    <tr><td><b>Applying</b> (appropriately / creatively)</td><td>Use learning in new ways — redesign meaning for a real audience</td><td style="color:#7A2FD0"><b>Design</b></td></tr>
+  </table>
+  <div style="margin-top:12px"><button class="dl-tile" onclick="dlKPPlan()" style="width:100%"><span>🧠</span><b>Download the Knowledge-Processes Plan template</b><small>a ready-to-fill Word planning grid</small></button></div>`;}
+
+function initsPanelHTML(){
+  const l=getInits().filter(i=>i.published);
+  return l.length? l.map(it=>`
+    <div class="init-row" style="align-items:flex-start">
+      <div style="flex:1">
+        <b>🚀 ${esc(it.title)}</b>
+        <div style="font-size:.8rem;color:var(--muted)">${esc(it.target||'All students')} · ${esc(it.from||'…')} → ${esc(it.to||'…')}</div>
+        ${it.spec?`<div style="font-size:.86rem;margin-top:4px">${esc(it.spec)}</div>`:''}
+        ${it.consent?`<div style="margin-top:6px"><button class="btn sm" onclick="openBarPanel('consent')">📝 Parent consent needed — open form</button></div>`:''}
+      </div>
+    </div>`).join('') : `<p class="note">No initiatives have been published yet — watch this space!</p>`;
+}
+
+/* ====================== DOWNLOADABLE DOCUMENTS (.doc) ====================== */
+function dlDoc(filename, title, bodyHtml){
+  const html = '\ufeff<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>'+title+'</title>'+
+  '<style>body{font-family:Georgia,serif;color:#1a1a2e;margin:28px} h1{font-size:20pt;color:#15183A;margin:0 0 2pt} h2{font-size:13pt;color:#a15c07;margin:14pt 0 4pt} .sub{color:#666;font-size:10pt;margin:0 0 12pt} table{border-collapse:collapse;width:100%;margin:6pt 0} th,td{border:1px solid #999;padding:6pt;font-size:10pt;vertical-align:top;text-align:left} th{background:#f3efe2} .foot{margin-top:16pt;font-size:9pt;color:#777;border-top:1px solid #ccc;padding-top:6pt} ul{margin:4pt 0 8pt 18pt} li{font-size:10.5pt;margin:2pt 0} p{font-size:10.5pt} .rtl{direction:rtl;text-align:right}</style></head><body>'+
+  '<h1>'+title+'</h1><p class="sub">iCAN Academy · Read · Write · Design (RWD) multiliteracies programme · '+(CONFIG.schoolName||'')+'</p>'+bodyHtml+
+  '<p class="foot">Teacher: '+(CONFIG.teacherName||'')+' — '+(CONFIG.teacherTitle||'')+' · '+(CONFIG.teacherCredit||'')+' · Adapted from Cope &amp; Kalantzis (2009, 2023, 2025)</p></body></html>';
+  const blob=new Blob([html],{type:'application/msword'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename+'.doc'; a.click();
+}
+function dlLessonPlan(){ dlDoc('iCAN-RWD-Lesson-Plan','RWD Lesson Plan', `
+  <table><tr><th>Teacher</th><td>${esc(CONFIG.teacherName||'')}</td><th>Class / grade</th><td></td></tr>
+  <tr><th>Unit / theme</th><td></td><th>Date & duration</th><td></td></tr>
+  <tr><th>Subject</th><td>English (adaptable to any subject)</td><th>Model text / stimulus</th><td></td></tr></table>
+  <h2>Learning objectives (by strand)</h2>
+  <table><tr><th>Read (view)</th><th>Write (represent)</th><th>Design (DST)</th></tr><tr><td></td><td></td><td></td></tr></table>
+  <h2>Phase-by-phase plan</h2>
+  <table><tr><th>Phase</th><th>Teacher moves</th><th>Learner activity & evidence</th><th>Knowledge process</th><th>Time</th></tr>
+  <tr><td><b>READ</b></td><td>Set purpose; model noticing author/designer choices</td><td>Annotated reading · comprehension check · discussion</td><td>Experiencing · Conceptualising</td><td></td></tr>
+  <tr><td><b>WRITE</b></td><td>Deconstruct model; guide planning & feedback</td><td>Plan → draft → peer/teacher feedback → revise</td><td>Conceptualising · Analysing</td><td></td></tr>
+  <tr><td><b>DESIGN</b></td><td>Introduce tool & storyboard; set audience</td><td>Storyboard → multimodal artefact → publish</td><td>Applying (creatively)</td><td></td></tr>
+  <tr><td><b>LOOP</b></td><td>Prompt re-reading / re-writing from design feedback</td><td>Revisit text & draft; second iteration notes</td><td>All four</td><td></td></tr></table>
+  <h2>Differentiation & support</h2><table><tr><th>Struggling / emerging</th><th>On level</th><th>Extension</th></tr><tr><td></td><td></td><td></td></tr></table>
+  <h2>Assessment links</h2><p>Attach the Multimodal Assessment &amp; Marking Rubric. Evidence: reading responses, drafts with revision, final design artefact, reflection.</p>
+  <h2>Teacher reflection (after the lesson)</h2><p>What did the loop reveal? Who needs which intervention next?</p>`); }
+function dlRubric(){ dlDoc('iCAN-Multimodal-Rubric','Multimodal Assessment & Marking Rubric', `
+  <p>Score each criterion 4–1. <b>Distinction</b> ≈ mostly 4s; <b>Standard</b> ≈ mostly 3s; below standard receives a participation certificate and targeted support.</p>
+  <table><tr><th>Criterion</th><th>4 — Exceeds</th><th>3 — Meets (Standard)</th><th>2 — Approaching</th><th>1 — Beginning</th></tr>
+  <tr><td><b>Reading comprehension & response</b></td><td>Insightful interpretation; evidence woven naturally</td><td>Accurate understanding with relevant evidence</td><td>Partial understanding; limited evidence</td><td>Minimal engagement with the text</td></tr>
+  <tr><td><b>Written composition</b></td><td>Purposeful, well-organised, controlled language</td><td>Clear organisation; minor language slips</td><td>Ideas present but uneven; frequent slips</td><td>Fragmentary; meaning often unclear</td></tr>
+  <tr><td><b>Multimodal design</b></td><td>Words, images, layout & sound reinforce one message</td><td>Modes mostly support the message</td><td>Modes decorate rather than build meaning</td><td>Modes random or missing</td></tr>
+  <tr><td><b>Digital storytelling delivery</b></td><td>Engaging narration/pacing for a real audience</td><td>Clear delivery; audience considered</td><td>Delivery uneven; audience unclear</td><td>Not yet shared or unclear</td></tr>
+  <tr><td><b>Process & iteration (the loop)</b></td><td>Visible re-reading/re-writing improved the work</td><td>At least one purposeful revision loop</td><td>Revision attempted but surface-level</td><td>Single pass; no revision evidence</td></tr></table>
+  <h2>Award mapping</h2>
+  <table><tr><th>Overall performance</th><th>Certificate conferred</th></tr>
+  <tr><td>Above expectation</td><td><b>Distinction</b></td></tr>
+  <tr><td>At expectation</td><td><b>Standard</b></td></tr>
+  <tr><td>Below expectation</td><td>Certificate of <b>Participation</b> + support plan</td></tr></table>`); }
+function dlTips(){ dlDoc('iCAN-Teacher-Tips','Tips for Teachers — Implementing the RWD Framework', `
+  <h2>Ten implementation tips</h2><ul>
+  <li>Teach the loop explicitly: show learners the RWD wheel and name the phase you are in.</li>
+  <li>Choose short, rich model texts — one page that rewards re-reading beats ten that don't.</li>
+  <li>Keep Design authentic: a real audience (class, parents, school screen) transforms effort.</li>
+  <li>Let design send learners back: build one deliberate "return to the text" checkpoint.</li>
+  <li>Activate only what the class needs now (use the dashboard Activation panel) — pacing prevents burnout.</li>
+  <li>Assess the process, not just the product: reward visible revision.</li>
+  <li>Use metalanguage: caption, layout, salience, framing — students can learn to talk design.</li>
+  <li>Pair strugglers with a design role first (image hunter, layout lead) — success there fuels writing.</li>
+  <li>Celebrate with certificates: Standard and Distinction are earned; Participation keeps everyone in the game.</li>
+  <li>Any subject works: swap the text, keep the cycle.</li></ul>
+  <h2>Phase-based iterative timeline (unit-bound example)</h2>
+  <table><tr><th>Week</th><th>Focus</th><th>Milestone</th></tr>
+  <tr><td>1</td><td>READ — purpose, comprehension, noticing</td><td>Annotated text + discussion</td></tr>
+  <tr><td>2</td><td>WRITE — plan, draft, feedback</td><td>Revised draft</td></tr>
+  <tr><td>3</td><td>DESIGN — storyboard & build</td><td>Draft artefact</td></tr>
+  <tr><td>4</td><td>LOOP — re-read, re-write, refine, publish</td><td>Published story + reflection</td></tr></table>
+  <p>Month-bound: run two loops per unit. Semester-bound: three units, each ending in a public showcase.</p>
+  <h2>Tools that assist RWD planning</h2>
+  <table><tr><th>Tool</th><th>Best for</th></tr>
+  <tr><td>ReadWorks</td><td>Levelled reading with question sets (Read)</td></tr>
+  <tr><td>Book Creator</td><td>Digital storytelling books (Design)</td></tr>
+  <tr><td>Canva / PowerPoint</td><td>Posters, slides, visual layout (Design)</td></tr>
+  <tr><td>diagrams.net</td><td>Labelled diagrams & flowcharts (any subject)</td></tr>
+  <tr><td>AI assistants</td><td>Lesson drafting, differentiation ideas, question banks (teacher planning — always review outputs)</td></tr></table>
+  <p><b>Curriculum flexibility:</b> map each phase to your subject outcomes — the loop carries the pedagogy; your curriculum supplies the content.</p>`); }
+function dlDiff(){ dlDoc('iCAN-Differentiation-Plan','Differentiation Plan — Struggling & Emerging Performers', `
+  <p>Time-paced support that meets learners where they are. Choose the pacing that fits your context; review at every checkpoint and move learners up as soon as they're ready.</p>
+  <h2>Pacing frames</h2>
+  <table><tr><th>Frame</th><th>Scope</th><th>Checkpoints</th><th>Exit evidence</th></tr>
+  <tr><td><b>Unit-bound</b></td><td>One RWD loop (≈3–4 weeks)</td><td>End of each phase</td><td>Completed loop with support</td></tr>
+  <tr><td><b>Month-bound</b></td><td>Two loops; support fades in loop 2</td><td>Fortnightly</td><td>Independent Write phase</td></tr>
+  <tr><td><b>Semester-bound</b></td><td>Three units with tracked growth</td><td>Monthly + data review</td><td>Standard-level rubric scores</td></tr></table>
+  <h2>Phase supports</h2>
+  <table><tr><th>Phase</th><th>Struggling</th><th>Emerging</th></tr>
+  <tr><td><b>Read</b></td><td>Shorter levelled text; pre-taught vocabulary; audio support; partner reading</td><td>Same text, guided questions; vocabulary log</td></tr>
+  <tr><td><b>Write</b></td><td>Sentence frames; shared writing first; reduced word count with full ideas</td><td>Paragraph frames; targeted feedback on two criteria only</td></tr>
+  <tr><td><b>Design</b></td><td>Template storyboard; design-role entry point (images/layout); pair work</td><td>Free storyboard with a model; solo build, paired review</td></tr></table>
+  <h2>Intervention log</h2>
+  <table><tr><th>Student</th><th>Frame</th><th>Support in place</th><th>Checkpoint date</th><th>Progress / next step</th></tr>
+  <tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></table>`); }
+function dlKPPlan(){ dlDoc('iCAN-Knowledge-Processes-Plan','Knowledge-Processes Planning Grid (RWD)', `
+  <p>Plan each lesson so it activates at least two knowledge processes. Tick the boxes you target and note the activity.</p>
+  <table><tr><th>Knowledge process</th><th>Sub-process</th><th>RWD phase</th><th>Planned activity</th><th>Evidence</th></tr>
+  <tr><td rowspan="2"><b>Experiencing</b></td><td>the known</td><td>Read</td><td></td><td></td></tr><tr><td>the new</td><td>Read</td><td></td><td></td></tr>
+  <tr><td rowspan="2"><b>Conceptualising</b></td><td>by naming</td><td>Read → Write</td><td></td><td></td></tr><tr><td>with theory</td><td>Write</td><td></td><td></td></tr>
+  <tr><td rowspan="2"><b>Analysing</b></td><td>functionally</td><td>Write</td><td></td><td></td></tr><tr><td>critically</td><td>Write → Design</td><td></td><td></td></tr>
+  <tr><td rowspan="2"><b>Applying</b></td><td>appropriately</td><td>Design</td><td></td><td></td></tr><tr><td>creatively</td><td>Design (DST)</td><td></td><td></td></tr></table>
+  <h2>Loop note</h2><p>Where will this lesson deliberately send learners <i>back</i> — from Design to Read, or from feedback to Write?</p>`); }
+function dlChecklist(){ dlDoc('iCAN-Student-RWD-Checklist','My RWD Checklist', `
+  <h2>📖 Read (view)</h2><ul><li>I know my purpose for reading.</li><li>I marked new words and found their meanings.</li><li>I can say the main idea in one sentence.</li><li>I noticed one choice the writer/designer made — and why.</li></ul>
+  <h2>✍️ Write (represent)</h2><ul><li>I planned before drafting.</li><li>My writing has a clear beginning, middle and end.</li><li>I used at least three new words from my reading.</li><li>I revised after feedback — and can point to what changed.</li></ul>
+  <h2>🎨 Design (digital storytelling)</h2><ul><li>My storyboard matches my writing.</li><li>Every image/sound helps my message (not just decoration).</li><li>I thought about my audience on every slide/page.</li><li>I shared my story and collected one piece of feedback.</li></ul>
+  <h2>🔁 …and back again</h2><ul><li>Designing made me re-read: what did I check?</li><li>Feedback made me re-write: what did I improve?</li><li>What will I do better in my next loop?</li></ul>`); }
+function dlStoryboard(){ dlDoc('iCAN-DST-Storyboard','My Digital Story — Storyboard', `
+  <p>Name: ____________________ &nbsp;&nbsp; Class: ________ &nbsp;&nbsp; Story title: ____________________</p>
+  <table><tr><th style="width:8%">Panel</th><th>Scene — what happens</th><th>Image / visual idea</th><th>Text on screen</th><th>Narration / sound</th></tr>
+  ${[1,2,3,4,5,6].map(n=>`<tr><td><b>${n}</b></td><td><br><br></td><td></td><td></td><td></td></tr>`).join('')}</table>
+  <h2>Design checks</h2><ul><li>Does panel 1 hook my audience?</li><li>One idea per panel?</li><li>Do words and pictures work together?</li><li>Does the ending answer my story's question?</li></ul>`); }
+function dlConsentDoc(){ dlDoc('iCAN-Parent-Consent-Form','Declaration for Parents — Consent Form', `
+  <p><b>Dear Parent / Guardian,</b></p>
+  <p>Your child is invited to take part in the <b>iCAN Academy EFL File</b> — a Read · Write · Design (RWD) multiliteracies programme. Learners read purposefully, write to represent their ideas, and design digital stories to share them with a real audience. Participation involves classroom activities on the iCAN platform under teacher guidance; certificates are awarded for standard and distinction performance, and work samples are used for learning purposes within the school only.</p>
+  <p>Please sign and return this form, or sign online using the link provided by the teacher.</p>
+  <h2>Consent</h2>
+  <p>I, ______________________________ (parent/guardian of ______________________________ , class ________ ), have read the declaration above and <b>I consent</b> to my child's participation in the iCAN Academy EFL File.</p>
+  <p>Signature: ______________________ &nbsp;&nbsp; Date: ______________</p>
+  <h2 class="rtl">إقرار وموافقة ولي الأمر</h2>
+  <p class="rtl">ولي الأمر الكريم، يسرّنا دعوة ابنكم للمشاركة في ملف اللغة الإنجليزية ضمن أكاديمية iCAN، وهو برنامج قائم على منهجية «اقرأ · اكتب · صمّم» حيث يقرأ المتعلم بوعي، ويكتب ليعبّر عن أفكاره، ثم يصمّم قصصًا رقمية لمشاركتها مع جمهور حقيقي. تشمل المشاركة أنشطة صفية عبر المنصة بإشراف المعلم، وتُمنح شهادات للأداء القياسي والمتميّز، وتُستخدم نماذج الأعمال لأغراض تعليمية داخل المدرسة فقط.</p>
+  <p class="rtl">أنا، ______________________________ (ولي أمر الطالب ______________________________ ، الصف ________ )، اطّلعت على الإقرار أعلاه <b>وأوافق</b> على مشاركة ابني في البرنامج.</p>
+  <p class="rtl">التوقيع: ______________________ &nbsp;&nbsp; التاريخ: ______________</p>`); }
+function printConsent(){
+  const w=window.open('','_blank','width=800,height=900'); if(!w){ alert('Please allow pop-ups to print.'); return; }
+  w.document.write('<html><head><title>iCAN Academy — Parent Consent</title><style>body{font-family:Georgia,serif;margin:40px;color:#1a1a2e;line-height:1.5} h1{font-size:20pt;color:#15183A} .rtl{direction:rtl;text-align:right} .sig{margin-top:26pt}</style></head><body>'+
+  '<h1>iCAN Academy — Declaration for Parents</h1>'+
+  '<p><b>Dear Parent / Guardian,</b> your child is invited to take part in the <b>iCAN Academy EFL File</b> — a Read · Write · Design (RWD) multiliteracies programme in which learners read purposefully, write to represent their ideas, and design digital stories to share them. Participation involves classroom activities on the iCAN platform under teacher guidance; certificates are awarded for standard and distinction performance, and work samples are used for learning purposes within the school only.</p>'+
+  '<p class="sig">I, ______________________________ (parent/guardian of ______________________________ , class ________ ), have read the declaration above and <b>I consent</b> to my child\\u2019s participation.</p>'+
+  '<p>Signature: ______________________ &nbsp;&nbsp; Date: ______________</p><hr>'+
+  '<p class="rtl">ولي الأمر الكريم، يسرّنا دعوة ابنكم للمشاركة في ملف اللغة الإنجليزية ضمن أكاديمية iCAN، وهو برنامج قائم على منهجية «اقرأ · اكتب · صمّم». تشمل المشاركة أنشطة صفية عبر المنصة بإشراف المعلم، وتُمنح شهادات للأداء القياسي والمتميّز.</p>'+
+  '<p class="rtl">أنا، ______________________________ (ولي أمر الطالب ______________________________ ، الصف ________ )، اطّلعت على الإقرار أعلاه <b>وأوافق</b> على مشاركة ابني في البرنامج.</p>'+
+  '<p class="rtl">التوقيع: ______________________ &nbsp;&nbsp; التاريخ: ______________</p>'+
+  '<p style="font-size:9pt;color:#777;margin-top:24pt">Teacher: '+(CONFIG.teacherName||'')+' — '+(CONFIG.teacherTitle||'')+' · '+(CONFIG.teacherCredit||'')+'</p>'+
+  '</body></html>');
+  w.document.close(); setTimeout(()=>{ try{ w.print(); }catch(e){} }, 400);
+}
+
+/* ---------- deep links (#consent / #ask) ---------- */
+function handleBarHash(){
+  if(location.hash==='#consent') setTimeout(()=>openBarPanel('consent'), 350);
+  if(location.hash==='#ask') setTimeout(()=>openBarPanel('qa'), 350);
+}
+window.addEventListener('hashchange', handleBarHash);
+setTimeout(handleBarHash, 500);
+
+/* ---------- styles ---------- */
+(function(){
+  const css = `
+  .ican-sidebar{position:fixed; left:10px; top:50%; transform:translateY(-50%); z-index:60; display:flex; flex-direction:column; gap:8px}
+  .isb-item{position:relative; width:66px; min-height:66px; border:none; cursor:pointer; border-radius:16px;
+    background:linear-gradient(160deg,#f97316,#ea580c); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
+    box-shadow:0 8px 18px rgba(180,70,10,.35), inset 0 1px 0 rgba(255,255,255,.35); transition:.18s; padding:7px 4px}
+  .isb-item:hover{transform:translateX(4px) scale(1.04); box-shadow:0 12px 24px rgba(180,70,10,.45)}
+  .isb-num{font-family:'Fraunces',Georgia,serif; font-weight:800; font-size:.82rem; opacity:.95; border-bottom:1.5px solid rgba(255,255,255,.55); padding-bottom:1px; line-height:1.1}
+  .isb-ic{font-size:1.3rem; line-height:1.25; filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
+  .isb-lab{font-family:'Lexend',sans-serif; font-size:.5rem; font-weight:700; letter-spacing:.02em; text-align:center; line-height:1.15; text-transform:uppercase; opacity:.95}
+  @media(max-width:860px){
+    .ican-sidebar{left:0; right:0; top:auto; bottom:0; transform:none; flex-direction:row; overflow-x:auto; padding:8px 10px calc(8px + env(safe-area-inset-bottom)); background:linear-gradient(0deg,rgba(255,255,255,.92),rgba(255,255,255,.6)); backdrop-filter:blur(6px)}
+    .isb-item{flex:0 0 auto; width:62px; min-height:60px}
+    .isb-item:hover{transform:none}
+  }
+  .mini-bar{display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:#fff; border:1.5px solid var(--line); border-radius:14px; padding:10px 14px; margin:0 0 18px; box-shadow:0 4px 14px rgba(20,40,90,.06)}
+  .mini-bar .mb-title{font-family:'Fraunces',Georgia,serif; font-weight:700; font-size:.92rem; color:var(--ink); margin-right:4px}
+  .mini-bar .chip{cursor:pointer}
+  .mini-bar .chip-hot{background:#fff7ed; border-color:#f97316; color:#9a3412; font-weight:700}
+  .mb-lock{font-size:.75em}
+  .locked-card{text-align:center; padding:40px 24px}
+  .locked-ic{font-size:3rem; filter:drop-shadow(0 6px 10px rgba(0,0,0,.15))}
+  .gate-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:10px}
+  .gate-item{display:flex; align-items:center; gap:9px; border:1.5px solid var(--line); border-radius:12px; padding:9px 12px; background:#fbfaf6}
+  .gate-item.on{background:#ecfdf5; border-color:#10b981}
+  .gate-item .gi-ic{font-size:1.2rem}
+  .gate-item .gi-lab{flex:1; font-size:.86rem; font-weight:600; color:var(--ink)}
+  .gate-item .gi-status{font-size:.62rem; font-weight:800; letter-spacing:.08em; color:#9ca3af}
+  .gate-item.on .gi-status{color:#059669}
+  .init-row,.qa-row{display:flex; gap:10px; border:1.5px solid var(--line); border-radius:12px; padding:10px 14px; margin-top:8px; background:#fff; flex-wrap:wrap}
+  .qa-done{opacity:.72}
+  .qa-reply{background:#f0fdf4; border-left:3px solid #10b981; padding:5px 9px; border-radius:0 8px 8px 0; font-size:.85rem; margin-top:4px}
+  .spec-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:10px}
+  .spec-phase{border:1.5px solid var(--line); border-top:4px solid var(--pc); border-radius:12px; padding:10px 14px; background:#fff}
+  .spec-phase b{color:var(--pc); font-family:'Fraunces',Georgia,serif}
+  .spec-phase b span{font-weight:500; font-size:.85em; color:var(--muted)}
+  .spec-phase p{font-size:.86rem; margin:6px 0 0; color:#333}
+  .spec-loop{border:1.5px dashed #7A2FD0; border-radius:12px; padding:10px 14px; margin-top:10px; background:#faf7ff}
+  .spec-loop b{color:#7A2FD0; font-family:'Fraunces',Georgia,serif}
+  .spec-loop p{font-size:.87rem; margin:6px 0 0}
+  .dl-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:10px}
+  .dl-tile{display:flex; flex-direction:column; align-items:flex-start; gap:3px; text-align:left; border:1.5px solid var(--line); border-radius:12px; padding:12px 14px; background:#fff; cursor:pointer; transition:.15s; font-family:inherit}
+  .dl-tile:hover{transform:translateY(-2px); box-shadow:0 8px 18px rgba(20,40,90,.12); border-color:#f97316}
+  .dl-tile span{font-size:1.4rem}
+  .dl-tile b{color:var(--ink); font-size:.92rem}
+  .dl-tile small{color:var(--muted); font-size:.76rem; line-height:1.3}
+  .consent-text{border:1.5px solid var(--line); border-radius:12px; padding:12px 16px; background:#fbfaf6; font-size:.9rem}
+  .consent-text p{margin:6px 0}
+  @media print{ .ican-sidebar,.mini-bar,.topbar,.a11y,.coach{display:none!important} }`;
+  const s=document.createElement('style'); s.textContent=css; document.head.appendChild(s);
+})();
+
 
 /* boot */
 go('home');
