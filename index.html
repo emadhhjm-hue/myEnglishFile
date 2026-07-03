@@ -244,8 +244,15 @@ table.data tr:nth-child(even){background:#fff}
 .fly-racer{left:-12%; top:80%; font-size:1.75rem; animation:carDrive 7.5s linear infinite; animation-delay:-4s}
 @keyframes carDrive{from{transform:translateX(0)}to{transform:translateX(136vw)}}
 .fly-star{right:22%; top:31%; font-size:1.4rem; animation:bob 5s ease-in-out infinite}
-.sweep{transform-box:fill-box; animation:sweepX 4.5s ease-in-out infinite}
-@keyframes sweepX{0%,100%{transform:translateX(-150px)}50%{transform:translateX(150px)}}
+.orbit-a,.orbit-b{transform-box:fill-box; transform-origin:240px 245px}
+.orbit-a{animation:orbSpin 5s linear infinite}
+.orbit-b{animation:orbSpin 7s linear infinite reverse}
+@keyframes orbSpin{to{transform:rotate(360deg)}}
+/* RWD Recursive Practice Cycle — rotating ring caption + arrow on its internal orbit */
+.rwdc-ringcap{transform-box:view-box; transform-origin:320px 320px; animation:orbSpin 40s linear infinite}
+.rwdc-arrow{transform-box:view-box; transform-origin:320px 320px; animation:orbSpin 12s linear infinite reverse}
+.lr-web:hover .rwdc-ringcap,.lr-web:hover .rwdc-arrow{animation-play-state:paused}
+.tri-note{margin:5px 0 0; font-size:.78rem; color:#4d5470; font-family:'Lexend',sans-serif}
 .lr-grid{position:relative; z-index:1; width:100%; max-width:1060px; display:grid; grid-template-columns:1fr; gap:40px; align-items:center; background:linear-gradient(140deg,#FBD75A 0%,#F4B72A 55%,#E89B12 100%); border-radius:28px; padding:46px 42px; box-sizing:border-box; box-shadow:0 30px 90px rgba(30,60,90,.35), 0 0 120px rgba(247,183,42,.25)}
 @media(min-width:880px){ .lr-grid{grid-template-columns:1.05fr .95fr; gap:56px} }
 .lr-brand{display:flex; align-items:center; gap:18px}
@@ -287,7 +294,7 @@ table.data tr:nth-child(even){background:#fff}
 @keyframes floatB{0%,100%{transform:translateY(0) rotate(1.5deg)}50%{transform:translateY(-14px) rotate(-2deg)}}
 @keyframes floatC{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-10px) rotate(2deg)}}
 @media(max-width:540px){ .lr-web{width:min(320px,90vw)} .lr-brand{flex-direction:column; text-align:center; align-items:center} .rwd-cap{margin-inline:auto} }
-@media (prefers-reduced-motion: reduce){ .cloud,.sun,.sun::after,.tg,.iter,.float-ic,.fly,.sweep{animation:none!important} }
+@media (prefers-reduced-motion: reduce){ .cloud,.sun,.sun::after,.tg,.iter,.float-ic,.fly,.orbit-a,.orbit-b,.rwdc-ringcap,.rwdc-arrow{animation:none!important} }
 .coach{position:fixed; right:0; top:44%; z-index:95; font-family:'Lexend',system-ui,sans-serif}
 .coach-fab{display:flex; align-items:center; gap:8px; border:none; cursor:pointer; background:#fff; color:#1f2a44; box-shadow:0 8px 22px rgba(20,40,90,.28); font-size:.96rem; font-weight:700; padding:11px 16px 11px 14px; border-radius:24px 0 0 24px; border:1px solid var(--line); border-right:none; animation:coachBob 3.4s ease-in-out infinite}
 .coach-fab .coach-ava{font-size:1.25rem}
@@ -1535,17 +1542,37 @@ const ROUTES = {
           </div>
         </div>
         <div class="lr-web">
-          <svg class="rwd-triad" viewBox="0 0 460 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The iterative Read to Write to Design multiliteracies process, and back again">
-            <defs><path id="arcTop" d="M 100 160 A 170 170 0 0 1 360 160" fill="none"/></defs>
-            <text font-family="Fraunces,Georgia,serif" font-weight="700" font-size="17" letter-spacing="0.5">
-              <textPath href="#arcTop" startOffset="50%" text-anchor="middle"><tspan fill="#E0403F">READ</tspan><tspan fill="#15183A"> to </tspan><tspan fill="#2BA84F">WRITE</tspan><tspan fill="#15183A"> to </tspan><tspan fill="#7A2FD0">DESIGN</tspan><tspan fill="#15183A"> and back again</tspan></textPath>
-            </text>
-            <line class="sweep" x1="230" y1="122" x2="230" y2="412" stroke="#F5C518" stroke-width="9" stroke-linecap="round" opacity="0.85"/>
-            <g class="tg tgR"><circle cx="160" cy="210" r="80" fill="#E0403F"/><text x="160" y="219" text-anchor="middle" fill="#fff" font-family="Fraunces,Georgia,serif" font-weight="700" font-size="26">READ</text></g>
-            <g class="tg tgW"><circle cx="300" cy="215" r="80" fill="#2BA84F"/><text x="300" y="224" text-anchor="middle" fill="#fff" font-family="Fraunces,Georgia,serif" font-weight="700" font-size="24">WRITE</text></g>
-            <g class="tg tgD"><circle cx="230" cy="335" r="80" fill="#7A2FD0"/><text x="230" y="344" text-anchor="middle" fill="#fff" font-family="Fraunces,Georgia,serif" font-weight="700" font-size="23">DESIGN</text></g>
+          <svg class="rwd-triad" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RWD Recursive Practice Cycle — read, write, design and back again: the iterative multiliteracies process">
+            <defs>
+              <path id="rwdcTextCircle" d="M 66 320 A 254 254 0 1 1 65.99 320.5" fill="none"/>
+              <radialGradient id="rwdcRingGrad" cx="50%" cy="42%" r="65%">
+                <stop offset="0%" stop-color="#cdc4f6"/><stop offset="78%" stop-color="#b9aef0"/><stop offset="100%" stop-color="#a294e6"/>
+              </radialGradient>
+              <filter id="rwdcShadow" x="-30%" y="-30%" width="160%" height="160%">
+                <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#3b2d7a" flood-opacity="0.30"/>
+              </filter>
+            </defs>
+            <circle cx="320" cy="320" r="304" fill="url(#rwdcRingGrad)"/>
+            <circle cx="320" cy="320" r="206" fill="#f3f0fc"/>
+            <circle cx="320" cy="320" r="206" fill="none" stroke="#ffffff" stroke-width="3" opacity=".7"/>
+            <g class="rwdc-ringcap" font-family="Fraunces,Georgia,serif" font-size="32" letter-spacing="3.5">
+              <text><textPath href="#rwdcTextCircle" textLength="1548" lengthAdjust="spacing"><tspan font-weight="800" fill="#E0403F" letter-spacing="5">READ</tspan><tspan fill="#15183A" font-style="italic"> to </tspan><tspan font-weight="800" fill="#2BA84F" letter-spacing="4">WRITE</tspan><tspan fill="#15183A" font-style="italic"> to </tspan><tspan font-weight="800" fill="#7A2FD0" letter-spacing="4">DESIGN</tspan><tspan fill="#15183A"> and </tspan><tspan font-weight="800" fill="#15183A" letter-spacing="4">back again</tspan><tspan fill="#15183A">&#8201;&#183;&#8201;The Iterative </tspan><tspan font-weight="700" fill="#2b6cb0">Multiliteracies</tspan><tspan fill="#15183A"> Process&#8201;&#183;&#8201;</tspan></textPath></text>
+            </g>
+            <g class="rwdc-arrow">
+              <circle cx="320" cy="320" r="184" fill="none" stroke="#6a5fd0" stroke-width="1.5" stroke-dasharray="2 10" opacity=".35"/>
+              <path d="M 300 136 L 328 121 L 328 151 Z" fill="#2b6cb0" filter="url(#rwdcShadow)"/>
+            </g>
+            <g filter="url(#rwdcShadow)" text-anchor="middle" font-family="Fraunces,Georgia,serif" font-weight="700" fill="#fff">
+              <circle cx="243" cy="262" r="64" fill="#E0403F"/>
+              <text x="243" y="256" font-size="21">READ &#8211;</text><text x="243" y="282" font-size="19">view</text>
+              <circle cx="397" cy="262" r="64" fill="#2BA84F"/>
+              <text x="397" y="256" font-size="21">WRITE &#8211;</text><text x="397" y="282" font-size="18">represent</text>
+              <circle cx="320" cy="392" r="64" fill="#7A2FD0"/>
+              <text x="320" y="386" font-size="21">DESIGN &#8211;</text><text x="320" y="412" font-size="19">DST</text>
+            </g>
           </svg>
-          <p class="tri-cap">The iterative multiliteracies process — <b>design at the core</b>.</p>
+          <p class="tri-cap">Read &#8596; Write &#8596; Design — <b>Iterative RWD Process for 21st Century Multiliteracies Learning</b></p>
+          <p class="tri-note"><i>Note.</i> Adapted from Cope &amp; Kalantzis, 2009, 2023, 2025</p>
           <span class="float-ic fi1">📖</span><span class="float-ic fi2">✍️</span><span class="float-ic fi3">💡</span><span class="float-ic fi4">💬</span><span class="float-ic fi5">🖥️</span>
         </div>
       </div>
@@ -2931,7 +2958,10 @@ function spellNewRound(){ const s=SPELLSTATE; if(!s)return;
 
 /* Standard Spell & Drill — a bank of common words, served 10 fresh per round
    until the whole bank is covered. Extend this list toward 500 over time. */
-const STANDARD_WORDS = [
+/* Standard spelling bank — three difficulty tiers, ~500 common curriculum words.
+   The queue picker (spellPick) shuffles and cycles the whole bank without repeats. */
+const STANDARD_WORDS_RAW = [
+ // ---- Tier 1 (foundation ~160)
  "because","friend","beautiful","important","different","necessary","probably","favourite","tomorrow","weather",
  "interesting","believe","received","separate","definitely","environment","government","business","decision","experience",
  "knowledge","language","library","measure","minute","modern","natural","opinion","picture","possible",
@@ -2948,8 +2978,46 @@ const STANDARD_WORDS = [
  "ordinary","parent","perhaps","popular","position","powerful","quarter","quiet","really","restaurant",
  "science","season","serious","several","shoulder","similar","simple","society","soldier","stomach",
  "stranger","stretch","studied","surprise","thought","through","tongue","towards","traffic","treasure",
- "uniform","useful","vegetable","voyage","welcome","whisper","writing","beneath","bicycle","breakfast"
+ "uniform","useful","vegetable","voyage","welcome","whisper","writing","beneath","bicycle","breakfast",
+ // ---- Tier 2 (intermediate ~180)
+ "achievement","adventure","announce","anxious","apologise","appreciate","approach","argument","arrangement","athlete",
+ "attitude","audience","authority","balance","behaviour","boundary","brilliant","calendar","capable","celebrate",
+ "challenge","chapter","character","charity","chemistry","citizen","climate","colleague","comfort","committee",
+ "communicate","company","competition","complaint","concentrate","conclude","confidence","confirm","conflict","confuse",
+ "connect","conscience","consequence","consider","constant","construct","consume","contain","context","control",
+ "convince","cooperate","courage","creative","criticise","culture","curious","current","danger","debate",
+ "decide","declare","dedicate","defend","demonstrate","depend","design","destination","destroy","determine",
+ "develop","devote","diagram","dictionary","difference","difficult","direction","discipline","discussion","disease",
+ "distinct","divide","document","earthquake","economy","edition","educate","efficient","electricity","emergency",
+ "emotion","emphasise","employee","empty","encourage","energy","engineer","enjoyment","entertain","entire",
+ "environment","equipment","escape","estimate","evening","evidence","exchange","expect","expensive","explain",
+ "explore","express","fascinate","feature","festival","fiction","forecast","forgive","fortune","foundation",
+ "function","furniture","further","gadget","generation","genuine","gesture","gigantic","glorious","goodness",
+ "governor","graduate","gradually","graphic","gravity","greeting","harmful","heritage","horizon","however",
+ "identify","imagine","imitate","immediate","immigrant","impact","impress","improve","incident","include",
+ "increase","independent","industry","influence","information","inhabit","initial","inspire","instant","instead",
+ "instruction","intelligent","intention","interact","internet","introduce","invention","involve","irritate","judgement",
+ "justice","justify","kindergarten","kingdom","knowledge","laboratory","landmark","landscape","legislation","liberty",
+ // ---- Tier 3 (advanced ~160)
+ "accommodate","accomplish","acknowledge","acquaintance","acquire","adequate","adjacent","aesthetic","affiliate","aggravate",
+ "ambiguous","amateur","analysis","ancestor","anniversary","anonymous","apparent","appreciate","appropriate","approximate",
+ "architect","arrangement","artificial","astonish","atmosphere","authentic","authority","autobiography","autonomy","biological",
+ "boundary","bureaucracy","calculation","camouflage","catastrophe","catalogue","category","celebrity","challenge","characterise",
+ "chronological","circumstance","civilisation","clarify","coincidence","colleague","collision","committed","communicate","comparison",
+ "competent","compensate","compliment","comprehensive","conception","concurrent","condemn","conference","confidence","conscience",
+ "conscientious","consecutive","consequence","conservation","consideration","conspicuous","constitution","consultation","consumer","contemporary",
+ "contribute","controversial","convenient","conversation","cooperative","correspondence","corridor","criticism","curriculum","deliberate",
+ "democracy","demonstrate","descendant","description","determine","development","dictionary","dilemma","diplomat","disappearance",
+ "discipline","disciplinary","discrimination","distinguished","distribution","embarrass","emphasise","enthusiasm","environment","equivalent",
+ "essential","exaggerate","exceptional","exhibition","existence","expedition","experience","explanation","exploration","extraordinary",
+ "familiar","fascinate","fellowship","fluctuation","forbidden","fulfilment","genuine","glimpse","government","gratitude",
+ "harmonious","hesitate","hierarchy","hypothesis","ignorance","imagination","immediate","incidentally","independent","indispensable",
+ "infrastructure","initiate","innovation","inspiration","intelligence","interpret","interrupt","introduce","intuition","invention",
+ "irregular","itinerary","journalism","legitimate","liaison","literature","luxurious","magnificent","maintenance","manuscript",
+ "meanwhile","miscellaneous","murmur","nevertheless","nostalgia","obedient","obstacle","occasion","opportunity","orchestra",
+ "parliament","peculiar","perception","permanent","perseverance","phenomenon","philosophy","photograph","physical","picturesque"
 ];
+const STANDARD_WORDS = Array.from(new Set(STANDARD_WORDS_RAW));
 function standardSpellStart(){
   const items=spellPick(STANDARD_WORDS.map(w=>({t:w})), SPELL_ROUND_SIZE, 'standard');
   SPELLSTATE={ key:'standard', back:'spelldrill', type:'word', label:'Standard spelling', items, i:0, attempt:1, first:0, second:0, missed:0, log:[] };
@@ -5769,10 +5837,13 @@ function drawEarnedCert(cert){
 
 /* ===================== ONLINE LITERACY RESOURCES ===================== */
 const LITERACY_RESOURCES = [
-  { cat:"🌐 General English practice", items:[
+  { cat:"🌐 General English & courses", items:[
     ["Test-English","https://test-english.com","Grammar, reading, listening at every level, with answer keys."],
-    ["British Council LearnEnglish","https://learnenglish.britishcouncil.org","Lessons, videos, and skills practice from the British Council."],
-    ["BBC Learning English","https://www.bbc.co.uk/learningenglish","Free lessons across grammar, vocabulary, pronunciation and news."]
+    ["British Council LearnEnglish","https://learnenglish.britishcouncil.org","All English skills for adults — lessons, videos and skills practice."],
+    ["British Council LearnEnglish Kids","https://learnenglishkids.britishcouncil.org","All English skills for younger learners — games, songs and stories."],
+    ["BBC Learning English","https://www.bbc.co.uk/learningenglish","Free lessons across grammar, vocabulary, pronunciation and news."],
+    ["VOA Learning English","https://learningenglish.voanews.com","American English lessons, news stories and audio at graded levels."],
+    ["Oxford Online English — Level Test","https://www.oxfordonlineenglish.com/english-level-test","Free online English level test."]
   ]},
   { cat:"🎓 IELTS practice", items:[
     ["Writing9 — IELTS writing","https://writing9.com","Sample essays and instant feedback on IELTS writing tasks."],
@@ -5782,18 +5853,38 @@ const LITERACY_RESOURCES = [
     ["Cambridge IELTS Practice","https://www.cambridgeenglish.org/exams-and-tests/ielts/preparation","Official Cambridge IELTS preparation materials."]
   ]},
   { cat:"📖 Reading", items:[
+    ["CommonLit","https://www.commonlit.org","Free reading passages and question sets for grades 3–12."],
+    ["ReadWorks","https://www.readworks.org","Passages, question sets and audio for K–12 reading practice."],
+    ["Newsomatic","https://app.newsomatic.net","Daily current-events articles for young readers, with quizzes."],
     ["Newsela","https://newsela.com","Real news articles at different reading levels."],
     ["ReadTheory","https://readtheory.org","Adaptive reading comprehension exercises."],
+    ["Get Epic","https://www.getepic.com","Multimodal reading — books, audiobooks and videos for kids."],
+    ["Unite for Literacy","https://www.uniteforliteracy.com","Free picture-book videos and texts for early readers (ages 1–5)."],
     ["Project Gutenberg","https://www.gutenberg.org","Free classic e-books for extensive reading."]
   ]},
+  { cat:"✍️ Writing tutors & AI feedback", items:[
+    ["Class Companion","https://classcompanion.com","AI tutor and feedback for writing and reading (subscription)."],
+    ["Writable","https://www.writable.com","Process-based writing practice, AI-marked (subscription)."]
+  ]},
+  { cat:"🧩 Grammar", items:[
+    ["English-Grammar.at","https://www.english-grammar.at","Free grammar exercises across every level, with keys."],
+    ["Perfect English Grammar","https://www.perfect-english-grammar.com","Clear grammar explanations plus practice exercises."]
+  ]},
+  { cat:"📚 Vocabulary & spelling", items:[
+    ["Vocabulary.com","https://www.vocabulary.com","Adaptive vocabulary and spelling with example sentences."],
+    ["SpellingTraining.com","https://www.spellingtraining.com","Create custom spelling lists and practise online."],
+    ["Quizlet","https://quizlet.com","Flashcards and games for word study."]
+  ]},
+  { cat:"⌨️ Touch typing", items:[
+    ["TypingClub","https://www.typingclub.com","Free touch-typing course from beginner to advanced."],
+    ["SpellingTraining — Typing","https://www.spellingtraining.com","Also useful for keyboarding while learning spellings."]
+  ]},
   { cat:"🎧 Listening & speaking", items:[
-    ["ELLLO","https://elllo.org","Short listening clips with transcripts and quizzes."],
+    ["TED-Ed","https://ed.ted.com","TED-Ed videos with lesson questions and quizzes."],
+    ["ESLvideo","https://www.eslvideo.com","Short videos with comprehension quizzes."],
+    ["ELLLO","https://elllo.org","Listening clips with transcripts and quizzes."],
     ["Randall's ESL Cyber Listening Lab","https://www.esl-lab.com","Graded listening practice with quizzes."],
     ["ESL Fast — Conversations","https://www.eslfast.com","Dialogues for everyday English practice."]
-  ]},
-  { cat:"📚 Vocabulary", items:[
-    ["Vocabulary.com","https://www.vocabulary.com","Adaptive vocabulary learning with example sentences."],
-    ["Quizlet","https://quizlet.com","Flashcards and games for word study."]
   ]}
 ];
 
