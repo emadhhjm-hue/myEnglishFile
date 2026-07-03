@@ -218,7 +218,7 @@ table.data tr:nth-child(even){background:#fff}
 .dash-hero-text b{color:#fff}
 .dash-hero-badge{font-family:'Fraunces'; font-weight:800; font-size:1.7rem; background:#FACC3D; color:#15183A; width:84px; height:84px; min-width:84px; border-radius:20px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.2); transform:rotate(-4deg)}
 @media(max-width:560px){ .dash-hero-badge{display:none} .dash-hero-text h1{font-size:1.7rem} }
-.landing-rwd{position:relative; overflow:hidden; min-height:100vh; width:100%; box-sizing:border-box; background:linear-gradient(180deg,#6fb7ea 0%,#9ed4f2 34%,#cfeafb 66%,#eaf7ff 100%); display:flex; align-items:center; justify-content:center; padding:44px 24px 44px 142px}
+.landing-rwd{position:relative; overflow:hidden; min-height:100vh; width:100%; box-sizing:border-box; background:linear-gradient(180deg,#6fb7ea 0%,#9ed4f2 34%,#cfeafb 66%,#eaf7ff 100%); display:flex; align-items:center; justify-content:center; padding:44px 24px 44px 170px}
 .sky{position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden}
 .sun{position:absolute; top:-110px; right:5%; width:340px; height:340px; border-radius:50%; background:radial-gradient(circle,#fffbe6 0%,#ffe98a 30%,#ffd54f 52%,rgba(255,213,79,0) 74%); animation:sunPulse 5s ease-in-out infinite}
 .sun::after{content:''; position:absolute; inset:-80px; border-radius:50%; background:conic-gradient(from 0deg, rgba(255,240,170,.0) 0deg, rgba(255,240,170,.5) 15deg, rgba(255,240,170,0) 30deg, rgba(255,240,170,0) 50deg, rgba(255,240,170,.5) 65deg, rgba(255,240,170,0) 80deg, rgba(255,240,170,0) 100deg, rgba(255,240,170,.5) 115deg, rgba(255,240,170,0) 130deg, rgba(255,240,170,0) 150deg, rgba(255,240,170,.5) 165deg, rgba(255,240,170,0) 180deg, rgba(255,240,170,0) 200deg, rgba(255,240,170,.5) 215deg, rgba(255,240,170,0) 230deg, rgba(255,240,170,0) 250deg, rgba(255,240,170,.5) 265deg, rgba(255,240,170,0) 280deg, rgba(255,240,170,0) 310deg, rgba(255,240,170,.5) 325deg, rgba(255,240,170,0) 340deg, rgba(255,240,170,0) 360deg); animation:raySpin 28s linear infinite}
@@ -274,7 +274,8 @@ table.data tr:nth-child(even){background:#fff}
 .tgD{animation:floatC 6.2s ease-in-out infinite; animation-delay:-2.4s}
 .iter{transform-box:fill-box; transform-origin:center; animation:iterSpin 7s linear infinite}
 @keyframes iterSpin{to{transform:rotate(360deg)}}
-.float-ic{position:absolute; font-size:1.6rem; opacity:.92; filter:drop-shadow(0 3px 6px rgba(0,0,0,.15)); pointer-events:none}
+.float-ic{display:none!important}
+.fly{display:none!important}
 .fi1{top:0; left:-3%; animation:bob 4s ease-in-out infinite}
 .fi2{top:12%; right:-5%; animation:bob 5s ease-in-out infinite; animation-delay:-1s}
 .fi3{bottom:26%; left:-6%; animation:bob 4.6s ease-in-out infinite; animation-delay:-2s}
@@ -1532,8 +1533,6 @@ const ROUTES = {
       <div class="sky" aria-hidden="true">
         <div class="sun"></div>
         <div class="cloud cloud1"></div><div class="cloud cloud2"></div><div class="cloud cloud3"></div>
-        <div class="route route1"></div><div class="route route2"></div>
-        <span class="fly fly-plane">✈️</span>
       </div>
       <div class="lr-grid">
         <div class="lr-left">
@@ -1577,7 +1576,7 @@ const ROUTES = {
           </svg>
           <p class="tri-cap">Read &#8596; Write &#8596; Design — <b>Iterative RWD Process for 21st Century Multiliteracies Learning</b></p>
           <p class="tri-note"><i>Note.</i> Adapted from Cope &amp; Kalantzis, 2009, 2023, 2025</p>
-          <span class="float-ic fi1">📖</span><span class="float-ic fi2">✍️</span><span class="float-ic fi3">💡</span><span class="float-ic fi4">💬</span><span class="float-ic fi5">🖥️</span>
+          <!-- floating icons removed -->
         </div>
       </div>
     </div>`;
@@ -6519,22 +6518,27 @@ setTimeout(handleBarHash, 500);
 /* ---------- styles ---------- */
 (function(){
   const css = `
-  .ican-sidebar{position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:60; display:flex; flex-direction:column; gap:4px}
-  .isb-item{position:relative; width:120px; min-height:52px; border:none; cursor:pointer; border-radius:0 10px 10px 0;
-    background:linear-gradient(160deg,#1a1a2e,#16213e); color:#fff; display:flex; align-items:center; gap:8px;
-    box-shadow:0 4px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08); transition:.18s; padding:8px 10px 8px 12px; overflow:hidden}
-  .isb-item::before{content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:#f97316; border-radius:0 2px 2px 0}
-  .isb-item:hover{transform:translateX(6px); box-shadow:0 8px 20px rgba(0,0,0,.45); background:linear-gradient(160deg,#0f3460,#1a1a2e)}
-  .isb-item:hover::before{width:6px}
-  .isb-num{font-family:'Fraunces',Georgia,serif; font-weight:800; font-size:.72rem; opacity:.7; line-height:1; min-width:16px}
-  .isb-ic{font-size:1.15rem; line-height:1; filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
-  .isb-lab{font-family:'Lexend',sans-serif; font-size:.52rem; font-weight:700; letter-spacing:.02em; text-align:left; line-height:1.2; text-transform:uppercase; opacity:.9; flex:1}
+  .ican-sidebar{position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:60; display:flex; flex-direction:column; gap:5px}
+  .isb-item{position:relative; width:148px; min-height:58px; border:none; cursor:pointer; border-radius:0 12px 12px 0;
+    color:#fff; display:flex; align-items:center; gap:10px;
+    box-shadow:0 4px 14px rgba(0,0,0,.3); transition:.2s; padding:10px 12px 10px 14px; overflow:hidden}
+  .isb-item::before{content:''; position:absolute; left:0; top:0; bottom:0; width:5px; background:rgba(255,255,255,.45); border-radius:0 2px 2px 0}
+  .isb-item:hover{transform:translateX(8px); box-shadow:0 8px 22px rgba(0,0,0,.4); filter:brightness(1.12)}
+  .isb-item:nth-child(1){background:linear-gradient(135deg,#1e3a5f,#2563eb)}
+  .isb-item:nth-child(2){background:linear-gradient(135deg,#7c2d12,#ea580c)}
+  .isb-item:nth-child(3){background:linear-gradient(135deg,#134e4a,#14b8a6)}
+  .isb-item:nth-child(4){background:linear-gradient(135deg,#581c87,#a855f7)}
+  .isb-item:nth-child(5){background:linear-gradient(135deg,#1a1a2e,#475569)}
+  .isb-item:nth-child(6){background:linear-gradient(135deg,#831843,#ec4899)}
+  .isb-num{font-family:'Fraunces',Georgia,serif; font-weight:800; font-size:.85rem; opacity:.9; line-height:1; min-width:18px; text-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .isb-ic{font-size:1.35rem; line-height:1; filter:drop-shadow(0 2px 4px rgba(0,0,0,.3))}
+  .isb-lab{font-family:'Lexend',sans-serif; font-size:.7rem; font-weight:700; letter-spacing:.03em; text-align:left; line-height:1.25; text-transform:uppercase; flex:1; text-shadow:0 1px 2px rgba(0,0,0,.2)}
   @media(max-width:860px){
-    .ican-sidebar{left:0; right:0; top:auto; bottom:0; transform:none; flex-direction:row; overflow-x:auto; padding:6px 10px calc(6px + env(safe-area-inset-bottom)); background:rgba(26,26,46,.95); backdrop-filter:blur(6px); border-radius:0; gap:4px}
-    .isb-item{flex:0 0 auto; width:auto; min-width:80px; min-height:44px; border-radius:8px; padding:6px 10px; box-shadow:none; flex-direction:column; gap:2px; align-items:center; text-align:center}
+    .ican-sidebar{left:0; right:0; top:auto; bottom:0; transform:none; flex-direction:row; overflow-x:auto; padding:6px 10px calc(6px + env(safe-area-inset-bottom)); background:rgba(20,20,36,.95); backdrop-filter:blur(6px); border-radius:0; gap:5px}
+    .isb-item{flex:0 0 auto; width:auto; min-width:90px; min-height:48px; border-radius:10px; padding:8px 12px; box-shadow:none; flex-direction:column; gap:3px; align-items:center; text-align:center}
     .isb-item::before{display:none}
     .isb-item:hover{transform:none}
-    .isb-lab{text-align:center; font-size:.46rem}
+    .isb-lab{text-align:center; font-size:.58rem}
   }
   .mini-bar{display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:#fff; border:1.5px solid var(--line); border-radius:14px; padding:10px 14px; margin:0 0 18px; box-shadow:0 4px 14px rgba(20,40,90,.06)}
   .mini-bar .mb-title{font-family:'Fraunces',Georgia,serif; font-weight:700; font-size:.92rem; color:var(--ink); margin-right:4px}
