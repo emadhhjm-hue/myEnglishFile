@@ -218,7 +218,7 @@ table.data tr:nth-child(even){background:#fff}
 .dash-hero-text b{color:#fff}
 .dash-hero-badge{font-family:'Fraunces'; font-weight:800; font-size:1.7rem; background:#FACC3D; color:#15183A; width:84px; height:84px; min-width:84px; border-radius:20px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.2); transform:rotate(-4deg)}
 @media(max-width:560px){ .dash-hero-badge{display:none} .dash-hero-text h1{font-size:1.7rem} }
-.landing-rwd{position:relative; overflow:hidden; min-height:100vh; width:100%; box-sizing:border-box; background:linear-gradient(180deg,#6fb7ea 0%,#9ed4f2 34%,#cfeafb 66%,#eaf7ff 100%); display:flex; align-items:center; justify-content:center; padding:44px 24px}
+.landing-rwd{position:relative; overflow:hidden; min-height:100vh; width:100%; box-sizing:border-box; background:linear-gradient(180deg,#6fb7ea 0%,#9ed4f2 34%,#cfeafb 66%,#eaf7ff 100%); display:flex; align-items:center; justify-content:center; padding:44px 24px 44px 90px}
 .sky{position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden}
 .sun{position:absolute; top:-110px; right:5%; width:340px; height:340px; border-radius:50%; background:radial-gradient(circle,#fffbe6 0%,#ffe98a 30%,#ffd54f 52%,rgba(255,213,79,0) 74%); animation:sunPulse 5s ease-in-out infinite}
 .sun::after{content:''; position:absolute; inset:-80px; border-radius:50%; background:conic-gradient(from 0deg, rgba(255,240,170,.0) 0deg, rgba(255,240,170,.5) 15deg, rgba(255,240,170,0) 30deg, rgba(255,240,170,0) 50deg, rgba(255,240,170,.5) 65deg, rgba(255,240,170,0) 80deg, rgba(255,240,170,0) 100deg, rgba(255,240,170,.5) 115deg, rgba(255,240,170,0) 130deg, rgba(255,240,170,0) 150deg, rgba(255,240,170,.5) 165deg, rgba(255,240,170,0) 180deg, rgba(255,240,170,0) 200deg, rgba(255,240,170,.5) 215deg, rgba(255,240,170,0) 230deg, rgba(255,240,170,0) 250deg, rgba(255,240,170,.5) 265deg, rgba(255,240,170,0) 280deg, rgba(255,240,170,0) 310deg, rgba(255,240,170,.5) 325deg, rgba(255,240,170,0) 340deg, rgba(255,240,170,0) 360deg); animation:raySpin 28s linear infinite}
@@ -253,8 +253,9 @@ table.data tr:nth-child(even){background:#fff}
 .rwdc-arrow{transform-box:view-box; transform-origin:320px 320px; animation:orbSpin 12s linear infinite reverse}
 .lr-web:hover .rwdc-ringcap,.lr-web:hover .rwdc-arrow{animation-play-state:paused}
 .tri-note{margin:5px 0 0; font-size:.78rem; color:#4d5470; font-family:'Lexend',sans-serif}
-.lr-grid{position:relative; z-index:1; width:100%; max-width:1240px; display:grid; grid-template-columns:1fr; gap:40px; align-items:center; background:linear-gradient(140deg,#FBD75A 0%,#F4B72A 55%,#E89B12 100%); border-radius:28px; padding:46px 54px; box-sizing:border-box; box-shadow:0 30px 90px rgba(30,60,90,.35), 0 0 120px rgba(247,183,42,.25)}
-@media(min-width:880px){ .lr-grid{grid-template-columns:1.05fr .95fr; gap:56px; padding:46px 64px} }
+.lr-grid{position:relative; z-index:1; width:100%; max-width:1140px; display:grid; grid-template-columns:1fr; gap:40px; align-items:center; background:linear-gradient(140deg,#FBD75A 0%,#F4B72A 55%,#E89B12 100%); border-radius:28px; padding:46px 48px; box-sizing:border-box; box-shadow:0 30px 90px rgba(30,60,90,.35), 0 0 120px rgba(247,183,42,.25)}
+@media(min-width:880px){ .lr-grid{grid-template-columns:1.05fr .95fr; gap:56px; padding:46px 56px} }
+@media(max-width:860px){ .landing-rwd{padding-left:24px} }
 .lr-brand{display:flex; align-items:center; gap:18px}
 .rwd-logo{width:104px; height:auto; flex:none; filter:drop-shadow(0 8px 14px rgba(0,0,0,.2))}
 .rwd-title{font-family:'Fraunces'; font-weight:800; font-size:clamp(3.4rem,9vw,5.6rem); line-height:.88; color:#15183A; margin:0; letter-spacing:.02em}
