@@ -218,7 +218,7 @@ table.data tr:nth-child(even){background:#fff}
 .dash-hero-text b{color:#fff}
 .dash-hero-badge{font-family:'Fraunces'; font-weight:800; font-size:1.7rem; background:#FACC3D; color:#15183A; width:84px; height:84px; min-width:84px; border-radius:20px; display:flex; align-items:center; justify-content:center; box-shadow:0 6px 18px rgba(0,0,0,.2); transform:rotate(-4deg)}
 @media(max-width:560px){ .dash-hero-badge{display:none} .dash-hero-text h1{font-size:1.7rem} }
-.landing-rwd{position:relative; overflow:hidden; min-height:100vh; width:100%; box-sizing:border-box; background:linear-gradient(180deg,#6fb7ea 0%,#9ed4f2 34%,#cfeafb 66%,#eaf7ff 100%); display:flex; align-items:center; justify-content:center; padding:44px 24px 44px 90px}
+.landing-rwd{position:relative; overflow:hidden; min-height:100vh; width:100%; box-sizing:border-box; background:linear-gradient(180deg,#6fb7ea 0%,#9ed4f2 34%,#cfeafb 66%,#eaf7ff 100%); display:flex; align-items:center; justify-content:center; padding:44px 24px 44px 142px}
 .sky{position:absolute; inset:0; z-index:0; pointer-events:none; overflow:hidden}
 .sun{position:absolute; top:-110px; right:5%; width:340px; height:340px; border-radius:50%; background:radial-gradient(circle,#fffbe6 0%,#ffe98a 30%,#ffd54f 52%,rgba(255,213,79,0) 74%); animation:sunPulse 5s ease-in-out infinite}
 .sun::after{content:''; position:absolute; inset:-80px; border-radius:50%; background:conic-gradient(from 0deg, rgba(255,240,170,.0) 0deg, rgba(255,240,170,.5) 15deg, rgba(255,240,170,0) 30deg, rgba(255,240,170,0) 50deg, rgba(255,240,170,.5) 65deg, rgba(255,240,170,0) 80deg, rgba(255,240,170,0) 100deg, rgba(255,240,170,.5) 115deg, rgba(255,240,170,0) 130deg, rgba(255,240,170,0) 150deg, rgba(255,240,170,.5) 165deg, rgba(255,240,170,0) 180deg, rgba(255,240,170,0) 200deg, rgba(255,240,170,.5) 215deg, rgba(255,240,170,0) 230deg, rgba(255,240,170,0) 250deg, rgba(255,240,170,.5) 265deg, rgba(255,240,170,0) 280deg, rgba(255,240,170,0) 310deg, rgba(255,240,170,.5) 325deg, rgba(255,240,170,0) 340deg, rgba(255,240,170,0) 360deg); animation:raySpin 28s linear infinite}
@@ -236,12 +236,9 @@ table.data tr:nth-child(even){background:#fff}
 .route1{width:150%; left:-25%; top:23%; transform:rotate(-14deg)}
 .route2{width:162%; left:-31%; top:82%; transform:rotate(2deg)}
 .fly{position:absolute; font-size:2rem; filter:drop-shadow(0 4px 8px rgba(0,0,0,.22)); will-change:transform; z-index:0}
-.fly-plane{left:-10%; top:17%; animation:planeFly 21s linear infinite; transform:scaleX(-1)}
+.fly-plane{left:-10%; top:17%; animation:planeFly 21s linear infinite; transform:scaleX(-1); font-size:1.6rem; opacity:.7}
 @keyframes planeFly{from{transform:scaleX(-1) translate(0,0)}to{transform:scaleX(-1) translate(132vw,7vh)}}
-.fly-rocket{left:-8%; top:74%; animation:rocketFly 13s linear infinite}
-@keyframes rocketFly{0%{transform:translate(0,0) rotate(-40deg); opacity:0}6%{opacity:1}92%{opacity:1}100%{transform:translate(122vw,-60vh) rotate(-40deg); opacity:0}}
-.fly-car{left:-12%; top:83%; animation:carDrive 12s linear infinite; animation-delay:-2s}
-.fly-racer{left:-12%; top:80%; font-size:1.75rem; animation:carDrive 7.5s linear infinite; animation-delay:-4s}
+.fly-rocket,.fly-car,.fly-racer,.fly-star{display:none}
 @keyframes carDrive{from{transform:translateX(0)}to{transform:translateX(136vw)}}
 .fly-star{right:22%; top:31%; font-size:1.4rem; animation:bob 5s ease-in-out infinite}
 .orbit-a,.orbit-b{transform-box:fill-box; transform-origin:240px 245px}
@@ -1495,6 +1492,7 @@ function go(screen, arg){
   }
   ROUTES[screen](arg); updateWho();
   if(typeof injectBars==='function') injectBars(screen);
+  if(typeof lockAllItems==='function') requestAnimationFrame(lockAllItems);
   requestAnimationFrame(positionKnobs);
 }
 function positionKnobs(){
@@ -1536,10 +1534,6 @@ const ROUTES = {
         <div class="cloud cloud1"></div><div class="cloud cloud2"></div><div class="cloud cloud3"></div>
         <div class="route route1"></div><div class="route route2"></div>
         <span class="fly fly-plane">✈️</span>
-        <span class="fly fly-rocket">🚀</span>
-        <span class="fly fly-car">🚗</span>
-        <span class="fly fly-racer">🏎️</span>
-        <span class="fly fly-star">⭐</span>
       </div>
       <div class="lr-grid">
         <div class="lr-left">
@@ -6046,6 +6040,7 @@ function gateCardHTML(){ return `
       <button class="btn sm ghost" onclick="setAllGates(false)">Lock all</button>
     </div>
     <div class="gate-grid" id="gateGrid"></div>
+    <div class="item-gate-area">${typeof itemGateHTML==='function'?itemGateHTML():''}</div>
   </div>`;}
 function paintGates(){
   const g=document.getElementById('gateGrid'); if(!g) return;
@@ -6524,18 +6519,22 @@ setTimeout(handleBarHash, 500);
 /* ---------- styles ---------- */
 (function(){
   const css = `
-  .ican-sidebar{position:fixed; left:10px; top:50%; transform:translateY(-50%); z-index:60; display:flex; flex-direction:column; gap:6px}
-  .isb-item{position:relative; width:62px; min-height:64px; border:none; cursor:pointer; border-radius:10px;
-    background:linear-gradient(160deg,#1a1a2e,#16213e); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px;
-    box-shadow:0 6px 16px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.1); transition:.18s; padding:7px 4px}
-  .isb-item:hover{transform:translateX(4px) scale(1.04); box-shadow:0 10px 22px rgba(0,0,0,.5); background:linear-gradient(160deg,#0f3460,#1a1a2e)}
-  .isb-num{font-family:'Fraunces',Georgia,serif; font-weight:800; font-size:.78rem; opacity:.85; border-bottom:1.5px solid rgba(255,255,255,.3); padding-bottom:1px; line-height:1.1}
-  .isb-ic{font-size:1.25rem; line-height:1.25; filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
-  .isb-lab{font-family:'Lexend',sans-serif; font-size:.48rem; font-weight:700; letter-spacing:.02em; text-align:center; line-height:1.15; text-transform:uppercase; opacity:.85}
+  .ican-sidebar{position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:60; display:flex; flex-direction:column; gap:4px}
+  .isb-item{position:relative; width:120px; min-height:52px; border:none; cursor:pointer; border-radius:0 10px 10px 0;
+    background:linear-gradient(160deg,#1a1a2e,#16213e); color:#fff; display:flex; align-items:center; gap:8px;
+    box-shadow:0 4px 14px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08); transition:.18s; padding:8px 10px 8px 12px; overflow:hidden}
+  .isb-item::before{content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:#f97316; border-radius:0 2px 2px 0}
+  .isb-item:hover{transform:translateX(6px); box-shadow:0 8px 20px rgba(0,0,0,.45); background:linear-gradient(160deg,#0f3460,#1a1a2e)}
+  .isb-item:hover::before{width:6px}
+  .isb-num{font-family:'Fraunces',Georgia,serif; font-weight:800; font-size:.72rem; opacity:.7; line-height:1; min-width:16px}
+  .isb-ic{font-size:1.15rem; line-height:1; filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))}
+  .isb-lab{font-family:'Lexend',sans-serif; font-size:.52rem; font-weight:700; letter-spacing:.02em; text-align:left; line-height:1.2; text-transform:uppercase; opacity:.9; flex:1}
   @media(max-width:860px){
-    .ican-sidebar{left:0; right:0; top:auto; bottom:0; transform:none; flex-direction:row; overflow-x:auto; padding:8px 10px calc(8px + env(safe-area-inset-bottom)); background:rgba(26,26,46,.92); backdrop-filter:blur(6px); border-radius:0}
-    .isb-item{flex:0 0 auto; width:58px; min-height:58px; box-shadow:none}
+    .ican-sidebar{left:0; right:0; top:auto; bottom:0; transform:none; flex-direction:row; overflow-x:auto; padding:6px 10px calc(6px + env(safe-area-inset-bottom)); background:rgba(26,26,46,.95); backdrop-filter:blur(6px); border-radius:0; gap:4px}
+    .isb-item{flex:0 0 auto; width:auto; min-width:80px; min-height:44px; border-radius:8px; padding:6px 10px; box-shadow:none; flex-direction:column; gap:2px; align-items:center; text-align:center}
+    .isb-item::before{display:none}
     .isb-item:hover{transform:none}
+    .isb-lab{text-align:center; font-size:.46rem}
   }
   .mini-bar{display:flex; align-items:center; gap:8px; flex-wrap:wrap; background:#fff; border:1.5px solid var(--line); border-radius:14px; padding:10px 14px; margin:0 0 18px; box-shadow:0 4px 14px rgba(20,40,90,.06)}
   .mini-bar .mb-title{font-family:'Fraunces',Georgia,serif; font-weight:700; font-size:.92rem; color:var(--ink); margin-right:4px}
@@ -6574,6 +6573,184 @@ setTimeout(handleBarHash, 500);
   const s=document.createElement('style'); s.textContent=css; document.head.appendChild(s);
 })();
 
+
+
+/* ====================== ITEM-LEVEL ACTIVATION ====================== */
+/* Teachers activate individual assignments within courses and exams.
+   Items default to LOCKED. The teacher toggles them from the dashboard
+   via the "Manage Activation" card (which now shows both module gates
+   and item gates). Storage key: ican_item_gates → {itemId: true/false} */
+
+function itemGates(){ return Store.get('ican_item_gates')||{}; }
+function itemGateOpen(id){ return !!itemGates()[id]; }
+function setItemGate(id,v){ const g=itemGates(); g[id]=!!v; Store.set('ican_item_gates',g); }
+function setAllItemGates(ids,v){ const g=itemGates(); ids.forEach(id=>g[id]=!!v); Store.set('ican_item_gates',g); }
+
+/* Collect every activatable item ID across the platform */
+function allItemIds(){
+  const ids=[];
+  // Reading course
+  try{ Object.keys(RCOURSE).forEach(lv=>{ rcUnits(lv).forEach(u=>u.lessons.forEach(l=>ids.push({id:l.id, label:l.title, group:'Reading Course ('+RCOURSE[lv].label+')'}))) }); }catch(e){}
+  // Writing course
+  try{ Object.keys(WCOURSE).forEach(lv=>{ wcUnits(lv).forEach(u=>u.lessons.forEach(l=>ids.push({id:l.id, label:l.title, group:'Writing Course ('+WCOURSE[lv].label+')'}))) }); }catch(e){}
+  // Design challenges
+  try{ allChallenges().forEach(d=>ids.push({id:d.id, label:d.title||d.id, group:'Design Studio'})); }catch(e){}
+  // Full exams
+  try{ EXAMS.forEach((e,i)=>ids.push({id:'exam_'+i, label:e.label, group:'Full-length Exams'})); }catch(e){}
+  // Grammar topics
+  try{ Object.keys(GRM).forEach(lv=>{ GRM[lv].topics.forEach(t=>ids.push({id:t.id, label:t.topic, group:'Grammar ('+lv+')'})) }); }catch(e){}
+  // Reading practice
+  try{ READING.forEach(r=>ids.push({id:'rp_'+r.title.replace(/\s/g,'_'), label:r.title, group:'Reading Practice'})); }catch(e){}
+  // Writing practice
+  try{ WRITING.forEach(w=>ids.push({id:'wp_'+w.title.replace(/\s/g,'_'), label:w.title, group:'Writing Practice'})); }catch(e){}
+  // Listening
+  try{ LISTEN_COMP.forEach(c=>ids.push({id:'lc_'+c.id, label:c.title, group:'Listening Comp'})); }catch(e){}
+  // Revision
+  try{ REVISE.forEach(t=>ids.push({id:'rev_'+t.id, label:t.title, group:'Revision'})); }catch(e){}
+  return ids;
+}
+
+/* ---- Inject lock icons into course lesson rows ---- */
+function lockLessonRows(){
+  document.querySelectorAll('.lesson-row').forEach(row=>{
+    const btn = row.querySelector('button[onclick]');
+    if(!btn) return;
+    const m = (btn.getAttribute('onclick')||'').match(/go\('(?:rcLesson|wcLesson)'\s*,\s*'([^']+)'/);
+    if(!m) return;
+    const id = m[1];
+    if(!itemGateOpen(id)){
+      btn.disabled = true;
+      btn.textContent = '🔒 Locked';
+      btn.style.opacity = '0.5';
+      btn.style.pointerEvents = 'none';
+      row.style.opacity = '0.6';
+    }
+  });
+}
+
+/* ---- Patch exam buttons ---- */
+function lockExamButtons(){
+  document.querySelectorAll('button[onclick*="examTest"]').forEach(btn=>{
+    const m = (btn.getAttribute('onclick')||'').match(/go\('examTest'\s*,\s*'(\d+)'/);
+    if(!m) return;
+    const id = 'exam_'+m[1];
+    if(!itemGateOpen(id)){
+      btn.disabled = true; btn.textContent = '🔒 Locked'; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none';
+    }
+  });
+}
+
+/* ---- Patch grammar topic buttons ---- */
+function lockGrammarButtons(){
+  document.querySelectorAll('button[onclick*="grammarLesson"]').forEach(btn=>{
+    const m = (btn.getAttribute('onclick')||'').match(/go\('grammarLesson'\s*,\s*'([^']+)'/);
+    if(!m) return;
+    if(!itemGateOpen(m[1])){
+      btn.disabled = true; btn.style.opacity = '0.45'; btn.style.pointerEvents = 'none';
+      btn.insertAdjacentHTML('afterbegin','<span style="font-size:1.2em">🔒 </span>');
+    }
+  });
+}
+
+/* ---- Patch reading/writing practice items ---- */
+function lockPracticeButtons(){
+  document.querySelectorAll('button[onclick*="readItem"], button[onclick*="writeItem"]').forEach(btn=>{
+    const m = (btn.getAttribute('onclick')||'').match(/go\('(readItem|writeItem)'\s*,\s*'?(\d+)/);
+    if(!m) return;
+    const prefix = m[1]==='readItem' ? 'rp_' : 'wp_';
+    // Get title from the row
+    const row = btn.closest('.lesson-row') || btn.closest('.item-row') || btn.parentElement;
+    const titleEl = row ? row.querySelector('.t, b, h3') : null;
+    const title = titleEl ? titleEl.textContent.trim().replace(/\s/g,'_').replace(/[✓✗].*/,'').trim() : m[2];
+    const id = prefix + title;
+    if(!itemGateOpen(id)){
+      btn.disabled = true; btn.textContent = '🔒 Locked'; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none';
+      if(row) row.style.opacity = '0.6';
+    }
+  });
+}
+
+/* ---- Patch design challenge buttons ---- */
+function lockDesignButtons(){
+  document.querySelectorAll('button[onclick*="dChallenge"]').forEach(btn=>{
+    const m = (btn.getAttribute('onclick')||'').match(/go\('dChallenge'\s*,\s*'([^']+)'/);
+    if(!m) return;
+    if(!itemGateOpen(m[1])){
+      btn.disabled = true; btn.textContent = '🔒 Locked'; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none';
+    }
+  });
+}
+
+/* ---- Patch listen comp buttons ---- */
+function lockListenButtons(){
+  document.querySelectorAll('button[onclick*="listenComp"]').forEach(btn=>{
+    const m = (btn.getAttribute('onclick')||'').match(/go\('listenComp'\s*,\s*'([^']+)'/);
+    if(!m) return;
+    if(!itemGateOpen('lc_'+m[1])){
+      btn.disabled = true; btn.textContent = '🔒 Locked'; btn.style.opacity = '0.5'; btn.style.pointerEvents = 'none';
+    }
+  });
+}
+
+/* ---- Patch revision buttons ---- */
+function lockReviseButtons(){
+  document.querySelectorAll('button[onclick*="reviseTask"]').forEach(btn=>{
+    const m = (btn.getAttribute('onclick')||'').match(/go\('reviseTask'\s*,\s*'([^']+)'/);
+    if(!m) return;
+    if(!itemGateOpen('rev_'+m[1])){
+      btn.disabled = true; btn.style.opacity = '0.45'; btn.style.pointerEvents = 'none';
+      btn.insertAdjacentHTML('afterbegin','<span style="font-size:1.1em">🔒 </span>');
+    }
+  });
+}
+
+/* Master lock call — runs after every screen render */
+function lockAllItems(){
+  if(!(SESSION && SESSION.role==='student')) return;
+  lockLessonRows(); lockExamButtons(); lockGrammarButtons();
+  lockPracticeButtons(); lockDesignButtons(); lockListenButtons(); lockReviseButtons();
+}
+
+/* ---- Teacher: item activation UI inside the gate card ---- */
+function itemGateHTML(){
+  const items = allItemIds();
+  const groups = {};
+  items.forEach(it=>{ (groups[it.group]=groups[it.group]||[]).push(it); });
+  const g = itemGates();
+  let html = '<div style="margin-top:18px"><h3 style="font-size:1.1rem">📋 Per-assignment activation</h3>';
+  html += '<p style="color:var(--muted);font-size:.85rem;margin:4px 0 10px">Each assignment inside courses, exams and quizzes is individually locked until you activate it. This lets you pace students assignment by assignment.</p>';
+  html += '<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap"><button class="btn sm teal" onclick="activateAllItems(true)">Activate all items</button><button class="btn sm ghost" onclick="activateAllItems(false)">Lock all items</button></div>';
+  for(const grp of Object.keys(groups)){
+    const its = groups[grp];
+    const allOn = its.every(it=>g[it.id]);
+    html += `<details style="margin-bottom:8px;border:1px solid var(--line);border-radius:10px;padding:8px 12px;background:#fbfaf6"><summary style="cursor:pointer;font-weight:700;font-size:.9rem">${esc(grp)} <span style="font-size:.75rem;color:var(--muted)">(${its.filter(it=>g[it.id]).length}/${its.length} active)</span> <button class="btn sm ${allOn?'ghost':'teal'}" style="float:right;margin-top:-4px" onclick="event.stopPropagation();toggleGroupItems('${esc(grp)}',${allOn?'false':'true'})">${allOn?'Lock group':'Activate group'}</button></summary>`;
+    html += '<div class="gate-grid" style="margin-top:8px">';
+    its.forEach(it=>{
+      const on = !!g[it.id];
+      html += `<div class="gate-item ${on?'on':''}" style="min-height:auto;padding:6px 10px"><span class="gi-lab" style="font-size:.8rem">${esc(it.label)}</span><span class="gi-status">${on?'ACTIVE':'LOCKED'}</span><button class="btn sm ${on?'ghost':'teal'}" onclick="toggleOneItem('${esc(it.id)}',${on?'false':'true'})">${on?'Lock':'Open'}</button></div>`;
+    });
+    html += '</div></details>';
+  }
+  html += '</div>';
+  return html;
+}
+function toggleOneItem(id,v){ setItemGate(id, v==='true'||v===true); refreshGateCard(); }
+function toggleGroupItems(grp, v){
+  const items = allItemIds().filter(it=>it.group===grp);
+  setAllItemGates(items.map(it=>it.id), v==='true'||v===true);
+  refreshGateCard();
+}
+function activateAllItems(v){
+  setAllItemGates(allItemIds().map(it=>it.id), v);
+  refreshGateCard();
+}
+function refreshGateCard(){
+  const card = document.getElementById('gateCard');
+  if(!card) return;
+  const itemArea = card.querySelector('.item-gate-area');
+  if(itemArea) itemArea.innerHTML = itemGateHTML();
+  paintGates();
+}
 
 /* boot */
 go('home');
