@@ -6129,14 +6129,22 @@ function AAD_INIT_SEED(dt){ return {
    guard (so the new Article-A-Day initiative appears without re-seeding the
    others, and without resurrecting any the teacher deleted). */
 (function seedAADInit(){
-  if(Store.get('ican_aad_init_seed_v1')) return;
-  const list=getInits();
+  if(Store.get('ican_aad_init_seed_v2')) return;
+  let list=getInits();
+  // Drop any legacy (ReadWorks-era) Article-A-Day initiative so it can be upgraded.
+  list=list.filter(x=>{
+    const t=(x.title||''), s=(x.spec||'');
+    const isAAD = t.indexOf('Article-A-Day')===0;
+    const isLegacy = /ReadWorks|Mastering Reading Comprehension|Literacy Contest/i.test(t+' '+s);
+    return !(isAAD && isLegacy);
+  });
+  // Ensure the current Article-A-Day initiative is present (added at the top for visibility).
   if(!list.some(x=>(x.title||'').indexOf('Article-A-Day')===0)){
-    list.push(AAD_INIT_SEED(Date.now()));
-    list.forEach(x=>{ x.consent=true; });
-    Store.set('ican_initiatives', list);
+    list.unshift(AAD_INIT_SEED(Date.now()));
   }
-  Store.set('ican_aad_init_seed_v1', true);
+  list.forEach(x=>{ x.consent=true; });
+  Store.set('ican_initiatives', list);
+  Store.set('ican_aad_init_seed_v2', true);
 })();
 
 (function seedInits(){
