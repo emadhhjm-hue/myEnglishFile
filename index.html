@@ -6114,6 +6114,31 @@ function paintGates(){
 
 /* ---------- Initiatives ---------- */
 function getInits(){ return Store.get('ican_initiatives')||[]; }
+/* Shared definition of the Article-A-Day initiative (used by the main seeder
+   for new users AND by a dedicated injector for existing users). */
+function AAD_INIT_SEED(dt){ return {
+  id:'seedAAD', title:'Article-A-Day — 10-Week Reading & Literacy Library',
+  target:'Grades 9–12, Advanced & General streams', from:'', to:'',
+  spec:'A built-in reading routine, right inside iCAN — no external site needed. The Literacy Library holds 50 original articles across 10 weeks (5 per week), spanning many genres: science, history, technology, AI, literature, environment, art, social issues, space, drama, war & peace, natural disasters, education, inventions, communication & social media, and short science fiction. Texts are pitched at exam level (Lexile ~1300–1600) with no question sets. Daily routine: open one article, read within a 20-minute timer (the article locks when time is up and is marked read), add two ideas to your own knowledge, and bank new vocabulary. Auto-scored per article: 100% for both ideas, 50% for one, 0% for none. Open it from the 📰 Article-A-Day tile (home) or the Quick-moves bar (student dashboard).',
+  plan:'Teacher activates each week separately as the class is ready; students see only activated weeks. Progress (articles read, % complete) shows on each week tile and feeds the teacher dashboard and certificate pipeline. The two "add to knowledge" ideas also flow into the student\u2019s Book of Knowledge journal (downloadable as Word). Support: vocabulary is pre-glossed with definitions and audio; sentence frames scaffold the two ideas; strugglers may target one idea. Extension: students add a "question I still have" and research it; compare two articles from different genres. Certificates: Participation for consistent reading; Distinction for consistency plus quality ideas.',
+  link:'#articleaday',
+  consent:true, published:false, date:dt };
+}
+
+/* One-time injector for existing installs that already passed the v2 seed
+   guard (so the new Article-A-Day initiative appears without re-seeding the
+   others, and without resurrecting any the teacher deleted). */
+(function seedAADInit(){
+  if(Store.get('ican_aad_init_seed_v1')) return;
+  const list=getInits();
+  if(!list.some(x=>(x.title||'').indexOf('Article-A-Day')===0)){
+    list.push(AAD_INIT_SEED(Date.now()));
+    list.forEach(x=>{ x.consent=true; });
+    Store.set('ican_initiatives', list);
+  }
+  Store.set('ican_aad_init_seed_v1', true);
+})();
+
 (function seedInits(){
   if(Store.get('ican_inits_seed_v2')) return;
   const list=getInits(); const have=t=>list.some(x=>(x.title||'').indexOf(t)===0);
@@ -6131,12 +6156,7 @@ function getInits(){ return Store.get('ican_initiatives')||[]; }
      plan:'Knowledge processes: Experiencing (personal travel experiences; multimodal reading); Conceptualising (claim, reasons, conclusion; vocabulary in context — layovers, all-inclusive, charge); Analysing (text features; Think Aloud; Questioning the Author; bias, audience, omitted perspectives); Applying (counter-argument poster/video; opposing-view essay). Checkpoint at end of each phase; essay assessed with the Multiliteracy rubric, writing strand emphasised. Support: pre-taught vocabulary, jigsaw roles, sentence/paragraph frames, design-role entry points. Extension: rhetorical analysis of mentor texts; rebut a second counterclaim. Tools: textbook, Book Creator, Canva, Vocabulary.com; AI: ChatGPT, InVideo, Steve.ai — outputs reviewed per school AI policy.',
      link:'https://read.bookcreator.com/4CTH0J6SoiWybkCQPwKSxPEBQUw1/oBvJ-DilTKqqQ4Y26YeSdg',
      consent:true, published:false, date:now+1 },
-   { id:'seed3', title:'Article-A-Day — Mastering Reading Comprehension (ReadWorks Literacy Contest)',
-     target:'Grades 9–12 (11 A, 11 G, 12 G + any class with a code)', from:'', to:'',
-     spec:'A daily reading-fluency routine, right inside iCAN. Every school day: open your assigned ReadWorks Article-A-Day set, read one short article (~10 minutes), then record 2–3 things you learned in your Book of Knowledge journal in the hub (tap Start below). Your journal tracks your streak and total entries — download it as a Word file at month\u2019s end as your contest evidence. Certificates: Participation for consistent daily reading; Distinction for consistency plus quality entries.',
-     plan:'Teacher monitors ReadWorks assignment/progress dashboards weekly; journal spot-checks at Weeks 2 and 4. Support: audio-supported articles on ReadWorks, sentence frames built into the journal, reduced target (3 facts → 1) for strugglers. Extension: students add a "question I still have" and research it. Certificates generated at month\u2019s end (Participation / Distinction) via the Article-A-Day certificate generator on WinjiGo.',
-     link:'#articleaday',
-     consent:true, published:false, date:now+2 }
+   AAD_INIT_SEED(now+2)
   ];
   seeds.forEach(sd=>{ if(!have(sd.title.slice(0,20))) list.push(sd); });
   list.forEach(x=>{ x.consent=true; });  // every initiative requires its own parent consent
@@ -6492,7 +6512,17 @@ function initsPanelHTML(){
         <div style="font-size:.8rem;color:var(--muted)">${esc(it.target||'All students')} · ${esc(it.from||'…')} → ${esc(it.to||'…')}</div>
         ${it.spec?`<div style="font-size:.86rem;margin-top:4px">${esc(it.spec)}</div>`:''}
         ${consentSignedFor(it.title)?`<div style="margin-top:6px;font-size:.83rem;color:var(--teal-dk)"><b>✔ Parent consent recorded on this device for this initiative.</b></div>`:`<div style="margin-top:6px"><button class="btn sm" onclick="openConsentFor('${it.id}')">📝 Parent consent needed for <b>this</b> initiative — open form</button></div>`}
-        ${it.link?`
+        ${it.link && it.link.charAt(0)==='#'?`
+        <div style="margin-top:8px"><button class="btn sm teal" onclick="closeBarPanel(); go('${it.link.slice(1)}')">📰 Start — open the reading library</button></div>
+        <details style="margin-top:6px;font-size:.83rem"><summary style="cursor:pointer;color:var(--muted)">❓ How it works (tap to open)</summary>
+          <ol style="margin:6px 0 4px 18px;line-height:1.5">
+            <li><b>Tap Start</b> above to open the Article-A-Day library inside iCAN.</li>
+            <li>Your teacher <b>activates one week at a time</b> — open any article in an active week.</li>
+            <li><b>Read within the 20-minute timer.</b> When time is up the article locks and is marked read.</li>
+            <li><b>Bank new vocabulary</b> as you read, then <b>add two ideas</b> to your own knowledge before you finish.</li>
+            <li>Scoring: <b>100%</b> for both ideas, <b>50%</b> for one. Your ideas also save to your <b>Book of Knowledge</b> journal.</li>
+          </ol>
+        </details>`:it.link?`
         <div style="margin-top:8px"><a class="btn sm teal" href="${esc(it.link)}" target="_blank" rel="noopener">🚀 Start — open the project deck</a></div>
         <details style="margin-top:6px;font-size:.83rem"><summary style="cursor:pointer;color:var(--muted)">❓ How to join &amp; use the deck (tap to open)</summary>
           <ol style="margin:6px 0 4px 18px;line-height:1.5">
