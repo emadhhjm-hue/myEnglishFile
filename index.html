@@ -6070,6 +6070,7 @@ function initCardHTML(){ return `
     </div>
     <div class="ed-field"><label>Specifications (what students will do)</label><textarea id="in_spec" rows="3" placeholder="Phases, tasks, outputs, publishing venue…"></textarea></div>
     <div class="ed-field"><label>Planning & interventions</label><textarea id="in_plan" rows="2" placeholder="Checkpoints, differentiation, support for struggling learners…"></textarea></div>
+    <div class="ed-field"><label>Engagement link (Book Creator deck, Padlet, site…)</label><input id="in_link" placeholder="https://read.bookcreator.com/… — students see a Start button + how-to-join steps when published"></div>
     <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;margin:6px 0 10px"><input type="checkbox" id="in_consent"> Parent consent required</label>
     <button class="btn teal" onclick="addInitiative()">＋ Add initiative</button>
     <div id="initList" style="margin-top:14px"></div>
@@ -6078,10 +6079,10 @@ function addInitiative(){
   const t=(val('in_title')||'').trim(); if(!t){ alert('Give the initiative a title.'); return; }
   const list=getInits();
   list.push({ id:'i'+Date.now(), title:t, target:val('in_target')||'', from:val('in_from')||'', to:val('in_to')||'',
-    spec:val('in_spec')||'', plan:val('in_plan')||'', consent:!!document.getElementById('in_consent').checked,
+    spec:val('in_spec')||'', plan:val('in_plan')||'', link:(val('in_link')||'').trim(), consent:!!document.getElementById('in_consent').checked,
     published:false, date:Date.now() });
   Store.set('ican_initiatives', list); paintInits();
-  ['in_title','in_target','in_from','in_to','in_spec','in_plan'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
+  ['in_title','in_target','in_from','in_to','in_spec','in_plan','in_link'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
 }
 function pubInit(id,v){ const l=getInits(); const it=l.find(x=>x.id===id); if(it){ it.published=v; Store.set('ican_initiatives',l); paintInits(); } }
 function delInit(id){ if(!confirm('Delete this initiative?')) return; Store.set('ican_initiatives', getInits().filter(x=>x.id!==id)); paintInits(); }
@@ -6099,6 +6100,7 @@ function paintInits(){
         <b>${esc(it.title)}</b> ${it.published?'<span class="pill done">published</span>':'<span class="pill">draft</span>'}${it.consent?' <span class="pill" style="background:#fef3c7;color:#92400e">consent required</span>':''}
         <div style="font-size:.8rem;color:var(--muted)">${esc(it.target||'All students')} · ${esc(it.from||'…')} → ${esc(it.to||'…')}</div>
         ${it.spec?`<div style="font-size:.82rem;margin-top:4px">${esc(it.spec)}</div>`:''}
+        ${it.link?`<div style="font-size:.8rem;margin-top:4px">🔗 <a href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.link)}</a></div>`:''}
         ${it.plan?`<div style="font-size:.78rem;color:var(--muted);margin-top:2px"><b>Plan:</b> ${esc(it.plan)}</div>`:''}
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start">
@@ -6237,6 +6239,7 @@ function openBarPanel(key){
   else if(key==='qa'){ head.innerHTML=H('💬','Q&A Tutor','ask the teacher — replies come back here'); body.innerHTML=qaPanelHTML(); }
   else if(key==='kp'){ head.innerHTML=H('🧠','RWD Pedagogical Grounding','multiliteracies knowledge processes'); body.innerHTML=kpPanelHTML(); }
   else if(key==='inits'){ head.innerHTML=H('🚀','Initiatives','published by your teacher'); body.innerHTML=initsPanelHTML(); }
+  else if(key==='aad'){ head.innerHTML=H('📰','Article-A-Day','10 minutes a day · powered by ReadWorks'); body.innerHTML=aadPanelHTML(); setTimeout(aadPaintList,50); }
   else return;
   m.classList.remove('hidden');
 }
@@ -6385,8 +6388,94 @@ function initsPanelHTML(){
         <div style="font-size:.8rem;color:var(--muted)">${esc(it.target||'All students')} · ${esc(it.from||'…')} → ${esc(it.to||'…')}</div>
         ${it.spec?`<div style="font-size:.86rem;margin-top:4px">${esc(it.spec)}</div>`:''}
         ${it.consent?`<div style="margin-top:6px"><button class="btn sm" onclick="openBarPanel('consent')">📝 Parent consent needed — open form</button></div>`:''}
+        ${it.link?`
+        <div style="margin-top:8px"><a class="btn sm teal" href="${esc(it.link)}" target="_blank" rel="noopener">🚀 Start — open the project deck</a></div>
+        <details style="margin-top:6px;font-size:.83rem"><summary style="cursor:pointer;color:var(--muted)">❓ How to join &amp; use the deck (tap to open)</summary>
+          <ol style="margin:6px 0 4px 18px;line-height:1.5">
+            <li><b>Open the link</b> above (or scan the QR code your teacher shared).</li>
+            <li>On the deck page, tap <b>Remix</b> / <b>Remix to library</b>.</li>
+            <li><b>Sign in</b> with your school account (or the account your teacher gave you). Your own copy is saved to your library — that copy is your workspace.</li>
+            <li><b>Read &amp; view</b> the pages first: the invitation, the plan and the worksheets show you each phase.</li>
+            <li><b>Use the built-in tools</b>: add pages, type your writing, insert images and illustrations, and record audio/video narration for your story.</li>
+            <li><b>Finish &amp; share</b>: publish your book to the class library and submit the PDF copy where your teacher asks (e.g., the LMS) before the deadline.</li>
+          </ol>
+          <p style="margin:2px 0 4px;color:var(--muted)">Stuck? Ask your teacher, or use the ❓ Q&amp;A Tutor panel.</p>
+        </details>`:''}
       </div>
     </div>`).join('') : `<p class="note">No initiatives have been published yet — watch this space!</p>`;
+}
+
+/* ---------- Article-A-Day in-hub workspace ---------- */
+const AAD_CODES=[['Grade 11 Advanced (11 A)','M5NJ42'],['Grade 11 General (11 G)','6FCQ5R'],['Grade 12 General (12 G)','UKLKKR']];
+function aadEntries(){ return Store.get('ican_aad_journal')||[]; }
+function aadStreak(){
+  const days=[...new Set(aadEntries().map(e=>e.day))];
+  let n=0; const d=new Date();
+  const iso=x=>x.toISOString().slice(0,10);
+  if(!days.includes(iso(d))) d.setDate(d.getDate()-1); // streak may continue from yesterday
+  while(days.includes(iso(d))){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
+function aadPanelHTML(){ return `
+  <p style="font-size:.92rem;margin:0 0 10px"><b>Mastering Reading Comprehension — Grades 9–12.</b> Read one short ReadWorks article every day (about <b>10 minutes</b>), then capture what you learned in your <b>Book of Knowledge</b> below. Your entries build toward <b>Participation</b> and <b>Distinction</b> certificates at the end of the contest month.</p>
+  <div class="card" style="background:#fbfaf6;margin-bottom:12px">
+    <b>1 · Join your ReadWorks class (one time)</b>
+    <ol style="margin:6px 0 6px 18px;font-size:.88rem;line-height:1.55">
+      <li>Go to <a href="https://www.readworks.org/student" target="_blank" rel="noopener">www.readworks.org/student</a></li>
+      <li>Enter your <b>class code</b>: <table style="margin:6px 0;border-collapse:collapse">${AAD_CODES.map(c=>`<tr><td style="border:1px solid var(--line);padding:3px 10px;font-size:.85rem">${c[0]}</td><td style="border:1px solid var(--line);padding:3px 10px"><b>${c[1]}</b></td></tr>`).join('')}</table>If your class is not listed, ask your teacher for your code.</li>
+      <li>Default password: <b>1234</b> (change it after first sign-in).</li>
+    </ol>
+  </div>
+  <div class="card" style="background:#fbfaf6;margin-bottom:12px">
+    <b>2 · Daily routine</b>
+    <p style="font-size:.88rem;margin:4px 0">Open your assigned <b>Article-A-Day set</b> on ReadWorks → read today's article (~10 min) → come back here and record 2–3 things you learned.</p>
+  </div>
+  <div class="card" style="background:#fff">
+    <b>3 · 📖 Book of Knowledge — today's entry</b>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0 4px">
+      <span class="pill done">🔥 Streak: <b id="aadStreak">0</b> day(s)</span>
+      <span class="pill">🗂 Entries: <b id="aadCount">0</b></span>
+    </div>
+    <div class="ed-field"><label>Article title</label><input id="aad_title" placeholder="e.g. The Water Cycle"></div>
+    <div class="ed-field"><label>I learned that … is …</label><input id="aad_l1" placeholder="I learned that ____ is ____."></div>
+    <div class="ed-field"><label>I also learned that … has …</label><input id="aad_l2" placeholder="I also learned that ____ has ____."></div>
+    <div class="ed-field"><label>The … is/has … (optional third fact)</label><input id="aad_l3" placeholder="The ____ is/has ____."></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      <button class="btn sm teal" onclick="aadSave()">💾 Save today's entry</button>
+      <button class="btn sm" onclick="dlAADJournal()">⬇ Download my journal (Word)</button>
+    </div>
+    <div id="aadList" style="margin-top:12px"></div>
+  </div>
+  <p style="font-size:.82rem;color:var(--muted);margin-top:10px">🏅 <b>Certification:</b> your teacher reviews journals and ReadWorks progress at month's end — consistent daily reading earns <b>Participation</b>; consistent reading + quality entries earn <b>Distinction</b>. Entries save on <i>this device</i>, so use the same device (or download your journal regularly).</p>`;}
+function aadSave(){
+  const t=(val('aad_title')||'').trim(), l1=(val('aad_l1')||'').trim(), l2=(val('aad_l2')||'').trim(), l3=(val('aad_l3')||'').trim();
+  if(!t){ alert('Add the article title.'); return; }
+  if(!l1&&!l2&&!l3){ alert('Write at least one thing you learned.'); return; }
+  const list=aadEntries();
+  list.push({ day:new Date().toISOString().slice(0,10), title:t, facts:[l1,l2,l3].filter(Boolean), ts:Date.now() });
+  Store.set('ican_aad_journal', list);
+  ['aad_title','aad_l1','aad_l2','aad_l3'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
+  aadPaintList();
+}
+function aadPaintList(){
+  const box=document.getElementById('aadList'); if(!box) return;
+  const list=aadEntries();
+  const sEl=document.getElementById('aadStreak'), cEl=document.getElementById('aadCount');
+  if(sEl) sEl.textContent=aadStreak(); if(cEl) cEl.textContent=list.length;
+  box.innerHTML = list.length ? '<b style="font-size:.9rem">My entries</b>'+list.slice().reverse().slice(0,30).map(e=>`
+    <div style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin-top:6px">
+      <div style="font-size:.8rem;color:var(--muted)">${e.day}</div>
+      <b style="font-size:.9rem">${esc(e.title)}</b>
+      <ul style="margin:4px 0 0 18px;font-size:.85rem">${e.facts.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>
+    </div>`).join('') : '<p class="note" style="margin-top:8px">No entries yet — read today\'s article and save your first one!</p>';
+}
+function dlAADJournal(){
+  const list=aadEntries();
+  dlDoc('iCAN-ArticleADay-Journal','Article-A-Day — My Book of Knowledge Journal', `
+  <p>Name: ____________________ &nbsp;&nbsp; Class: ________ &nbsp;&nbsp; Total entries: <b>${list.length}</b> &nbsp;&nbsp; Current streak: <b>${aadStreak()} day(s)</b></p>
+  <table><tr><th style="width:14%">Date</th><th style="width:26%">Article</th><th>What I learned (Book of Knowledge)</th></tr>
+  ${list.map(e=>`<tr><td>${e.day}</td><td>${esc(e.title)}</td><td><ul>${e.facts.map(f=>`<li>${esc(f)}</li>`).join('')}</ul></td></tr>`).join('') || '<tr><td></td><td></td><td></td></tr>'}</table>
+  <p style="font-size:9pt;color:#777"><i>Article-A-Day routine powered by ReadWorks.org · 10 minutes a day · certificates for Participation and Distinction.</i></p>`);
 }
 
 /* ====================== DOWNLOADABLE DOCUMENTS (.doc) ====================== */
@@ -6597,6 +6686,7 @@ function printConsent(){
 function handleBarHash(){
   if(location.hash==='#consent') setTimeout(()=>openBarPanel('consent'), 350);
   if(location.hash==='#ask') setTimeout(()=>openBarPanel('qa'), 350);
+  if(location.hash==='#articleaday') setTimeout(()=>openBarPanel('aad'), 350);
 }
 window.addEventListener('hashchange', handleBarHash);
 setTimeout(handleBarHash, 500);
