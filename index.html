@@ -5866,7 +5866,9 @@ const LITERACY_RESOURCES = [
     ["IELTS-Up","https://ielts-up.com","Free full IELTS reading, listening, writing and speaking practice."],
     ["IELTS Liz","https://ieltsliz.com","Free tips, model answers and lessons for IELTS."],
     ["IELTS Buddy","https://www.ieltsbuddy.com","Practice tests and IELTS writing samples with feedback."],
-    ["Cambridge IELTS Practice","https://www.cambridgeenglish.org/exams-and-tests/ielts/preparation","Official Cambridge IELTS preparation materials."]
+    ["Cambridge IELTS Practice","https://www.cambridgeenglish.org/exams-and-tests/ielts/preparation","Official Cambridge IELTS preparation materials."],
+    ["IELTS Online Tests — Exam Library","https://ieltsonlinetests.com/ielts-exam-library","Huge free library of full mock tests with band scores and answer explanations."],
+    ["IELTSolve","https://www.ieltsolve.com/","IELTS practice and preparation resources across all four skills."]
   ]},
   { cat:"📖 Reading", items:[
     ["CommonLit","https://www.commonlit.org","Free reading passages and question sets for grades 3–12."],
@@ -5879,6 +5881,7 @@ const LITERACY_RESOURCES = [
     ["Project Gutenberg","https://www.gutenberg.org","Free classic e-books for extensive reading."]
   ]},
   { cat:"✍️ Writing tutors & AI feedback", items:[
+    ["NoRedInk","https://www.noredink.com/","Adaptive writing and grammar practice personalised to student interests, with guided drafting."],
     ["Class Companion","https://classcompanion.com","AI tutor and feedback for writing and reading (subscription)."],
     ["Writable","https://www.writable.com","Process-based writing practice, AI-marked (subscription)."]
   ]},
@@ -6263,8 +6266,10 @@ function specPanelHTML(){ return `
 function taidsPanelHTML(){ return `
   <p style="font-size:.9rem;color:var(--muted);margin:0 0 12px">Download, open in Word, adapt to your class, print. Each document is curriculum-flexible — usable for EFL or any subject.</p>
   <div class="dl-grid">
-    <button class="dl-tile" onclick="dlLessonPlan()"><span>📋</span><b>RWD Lesson Plan</b><small>phase-by-phase template with objectives, KP links & reflection</small></button>
-    <button class="dl-tile" onclick="dlRubric()"><span>✅</span><b>Multimodal Assessment & Marking Rubric</b><small>criteria for reading, writing, design & iteration (4→1 bands)</small></button>
+    <button class="dl-tile" onclick="dlLessonPlan()"><span>📋</span><b>RWD Lesson Plan Template</b><small>knowledge-processes outline (Cope & Kalantzis, 2015) with a worked Grade 9 example — fully editable</small></button>
+    <button class="dl-tile" onclick="dlRubric()"><span>✅</span><b>Multiliteracy Read·Write·Create Rubric</b><small>18 elements scored 0–5 across reading, writing, multiliteracy & work habits — with marking standards & certificate mapping</small></button>
+    <button class="dl-tile" onclick="dlTimeline()"><span>📅</span><b>Implementation Timeline</b><small>11-week, six-phase Reader-Is-Designer roadmap — orientation to recognition & next loop</small></button>
+    <button class="dl-tile" onclick="dlToolkit()"><span>🧰</span><b>RWD Digital Toolkit</b><small>recommended platforms — ReadWorks, Book Creator, Padlet & more, with a safe-publishing checklist</small></button>
     <button class="dl-tile" onclick="dlTips()"><span>💡</span><b>Tips for Teachers</b><small>implementation guide, phase-based iterative timeline & tools</small></button>
     <button class="dl-tile" onclick="dlDiff()"><span>🧩</span><b>Differentiation Plan</b><small>time-paced support for struggling & emerging performers (unit / month / semester)</small></button>
     <button class="dl-tile" onclick="dlKPPlan()"><span>🧠</span><b>Knowledge-Processes Plan</b><small>experiencing · conceptualising · analysing · applying — mapped to RWD</small></button>
@@ -6292,8 +6297,8 @@ function consentPanelHTML(){
   const mine=getConsents();
   return `
   <div class="consent-text">
-    <p><b>Dear Parent / Guardian,</b> your child is invited to take part in the <b>iCAN Academy EFL File</b> — a Read · Write · Design (RWD) multiliteracies programme in which learners read purposefully, write to represent their ideas, and design digital stories to share them. Participation involves classroom activities on the iCAN platform, teacher-guided practice, and the award of certificates for standard and distinction performance. Work samples are used for learning purposes within the school.</p>
-    <p style="direction:rtl;text-align:right;font-family:Georgia,serif"><b>ولي الأمر الكريم،</b> يسرّنا دعوة ابنكم للمشاركة في ملف اللغة الإنجليزية ضمن أكاديمية iCAN، وهو برنامج قائم على منهجية «اقرأ · اكتب · صمّم» حيث يقرأ المتعلم بوعي، ويكتب ليعبّر عن أفكاره، ثم يصمّم قصصًا رقمية لمشاركتها. تشمل المشاركة أنشطة صفية عبر المنصة بإشراف المعلم، وتُمنح شهادات للأداء القياسي والمتميّز، وتُستخدم نماذج الأعمال لأغراض تعليمية داخل المدرسة فقط.</p>
+    <p><b>Dear Parent / Guardian,</b> your child is invited to take part in the <b>iCAN Academy EFL File</b> — a Read · Write · Design (RWD) multiliteracies programme built on learning by doing. Learners read for a meaningful purpose, write to represent their ideas, and design an artefact that brings their learning to life — a digital story, a storyboard video, or a model of something they read or researched, such as a drone, a machine, or a solution to a local or global issue — or simply something they create for enjoyment. Along the way, they develop digital, literacy, and social skills. Participation involves classroom activities on the iCAN platform, teacher-guided practice, and the award of certificates for standard and distinction performance. Work samples are used for learning purposes within the school.</p>
+    <p style="direction:rtl;text-align:right;font-family:Georgia,serif"><b>ولي الأمر الكريم،</b> يسرّنا دعوة ابنكم للمشاركة في ملف اللغة الإنجليزية ضمن أكاديمية iCAN، وهو برنامج قائم على منهجية «اقرأ · اكتب · صمّم» التي تجسّد مبدأ التعلّم بالممارسة. يقرأ المتعلّم لغايةٍ ذات معنى، ويكتب ليعبّر عن أفكاره، ثم يصمّم منتجًا يجسّد تعلّمه — قصة رقمية، أو فيديو مصوَّر، أو نموذجًا لشيءٍ قرأ عنه أو بحث فيه، كطائرة مسيّرة أو آلة أو حلٍّ لقضية محلية أو عالمية — أو عملًا يبتكره لمجرد المتعة. ومن خلال ذلك يطوّر مهاراته الرقمية واللغوية والاجتماعية. تشمل المشاركة أنشطة صفية عبر المنصة بإشراف المعلم، وتُمنح شهادات للأداء القياسي والمتميّز، وتُستخدم نماذج الأعمال لأغراض تعليمية داخل المدرسة فقط.</p>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px">
     <button class="btn sm" onclick="printConsent()">🖨 Print form</button>
@@ -6393,34 +6398,78 @@ function dlDoc(filename, title, bodyHtml){
   const blob=new Blob([html],{type:'application/msword'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=filename+'.doc'; a.click();
 }
-function dlLessonPlan(){ dlDoc('iCAN-RWD-Lesson-Plan','RWD Lesson Plan', `
-  <table><tr><th>Teacher</th><td>${esc(CONFIG.teacherName||'')}</td><th>Class / grade</th><td></td></tr>
-  <tr><th>Unit / theme</th><td></td><th>Date & duration</th><td></td></tr>
-  <tr><th>Subject</th><td>English (adaptable to any subject)</td><th>Model text / stimulus</th><td></td></tr></table>
-  <h2>Learning objectives (by strand)</h2>
-  <table><tr><th>Read (view)</th><th>Write (represent)</th><th>Design (DST)</th></tr><tr><td></td><td></td><td></td></tr></table>
-  <h2>Phase-by-phase plan</h2>
-  <table><tr><th>Phase</th><th>Teacher moves</th><th>Learner activity & evidence</th><th>Knowledge process</th><th>Time</th></tr>
-  <tr><td><b>READ</b></td><td>Set purpose; model noticing author/designer choices</td><td>Annotated reading · comprehension check · discussion</td><td>Experiencing · Conceptualising</td><td></td></tr>
-  <tr><td><b>WRITE</b></td><td>Deconstruct model; guide planning & feedback</td><td>Plan → draft → peer/teacher feedback → revise</td><td>Conceptualising · Analysing</td><td></td></tr>
-  <tr><td><b>DESIGN</b></td><td>Introduce tool & storyboard; set audience</td><td>Storyboard → multimodal artefact → publish</td><td>Applying (creatively)</td><td></td></tr>
-  <tr><td><b>LOOP</b></td><td>Prompt re-reading / re-writing from design feedback</td><td>Revisit text & draft; second iteration notes</td><td>All four</td><td></td></tr></table>
-  <h2>Differentiation & support</h2><table><tr><th>Struggling / emerging</th><th>On level</th><th>Extension</th></tr><tr><td></td><td></td><td></td></tr></table>
-  <h2>Assessment links</h2><p>Attach the Multimodal Assessment &amp; Marking Rubric. Evidence: reading responses, drafts with revision, final design artefact, reflection.</p>
-  <h2>Teacher reflection (after the lesson)</h2><p>What did the loop reveal? Who needs which intervention next?</p>`); }
-function dlRubric(){ dlDoc('iCAN-Multimodal-Rubric','Multimodal Assessment & Marking Rubric', `
-  <p>Score each criterion 4–1. <b>Distinction</b> ≈ mostly 4s; <b>Standard</b> ≈ mostly 3s; below standard receives a participation certificate and targeted support.</p>
-  <table><tr><th>Criterion</th><th>4 — Exceeds</th><th>3 — Meets (Standard)</th><th>2 — Approaching</th><th>1 — Beginning</th></tr>
-  <tr><td><b>Reading comprehension & response</b></td><td>Insightful interpretation; evidence woven naturally</td><td>Accurate understanding with relevant evidence</td><td>Partial understanding; limited evidence</td><td>Minimal engagement with the text</td></tr>
-  <tr><td><b>Written composition</b></td><td>Purposeful, well-organised, controlled language</td><td>Clear organisation; minor language slips</td><td>Ideas present but uneven; frequent slips</td><td>Fragmentary; meaning often unclear</td></tr>
-  <tr><td><b>Multimodal design</b></td><td>Words, images, layout & sound reinforce one message</td><td>Modes mostly support the message</td><td>Modes decorate rather than build meaning</td><td>Modes random or missing</td></tr>
-  <tr><td><b>Digital storytelling delivery</b></td><td>Engaging narration/pacing for a real audience</td><td>Clear delivery; audience considered</td><td>Delivery uneven; audience unclear</td><td>Not yet shared or unclear</td></tr>
-  <tr><td><b>Process & iteration (the loop)</b></td><td>Visible re-reading/re-writing improved the work</td><td>At least one purposeful revision loop</td><td>Revision attempted but surface-level</td><td>Single pass; no revision evidence</td></tr></table>
-  <h2>Award mapping</h2>
-  <table><tr><th>Overall performance</th><th>Certificate conferred</th></tr>
-  <tr><td>Above expectation</td><td><b>Distinction</b></td></tr>
-  <tr><td>At expectation</td><td><b>Standard</b></td></tr>
-  <tr><td>Below expectation</td><td>Certificate of <b>Participation</b> + support plan</td></tr></table>`); }
+function dlLessonPlan(){ dlDoc('iCAN-RWD-Lesson-Plan-Template','RWD Lesson Plan Outline — Knowledge Processes Template', `
+  <p><i>Editable template. Grey "e.g." prompts show a worked Grade 9 Advanced example (persuasive text, Bridge to Success) — delete and replace with your own. The RWD order is flexible: Read → Write → Design, or Read → Design → Write, and always <b>back again</b> (recursive loop).</i></p>
+  <h2>Overview</h2>
+  <table>
+  <tr><th style="width:22%">Approach</th><td><b>Reader Is Designer:</b> Read · Write · Design multiliteracies — learning by doing, operationalised through Cope &amp; Kalantzis's (2015) Learning by Design knowledge processes</td></tr>
+  <tr><th>Source text / stimulus</th><td><i>e.g., "Why a Travel Agent Still Matters?" (Bridge to Success, Gr. 9 Adv., Unit 9, Lessons 9–10)</i></td></tr>
+  <tr><th>Domain / subject</th><td><i>e.g., English Language Arts (adaptable to any subject)</i></td></tr>
+  <tr><th>Scope</th><td><i>e.g., persuasive/expository text through a multiliteracies lens</i></td></tr>
+  <tr><th>Level / duration</th><td><i>e.g., Grade 9 Advanced, Cycle 3 — one unit (2–4 weeks) or full 11-week programme</i></td></tr>
+  <tr><th>Text level (Lexile)</th><td><i>e.g., 900–1000L</i></td></tr>
+  <tr><th>RWD pattern</th><td><i>e.g., Read → Design → Write → back again (recursive cycle)</i></td></tr>
+  <tr><th>Teacher / class</th><td>${esc(CONFIG.teacherName||'')} · Class: ______</td></tr></table>
+  <h2>Knowledge objectives (Learning by Design)</h2>
+  <table><tr><th style="width:24%">Knowledge process</th><th style="width:20%">Sub-process</th><th>Planned objectives / activities</th></tr>
+  <tr><td rowspan="2"><b>1. Experiencing</b></td><td>the known</td><td><i>e.g., connect personal travel experiences to text arguments; identify persuasive elements learners already recognise</i></td></tr>
+  <tr><td>the new</td><td><i>e.g., read passage and identify persuasive strategies (multimodal reading); view multimedia comparing travel agents vs. online booking</i></td></tr>
+  <tr><td rowspan="2"><b>2. Conceptualising</b></td><td>by naming</td><td><i>e.g., identify claim, supporting reasons, conclusion; build vocabulary in context (layovers, all-inclusive, charge)</i></td></tr>
+  <tr><td>by theorising</td><td><i>e.g., analyse how the author structures reasons persuasively; evaluate how design choices strengthen or weaken a message</i></td></tr>
+  <tr><td rowspan="2"><b>3. Analysing</b></td><td>functionally</td><td><i>e.g., analyse text features: bold keywords, paragraph structure, topic sentences; analyse mentor texts for design and writing conventions</i></td></tr>
+  <tr><td>critically</td><td><i>e.g., apply "Think Aloud" and "Questioning the Author" strategies; evaluate author bias, audience, and omitted perspectives</i></td></tr>
+  <tr><td rowspan="2"><b>4. Applying</b></td><td>appropriately</td><td><i>e.g., write a persuasive essay arguing the opposing view</i></td></tr>
+  <tr><td>creatively</td><td><i>e.g., design a poster/brochure with a counter-argument; create a digital storytelling video (AI–human collaboration); design a model or prototype of something read/researched (a drone, a machine, a solution to a local or global issue); present the multimodal artefact to peers</i></td></tr></table>
+  <h2>RWD engagement phases</h2>
+  <table><tr><th style="width:26%">Engagement</th><th>Activities</th></tr>
+  <tr><td><b>1 — Reading</b><br><small>(read for a meaningful purpose)</small></td><td><i>e.g., pre-reading sequencing task; jigsaw reading across Groups A–D; comprehension questions; wordlist (Vocabulary.com) + spelling bee; identify the author's stance with textual evidence</i></td></tr>
+  <tr><td><b>2 — Writing</b><br><small>(represent ideas)</small></td><td><i>e.g., argumentative essay (opposing view): claim → reasons → counterclaim &amp; rebuttal → conclusion; ~120 words; peer feedback; writing checklist</i></td></tr>
+  <tr><td><b>3 — Designing</b><br><small>(learn by doing — make an artefact)</small></td><td><i>e.g., Task 1: design a poster arguing the counter-position (Canva/AI); Task 2: create an AI-generated storytelling video on the debate — or design a model/prototype inspired by the reading. Address: efficiency, modern tools, digital security</i></td></tr>
+  <tr><td><b>…and back again</b><br><small>(the loop)</small></td><td><i>Where does designing send learners back to the text? Which feedback triggers re-writing? Plan one deliberate return checkpoint.</i></td></tr>
+  <tr><td><b>Self-reflection</b></td><td><i>e.g., reflect on the RWD journey and the role of Design in developing new literacies — output: text, audio, or video (student choice)</i></td></tr></table>
+  <h2>Digital resources</h2>
+  <table><tr><th style="width:26%">Resources &amp; platforms</th><td><i>e.g., textbook; ReadWorks; Book Creator; Canva; Padlet; Vocabulary.com</i></td></tr>
+  <tr><th>AI tools</th><td><i>e.g., ChatGPT / Claude (planning &amp; feedback); InVideo, Steve.ai (video) — always review outputs and follow school AI policy</i></td></tr></table>
+  <h2>Assessment links</h2>
+  <p>Attach the Multimodal Read·Write·Create Assessment Rubric. Evidence: reading responses, drafts with visible revision, final design artefact, reflection.</p>
+  <p style="font-size:9pt;color:#777"><i>Note. Template developed per Cope &amp; Kalantzis's (2015) Learning by Design framework; adapted from a Grade 9 Advanced implementation in a UAE government secondary school.</i></p>`); }
+function dlRubric(){ dlDoc('iCAN-Multimodal-Rubric','Multiliteracy Read · Write · Create Assessment Rubric & Marking Standards', `
+  <p>Name: ______________________________ &nbsp; Grade: ______ &nbsp; Due date: ____________ &nbsp; Text type: Informative / Explanatory / Argumentative / Narrative</p>
+  <p>Score each element <b>0–5</b>: &nbsp; <b>0–1 Struggling</b> · <b>2–3 Developing</b> · <b>4–5 Advanced</b>. Aligned to Common Core standards; adaptable K–12.</p>
+  <h2>A. Reading comprehension standards (25)</h2>
+  <table><tr><th style="width:26%">Element</th><th>Descriptors</th><th style="width:14%">Score /5</th></tr>
+  <tr><td><b>Making connection</b></td><td>Answers questions correctly and thoroughly; connects to prior knowledge and world experiences or events</td><td></td></tr>
+  <tr><td><b>Sequencing</b></td><td>Recalls beginning, middle and end with logical sequencing</td><td></td></tr>
+  <tr><td><b>Main idea &amp; details</b></td><td>Determines the main idea independently; finds several supporting details</td><td></td></tr>
+  <tr><td><b>Cause &amp; effect</b></td><td>Evaluates what happens and why without prompting; supports understanding with text evidence</td><td></td></tr>
+  <tr><td><b>Infer &amp; draw conclusions</b></td><td>Uses prior knowledge and text evidence to draw logical conclusions</td><td></td></tr></table>
+  <h2>B. Writing standards (40)</h2>
+  <table><tr><th style="width:26%">Element</th><th>Descriptors</th><th style="width:14%">Score /5</th></tr>
+  <tr><td><b>Planning (graphic organizer / free-writing)</b></td><td>Uses organizers and mind-maps to explore the topic and build academic vocabulary; identifies clear purpose and audience; brainstorms relevant ideas</td><td></td></tr>
+  <tr><td><b>Task completion</b></td><td>Covers the main points and stays on topic</td><td></td></tr>
+  <tr><td><b>Ideas</b></td><td>Attention-grabbing, clear and focused; evidence of original and critical thinking with supporting details</td><td></td></tr>
+  <tr><td><b>Voice</b></td><td>Connects to the audience with appropriate 1st/2nd/3rd-person point of view; writing purpose is clear</td><td></td></tr>
+  <tr><td><b>Word choice</b></td><td>Accurately uses precise, colourful and powerful words</td><td></td></tr>
+  <tr><td><b>Sentence fluency &amp; style</b></td><td>Well-built, strong, varied sentences; transitions link ideas; order and structure convey meaning without confusion</td><td></td></tr>
+  <tr><td><b>Grammar / mechanics</b></td><td>Correct spelling, punctuation, grammar and capitalisation; free from fragments, run-ons and comma splices</td><td></td></tr>
+  <tr><td><b>Organisation &amp; presentation</b></td><td>Neat, readable format with title and author; essay structure — introduction (hook/thesis), body paragraphs (topic sentence, controlling idea, support), conclusion (summary, question, or call to action); coherent and logical</td><td></td></tr></table>
+  <h2>C. Multiliteracy, 21st-century &amp; life skills (15)</h2>
+  <table><tr><th style="width:26%">Element</th><th>Descriptors</th><th style="width:14%">Score /5</th></tr>
+  <tr><td><b>Illustrations &amp; multimedia (design)</b></td><td>Uses a mixture of multimodal texts to express meaning — relevant visuals/videos that aid comprehension; hyperlinks to relevant readings; ICT tools to design meaningful multimodal texts (image, illustration, video, model); artwork, sound effects and visual stimuli that communicate meaning; presents and showcases the artefact confidently</td><td></td></tr>
+  <tr><td><b>21st-century skills</b></td><td>Collaborates and peer-checks at least 3 classmates' work with constructive, positive feedback; self-assesses and improves the product; self-regulates and offers creative solutions; manages time and materials; uses ICT properly and safely to research and expand knowledge</td><td></td></tr>
+  <tr><td><b>Life skills (personal &amp; social wellbeing)</b></td><td>Independently and confidently discusses, reasons and thinks creatively about the topic; behaves in ways that promote wellbeing and reduce risk; takes responsibility; communicates effectively in written, spoken and technological modes</td><td></td></tr></table>
+  <h2>D. Quality of work &amp; punctuality (10)</h2>
+  <table><tr><th style="width:26%">Element</th><th>Descriptors</th><th style="width:14%">Score /5</th></tr>
+  <tr><td><b>Quality of work</b></td><td>Produces standard-quality work guided by the rubric and project specifications</td><td></td></tr>
+  <tr><td><b>Punctuality (turn-in time)</b></td><td>Self-regulates time consistently; delivers work phases on time</td><td></td></tr></table>
+  <h2>Marking standards &amp; award mapping</h2>
+  <table><tr><th>Total /90</th><th>Band</th><th>Certificate conferred</th></tr>
+  <tr><td>76–90</td><td>Advanced — above expectation</td><td><b>Distinction</b></td></tr>
+  <tr><td>54–75</td><td>Developing–secure — at expectation</td><td><b>Standard</b></td></tr>
+  <tr><td>Below 54</td><td>Struggling — below expectation</td><td>Certificate of <b>Participation</b> + targeted support plan</td></tr></table>
+  <h2>Teacher comments</h2>
+  <p>_________________________________________________________________________</p>
+  <p>_________________________________________________________________________</p>`); }
 function dlTips(){ dlDoc('iCAN-Teacher-Tips','Tips for Teachers — Implementing the RWD Framework', `
   <h2>Ten implementation tips</h2><ul>
   <li>Teach the loop explicitly: show learners the RWD wheel and name the phase you are in.</li>
@@ -6471,10 +6520,47 @@ function dlKPPlan(){ dlDoc('iCAN-Knowledge-Processes-Plan','Knowledge-Processes 
   <tr><td rowspan="2"><b>Analysing</b></td><td>functionally</td><td>Write</td><td></td><td></td></tr><tr><td>critically</td><td>Write → Design</td><td></td><td></td></tr>
   <tr><td rowspan="2"><b>Applying</b></td><td>appropriately</td><td>Design</td><td></td><td></td></tr><tr><td>creatively</td><td>Design (DST)</td><td></td><td></td></tr></table>
   <h2>Loop note</h2><p>Where will this lesson deliberately send learners <i>back</i> — from Design to Read, or from feedback to Write?</p>`); }
+function dlTimeline(){ dlDoc('iCAN-RWD-Implementation-Timeline','Reader-Is-Designer — Phase-Based Implementation Timeline & Procedures', `
+  <p><i>An 11-week, six-phase roadmap field-tested in a UAE government secondary school (Grade 10). Adapt the week numbers to your calendar — school breaks may extend the calendar duration while the instructional weeks stay the same. Write your own dates in the last column.</i></p>
+  <table><tr><th style="width:18%">Phase</th><th style="width:12%">Suggested timeline</th><th>Key activities</th><th style="width:16%">Evidence / output</th><th style="width:12%">Your dates</th></tr>
+  <tr><td><b>1 — Orientation &amp; training</b></td><td>Week 1</td><td>Familiarise teachers with the multiliteracies framework (workshop); train on the knowledge processes (Experiencing, Conceptualising, Analysing, Applying); TPACK scaffolds and platform tutorials (e.g., ReadWorks, Book Creator); set up a class/teacher communication channel; agree implementation expectations, challenges and support structures</td><td>Trained team; shared channel; fidelity agreement</td><td></td></tr>
+  <tr><td><b>2 — Baseline assessment</b></td><td>Week 2</td><td>Administer reading pre-test (45 min); administer writing pre-test (45 min); score and record baseline performance</td><td>Baseline data recorded</td><td></td></tr>
+  <tr><td><b>3 — RWD intervention</b></td><td>Weeks 3–8<br><small>(4 instructional weeks + calendar buffer for breaks)</small></td><td><b>Milestone 1:</b> scaffolded reading assignments with multimodal supports (e.g., ReadWorks). <b>Milestone 2:</b> structured analytical writing (e.g., book report / essay). <b>Milestone 3:</b> illustration creation — visual representation of key ideas. <b>Milestone 4:</b> digital artefact production — storyboard/animation, digital book, or designed model/prototype (multimodal synthesis).<br><b>Ongoing:</b> regular check-ins for troubleshooting; monitor platform analytics (completion, engagement); responsive scaffolding.<br><b>If a break intervenes:</b> learners refine artefacts independently, then peer-review; asynchronous platform access for revision; publish products (e.g., Book Creator) for an authentic audience</td><td>Four milestone artefacts; published work</td><td></td></tr>
+  <tr><td><b>4 — Summative assessment</b></td><td>Weeks 9–10</td><td>Evaluate reading comprehension (post-test assignments); score writing quality; assess design artefacts (illustrations, storyboard videos, models) with the Multiliteracy rubric; record post-intervention data; exclude incomplete submissions from comparisons</td><td>Post data; marked rubrics</td><td></td></tr>
+  <tr><td><b>5 — Recognition &amp; reflection</b></td><td>Week 11</td><td>Share exemplary student work with the school community; award certificates — Standard, Distinction, Participation; facilitate student reflections on their multiliteracies learning journey (text, audio or video)</td><td>Certificates; reflections; showcase</td><td></td></tr>
+  <tr><td><b>6 — Review &amp; next loop</b></td><td>Week 12+</td><td>Compare pre/post results; gather teacher and student feedback; identify who needs which intervention next; refine texts, tools and pacing; plan the next RWD cycle</td><td>Review notes; next-cycle plan</td><td></td></tr></table>
+  <p style="font-size:9pt;color:#777"><i>Note. TPACK = Technological Pedagogical Content Knowledge; RWD = Read·Write·Design. Adapted from the Reader-Is-Designer intervention (11 weeks, Phases 1–5 + review).</i></p>`); }
+function dlToolkit(){ dlDoc('iCAN-RWD-Digital-Toolkit','RWD Digital Toolkit — Recommended Platforms for Reading, Creating & Publishing', `
+  <p>Reliable, classroom-tested platforms mapped to the RWD loop. Prioritise tools that let learners <b>create</b> multimodal artefacts and <b>publish to a wider audience</b> — an authentic audience transforms effort.</p>
+  <h2>Read — scaffolded, purposeful reading</h2>
+  <table><tr><th style="width:20%">Platform</th><th>Best for</th></tr>
+  <tr><td><b>ReadWorks</b></td><td>Levelled passages with question sets, Article-a-Day routine, audio support and vocabulary scaffolds; assignment tracking and analytics</td></tr>
+  <tr><td><b>CommonLit</b></td><td>Levelled literary and informational texts with guided questions and paired texts for perspective work</td></tr>
+  <tr><td><b>Vocabulary.com</b></td><td>Word lists built from your source text; adaptive practice and spelling bees in context</td></tr></table>
+  <h2>Write &amp; Design — authorship and multimodal creation</h2>
+  <table><tr><th style="width:20%">Platform</th><th>Best for</th></tr>
+  <tr><td><b>Book Creator</b></td><td>Digital book authorship — text, image, audio, video in one artefact; class libraries with shareable links for real audiences</td></tr>
+  <tr><td><b>Canva for Education</b></td><td>Posters, brochures, infographics, presentations and short videos; templates lower the entry barrier for struggling designers</td></tr>
+  <tr><td><b>Storyboard That</b></td><td>Storyboarding narratives and arguments before video production — the bridge between Write and Design</td></tr>
+  <tr><td><b>Adobe Express</b></td><td>Graphics, single-page websites and videos with school-safe templates</td></tr>
+  <tr><td><b>Genially</b></td><td>Interactive images, presentations and gamified content — good for expository/explanatory designs</td></tr>
+  <tr><td><b>Scratch</b></td><td>Interactive stories, animations and games through block coding; a global publishing community</td></tr>
+  <tr><td><b>Tinkercad</b></td><td>3D design of models and prototypes — when the artefact is an object learners read about or researched (a drone, a machine, a solution to a local or global issue)</td></tr></table>
+  <h2>Publish &amp; share — authentic, wider audiences</h2>
+  <table><tr><th style="width:20%">Platform</th><th>Best for</th></tr>
+  <tr><td><b>Padlet</b></td><td>Multimodal walls for collaborative curation, peer feedback and public/class showcases</td></tr>
+  <tr><td><b>Wakelet</b></td><td>Curated collections and student portfolios with shareable links</td></tr>
+  <tr><td><b>Google Sites</b></td><td>Class or student websites presenting the full RWD journey (reading log → drafts → artefact → reflection)</td></tr>
+  <tr><td><b>School LMS / iCAN</b></td><td>Certificates, activation-paced tasks and consented sharing within the school community</td></tr></table>
+  <h2>Safe publishing checklist</h2>
+  <ul><li>Obtain parent/guardian consent before any public sharing (use the iCAN Parent Consent form).</li>
+  <li>Use school-managed accounts; keep student names/faces off public artefacts unless consented.</li>
+  <li>Check MoE and school policies on platforms and AI tools; moderate comments on shared work.</li>
+  <li>Start with a class-only audience, then widen (school → parents → global) as confidence and consent allow.</li></ul>`); }
 function dlChecklist(){ dlDoc('iCAN-Student-RWD-Checklist','My RWD Checklist', `
   <h2>📖 Read (view)</h2><ul><li>I know my purpose for reading.</li><li>I marked new words and found their meanings.</li><li>I can say the main idea in one sentence.</li><li>I noticed one choice the writer/designer made — and why.</li></ul>
   <h2>✍️ Write (represent)</h2><ul><li>I planned before drafting.</li><li>My writing has a clear beginning, middle and end.</li><li>I used at least three new words from my reading.</li><li>I revised after feedback — and can point to what changed.</li></ul>
-  <h2>🎨 Design (digital storytelling)</h2><ul><li>My storyboard matches my writing.</li><li>Every image/sound helps my message (not just decoration).</li><li>I thought about my audience on every slide/page.</li><li>I shared my story and collected one piece of feedback.</li></ul>
+  <h2>🎨 Design (make your artefact — learn by doing)</h2><p style="font-size:9.5pt;color:#555"><i>Your artefact can be a digital story or storyboard video — or a poster, a digital book, or a model/prototype of something you read or researched (a drone, a machine, a solution to a local or global issue), or something you build just for fun.</i></p><ul><li>My plan (storyboard, sketch, or design notes) matches my reading and writing.</li><li>Every image, sound, label or part of my artefact helps my message (not just decoration).</li><li>I thought about my audience in every slide, page, or design choice.</li><li>My artefact shows something I learned from the text — I can point to where.</li><li>I shared my artefact and collected one piece of feedback.</li></ul>
   <h2>🔁 …and back again</h2><ul><li>Designing made me re-read: what did I check?</li><li>Feedback made me re-write: what did I improve?</li><li>What will I do better in my next loop?</li></ul>`); }
 function dlStoryboard(){ dlDoc('iCAN-DST-Storyboard','My Digital Story — Storyboard', `
   <p>Name: ____________________ &nbsp;&nbsp; Class: ________ &nbsp;&nbsp; Story title: ____________________</p>
@@ -6483,23 +6569,23 @@ function dlStoryboard(){ dlDoc('iCAN-DST-Storyboard','My Digital Story — Story
   <h2>Design checks</h2><ul><li>Does panel 1 hook my audience?</li><li>One idea per panel?</li><li>Do words and pictures work together?</li><li>Does the ending answer my story's question?</li></ul>`); }
 function dlConsentDoc(){ dlDoc('iCAN-Parent-Consent-Form','Declaration for Parents — Consent Form', `
   <p><b>Dear Parent / Guardian,</b></p>
-  <p>Your child is invited to take part in the <b>iCAN Academy EFL File</b> — a Read · Write · Design (RWD) multiliteracies programme. Learners read purposefully, write to represent their ideas, and design digital stories to share them with a real audience. Participation involves classroom activities on the iCAN platform under teacher guidance; certificates are awarded for standard and distinction performance, and work samples are used for learning purposes within the school only.</p>
+  <p>Your child is invited to take part in the <b>iCAN Academy EFL File</b> — a Read · Write · Design (RWD) multiliteracies programme built on learning by doing. Learners read for a meaningful purpose, write to represent their ideas, and design an artefact that brings their learning to life — a digital story, a storyboard video, or a model of something they read or researched, such as a drone, a machine, or a solution to a local or global issue — or simply something they create for enjoyment. Along the way, they develop digital, literacy, and social skills. Participation involves classroom activities on the iCAN platform under teacher guidance; certificates are awarded for standard and distinction performance, and work samples are used for learning purposes within the school only.</p>
   <p>Please sign and return this form, or sign online using the link provided by the teacher.</p>
   <h2>Consent</h2>
   <p>I, ______________________________ (parent/guardian of ______________________________ , class ________ ), have read the declaration above and <b>I consent</b> to my child's participation in the iCAN Academy EFL File.</p>
   <p>Signature: ______________________ &nbsp;&nbsp; Date: ______________</p>
   <h2 class="rtl">إقرار وموافقة ولي الأمر</h2>
-  <p class="rtl">ولي الأمر الكريم، يسرّنا دعوة ابنكم للمشاركة في ملف اللغة الإنجليزية ضمن أكاديمية iCAN، وهو برنامج قائم على منهجية «اقرأ · اكتب · صمّم» حيث يقرأ المتعلم بوعي، ويكتب ليعبّر عن أفكاره، ثم يصمّم قصصًا رقمية لمشاركتها مع جمهور حقيقي. تشمل المشاركة أنشطة صفية عبر المنصة بإشراف المعلم، وتُمنح شهادات للأداء القياسي والمتميّز، وتُستخدم نماذج الأعمال لأغراض تعليمية داخل المدرسة فقط.</p>
+  <p class="rtl">ولي الأمر الكريم، يسرّنا دعوة ابنكم للمشاركة في ملف اللغة الإنجليزية ضمن أكاديمية iCAN، وهو برنامج قائم على منهجية «اقرأ · اكتب · صمّم» التي تجسّد مبدأ التعلّم بالممارسة. يقرأ المتعلّم لغايةٍ ذات معنى، ويكتب ليعبّر عن أفكاره، ثم يصمّم منتجًا يجسّد تعلّمه — قصة رقمية، أو فيديو مصوَّر، أو نموذجًا لشيءٍ قرأ عنه أو بحث فيه، كطائرة مسيّرة أو آلة أو حلٍّ لقضية محلية أو عالمية — أو عملًا يبتكره لمجرد المتعة. ومن خلال ذلك يطوّر مهاراته الرقمية واللغوية والاجتماعية. تشمل المشاركة أنشطة صفية عبر المنصة بإشراف المعلم، وتُمنح شهادات للأداء القياسي والمتميّز، وتُستخدم نماذج الأعمال لأغراض تعليمية داخل المدرسة فقط.</p>
   <p class="rtl">أنا، ______________________________ (ولي أمر الطالب ______________________________ ، الصف ________ )، اطّلعت على الإقرار أعلاه <b>وأوافق</b> على مشاركة ابني في البرنامج.</p>
   <p class="rtl">التوقيع: ______________________ &nbsp;&nbsp; التاريخ: ______________</p>`); }
 function printConsent(){
   const w=window.open('','_blank','width=800,height=900'); if(!w){ alert('Please allow pop-ups to print.'); return; }
   w.document.write('<html><head><title>iCAN Academy — Parent Consent</title><style>body{font-family:Georgia,serif;margin:40px;color:#1a1a2e;line-height:1.5} h1{font-size:20pt;color:#15183A} .rtl{direction:rtl;text-align:right} .sig{margin-top:26pt}</style></head><body>'+
   '<h1>iCAN Academy — Declaration for Parents</h1>'+
-  '<p><b>Dear Parent / Guardian,</b> your child is invited to take part in the <b>iCAN Academy EFL File</b> — a Read · Write · Design (RWD) multiliteracies programme in which learners read purposefully, write to represent their ideas, and design digital stories to share them. Participation involves classroom activities on the iCAN platform under teacher guidance; certificates are awarded for standard and distinction performance, and work samples are used for learning purposes within the school only.</p>'+
+  '<p><b>Dear Parent / Guardian,</b> your child is invited to take part in the <b>iCAN Academy EFL File</b> — a Read · Write · Design (RWD) multiliteracies programme built on learning by doing. Learners read for a meaningful purpose, write to represent their ideas, and design an artefact that brings their learning to life — a digital story, a storyboard video, or a model of something they read or researched, such as a drone, a machine, or a solution to a local or global issue — or simply something they create for enjoyment. Along the way, they develop digital, literacy, and social skills. Participation involves classroom activities on the iCAN platform under teacher guidance; certificates are awarded for standard and distinction performance, and work samples are used for learning purposes within the school only.</p>'+
   '<p class="sig">I, ______________________________ (parent/guardian of ______________________________ , class ________ ), have read the declaration above and <b>I consent</b> to my child\\u2019s participation.</p>'+
   '<p>Signature: ______________________ &nbsp;&nbsp; Date: ______________</p><hr>'+
-  '<p class="rtl">ولي الأمر الكريم، يسرّنا دعوة ابنكم للمشاركة في ملف اللغة الإنجليزية ضمن أكاديمية iCAN، وهو برنامج قائم على منهجية «اقرأ · اكتب · صمّم». تشمل المشاركة أنشطة صفية عبر المنصة بإشراف المعلم، وتُمنح شهادات للأداء القياسي والمتميّز.</p>'+
+  '<p class="rtl">ولي الأمر الكريم، يسرّنا دعوة ابنكم للمشاركة في ملف اللغة الإنجليزية ضمن أكاديمية iCAN، وهو برنامج قائم على منهجية «اقرأ · اكتب · صمّم» التي تجسّد مبدأ التعلّم بالممارسة: يقرأ المتعلّم لغايةٍ ذات معنى، ويكتب ليعبّر عن أفكاره، ثم يصمّم منتجًا يجسّد تعلّمه — قصة رقمية أو نموذجًا لشيءٍ قرأ عنه أو بحث فيه. تشمل المشاركة أنشطة صفية عبر المنصة بإشراف المعلم، وتُمنح شهادات للأداء القياسي والمتميّز.</p>'+
   '<p class="rtl">أنا، ______________________________ (ولي أمر الطالب ______________________________ ، الصف ________ )، اطّلعت على الإقرار أعلاه <b>وأوافق</b> على مشاركة ابني في البرنامج.</p>'+
   '<p class="rtl">التوقيع: ______________________ &nbsp;&nbsp; التاريخ: ______________</p>'+
   '<p style="font-size:9pt;color:#777;margin-top:24pt">Teacher: '+(CONFIG.teacherName||'')+' — '+(CONFIG.teacherTitle||'')+' · '+(CONFIG.teacherCredit||'')+'</p>'+
