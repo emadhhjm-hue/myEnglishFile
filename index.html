@@ -6058,6 +6058,34 @@ function paintGates(){
 
 /* ---------- Initiatives ---------- */
 function getInits(){ return Store.get('ican_initiatives')||[]; }
+(function seedInits(){
+  if(Store.get('ican_inits_seed_v1')) return;
+  const list=getInits(); const have=t=>list.some(x=>(x.title||'').indexOf(t)===0);
+  const now=Date.now();
+  const seeds=[
+   { id:'seed1', title:'My BookTalk — "I Can, Too!" (a story made with People of Determination)',
+     target:'Grades 9–12, Advanced & General streams', from:'', to:'',
+     spec:'A 4-week Read·Write·Design journey on Book Creator (final product: DESIGNED artefact). READ/VIEW (Wks 1–2): think-pair-share on inclusion; watch and analyse Taare Zameen Par with structured film notes (10 elements); research UAE\u2019s National Policy for Empowering People of Determination (3 credible sources). WRITE (Wks 2–3): 150-word film review; original 8–10-scene script from the prompt "A curious boy sees the world differently…"; give and receive 2 peer reviews. DESIGN (Wks 3–4): AI process log (responsible prompt engineering); 2–4-minute storyboard video; 10–15-page illustrated storybook with dignified representation. CELEBRATE & PRESENT (Wk 4): 3–5-minute presentation on Display Day; publish to the class Book Creator library for an authentic worldwide audience; submit a PDF copy to the LMS. Certificates of Appreciation for all; Outstanding Participation for 90%+ achievement.',
+     plan:'Weekly self-review checkpoints (portfolio, Wks 1–4); assessed with the Multiliteracy Read·Write·Create rubric. Support: simplified fact cards with visuals, sentence starters and story frames, partner/recording assistants, teacher conferences, extended time, shorter story/video option. Extension: cinematography analysis, subplots and symbolism, peer-mentor and showcase-leadership roles. Cross-curricular team-teaching: EFL leads literacy; Special Needs delivers the "I can, too!" talk; Drama guides character exploration and expression. Ethical AI use mentored throughout.',
+     link:'https://read.bookcreator.com/4CTH0J6SoiWybkCQPwKSxPEBQUw1/E-kVAh0YR92Hqf5Xv5wm9g',
+     consent:true, published:false, date:now },
+   { id:'seed2', title:'Read → Design → Write, and back again: "Why a Travel Agent Still Matters?" (final product: written piece)',
+     target:'Grade 9 Advanced (adaptable to other grades/streams)', from:'', to:'',
+     spec:'An RWD cycle in a different sequence — Read → Design → Write, and back again — where designing feeds the final WRITTEN piece. READ: pre-reading — sequence the seven trip-planning steps; jigsaw reading of "Why a Travel Agent Still Matters?" (Bridge to Success, Gr. 9 Adv., Unit 9, Lessons 9–10; Lexile 900–1000L) across Groups A–D; comprehension questions; wordlist on Vocabulary.com + spelling bee; identify the author\u2019s stance with textual evidence. DESIGN (design to think, before writing): Task 1 — poster arguing the counter-position "Why Travel Agents Are Not Needed" (Canva/AI); Task 2 — AI-generated storytelling video on the debate (online-booking efficiency, modern tools, digital security). WRITE (final product): argumentative essay arguing the opposing view — claim → reasons → counterclaim & rebuttal → conclusion (~120 words), peer feedback + writing checklist. …AND BACK AGAIN: designing sends you back to the text for evidence; feedback sends you back to redraft. SELF-REFLECTION: on the RWD journey and Design\u2019s role in developing new literacies (text, audio or video — your choice).',
+     plan:'Knowledge processes: Experiencing (personal travel experiences; multimodal reading); Conceptualising (claim, reasons, conclusion; vocabulary in context — layovers, all-inclusive, charge); Analysing (text features; Think Aloud; Questioning the Author; bias, audience, omitted perspectives); Applying (counter-argument poster/video; opposing-view essay). Checkpoint at end of each phase; essay assessed with the Multiliteracy rubric, writing strand emphasised. Support: pre-taught vocabulary, jigsaw roles, sentence/paragraph frames, design-role entry points. Extension: rhetorical analysis of mentor texts; rebut a second counterclaim. Tools: textbook, Book Creator, Canva, Vocabulary.com; AI: ChatGPT, InVideo, Steve.ai — outputs reviewed per school AI policy.',
+     link:'https://read.bookcreator.com/4CTH0J6SoiWybkCQPwKSxPEBQUw1/oBvJ-DilTKqqQ4Y26YeSdg',
+     consent:false, published:false, date:now+1 },
+   { id:'seed3', title:'Article-A-Day — Mastering Reading Comprehension (ReadWorks Literacy Contest)',
+     target:'Grades 9–12 (11 A, 11 G, 12 G + any class with a code)', from:'', to:'',
+     spec:'A daily reading-fluency routine, right inside iCAN. Every school day: open your assigned ReadWorks Article-A-Day set, read one short article (~10 minutes), then record 2–3 things you learned in your Book of Knowledge journal in the hub (tap Start below). Your journal tracks your streak and total entries — download it as a Word file at month\u2019s end as your contest evidence. Certificates: Participation for consistent daily reading; Distinction for consistency plus quality entries.',
+     plan:'Teacher monitors ReadWorks assignment/progress dashboards weekly; journal spot-checks at Weeks 2 and 4. Support: audio-supported articles on ReadWorks, sentence frames built into the journal, reduced target (3 facts → 1) for strugglers. Extension: students add a "question I still have" and research it. Certificates generated at month\u2019s end (Participation / Distinction) via the Article-A-Day certificate generator on WinjiGo.',
+     link:'#articleaday',
+     consent:false, published:false, date:now+2 }
+  ];
+  seeds.forEach(sd=>{ if(!have(sd.title.slice(0,20))) list.push(sd); });
+  Store.set('ican_initiatives', list);
+  Store.set('ican_inits_seed_v1', true);
+})();
 function initCardHTML(){ return `
   <div class="card" id="initCard" style="margin-bottom:22px">
     <h3 style="font-size:1.2rem">🚀 Initiatives</h3>
@@ -6084,6 +6112,17 @@ function addInitiative(){
   Store.set('ican_initiatives', list); paintInits();
   ['in_title','in_target','in_from','in_to','in_spec','in_plan','in_link'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
 }
+function editInit(id){
+  const it=getInits().find(x=>x.id===id); if(!it) return;
+  const set=(fid,v)=>{ const e=document.getElementById(fid); if(e) e.value=v||''; };
+  set('in_title',it.title); set('in_target',it.target); set('in_from',it.from); set('in_to',it.to);
+  set('in_spec',it.spec); set('in_plan',it.plan); set('in_link',it.link);
+  const c=document.getElementById('in_consent'); if(c) c.checked=!!it.consent;
+  if(confirm('Loaded "'+it.title.slice(0,60)+'…" into the form above for editing.\n\nOK = remove the old copy (re-add after your edits)\nCancel = keep the old copy too (duplicate then delete manually)')){
+    Store.set('ican_initiatives', getInits().filter(x=>x.id!==id)); paintInits();
+  }
+  const card=document.getElementById('initCard'); if(card) card.scrollIntoView({behavior:'smooth',block:'start'});
+}
 function pubInit(id,v){ const l=getInits(); const it=l.find(x=>x.id===id); if(it){ it.published=v; Store.set('ican_initiatives',l); paintInits(); } }
 function delInit(id){ if(!confirm('Delete this initiative?')) return; Store.set('ican_initiatives', getInits().filter(x=>x.id!==id)); paintInits(); }
 function consentLink(){ return location.href.split('#')[0] + '#consent'; }
@@ -6105,6 +6144,7 @@ function paintInits(){
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start">
         <button class="btn sm ${it.published?'ghost':'teal'}" onclick="pubInit('${it.id}',${it.published?'false':'true'})">${it.published?'Unpublish':'Publish'}</button>
+        <button class="btn sm" onclick="editInit('${it.id}')">✏️ Edit</button>
         ${it.consent?`<button class="btn sm" onclick="copyConsentLink()">🔗 Consent link</button>`:''}
         <button class="btn sm ghost" onclick="delInit('${it.id}')">🗑</button>
       </div>
