@@ -456,6 +456,24 @@ table.data tr:nth-child(even){background:#fff}
 .aad-timer.done{background:rgba(15,169,139,.9)}
 @keyframes aadPulse{0%,100%{opacity:1}50%{opacity:.55}}
 .aad-reader-body{padding:18px 22px; max-height:none}
+/* read-aloud toolbar */
+.aad-read-tools{display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; padding:10px 12px; margin-bottom:14px; background:#f4f8ff; border:1px solid #d7e3f7; border-radius:12px}
+.aad-play-btn{border:none; background:var(--teal-dk,#0b7); color:#fff; font-weight:700; font-size:.9rem; padding:8px 14px; border-radius:9px; cursor:pointer}
+.aad-play-btn:hover{filter:brightness(1.05)}
+.aad-slider{display:flex; align-items:center; gap:6px}
+.aad-sl-lab{font-size:.78rem; font-weight:700; color:#3a4a63}
+.aad-sl-val{font-size:.76rem; color:#5a6b85; min-width:38px; text-align:right; font-variant-numeric:tabular-nums}
+.aad-read-tools input[type=range]{width:96px; accent-color:var(--teal-dk,#0b7); cursor:pointer}
+.aad-step{width:26px; height:26px; border-radius:7px; border:1px solid #c3d3ea; background:#fff; color:#2a3a55; font-size:1.05rem; font-weight:800; line-height:1; cursor:pointer}
+.aad-step:hover{background:#eaf1fb}
+.aad-dict-link{margin-left:auto; font-size:.83rem; font-weight:700; color:var(--teal-dk,#0b7); text-decoration:none; border:1px solid #bfe0d6; padding:7px 11px; border-radius:9px; background:#fff; white-space:nowrap}
+.aad-dict-link:hover{background:#f0faf6}
+.aad-word-link{color:inherit; text-decoration:none; border-bottom:1px dotted #b9a25a}
+.aad-word-link:hover{color:var(--teal-dk,#0b7)}
+/* sentence highlight while reading aloud */
+.aad-sent{transition:background .15s}
+.aad-sent.on{background:#ffe9a8; border-radius:4px; box-shadow:0 0 0 3px #ffe9a8}
+@media(max-width:560px){ .aad-read-tools{gap:8px} .aad-dict-link{margin-left:0} .aad-read-tools input[type=range]{width:76px} }
 .aad-article-text{font-family:Georgia,serif; font-size:1.06rem; line-height:1.72; color:#1f2233}
 .aad-article-text p{margin:0 0 14px}
 .aad-vocab-box{margin-top:18px; border:1px solid var(--line); border-radius:12px; padding:12px 14px; background:#fbfaf6}
@@ -574,7 +592,7 @@ function saveResult(r){
   const a=getResults(); a.push(r); Store.set("ican_results",a); cloudSave(r);
   try{
     if(SESSION && SESSION.role==='student' && !r.noCert && typeof r.max==='number' && r.max>0 && typeof r.percent==='number'){
-      mintCert({skill:r.skill, activity:r.activity, score:r.score, max:r.max, percent:r.percent, detail:r.detail});
+      mintCert({skill:r.skill, activity:r.activity, score:r.score, max:r.max, percent:r.percent, detail:r.detail, ideas:r.ideas, words:r.words});
     }
   }catch(e){}
 }
@@ -1709,16 +1727,16 @@ const ROUTES = {
           <circle cx="450" cy="260" r="68" fill="#0e1130" stroke="rgba(255,255,255,.9)" stroke-width="2.5"/>
           <text x="450" y="270" text-anchor="middle" font-family="Fraunces,serif" font-weight="800" font-size="34">
             <tspan fill="#ffffff">i</tspan><tspan fill="#ff5a5f">C</tspan><tspan fill="#34d39a">A</tspan><tspan fill="#5b8def">N</tspan></text>
-          ${[["spelldrill","🐝","Spell & Drill",450,60],["grammar","🧩","Grammar",130,118],["mycerts","🏅","My Certificates",770,118],["typing","⌨️","Type",130,455],["diagnostic","🧭","Diagnostic",770,455],["exams","🎓","Exams & Quizzes",450,525]].map(([r,ic,lab,cx,cy])=>{
+          ${[["spelldrill","🐝","Spell & Drill",450,60],["grammar","🧩","Grammar",130,118],["articleaday","📰","Article-A-Day",770,118],["typing","⌨️","Type",130,455],["diagnostic","🧭","Diagnostic",770,455],["exams","🎓","Exams & Quizzes",450,525]].map(([r,ic,lab,cx,cy])=>{
             const bee = r==='spelldrill';
             const rad = bee?60:55;
             return `<g class="hub-s${bee?' hub-bee':''}" onclick="go('${r}')">
             <circle cx="${cx}" cy="${cy}" r="${rad}" fill="${bee?'#3a2a06':'#13322c'}" stroke="${bee?'#ffd23f':'rgba(255,255,255,.8)'}" stroke-width="${bee?'4':'2.5'}"/>
-            <text x="${cx}" y="${cy-(bee?9:7)}" text-anchor="middle" font-size="${bee?34:27}">${ic}</text>
-            <text x="${cx}" y="${cy+(bee?18:22)}" text-anchor="middle" fill="#ffffff" font-size="${bee?19:18}" font-weight="700">${lab}</text>
-            ${bee?`<text x="${cx}" y="${cy+38}" text-anchor="middle" fill="#ffe39a" font-size="11" font-weight="700" letter-spacing="0.03em">Say · Spell · Say</text>`:''}</g>`; }).join('')}
+            <text x="${cx}" y="${cy-(bee?9:7)}" text-anchor="middle" font-size="${bee?34:(r==='articleaday'?24:27)}">${ic}</text>
+            <text x="${cx}" y="${cy+(bee?18:22)}" text-anchor="middle" fill="#ffffff" font-size="${bee?19:(r==='articleaday'?15:18)}" font-weight="700">${lab}</text>
+            ${bee?`<text x="${cx}" y="${cy+38}" text-anchor="middle" fill="#ffe39a" font-size="11" font-weight="700" letter-spacing="0.03em">Say · Spell · Say</text>`:(r==='articleaday'?`<text x="${cx}" y="${cy+38}" text-anchor="middle" fill="#ffe39a" font-size="10.5" font-weight="700">Read · 20 min</text>`:'')}</g>`; }).join('')}
         </svg>
-        <div class="hub-foot">Tap any circle to begin. Tap 🎓 <b>Exams &amp; Quizzes</b> for full-length exams and differentiated practice.</div>
+        <div class="hub-foot">Tap any circle to begin. Tap 📰 <b>Article-A-Day</b> for daily reading, or 🎓 <b>Exams &amp; Quizzes</b> for full-length exams and differentiated practice.</div>
       </div>
 
       <div class="grid c2" style="margin-top:22px">
@@ -1730,7 +1748,7 @@ const ROUTES = {
           <span class="btn sm ghost" style="white-space:nowrap">Open →</span></button>
       </div>
 
-      <div style="margin-top:14px;font-size:.86rem;color:var(--muted)">Looking for your saved words? Open your <a onclick="go('vocab')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">📚 Vocabulary bank</a>.</div>
+      <div style="margin-top:14px;font-size:.86rem;color:var(--muted)">Looking for your awarded certificates? Open <a onclick="go('mycerts')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">🏅 My Certificates</a>. &nbsp;·&nbsp; Looking for your saved words? Open your <a onclick="go('vocab')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">📚 Vocabulary bank</a>.</div>
 
       <div class="card" style="margin-top:24px">
         <h3 style="font-size:1.2rem">My recent results</h3>
@@ -5784,7 +5802,9 @@ function mintCert(o){
     palette: pal.primary, orientation:'landscape', date: Date.now(),
     school: (CONFIG.schoolName || CONFIG.school || 'Al-Dhannah School Cycle 2-3, Boys'),
     sig1: CONFIG.teacherName || 'Teacher / Mentor', sig1t: CONFIG.teacherTitle || 'Teacher / Mentor',
-    sig2: CONFIG.principalName || '', sig2t: 'Principal'
+    sig2: CONFIG.principalName || '', sig2t: 'Principal',
+    ideas: Array.isArray(o.ideas)? o.ideas.filter(Boolean) : [],
+    words: Array.isArray(o.words)? o.words.filter(Boolean) : []
   };
   cert.honorary = honoraryV2(cert);
   const all = allCerts(); all.push(cert); Store.set('ican_certificates', all);
@@ -5795,6 +5815,71 @@ function certWrap(x,text,cx,cy,maxW,lh){
   words.forEach(w=>{ const t=line?line+' '+w:w; if(x.measureText(t).width>maxW){ x.fillText(line,cx,y); y+=lh; line=w; } else line=t; });
   if(line) x.fillText(line,cx,y); return y;
 }
+/* Compact work record drawn on Article-A-Day certificates:
+   the two knowledge ideas the student wrote + the words they banked.
+   Kept small so the teacher/parents can see exactly what was submitted. */
+function drawAadWorkTable(x, cert, W, topY){
+  const pal = tierPalette(normTier(cert.tier || certTier(cert.level)));
+  const tableW = Math.round(W*0.68);
+  const tX = (W-tableW)/2;
+  let y = topY;
+  const ideas = (cert.ideas||[]).map(s=>(s||'').trim());
+  const words = (cert.words||[]).map(s=>(s||'').trim()).filter(Boolean);
+
+  // helper: wrap text inside a cell, return the number of lines used
+  function cellLines(text, maxW, font){
+    x.font=font; const w=(text||'').split(/\s+/); let line='', lines=[];
+    w.forEach(word=>{ const t=line?line+' '+word:word; if(x.measureText(t).width>maxW){ if(line)lines.push(line); line=word; } else line=t; });
+    if(line) lines.push(line); return lines.length?lines:[''];
+  }
+
+  // ---- Section heading ----
+  x.textAlign='center'; x.fillStyle=pal.primary; x.font='italic 600 15px Georgia';
+  x.fillText('What '+(cert.firstName||(cert.name||'the student').split(' ')[0])+' added to their knowledge', W/2, y);
+  y += 16;
+
+  // ---- Ideas table ----
+  const rowFont='500 12.5px Georgia';
+  const numW=34, pad=10, textW=tableW-numW-pad*2;
+  const lh=16;
+  x.textAlign='left';
+  const rows = ideas.map((it,i)=>{ const t=it||'—'; return {n:i+1, text:t, lines:cellLines(t, textW, rowFont)}; });
+  // draw each row with a light divider
+  rows.forEach(r=>{
+    const rowH = Math.max(lh+8, r.lines.length*lh+8);
+    // row border
+    x.strokeStyle='#e4d9bf'; x.lineWidth=1;
+    x.strokeRect(tX, y, tableW, rowH);
+    // number cell divider
+    x.beginPath(); x.moveTo(tX+numW, y); x.lineTo(tX+numW, y+rowH); x.stroke();
+    // number
+    x.fillStyle=pal.primary; x.font='700 13px Georgia'; x.textAlign='center';
+    x.fillText(String(r.n), tX+numW/2, y+rowH/2+4);
+    // idea text (left aligned, wrapped, vertically centred)
+    x.fillStyle='#333'; x.font=rowFont; x.textAlign='left';
+    let ty = y + (rowH - r.lines.length*lh)/2 + 12;
+    r.lines.forEach(ln=>{ x.fillText(ln, tX+numW+pad, ty); ty+=lh; });
+    y += rowH;
+  });
+
+  // ---- Banked words strip ----
+  if(words.length){
+    y += 14;
+    x.textAlign='center'; x.fillStyle=pal.primary; x.font='italic 600 15px Georgia';
+    x.fillText('Words added to their vocabulary bank', W/2, y);
+    y += 8;
+    const wline = words.join('   \u00b7   ');
+    const wlines = cellLines(wline, tableW-20, '600 12.5px Georgia');
+    const boxH = wlines.length*16 + 14;
+    x.strokeStyle='#e4d9bf'; x.lineWidth=1; x.strokeRect(tX, y, tableW, boxH);
+    x.fillStyle=pal.dark; x.font='600 12.5px Georgia'; x.textAlign='center';
+    let wy = y + 18;
+    wlines.forEach(ln=>{ x.fillText(ln, W/2, wy); wy+=16; });
+    y += boxH;
+  }
+  return y;
+}
+
 function drawEarnedCert(cert){
   const tier = normTier(cert.tier || certTier(cert.level));
   const pal  = tierPalette(tier);
@@ -5867,7 +5952,15 @@ function drawEarnedCert(cert){
   x.fillStyle=pal.gold; [-24,-8,8,24].forEach(dx=>{ x.beginPath(); x.arc(W/2+dx,dY,3,0,7); x.fill(); });
   // recognition paragraph
   x.fillStyle='#333'; x.font='500 18px Georgia';
-  certWrap(x, honoraryV2(Object.assign({}, cert, {tier:tier})), W/2, dY+40, W*0.72, 28);
+  const recEndY = certWrap(x, honoraryV2(Object.assign({}, cert, {tier:tier})), W/2, dY+40, W*0.72, 28);
+
+  // --- Article-A-Day work record: the student's own ideas + banked words ---
+  const hasWork = (cert.ideas && cert.ideas.length) || (cert.words && cert.words.length);
+  const isAAD = /Article-A-Day/i.test(cert.activity||'');
+  if(isAAD && hasWork){
+    drawAadWorkTable(x, cert, W, recEndY+26);
+  }
+
   // motivational quote
   x.fillStyle=pal.primary; x.font='italic 500 18px Georgia';
   x.fillText('A reader today is a leader tomorrow.', W/2, H-215);
@@ -6886,11 +6979,152 @@ function paintAadWeeks(){
 /* ============================ THE READER ============================ */
 let _aadTimer=null, _aadEndsAt=0, _aadCurrent=null, _aadLocked=false;
 
+/* ==================== READ-TO-ME (article text-to-speech) ====================
+   Female English voice where available, live speed & volume, sentence
+   highlighting, and play / pause / resume / stop. Independent of speak(). */
+let _aadTts = { rate:0.9, vol:1, sentences:[], idx:0, playing:false, paused:false, voice:null };
+
+function aadPickVoice(){
+  if(!('speechSynthesis' in window)) return null;
+  const vs = speechSynthesis.getVoices()||[];
+  if(!vs.length) return null;
+  const en = vs.filter(v=>/^en(-|_|$)/i.test(v.lang||''));
+  const pool = en.length?en:vs;
+  // Prefer a female-sounding English voice by common names, then by 'female' hint.
+  const femNames = /(female|samantha|victoria|karen|moira|tessa|serena|fiona|amelie|joanna|salli|kendra|kimberly|aria|jenny|sonia|libby|google uk english female|google us english)/i;
+  return pool.find(v=>femNames.test(v.name||'')) 
+      || pool.find(v=>/female/i.test((v.name||'')+(v.voiceURI||'')))
+      || pool.find(v=>/en-GB/i.test(v.lang||''))
+      || pool[0];
+}
+// voices load asynchronously in some browsers
+if('speechSynthesis' in window){
+  try{ speechSynthesis.onvoiceschanged = ()=>{ _aadTts.voice = aadPickVoice(); }; }catch(e){}
+}
+
+function aadSpeakWord(w){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(w);
+  u.lang='en-GB'; u.rate=Math.max(0.6,_aadTts.rate); u.volume=_aadTts.vol;
+  if(!_aadTts.voice) _aadTts.voice=aadPickVoice();
+  if(_aadTts.voice) u.voice=_aadTts.voice;
+  speechSynthesis.speak(u);
+}
+
+function aadTtsBuild(){
+  // Split the article into sentence spans we can highlight while reading.
+  const box=document.getElementById('aadArticleText'); if(!box) return [];
+  if(box.dataset.ttsReady==='1') return _aadTts.sentences;
+  const paras=[...box.querySelectorAll('p')];
+  const sentences=[];
+  const src = paras.length?paras:[box];
+  src.forEach(p=>{
+    const raw=p.textContent||'';
+    const parts=raw.match(/[^.!?]+[.!?]*/g)||[raw];
+    p.innerHTML=''; // rebuild with wrapped sentence spans
+    parts.forEach(s=>{
+      const t=s.trim(); if(!t){ p.appendChild(document.createTextNode(s)); return; }
+      const span=document.createElement('span');
+      span.className='aad-sent'; span.textContent=s;
+      span.dataset.si=sentences.length;
+      p.appendChild(span);
+      sentences.push({el:span, text:t});
+    });
+  });
+  box.dataset.ttsReady='1';
+  _aadTts.sentences=sentences;
+  return sentences;
+}
+
+function aadTtsHighlight(i){
+  document.querySelectorAll('.aad-sent.on').forEach(e=>e.classList.remove('on'));
+  const s=_aadTts.sentences[i];
+  if(s && s.el){ s.el.classList.add('on');
+    // keep the current sentence in view
+    try{ s.el.scrollIntoView({block:'center', behavior:'smooth'}); }catch(e){}
+  }
+}
+
+function aadTtsSpeakFrom(i){
+  if(!('speechSynthesis' in window)) return;
+  if(i>=_aadTts.sentences.length){ aadTtsFinish(); return; }
+  _aadTts.idx=i; _aadTts.playing=true; _aadTts.paused=false;
+  aadTtsHighlight(i);
+  const u=new SpeechSynthesisUtterance(_aadTts.sentences[i].text);
+  u.lang='en-GB'; u.rate=_aadTts.rate; u.volume=_aadTts.vol;
+  if(!_aadTts.voice) _aadTts.voice=aadPickVoice();
+  if(_aadTts.voice) u.voice=_aadTts.voice;
+  u.onend=()=>{ if(_aadTts.playing && !_aadTts.paused){ aadTtsSpeakFrom(i+1); } };
+  speechSynthesis.speak(u);
+  aadTtsSetBtn('pause');
+}
+
+function aadTtsToggle(){
+  if(!('speechSynthesis' in window)){ alert('Sorry — your browser does not support read-aloud.'); return; }
+  aadTtsBuild();
+  if(!_aadTts.playing){                 // start fresh
+    speechSynthesis.cancel();
+    aadTtsSpeakFrom(_aadTts.idx||0);
+  } else if(_aadTts.paused){            // resume
+    _aadTts.paused=false; speechSynthesis.resume(); aadTtsSetBtn('pause');
+  } else {                              // pause
+    _aadTts.paused=true; speechSynthesis.pause(); aadTtsSetBtn('resume');
+  }
+}
+
+function aadTtsStop(){
+  _aadTts.playing=false; _aadTts.paused=false; _aadTts.idx=0;
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  document.querySelectorAll('.aad-sent.on').forEach(e=>e.classList.remove('on'));
+  aadTtsSetBtn('play');
+}
+
+function aadTtsFinish(){
+  _aadTts.playing=false; _aadTts.paused=false; _aadTts.idx=0;
+  document.querySelectorAll('.aad-sent.on').forEach(e=>e.classList.remove('on'));
+  aadTtsSetBtn('play');
+}
+
+function aadTtsSetBtn(state){
+  const b=document.getElementById('aadPlayBtn'); if(!b) return;
+  if(state==='play')   b.innerHTML='🔊 Read to me';
+  if(state==='pause')  b.innerHTML='⏸ Pause';
+  if(state==='resume') b.innerHTML='▶ Resume';
+}
+
+function aadTtsSet(kind,v){
+  v=parseFloat(v);
+  if(kind==='rate'){ _aadTts.rate=v; const l=document.getElementById('aadRateVal'); if(l) l.textContent=v.toFixed(2).replace(/0$/,'')+'×'; }
+  if(kind==='vol'){ _aadTts.vol=v; const l=document.getElementById('aadVolVal'); if(l) l.textContent=Math.round(v*100)+'%'; }
+  // apply live: restart current sentence with new settings
+  if(_aadTts.playing && !_aadTts.paused){
+    speechSynthesis.cancel();
+    aadTtsSpeakFrom(_aadTts.idx);
+  }
+}
+
+function aadTtsStep(kind,dir){
+  if(kind==='rate'){
+    const el=document.getElementById('aadRate'); if(!el) return;
+    let v=Math.min(1.5, Math.max(0.5, (parseFloat(el.value)+dir*0.1)));
+    el.value=v; aadTtsSet('rate',v);
+  } else {
+    const el=document.getElementById('aadVol'); if(!el) return;
+    let v=Math.min(1, Math.max(0, (parseFloat(el.value)+dir*0.1)));
+    el.value=v; aadTtsSet('vol',v);
+  }
+}
+
 function openAadArticle(id){
   const found = aadFindArt(id); if(!found) return;
   // students blocked if the week is not open
   if(SESSION && SESSION.role==='student' && !aadWeekOpen(found.week)){ alert('This week is not activated yet.'); return; }
   _aadCurrent = found; _aadLocked=false;
+  // reset read-aloud for the new article (keep the user's chosen rate/volume)
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  _aadTts.sentences=[]; _aadTts.idx=0; _aadTts.playing=false; _aadTts.paused=false;
+  if(!_aadTts.voice) _aadTts.voice=aadPickVoice();
   const prev = aadArtStatus(id);
   const a = found.art;
   const c = aadGenreColor(a.genre);
@@ -6911,6 +7145,26 @@ function openAadArticle(id){
       </div>
 
       <div class="aad-reader-body">
+        <div class="aad-read-tools" role="group" aria-label="Reading aids">
+          <button class="aad-play-btn" id="aadPlayBtn" onclick="aadTtsToggle()">🔊 Read to me</button>
+          <button class="btn ghost sm" id="aadStopBtn" onclick="aadTtsStop()" title="Stop">⏹ Stop</button>
+          <div class="aad-slider">
+            <span class="aad-sl-lab">Speed</span>
+            <button class="aad-step" onclick="aadTtsStep('rate',-1)" aria-label="Slower">−</button>
+            <input type="range" id="aadRate" min="0.5" max="1.5" step="0.05" value="0.9" oninput="aadTtsSet('rate',this.value)">
+            <button class="aad-step" onclick="aadTtsStep('rate',1)" aria-label="Faster">+</button>
+            <span class="aad-sl-val" id="aadRateVal">0.9×</span>
+          </div>
+          <div class="aad-slider">
+            <span class="aad-sl-lab">Volume</span>
+            <button class="aad-step" onclick="aadTtsStep('vol',-1)" aria-label="Quieter">−</button>
+            <input type="range" id="aadVol" min="0" max="1" step="0.1" value="1" oninput="aadTtsSet('vol',this.value)">
+            <button class="aad-step" onclick="aadTtsStep('vol',1)" aria-label="Louder">+</button>
+            <span class="aad-sl-val" id="aadVolVal">100%</span>
+          </div>
+          <a class="aad-dict-link" href="https://www.vocabulary.com/dictionary/" target="_blank" rel="noopener" title="Look up a word on Vocabulary.com">📖 Dictionary</a>
+        </div>
+
         <div class="aad-article-text" id="aadArticleText">${a.text}</div>
 
         <div class="aad-vocab-box">
@@ -6919,9 +7173,9 @@ function openAadArticle(id){
           <div class="aad-vocab-list">
             ${a.vocab.map(v=>`
               <div class="aad-vocab-word">
-                <div><b>${esc(v[0])}</b> — ${esc(v[1])}</div>
+                <div><a class="aad-word-link" href="https://www.vocabulary.com/dictionary/${encodeURIComponent(v[0])}" target="_blank" rel="noopener" title="Look up on Vocabulary.com"><b>${esc(v[0])}</b></a> — ${esc(v[1])}</div>
                 <div style="display:flex;gap:6px;flex-shrink:0">
-                  <button class="btn ghost sm" onclick="speak('${escq(v[0])}')">🔊</button>
+                  <button class="btn ghost sm" onclick="aadSpeakWord('${escq(v[0])}')" title="Hear this word">🔊</button>
                   <button class="btn sm teal" onclick="aadBankWord('${escq(v[0])}','${escq(v[1])}',this)">+ Bank</button>
                 </div>
               </div>`).join('')}
@@ -7009,9 +7263,13 @@ function aadSubmitArticle(auto){
 
   // log a result for the teacher dashboard + certificates pipeline
   if(SESSION && SESSION.role==='student'){
+    // words this student banked from THIS article (for the certificate record)
+    let bankedWords=[];
+    try{ bankedWords = getAllVocab().filter(v=>v.source==='aad' && v.artId===id).map(v=>v.word); }catch(e){}
     saveResult({ date:Date.now(), name:SESSION.name, class:SESSION.class, code:SESSION.code, id:SESSION.id,
       skill:'Reading', activity:'Article-A-Day: '+_aadCurrent.art.title,
       score:filled.length, max:2, percent:pct,
+      ideas:[i1,i2], words:bankedWords,
       detail:`Week ${_aadCurrent.week} · ${_aadCurrent.art.genre} · ${filled.length}/2 ideas${auto?' · auto-locked (time up)':''}` });
   }
 
@@ -7035,6 +7293,7 @@ function aadSubmitArticle(auto){
 
 function closeAadReader(){
   clearInterval(_aadTimer);
+  aadTtsStop();
   const m=document.getElementById('aadReaderOverlay'); if(m) m.classList.remove('show');
   _aadCurrent=null;
   if(CURRENT_SCREEN==='articleaday') ROUTES.articleaday(); // repaint week meters
