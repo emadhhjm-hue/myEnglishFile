@@ -6059,7 +6059,7 @@ function paintGates(){
 /* ---------- Initiatives ---------- */
 function getInits(){ return Store.get('ican_initiatives')||[]; }
 (function seedInits(){
-  if(Store.get('ican_inits_seed_v1')) return;
+  if(Store.get('ican_inits_seed_v2')) return;
   const list=getInits(); const have=t=>list.some(x=>(x.title||'').indexOf(t)===0);
   const now=Date.now();
   const seeds=[
@@ -6074,22 +6074,23 @@ function getInits(){ return Store.get('ican_initiatives')||[]; }
      spec:'An RWD cycle in a different sequence — Read → Design → Write, and back again — where designing feeds the final WRITTEN piece. READ: pre-reading — sequence the seven trip-planning steps; jigsaw reading of "Why a Travel Agent Still Matters?" (Bridge to Success, Gr. 9 Adv., Unit 9, Lessons 9–10; Lexile 900–1000L) across Groups A–D; comprehension questions; wordlist on Vocabulary.com + spelling bee; identify the author\u2019s stance with textual evidence. DESIGN (design to think, before writing): Task 1 — poster arguing the counter-position "Why Travel Agents Are Not Needed" (Canva/AI); Task 2 — AI-generated storytelling video on the debate (online-booking efficiency, modern tools, digital security). WRITE (final product): argumentative essay arguing the opposing view — claim → reasons → counterclaim & rebuttal → conclusion (~120 words), peer feedback + writing checklist. …AND BACK AGAIN: designing sends you back to the text for evidence; feedback sends you back to redraft. SELF-REFLECTION: on the RWD journey and Design\u2019s role in developing new literacies (text, audio or video — your choice).',
      plan:'Knowledge processes: Experiencing (personal travel experiences; multimodal reading); Conceptualising (claim, reasons, conclusion; vocabulary in context — layovers, all-inclusive, charge); Analysing (text features; Think Aloud; Questioning the Author; bias, audience, omitted perspectives); Applying (counter-argument poster/video; opposing-view essay). Checkpoint at end of each phase; essay assessed with the Multiliteracy rubric, writing strand emphasised. Support: pre-taught vocabulary, jigsaw roles, sentence/paragraph frames, design-role entry points. Extension: rhetorical analysis of mentor texts; rebut a second counterclaim. Tools: textbook, Book Creator, Canva, Vocabulary.com; AI: ChatGPT, InVideo, Steve.ai — outputs reviewed per school AI policy.',
      link:'https://read.bookcreator.com/4CTH0J6SoiWybkCQPwKSxPEBQUw1/oBvJ-DilTKqqQ4Y26YeSdg',
-     consent:false, published:false, date:now+1 },
+     consent:true, published:false, date:now+1 },
    { id:'seed3', title:'Article-A-Day — Mastering Reading Comprehension (ReadWorks Literacy Contest)',
      target:'Grades 9–12 (11 A, 11 G, 12 G + any class with a code)', from:'', to:'',
      spec:'A daily reading-fluency routine, right inside iCAN. Every school day: open your assigned ReadWorks Article-A-Day set, read one short article (~10 minutes), then record 2–3 things you learned in your Book of Knowledge journal in the hub (tap Start below). Your journal tracks your streak and total entries — download it as a Word file at month\u2019s end as your contest evidence. Certificates: Participation for consistent daily reading; Distinction for consistency plus quality entries.',
      plan:'Teacher monitors ReadWorks assignment/progress dashboards weekly; journal spot-checks at Weeks 2 and 4. Support: audio-supported articles on ReadWorks, sentence frames built into the journal, reduced target (3 facts → 1) for strugglers. Extension: students add a "question I still have" and research it. Certificates generated at month\u2019s end (Participation / Distinction) via the Article-A-Day certificate generator on WinjiGo.',
      link:'#articleaday',
-     consent:false, published:false, date:now+2 }
+     consent:true, published:false, date:now+2 }
   ];
   seeds.forEach(sd=>{ if(!have(sd.title.slice(0,20))) list.push(sd); });
+  list.forEach(x=>{ x.consent=true; });  // every initiative requires its own parent consent
   Store.set('ican_initiatives', list);
-  Store.set('ican_inits_seed_v1', true);
+  Store.set('ican_inits_seed_v2', true);
 })();
 function initCardHTML(){ return `
   <div class="card" id="initCard" style="margin-bottom:22px">
     <h3 style="font-size:1.2rem">🚀 Initiatives</h3>
-    <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Create an initiative with its timeframe, specifications, target students and planned interventions. Published initiatives appear (by title) in students' dashboards; unpublished ones stay private to you. If consent is required, share the online consent link or print the form.</p>
+    <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Create an initiative with its timeframe, specifications, target students and planned interventions. Each initiative is <b>activated separately</b>: activated ones appear in students' dashboards; drafts stay private to you. Every initiative requires its <b>own parent consent</b> — share the online consent link or print the form.</p>
     <div class="grid c2" style="gap:10px">
       <div class="ed-field"><label>Title</label><input id="in_title" placeholder="e.g. Reader is Designer — Term 1"></div>
       <div class="ed-field"><label>Target students / grades</label><input id="in_target" placeholder="e.g. Grade 10 Advanced, G11 General"></div>
@@ -6099,7 +6100,7 @@ function initCardHTML(){ return `
     <div class="ed-field"><label>Specifications (what students will do)</label><textarea id="in_spec" rows="3" placeholder="Phases, tasks, outputs, publishing venue…"></textarea></div>
     <div class="ed-field"><label>Planning & interventions</label><textarea id="in_plan" rows="2" placeholder="Checkpoints, differentiation, support for struggling learners…"></textarea></div>
     <div class="ed-field"><label>Engagement link (Book Creator deck, Padlet, site…)</label><input id="in_link" placeholder="https://read.bookcreator.com/… — students see a Start button + how-to-join steps when published"></div>
-    <label style="display:flex;align-items:center;gap:8px;font-size:.9rem;margin:6px 0 10px"><input type="checkbox" id="in_consent"> Parent consent required</label>
+    <p style="font-size:.88rem;margin:6px 0 10px;background:#fef3c7;color:#92400e;border-radius:8px;padding:8px 10px">📝 <b>Parent consent: always required.</b> Every initiative needs its own signed consent — students see a consent button on each activated initiative, and signatures are recorded per initiative in your Consent log.</p>
     <button class="btn teal" onclick="addInitiative()">＋ Add initiative</button>
     <div id="initList" style="margin-top:14px"></div>
   </div>`;}
@@ -6107,7 +6108,7 @@ function addInitiative(){
   const t=(val('in_title')||'').trim(); if(!t){ alert('Give the initiative a title.'); return; }
   const list=getInits();
   list.push({ id:'i'+Date.now(), title:t, target:val('in_target')||'', from:val('in_from')||'', to:val('in_to')||'',
-    spec:val('in_spec')||'', plan:val('in_plan')||'', link:(val('in_link')||'').trim(), consent:!!document.getElementById('in_consent').checked,
+    spec:val('in_spec')||'', plan:val('in_plan')||'', link:(val('in_link')||'').trim(), consent:true,
     published:false, date:Date.now() });
   Store.set('ican_initiatives', list); paintInits();
   ['in_title','in_target','in_from','in_to','in_spec','in_plan','in_link'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
@@ -6117,7 +6118,6 @@ function editInit(id){
   const set=(fid,v)=>{ const e=document.getElementById(fid); if(e) e.value=v||''; };
   set('in_title',it.title); set('in_target',it.target); set('in_from',it.from); set('in_to',it.to);
   set('in_spec',it.spec); set('in_plan',it.plan); set('in_link',it.link);
-  const c=document.getElementById('in_consent'); if(c) c.checked=!!it.consent;
   if(confirm('Loaded "'+it.title.slice(0,60)+'…" into the form above for editing.\n\nOK = remove the old copy (re-add after your edits)\nCancel = keep the old copy too (duplicate then delete manually)')){
     Store.set('ican_initiatives', getInits().filter(x=>x.id!==id)); paintInits();
   }
@@ -6136,16 +6136,16 @@ function paintInits(){
   box.innerHTML = l.length ? l.slice().reverse().map(it=>`
     <div class="init-row">
       <div style="flex:1;min-width:220px">
-        <b>${esc(it.title)}</b> ${it.published?'<span class="pill done">published</span>':'<span class="pill">draft</span>'}${it.consent?' <span class="pill" style="background:#fef3c7;color:#92400e">consent required</span>':''}
+        <b>${esc(it.title)}</b> ${it.published?'<span class="pill done">ACTIVE</span>':'<span class="pill">draft</span>'} <span class="pill" style="background:#fef3c7;color:#92400e">consent required</span>
         <div style="font-size:.8rem;color:var(--muted)">${esc(it.target||'All students')} · ${esc(it.from||'…')} → ${esc(it.to||'…')}</div>
         ${it.spec?`<div style="font-size:.82rem;margin-top:4px">${esc(it.spec)}</div>`:''}
         ${it.link?`<div style="font-size:.8rem;margin-top:4px">🔗 <a href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.link)}</a></div>`:''}
         ${it.plan?`<div style="font-size:.78rem;color:var(--muted);margin-top:2px"><b>Plan:</b> ${esc(it.plan)}</div>`:''}
       </div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start">
-        <button class="btn sm ${it.published?'ghost':'teal'}" onclick="pubInit('${it.id}',${it.published?'false':'true'})">${it.published?'Unpublish':'Publish'}</button>
+        <button class="btn sm ${it.published?'ghost':'teal'}" onclick="pubInit('${it.id}',${it.published?'false':'true'})">${it.published?'⏸ Deactivate':'▶ Activate'}</button>
         <button class="btn sm" onclick="editInit('${it.id}')">✏️ Edit</button>
-        ${it.consent?`<button class="btn sm" onclick="copyConsentLink()">🔗 Consent link</button>`:''}
+        <button class="btn sm" onclick="copyConsentLink()">🔗 Consent link</button>
         <button class="btn sm ghost" onclick="delInit('${it.id}')">🗑</button>
       </div>
     </div>`).join('') : `<p class="note">No initiatives yet — add your first one above.</p>`;
@@ -6354,7 +6354,8 @@ function consentPanelHTML(){
       <div class="ed-field"><label>Child's full name</label><input id="cs_child"></div>
       <div class="ed-field"><label>Class / grade</label><input id="cs_class" placeholder="e.g. Grade 10-A"></div>
       <div class="ed-field"><label>Initiative</label>
-        <select id="cs_init"><option value="">General participation (EFL File)</option>${inits.map(i=>`<option>${esc(i.title)}</option>`).join('')}</select></div>
+        <select id="cs_init"><option value="">— General participation (EFL File) —</option>${inits.map(i=>`<option>${esc(i.title)}</option>`).join('')}</select>
+        <small style="color:var(--muted)">Each initiative needs its own consent — select the initiative you are consenting to. One form per initiative.</small></div>
     </div>
     <label style="display:flex;align-items:flex-start;gap:8px;font-size:.88rem;margin:8px 0"><input type="checkbox" id="cs_agree" style="margin-top:3px"> I have read the declaration above and I <b>consent</b> to my child's participation.</label>
     <div class="ed-field"><label>Type your full name as signature</label><input id="cs_sig" style="font-family:Georgia;font-style:italic"></div>
@@ -6419,6 +6420,12 @@ function kpPanelHTML(){ return `
   </table>
   <div style="margin-top:12px"><button class="dl-tile" onclick="dlKPPlan()" style="width:100%"><span>🧠</span><b>Download the Knowledge-Processes Plan template</b><small>a ready-to-fill Word planning grid</small></button></div>`;}
 
+function consentSignedFor(title){ return getConsents().some(c=>(c.initiative||'')===title); }
+function openConsentFor(id){
+  const it=getInits().find(x=>x.id===id);
+  openBarPanel('consent');
+  setTimeout(()=>{ const sel=document.getElementById('cs_init'); if(sel&&it) sel.value=it.title; }, 120);
+}
 function initsPanelHTML(){
   const l=getInits().filter(i=>i.published);
   return l.length? l.map(it=>`
@@ -6427,7 +6434,7 @@ function initsPanelHTML(){
         <b>🚀 ${esc(it.title)}</b>
         <div style="font-size:.8rem;color:var(--muted)">${esc(it.target||'All students')} · ${esc(it.from||'…')} → ${esc(it.to||'…')}</div>
         ${it.spec?`<div style="font-size:.86rem;margin-top:4px">${esc(it.spec)}</div>`:''}
-        ${it.consent?`<div style="margin-top:6px"><button class="btn sm" onclick="openBarPanel('consent')">📝 Parent consent needed — open form</button></div>`:''}
+        ${consentSignedFor(it.title)?`<div style="margin-top:6px;font-size:.83rem;color:var(--teal-dk)"><b>✔ Parent consent recorded on this device for this initiative.</b></div>`:`<div style="margin-top:6px"><button class="btn sm" onclick="openConsentFor('${it.id}')">📝 Parent consent needed for <b>this</b> initiative — open form</button></div>`}
         ${it.link?`
         <div style="margin-top:8px"><a class="btn sm teal" href="${esc(it.link)}" target="_blank" rel="noopener">🚀 Start — open the project deck</a></div>
         <details style="margin-top:6px;font-size:.83rem"><summary style="cursor:pointer;color:var(--muted)">❓ How to join &amp; use the deck (tap to open)</summary>
