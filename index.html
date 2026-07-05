@@ -253,6 +253,10 @@ table.data tr:nth-child(even){background:#fff}
 .lr-grid{position:relative; z-index:1; width:100%; max-width:1140px; display:grid; grid-template-columns:1fr; gap:40px; align-items:center; background:linear-gradient(140deg,#FBD75A 0%,#F4B72A 55%,#E89B12 100%); border-radius:28px; padding:46px 48px; box-sizing:border-box; box-shadow:0 30px 90px rgba(30,60,90,.35), 0 0 120px rgba(247,183,42,.25)}
 @media(min-width:880px){ .lr-grid{grid-template-columns:1.05fr .95fr; gap:56px; padding:46px 56px} }
 @media(max-width:860px){ .landing-rwd{padding-left:24px} }
+.lr-copyright{margin-top:22px; font-size:.82rem; color:#15496b; line-height:1.5}
+.lr-copyright>div:first-child{font-weight:700}
+.lr-caption{font-style:italic; color:#2b6cb0; font-size:.8rem}
+.hub-copyright{text-align:center; margin-top:14px; font-size:.8rem; color:#8fa0b8}
 .lr-brand{display:flex; align-items:center; gap:18px}
 .rwd-logo{width:104px; height:auto; flex:none; filter:drop-shadow(0 8px 14px rgba(0,0,0,.2))}
 .rwd-title{font-family:'Fraunces'; font-weight:800; font-size:clamp(3.4rem,9vw,5.6rem); line-height:.88; color:#15183A; margin:0; letter-spacing:.02em}
@@ -449,7 +453,7 @@ table.data tr:nth-child(even){background:#fff}
 .aad-reader{background:#fff; width:min(820px,100%); border-radius:18px; box-shadow:0 24px 60px rgba(10,12,40,.4); overflow:hidden; margin:auto}
 .aad-reader-top{display:flex; align-items:flex-start; gap:12px; padding:16px 18px; background:linear-gradient(135deg,#15183A,#2a2f66); color:#fff}
 .aad-r-genre{font-size:.68rem; font-weight:700; letter-spacing:.03em; text-transform:uppercase; color:#ffd23f}
-.aad-r-title{margin:2px 0 0; font-size:1.3rem; line-height:1.25; color:#fff; font-family:Fraunces,Georgia,serif}
+.aad-r-title{margin:2px 0 0; font-size:1.7rem; font-weight:800; line-height:1.2; color:#fff; font-family:Fraunces,Georgia,serif}
 .aad-r-right{margin-left:auto; display:flex; align-items:center; gap:10px}
 .aad-timer{font-variant-numeric:tabular-nums; font-weight:800; font-size:1.15rem; background:rgba(255,255,255,.16); padding:6px 12px; border-radius:10px; min-width:74px; text-align:center}
 .aad-timer.warn{background:#e6464b; animation:aadPulse 1s infinite}
@@ -478,6 +482,31 @@ table.data tr:nth-child(even){background:#fff}
 .aad-word:hover{background:#e8f0ff}
 .aad-word.tapped{background:#bfe0d6; box-shadow:0 0 0 2px #bfe0d6}
 .aad-article-text{ -webkit-tap-highlight-color:transparent }
+/* key vocabulary words in the body: bold, teal/green, dotted underline */
+.aad-word.aad-key{color:#0f766e; font-weight:700; border-bottom:2px dotted #14b8a6}
+.aad-word.aad-key:hover{background:#d7f5ee}
+/* two-column read layout: article + details sidebar */
+.aad-read-grid{display:grid; grid-template-columns:1fr 232px; gap:20px; align-items:start}
+.aad-details{border:1px solid var(--line); border-radius:12px; padding:12px 14px; background:#fbfaf6; font-size:.86rem; position:sticky; top:8px}
+.aad-details h4{margin:0 0 6px; font-size:.82rem; letter-spacing:.03em; text-transform:uppercase; color:#8a6d1f}
+.aad-details dl{margin:0; display:grid; grid-template-columns:auto 1fr; gap:3px 10px}
+.aad-details dt{font-weight:700; color:#5a6b85; font-size:.78rem}
+.aad-details dd{margin:0; color:#333; font-size:.82rem}
+.aad-det-vocab{margin:0; padding-left:18px; columns:1}
+.aad-det-vocab li{margin:1px 0}
+.aad-det-vocab a{color:#0f766e; text-decoration:none; border-bottom:1px dotted #b9a25a}
+.aad-det-source{margin:0; font-size:.78rem; color:#6a6a80; font-style:italic}
+@media(max-width:760px){ .aad-read-grid{grid-template-columns:1fr} .aad-details{position:static; order:-1} }
+/* vocabulary pop-up */
+.aad-vocab-pop{position:absolute; z-index:250; display:none; background:#fff; border:1px solid #cfd8e6; border-radius:12px; box-shadow:0 12px 34px rgba(10,15,40,.24); padding:12px 13px; max-width:320px; font-size:.9rem}
+.avp-head{display:flex; align-items:center; gap:8px; margin-bottom:5px}
+.avp-word{font-weight:800; font-size:1.05rem; color:#0f2233}
+.avp-pos{font-size:.72rem; font-style:italic; color:#0f766e; background:#e6f6f2; padding:2px 7px; border-radius:50px}
+.avp-x{margin-left:auto; border:none; background:transparent; font-size:.95rem; cursor:pointer; color:#8a97ad}
+.avp-def{color:#2a3242; line-height:1.4}
+.avp-ex{margin-top:5px; font-style:italic; color:#5a6478; font-size:.85rem}
+.avp-rel{margin-top:6px; display:flex; flex-direction:column; gap:2px; font-size:.82rem; color:#3a4456}
+.avp-actions{margin-top:9px; display:flex; gap:6px; flex-wrap:wrap; align-items:center}
 /* explore-further panel */
 .aad-explore{margin-top:18px; border:1px solid #d7e3f7; border-radius:12px; padding:12px 14px; background:#f7faff}
 .aad-explore h4{margin:0 0 3px; font-size:1rem}
@@ -1628,6 +1657,10 @@ const ROUTES = {
             <button class="lr-role role-student" onclick="go('studentLogin')"><span class="lr-ic">🎓</span> I'm a student</button>
             <button class="lr-role role-teacher" onclick="go('teacherLogin')"><span class="lr-ic">📋</span> I'm a teacher</button>
           </div>
+          <div class="lr-copyright">
+            <div>© 2026 Emad Ali Mohamed</div>
+            <div class="lr-caption">iCAN my English File · RWD-oriented literacy hub for EFL learners</div>
+          </div>
         </div>
         <div class="lr-web">
           <svg class="rwd-triad" viewBox="0 0 640 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RWD Recursive Practice Cycle — read, write, design and back again: the iterative multiliteracies process">
@@ -1752,6 +1785,7 @@ const ROUTES = {
             ${bee?`<text x="${cx}" y="${cy+38}" text-anchor="middle" fill="#ffe39a" font-size="11" font-weight="700" letter-spacing="0.03em">Say · Spell · Say</text>`:(r==='articleaday'?`<text x="${cx}" y="${cy+38}" text-anchor="middle" fill="#ffe39a" font-size="10.5" font-weight="700">Read · 20 min</text>`:'')}</g>`; }).join('')}
         </svg>
         <div class="hub-foot">Tap any circle to begin. Tap 📰 <b>Article-A-Day</b> for daily reading, or 🎓 <b>Exams &amp; Quizzes</b> for full-length exams and differentiated practice.</div>
+        <div class="hub-copyright">© 2026 Emad Ali Mohamed · <i>iCAN my English File — RWD-oriented literacy hub for EFL learners</i></div>
       </div>
 
       <div class="grid c2" style="margin-top:22px">
@@ -6831,6 +6865,249 @@ const AAD_PROG=[
 ]}
 ];
 
+/* ============ ARTICLE-A-DAY VOCABULARY ENRICHMENT ============
+   word -> {pos, def, ex, syn, ant}. Pop-up falls back to the article's own
+   definition + a Vocabulary.com link for anything missing. */
+const AAD_VOCAB = {
+"genome":{pos:"noun",def:"the complete set of genetic instructions in an organism",ex:"Scientists mapped the entire human genome by 2003.",syn:"genetic code",ant:""},
+"sequence":{pos:"verb",def:"to determine the exact order of units, as in DNA",ex:"Researchers sequenced the virus to track how it changed.",syn:"order, map",ant:""},
+"hereditary":{pos:"adjective",def:"passed from parents to offspring through genes",ex:"Eye colour is a hereditary trait.",syn:"inherited, genetic",ant:"acquired"},
+"therapeutic":{pos:"adjective",def:"relating to the healing or treatment of disease",ex:"The drug had a powerful therapeutic effect.",syn:"healing, curative",ant:"harmful"},
+"unprecedented":{pos:"adjective",def:"never done or known before",ex:"The discovery caused unprecedented excitement.",syn:"unheard-of, novel",ant:"common, routine"},
+"commodity":{pos:"noun",def:"a raw material or product that can be bought and sold",ex:"Salt was once a precious commodity.",syn:"goods, product",ant:""},
+"caravan":{pos:"noun",def:"a group of travellers or merchants journeying together",ex:"A caravan of camels crossed the desert.",syn:"convoy, procession",ant:""},
+"intermediary":{pos:"noun",def:"a person or place acting as a go-between",ex:"The city grew rich as an intermediary in trade.",syn:"middleman, agent",ant:""},
+"monopoly":{pos:"noun",def:"exclusive control over the supply of something",ex:"The empire held a monopoly on the spice trade.",syn:"control, dominance",ant:"competition"},
+"cosmopolitan":{pos:"adjective",def:"containing people and influences from many countries",ex:"Timbuktu became a cosmopolitan centre of learning.",syn:"multicultural, worldly",ant:"provincial, parochial"},
+"portable":{pos:"adjective",def:"able to be easily carried or moved",ex:"The battery made truly portable computers possible.",syn:"movable, handheld",ant:"fixed, stationary"},
+"density":{pos:"noun",def:"the amount of something packed into a given space",ex:"Lithium stores a high density of energy.",syn:"concentration",ant:"sparseness"},
+"degrade":{pos:"verb",def:"to break down or decline in quality over time",ex:"Batteries degrade with every charge.",syn:"deteriorate, decline",ant:"improve, restore"},
+"scarcity":{pos:"noun",def:"a shortage; the state of being in short supply",ex:"Analysts warn of a scarcity of key minerals.",syn:"shortage, lack",ant:"abundance"},
+"infrastructure":{pos:"noun",def:"the basic systems a society needs to function",ex:"Roads and power grids are vital infrastructure.",syn:"framework, foundations",ant:""},
+"obituary":{pos:"noun",def:"a notice of a death; here, a premature declaration that something is finished",ex:"Critics wrote the obituary of the novel too soon.",syn:"death notice",ant:""},
+"immersive":{pos:"adjective",def:"deeply absorbing; surrounding the participant completely",ex:"A long novel offers an immersive experience.",syn:"absorbing, engrossing",ant:"superficial"},
+"empathy":{pos:"noun",def:"the ability to understand and share another's feelings",ex:"Reading fiction can build empathy.",syn:"compassion, understanding",ant:"indifference"},
+"interiority":{pos:"noun",def:"the inner life of thoughts and feelings",ex:"Novels capture the interiority of their characters.",syn:"inner life",ant:""},
+"adaptable":{pos:"adjective",def:"able to change to suit new conditions",ex:"The novel is a remarkably adaptable form.",syn:"flexible, versatile",ant:"rigid, inflexible"},
+"ecosystem":{pos:"noun",def:"a community of living things interacting with their environment",ex:"A wetland is a productive ecosystem.",syn:"biome, habitat",ant:""},
+"filtration":{pos:"noun",def:"the process of removing impurities by passing through a barrier",ex:"Wetlands provide natural filtration of water.",syn:"purification, straining",ant:"contamination"},
+"buffer":{pos:"noun",def:"something that protects by absorbing impact",ex:"Mangroves act as a buffer against storms.",syn:"shield, cushion",ant:""},
+"valuation":{pos:"noun",def:"the act of estimating what something is worth",ex:"Economists attempt a valuation of nature's services.",syn:"appraisal, assessment",ant:""},
+"restoration":{pos:"noun",def:"the act of returning something to its original condition",ex:"Mangrove restoration protects coastlines.",syn:"renewal, repair",ant:"destruction"},
+"algorithm":{pos:"noun",def:"a step-by-step procedure for solving a problem",ex:"A learning algorithm adjusts millions of values.",syn:"procedure, formula",ant:""},
+"pattern":{pos:"noun",def:"a regular, repeated arrangement that can be recognised",ex:"The network detects patterns in data.",syn:"design, regularity",ant:""},
+"correlation":{pos:"noun",def:"a relationship in which things occur together",ex:"The machine learns correlation, not meaning.",syn:"connection, link",ant:""},
+"opaque":{pos:"adjective",def:"difficult to see through or understand",ex:"The system's reasoning is opaque even to its makers.",syn:"unclear, obscure",ant:"transparent, clear"},
+"accountability":{pos:"noun",def:"responsibility for one's decisions and their effects",ex:"Assigning accountability for AI errors is hard.",syn:"responsibility, answerability",ant:""},
+"conservation":{pos:"noun",def:"the careful preservation of something valuable",ex:"Art conservation follows strict rules.",syn:"preservation, protection",ant:"neglect, destruction"},
+"patina":{pos:"noun",def:"a surface change produced by age",ex:"Some valued the dark patina on the fresco.",syn:"sheen, weathering",ant:""},
+"authenticity":{pos:"noun",def:"the quality of being genuine or true to the original",ex:"Restorers debate a work's authenticity.",syn:"genuineness",ant:"forgery, fakeness"},
+"irreversible":{pos:"adjective",def:"impossible to undo",ex:"Cleaning the painting was an irreversible act.",syn:"permanent, final",ant:"reversible"},
+"intervention":{pos:"noun",def:"action taken to change what would otherwise happen",ex:"Minimal intervention is the restorer's rule.",syn:"involvement, action",ant:"inaction"},
+"paradox":{pos:"noun",def:"a situation that seems contradictory yet is true",ex:"Crowded cities create a paradox of loneliness.",syn:"contradiction",ant:""},
+"proximity":{pos:"noun",def:"nearness in space",ex:"Physical proximity does not guarantee connection.",syn:"closeness, nearness",ant:"distance"},
+"anonymity":{pos:"noun",def:"the state of being unknown to those around you",ex:"Urban anonymity can feel isolating.",syn:"namelessness",ant:"fame, recognition"},
+"epidemic":{pos:"noun",def:"a widespread occurrence of something harmful",ex:"Researchers speak of a loneliness epidemic.",syn:"outbreak, plague",ant:""},
+"civic":{pos:"adjective",def:"relating to citizens and community life",ex:"Libraries perform a civic role.",syn:"communal, public",ant:"private"},
+"ripple":{pos:"noun",def:"a small wave spreading outward from a disturbance",ex:"Gravitational waves are ripples in space-time.",syn:"wave, undulation",ant:""},
+"collide":{pos:"verb",def:"to crash together",ex:"Two black holes collided a billion years ago.",syn:"crash, smash",ant:"miss, avoid"},
+"interferometer":{pos:"noun",def:"an instrument that measures tiny changes using light beams",ex:"The interferometer detected a faint signal.",syn:"",ant:""},
+"distort":{pos:"verb",def:"to change the shape of something",ex:"A passing wave can distort space itself.",syn:"warp, deform",ant:"straighten"},
+"observatory":{pos:"noun",def:"a facility built for observing the sky or natural events",ex:"The observatory trembled by less than a proton's width.",syn:"",ant:""},
+"archive":{pos:"noun",def:"a collection of records preserved for the future",ex:"She stored the footage in the archive.",syn:"record, repository",ant:""},
+"subsurface":{pos:"adjective",def:"existing beneath the surface",ex:"Europa hides a subsurface ocean.",syn:"underground",ant:"surface"},
+"luminescent":{pos:"adjective",def:"giving off light without heat",ex:"Luminescent filaments drifted past the window.",syn:"glowing, radiant",ant:"dark, dull"},
+"protocol":{pos:"noun",def:"an official set of rules for behaviour or procedure",ex:"The mission protocol was austere: observe, never interfere.",syn:"procedure, rules",ant:""},
+"testimony":{pos:"noun",def:"a formal statement bearing witness to something",ex:"Some testimony must be delivered in person.",syn:"evidence, account",ant:""},
+"serendipity":{pos:"noun",def:"the occurrence of fortunate discoveries by accident",ex:"The microwave was born of serendipity.",syn:"chance, luck",ant:"design, intention"},
+"prototype":{pos:"noun",def:"a first model from which other versions are developed",ex:"He built a prototype within a year.",syn:"model, mock-up",ant:""},
+"residue":{pos:"noun",def:"a substance that remains after a process",ex:"The residue of a failed experiment became a product.",syn:"remainder, remnant",ant:""},
+"patent":{pos:"noun",def:"a legal right protecting an invention",ex:"She filed a patent for the new design.",syn:"licence, copyright",ant:""},
+"receptive":{pos:"adjective",def:"willing and prepared to notice and accept new ideas",ex:"A receptive mind turns accidents into discoveries.",syn:"open, responsive",ant:"closed, resistant"},
+"retrieval":{pos:"noun",def:"the act of bringing information back from memory",ex:"Retrieval practice beats rereading.",syn:"recall, recovery",ant:""},
+"cognitive":{pos:"adjective",def:"relating to mental processes of knowing and thinking",ex:"Cognitive science studies how we learn.",syn:"mental, intellectual",ant:""},
+"fluency":{pos:"noun",def:"smoothness and ease that can be mistaken for mastery",ex:"Rereading creates an illusion of fluency.",syn:"ease, smoothness",ant:"difficulty"},
+"consolidate":{pos:"verb",def:"to strengthen and make firm or secure",ex:"Sleep helps consolidate memories.",syn:"strengthen, reinforce",ant:"weaken"},
+"counterintuitive":{pos:"adjective",def:"opposite to what common sense would expect",ex:"The finding is usefully counterintuitive.",syn:"surprising, paradoxical",ant:"expected, obvious"},
+"displacement":{pos:"noun",def:"the moving of something from its usual position",ex:"An earthquake causes a displacement of water.",syn:"shift, movement",ant:""},
+"magnitude":{pos:"noun",def:"the size or scale of something, especially an earthquake",ex:"The quake's magnitude set the ocean in motion.",syn:"size, scale",ant:""},
+"inundation":{pos:"noun",def:"flooding; the covering of land with water",ex:"The inundation reached far inland.",syn:"flood, deluge",ant:"drought"},
+"seismic":{pos:"adjective",def:"relating to earthquakes or vibrations of the earth",ex:"Seismic sensors warn of tsunamis.",syn:"",ant:""},
+"evacuation":{pos:"noun",def:"the organised removal of people from danger",ex:"Her warning triggered an evacuation.",syn:"withdrawal, removal",ant:""},
+"catharsis":{pos:"noun",def:"the release of strong emotions through art",ex:"Tragedy produces a catharsis of pity and fear.",syn:"release, purging",ant:""},
+"protagonist":{pos:"noun",def:"the central character in a drama or story",ex:"The protagonist is undone by a flaw within.",syn:"hero, lead",ant:"antagonist"},
+"hubris":{pos:"noun",def:"excessive pride that leads to downfall",ex:"His hubris blinded him to the danger.",syn:"arrogance, conceit",ant:"humility"},
+"inevitability":{pos:"noun",def:"the quality of being certain to happen",ex:"Tragedy holds us with its sense of inevitability.",syn:"certainty",ant:"uncertainty"},
+"spectacle":{pos:"noun",def:"a visually striking performance or display",ex:"Tragedy dignifies suffering rather than offering mere spectacle.",syn:"display, show",ant:""},
+"monetise":{pos:"verb",def:"to convert something into a source of profit",ex:"Platforms monetise our attention.",syn:"profit from",ant:""},
+"engagement":{pos:"noun",def:"the time and interaction users give to content",ex:"Features are tested for their power to boost engagement.",syn:"involvement, interaction",ant:"disengagement"},
+"notification":{pos:"noun",def:"an alert designed to draw a user's attention",ex:"Notifications arrive on unpredictable schedules.",syn:"alert, reminder",ant:""},
+"fragmented":{pos:"adjective",def:"broken into small, disconnected pieces",ex:"Constant interruptions leave attention fragmented.",syn:"broken, scattered",ant:"whole, unified"},
+"deliberate":{pos:"adjective",def:"done consciously and intentionally",ex:"The design of infinite scroll is deliberate.",syn:"intentional, planned",ant:"accidental"},
+"microbiome":{pos:"noun",def:"the community of microorganisms living in a body",ex:"The gut microbiome influences our health.",syn:"",ant:""},
+"symbiotic":{pos:"adjective",def:"involving a mutually beneficial relationship",ex:"Our relationship with gut microbes is symbiotic.",syn:"cooperative, mutual",ant:"parasitic"},
+"immunity":{pos:"noun",def:"the body's ability to resist infection",ex:"Microbes help train our immunity.",syn:"resistance, defence",ant:"vulnerability"},
+"diversity":{pos:"noun",def:"variety; the presence of many different types",ex:"Diet affects microbial diversity.",syn:"variety, range",ant:"uniformity"},
+"colonise":{pos:"verb",def:"to establish a population in a new place",ex:"Bacteria colonise the gut from birth.",syn:"settle, populate",ant:"abandon"},
+"deterrence":{pos:"noun",def:"preventing action through fear of consequences",ex:"Nuclear deterrence discouraged direct war.",syn:"prevention",ant:"provocation"},
+"interdependence":{pos:"noun",def:"mutual reliance between countries or groups",ex:"Economic interdependence discourages conflict.",syn:"mutual reliance",ant:"independence"},
+"institution":{pos:"noun",def:"an established organisation with rules and authority",ex:"International institutions process disputes.",syn:"organisation, body",ant:""},
+"fragile":{pos:"adjective",def:"easily broken or destroyed",ex:"The Long Peace is fragile.",syn:"delicate, brittle",ant:"robust, sturdy"},
+"norm":{pos:"noun",def:"a shared standard of acceptable behaviour",ex:"Conquest became a broken norm.",syn:"standard, convention",ant:"anomaly"},
+"superposition":{pos:"noun",def:"the ability of a quantum system to be in multiple states at once",ex:"A qubit exists in superposition.",syn:"",ant:""},
+"qubit":{pos:"noun",def:"the basic unit of quantum information",ex:"Adding a qubit doubles the capacity.",syn:"",ant:""},
+"exponential":{pos:"adjective",def:"growing at an ever-increasing rate",ex:"Quantum capacity grows exponentially.",syn:"rapid, escalating",ant:"linear, gradual"},
+"decoherence":{pos:"noun",def:"the loss of quantum behaviour through outside interference",ex:"Decoherence destroys fragile quantum states.",syn:"",ant:""},
+"cryptography":{pos:"noun",def:"the science of protecting information through codes",ex:"Quantum computers threaten today's cryptography.",syn:"encryption",ant:""},
+"equivalence":{pos:"noun",def:"the state of being equal in value or meaning",ex:"Languages rarely offer neat equivalence.",syn:"equality, sameness",ant:"difference"},
+"idiom":{pos:"noun",def:"an expression whose meaning cannot be guessed from its words",ex:"'Kick the bucket' is an idiom.",syn:"expression, phrase",ant:""},
+"connotation":{pos:"noun",def:"an idea or feeling a word suggests beyond its meaning",ex:"'Home' carries a warm connotation.",syn:"undertone, association",ant:"denotation"},
+"fidelity":{pos:"noun",def:"faithfulness to the original",ex:"Translators balance fidelity and fluency.",syn:"faithfulness, accuracy",ant:"betrayal"},
+"mediate":{pos:"verb",def:"to act as a bridge between two sides",ex:"Translation mediates between cultures.",syn:"bridge, reconcile",ant:""},
+"keystone":{pos:"noun",def:"a species on which an entire ecosystem depends",ex:"The wolf is a keystone predator.",syn:"linchpin, cornerstone",ant:""},
+"cascade":{pos:"noun",def:"a series of connected effects, each triggering the next",ex:"The wolves set off a trophic cascade.",syn:"chain reaction",ant:""},
+"apex":{pos:"noun",def:"the top position, especially in a food chain",ex:"An apex predator sits at the top.",syn:"peak, summit",ant:"base, bottom"},
+"regenerate":{pos:"verb",def:"to grow back or bring back to a healthy state",ex:"Freed from grazing, the willows regenerated.",syn:"renew, revive",ant:"destroy"},
+"coexistence":{pos:"noun",def:"living together peacefully in the same place",ex:"Coexistence with predators takes patience.",syn:"harmony",ant:"conflict"},
+"diffusion":{pos:"noun",def:"the spreading out of something, here of responsibility",ex:"Diffusion of responsibility slows helping.",syn:"dispersal, spreading",ant:"concentration"},
+"intervene":{pos:"verb",def:"to become involved in order to change an outcome",ex:"Someone must intervene to break the spell.",syn:"step in, intercede",ant:"stand by"},
+"ambiguity":{pos:"noun",def:"uncertainty about meaning or the correct action",ex:"Ambiguity makes bystanders hesitate.",syn:"uncertainty, vagueness",ant:"clarity"},
+"conformity":{pos:"noun",def:"behaviour that matches that of the surrounding group",ex:"Conformity keeps everyone calm and passive.",syn:"compliance",ant:"rebellion"},
+"revise":{pos:"verb",def:"to reconsider and change a previous conclusion",ex:"New research revises the old picture.",syn:"amend, rethink",ant:"retain"},
+"movable":{pos:"adjective",def:"capable of being moved or rearranged",ex:"Movable type transformed printing.",syn:"portable",ant:"fixed"},
+"proliferation":{pos:"noun",def:"rapid increase in number or spread",ex:"The proliferation of books lowered their price.",syn:"spread, growth",ant:"decline"},
+"vernacular":{pos:"noun",def:"the everyday language of ordinary people",ex:"Luther wrote in the vernacular.",syn:"everyday speech",ant:"formal language"},
+"standardise":{pos:"verb",def:"to make consistent and uniform",ex:"Printing standardised spelling.",syn:"regularise, normalise",ant:"vary"},
+"subversive":{pos:"adjective",def:"tending to undermine established authority",ex:"A technology of connection is often subversive.",syn:"rebellious, disruptive",ant:"conformist"},
+"consolidation":{pos:"noun",def:"the process of strengthening memories",ex:"Deep sleep aids memory consolidation.",syn:"strengthening",ant:"weakening"},
+"deprivation":{pos:"noun",def:"the lack of something needed, such as sleep",ex:"Sleep deprivation impairs judgement.",syn:"lack, shortage",ant:"abundance"},
+"restorative":{pos:"adjective",def:"having the power to renew or repair",ex:"Sleep is deeply restorative.",syn:"healing, refreshing",ant:"draining"},
+"circadian":{pos:"adjective",def:"relating to the roughly 24-hour biological cycle",ex:"Light governs our circadian rhythm.",syn:"",ant:""},
+"accumulate":{pos:"verb",def:"to build up gradually over time",ex:"Waste proteins accumulate while we are awake.",syn:"gather, amass",ant:"disperse"},
+"vanishing point":{pos:"noun",def:"the spot where parallel lines appear to meet",ex:"Lines converge on the vanishing point.",syn:"",ant:""},
+"illusion":{pos:"noun",def:"something that deceives by producing a false impression",ex:"Perspective creates the illusion of depth.",syn:"deception, mirage",ant:"reality"},
+"convention":{pos:"noun",def:"an accepted way of doing something",ex:"Perspective became an artistic convention.",syn:"custom, norm",ant:""},
+"geometry":{pos:"noun",def:"the mathematics of shapes, lines and space",ex:"Perspective rests on geometry.",syn:"",ant:""},
+"render":{pos:"verb",def:"to represent or depict artistically",ex:"Artists learned to render deep space.",syn:"depict, portray",ant:""},
+"syntax":{pos:"noun",def:"the arrangement of words to form sentences",ex:"The model masters syntax superbly.",syn:"grammar, structure",ant:""},
+"semantics":{pos:"noun",def:"the branch of meaning in language",ex:"Semantics concerns what words mean.",syn:"meaning",ant:""},
+"statistical":{pos:"adjective",def:"based on the analysis of numerical data and probability",ex:"The model learns statistical relationships.",syn:"numerical, probabilistic",ant:""},
+"comprehension":{pos:"noun",def:"the action of understanding meaning",ex:"Fluent output is not proof of comprehension.",syn:"understanding, grasp",ant:"misunderstanding"},
+"plausible":{pos:"adjective",def:"seeming reasonable or probable",ex:"Its answers are always plausible.",syn:"believable, credible",ant:"implausible"},
+"radiation":{pos:"noun",def:"energy that can damage living tissue",ex:"Mars's surface is bathed in radiation.",syn:"",ant:""},
+"sustainable":{pos:"adjective",def:"able to be maintained over the long term",ex:"A colony must be sustainable to survive.",syn:"viable, enduring",ant:"unsustainable"},
+"atmosphere":{pos:"noun",def:"the layer of gases surrounding a planet",ex:"Mars has a thin atmosphere.",syn:"air",ant:""},
+"logistics":{pos:"noun",def:"the detailed organisation of a complex operation",ex:"The logistics of resupply are daunting.",syn:"organisation, coordination",ant:""},
+"viable":{pos:"adjective",def:"capable of working successfully",ex:"Mars is, at best, barely viable.",syn:"workable, feasible",ant:"unworkable"},
+"extrinsic":{pos:"adjective",def:"coming from outside; external reward or pressure",ex:"Grades are an extrinsic motivator.",syn:"external",ant:"intrinsic"},
+"intrinsic":{pos:"adjective",def:"coming from within; motivated by genuine interest",ex:"Curiosity is intrinsic motivation.",syn:"internal, inherent",ant:"extrinsic"},
+"quantify":{pos:"verb",def:"to express as a number or amount",ex:"A grade tries to quantify learning.",syn:"measure, count",ant:""},
+"proxy":{pos:"noun",def:"something that stands in for the thing you really want to measure",ex:"A grade is a proxy for understanding.",syn:"substitute, stand-in",ant:""},
+"abstraction":{pos:"noun",def:"an idea considered apart from physical reality",ex:"The cloud hides a physical reality behind an abstraction.",syn:"concept, generalisation",ant:"concrete reality"},
+"consumption":{pos:"noun",def:"the using up of a resource",ex:"Data centres have huge energy consumption.",syn:"use, usage",ant:"conservation"},
+"latency":{pos:"noun",def:"the delay before data begins to transfer",ex:"Companies fight latency by spreading servers worldwide.",syn:"delay, lag",ant:""},
+"redundancy":{pos:"noun",def:"the duplication of systems to prevent failure",ex:"Redundancy keeps data safe from disaster.",syn:"backup, duplication",ant:""},
+"tangible":{pos:"adjective",def:"able to be touched; physically real",ex:"The cloud has a tangible, physical weight.",syn:"concrete, physical",ant:"intangible"},
+"complicit":{pos:"adjective",def:"involved together, as a willing partner",ex:"The audience is complicit in imagining the world.",syn:"involved, party to",ant:"innocent"},
+"minimal":{pos:"adjective",def:"using very little; reduced to essentials",ex:"Great theatre uses minimal means.",syn:"sparse, bare",ant:"elaborate"},
+"evoke":{pos:"verb",def:"to bring a feeling or image to mind",ex:"A blue cloth can evoke the sea.",syn:"summon, conjure",ant:"suppress"},
+"immediacy":{pos:"noun",def:"the quality of happening in the present, right now",ex:"Live theatre offers immediacy.",syn:"directness, urgency",ant:""},
+"sequester":{pos:"verb",def:"to store away and isolate, especially carbon",ex:"Healthy soil can sequester carbon.",syn:"store, lock away",ant:"release"},
+"arable":{pos:"adjective",def:"suitable for growing crops",ex:"Ploughing has depleted arable land.",syn:"farmable, fertile",ant:"barren"},
+"depletion":{pos:"noun",def:"the reduction of something to a low level",ex:"Depletion of organic matter harms soil.",syn:"exhaustion, reduction",ant:"replenishment"},
+"microbe":{pos:"noun",def:"a microscopic living organism",ex:"Soil teems with microbes.",syn:"microorganism, germ",ant:""},
+"yield":{pos:"noun",def:"the amount of crop produced",ex:"Healthy soil gives a steadier yield.",syn:"harvest, output",ant:""},
+"commons":{pos:"noun",def:"a resource shared by a community",ex:"An open pasture is a commons.",syn:"shared resource",ant:"private property"},
+"incentive":{pos:"noun",def:"something that motivates a particular action",ex:"Each herder has an incentive to add animals.",syn:"motivation, spur",ant:"deterrent"},
+"exploit":{pos:"verb",def:"to use, often selfishly or excessively",ex:"Fishermen exploit a shared sea.",syn:"use, take advantage of",ant:"conserve"},
+"regulation":{pos:"noun",def:"a rule made and enforced by an authority",ex:"Regulation can prevent the tragedy.",syn:"rule, control",ant:"deregulation"},
+"cooperation":{pos:"noun",def:"working together toward a shared goal",ex:"Cooperation can save the commons.",syn:"collaboration, teamwork",ant:"competition"},
+"ledger":{pos:"noun",def:"a book or system recording financial transactions",ex:"Double-entry ledgers built modern trade.",syn:"account book, record",ant:""},
+"credit":{pos:"noun",def:"trust that allows goods now and payment later",ex:"Clear accounts build credit.",syn:"trust, loan",ant:"cash"},
+"speculation":{pos:"noun",def:"risky trading in hope of profit",ex:"Markets invite both investment and speculation.",syn:"gambling, risk-taking",ant:""},
+"displace":{pos:"verb",def:"to force out of a position or job",ex:"Machines can displace workers.",syn:"replace, oust",ant:"retain"},
+"augment":{pos:"verb",def:"to make greater by adding to it",ex:"Technology can augment human productivity.",syn:"increase, boost",ant:"reduce, diminish"},
+"obsolete":{pos:"adjective",def:"no longer used or useful",ex:"Automation makes some jobs obsolete.",syn:"outdated, defunct",ant:"current, modern"},
+"transition":{pos:"noun",def:"the process of changing from one state to another",ex:"The transition could be brutal for a generation.",syn:"change, shift",ant:"stability"},
+"polarisation":{pos:"noun",def:"division into two sharply contrasting groups",ex:"Economists worry about job-market polarisation.",syn:"division, split",ant:"unity"},
+"narrator":{pos:"noun",def:"the voice that tells a story",ex:"An unreliable narrator cannot be trusted.",syn:"storyteller",ant:""},
+"perspective":{pos:"noun",def:"a particular point of view or way of seeing",ex:"Every story is told from a perspective.",syn:"viewpoint, angle",ant:""},
+"deceive":{pos:"verb",def:"to cause someone to believe something untrue",ex:"The narrator may deceive the reader.",syn:"mislead, trick",ant:"enlighten"},
+"bias":{pos:"noun",def:"a tendency to lean unfairly in one direction",ex:"Bias can blind a narrator to the truth.",syn:"prejudice, slant",ant:"fairness"},
+"complicity":{pos:"noun",def:"the state of being involved in a shared act",ex:"Our complicity in the misreading is the point.",syn:"involvement, collusion",ant:"innocence"},
+"placebo":{pos:"noun",def:"a treatment with no active ingredient given as a control",ex:"A placebo can still relieve pain.",syn:"dummy treatment",ant:""},
+"expectation":{pos:"noun",def:"a belief about what will happen",ex:"Expectation is a biological force.",syn:"anticipation, belief",ant:""},
+"subjective":{pos:"adjective",def:"based on personal feeling rather than external fact",ex:"Placebos help with subjective symptoms.",syn:"personal, biased",ant:"objective"},
+"measurable":{pos:"adjective",def:"able to be assessed by objective observation",ex:"Placebos produce measurable changes.",syn:"quantifiable",ant:"immeasurable"},
+"ethical":{pos:"adjective",def:"relating to what is morally right",ex:"Placebos raise ethical questions.",syn:"moral, principled",ant:"unethical"},
+"standardisation":{pos:"noun",def:"making things uniform to a fixed measure",ex:"Standardisation made the container work.",syn:"uniformity",ant:"variation"},
+"intermodal":{pos:"adjective",def:"able to transfer between different modes of transport",ex:"The container is intermodal.",syn:"",ant:""},
+"efficiency":{pos:"noun",def:"achieving maximum output with minimum waste",ex:"The box brought huge efficiency to shipping.",syn:"productivity",ant:"waste"},
+"ripple effect":{pos:"noun",def:"a spreading series of consequences",ex:"The container had a global ripple effect.",syn:"knock-on effect, chain reaction",ant:""},
+"propaganda":{pos:"noun",def:"information spread to promote a cause or view",ex:"Propaganda works by emotion, not argument.",syn:"spin, indoctrination",ant:""},
+"emotive":{pos:"adjective",def:"arousing strong emotion",ex:"Propaganda relies on emotive imagery.",syn:"emotional, stirring",ant:"neutral"},
+"repetition":{pos:"noun",def:"the act of saying or showing something again and again",ex:"Repetition makes a claim feel true.",syn:"reiteration",ant:""},
+"scapegoat":{pos:"noun",def:"a person or group unfairly blamed",ex:"Propaganda often supplies a scapegoat.",syn:"fall guy, victim",ant:""},
+"scepticism":{pos:"noun",def:"a questioning, doubting attitude",ex:"Scepticism defends against propaganda.",syn:"doubt, questioning",ant:"credulity"},
+"biodiversity":{pos:"noun",def:"the variety of life in a place or on Earth",ex:"Human activity is dismantling biodiversity.",syn:"variety of life",ant:""},
+"extinction":{pos:"noun",def:"the dying out of a species",ex:"A sixth mass extinction is underway.",syn:"dying out, eradication",ant:"survival"},
+"habitat":{pos:"noun",def:"the natural home of an organism",ex:"Habitat loss threatens many species.",syn:"home, environment",ant:""},
+"irreplaceable":{pos:"adjective",def:"impossible to substitute once lost",ex:"A lost species is irreplaceable.",syn:"unique, priceless",ant:"replaceable"},
+"aesthetic":{pos:"adjective",def:"concerned with beauty and its appreciation",ex:"We share some aesthetic instincts.",syn:"artistic",ant:""},
+"proportion":{pos:"noun",def:"the pleasing relation of parts to a whole",ex:"Certain proportions recur in beautiful art.",syn:"balance, ratio",ant:"disproportion"},
+"universal":{pos:"adjective",def:"true or found everywhere",ex:"Some beauty judgements seem universal.",syn:"worldwide, general",ant:"particular, local"},
+"cultivated":{pos:"adjective",def:"developed through learning and experience",ex:"Taste is partly cultivated.",syn:"refined, developed",ant:"innate, natural"},
+"algorithmic":{pos:"adjective",def:"controlled by a computational procedure",ex:"Algorithmic feeds curate what we see.",syn:"automated",ant:""},
+"reinforce":{pos:"verb",def:"to strengthen or support an existing tendency",ex:"Echo chambers reinforce beliefs.",syn:"strengthen, bolster",ant:"weaken, undermine"},
+"polarise":{pos:"verb",def:"to divide into sharply opposed groups",ex:"These forces polarise communities.",syn:"divide, split",ant:"unite"},
+"homogeneous":{pos:"adjective",def:"of the same kind; uniform",ex:"The feed becomes homogeneous.",syn:"uniform, similar",ant:"diverse, varied"},
+"exposure":{pos:"noun",def:"the state of being presented with something",ex:"We mistake narrowed exposure for reality.",syn:"contact, experience",ant:"shelter"},
+"hypothesis":{pos:"noun",def:"a proposed explanation to be tested",ex:"A useful hypothesis makes specific predictions.",syn:"theory, proposition",ant:""},
+"replication":{pos:"noun",def:"repeating a study to confirm its results",ex:"Replication tests whether a result was real.",syn:"repetition, reproduction",ant:""},
+"falsifiable":{pos:"adjective",def:"capable of being proven wrong by evidence",ex:"A scientific claim must be falsifiable.",syn:"testable, refutable",ant:"unfalsifiable"},
+"peer review":{pos:"noun",def:"evaluation of work by other experts",ex:"Peer review scrutinises new research.",syn:"expert review",ant:""},
+"provisional":{pos:"adjective",def:"accepted for now, open to revision",ex:"Scientific conclusions are provisional.",syn:"temporary, tentative",ant:"final, permanent"},
+"intuition":{pos:"noun",def:"immediate understanding without conscious reasoning",ex:"We often reach beliefs by intuition.",syn:"instinct, hunch",ant:"reasoning"},
+"confirmation":{pos:"noun",def:"the seeking of evidence that supports what one already believes",ex:"Confirmation bias distorts judgement.",syn:"corroboration",ant:"refutation"},
+"rationalise":{pos:"verb",def:"to invent reasonable-sounding explanations for beliefs",ex:"A clever mind can rationalise a false belief.",syn:"justify, explain away",ant:""},
+"humility":{pos:"noun",def:"a modest view of one's own knowledge",ex:"Intellectual humility guards against error.",syn:"modesty, openness",ant:"arrogance"},
+"autonomous":{pos:"adjective",def:"able to operate independently, without human control",ex:"An autonomous car drives itself.",syn:"self-governing, independent",ant:"controlled, manual"},
+"dilemma":{pos:"noun",def:"a situation forcing a choice between undesirable options",ex:"The car faces a moral dilemma.",syn:"predicament, quandary",ant:""},
+"liability":{pos:"noun",def:"legal responsibility for harm",ex:"Who holds liability when an AI car kills?",syn:"responsibility, blame",ant:""},
+"programmed":{pos:"adjective",def:"given a set of instructions to follow",ex:"The car executes a programmed decision.",syn:"coded, set",ant:""},
+"consequence":{pos:"noun",def:"a result or effect of an action",ex:"Every choice has a consequence.",syn:"result, outcome",ant:"cause"},
+"simultaneous":{pos:"adjective",def:"happening at the same time",ex:"Calculus had two simultaneous inventors.",syn:"concurrent",ant:"sequential"},
+"incremental":{pos:"adjective",def:"proceeding by small steps",ex:"Discovery is largely incremental.",syn:"gradual, step-by-step",ant:"sudden"},
+"collaboration":{pos:"noun",def:"the act of working jointly with others",ex:"Modern science is deep collaboration.",syn:"teamwork, partnership",ant:"solo effort"},
+"attribution":{pos:"noun",def:"the assigning of credit or authorship",ex:"Attribution is simpler with one name.",syn:"credit, ascription",ant:""},
+"contingent":{pos:"adjective",def:"dependent on circumstances; not inevitable",ex:"Discovery is contingent and collective.",syn:"dependent, conditional",ant:"certain, inevitable"},
+"cartographer":{pos:"noun",def:"a person who makes maps",ex:"The cartographers had mapped everything.",syn:"mapmaker",ant:""},
+"precision":{pos:"noun",def:"exactness and accuracy",ex:"Precision is the easy part, the elder said.",syn:"accuracy, exactness",ant:"vagueness"},
+"cognition":{pos:"noun",def:"the mental action of acquiring knowledge",ex:"We offload cognition onto our devices.",syn:"thinking, thought",ant:""},
+"offload":{pos:"verb",def:"to transfer a burden onto something else",ex:"We offload memory onto our phones.",syn:"transfer, unload",ant:"retain"},
+"external":{pos:"adjective",def:"outside oneself; in the environment",ex:"A notebook is an external memory.",syn:"outside, outer",ant:"internal"},
+"integrate":{pos:"verb",def:"to combine into a unified whole",ex:"We integrate tools into our thinking.",syn:"combine, merge",ant:"separate"},
+"dependency":{pos:"noun",def:"reliance on something for support",ex:"An unnoticed dependency becomes a vulnerability.",syn:"reliance, addiction",ant:"independence"},
+"narrative":{pos:"noun",def:"a spoken or written account of connected events",ex:"Every culture tells narratives.",syn:"story, account",ant:""},
+"innate":{pos:"adjective",def:"existing from birth; natural rather than learned",ex:"The hunger to narrate may be innate.",syn:"inborn, inherent",ant:"learned, acquired"},
+"cohesion":{pos:"noun",def:"the state of forming a united whole",ex:"Shared myths give a group cohesion.",syn:"unity, solidarity",ant:"division"},
+"transmit":{pos:"verb",def:"to pass on from one person or generation to another",ex:"Stories transmit hard-won knowledge.",syn:"pass on, convey",ant:"withhold"},
+"metacognition":{pos:"noun",def:"awareness and understanding of one's own thinking",ex:"Metacognition means thinking about thinking.",syn:"self-awareness",ant:""},
+"strategy":{pos:"noun",def:"a plan of action designed to achieve a goal",ex:"Good learners choose the right strategy.",syn:"plan, approach",ant:""},
+"transfer":{pos:"noun",def:"applying learning from one context to another",ex:"Transfer is the heart of a flexible mind.",syn:"application",ant:""},
+"adaptive":{pos:"adjective",def:"able to adjust to new conditions",ex:"An adaptive mind meets a changing world.",syn:"flexible, adjustable",ant:"rigid"},
+"autonomy":{pos:"noun",def:"independence; the capacity to direct oneself",ex:"Education should build autonomy.",syn:"independence, self-rule",ant:"dependence"},
+"abundance":{pos:"noun",def:"a very large quantity of something",ex:"Abundance of choice can reduce happiness.",syn:"plenty, surplus",ant:"scarcity"},
+"overwhelm":{pos:"verb",def:"to overpower or bury under too much",ex:"Too many options overwhelm shoppers.",syn:"swamp, overpower",ant:"underwhelm"},
+"regret":{pos:"noun",def:"sadness over a decision or missed alternative",ex:"Abundance manufactures regret.",syn:"remorse, rue",ant:"satisfaction"},
+"satisfice":{pos:"verb",def:"to accept a good-enough option rather than the best possible",ex:"Satisficers are happier than maximisers.",syn:"settle, suffice",ant:"maximise"},
+"profound":{pos:"adjective",def:"very great; felt or experienced intensely",ex:"Astronauts describe a profound shift.",syn:"deep, intense",ant:"superficial"},
+"boundary":{pos:"noun",def:"a line marking a limit or division",ex:"Political boundaries vanish from orbit.",syn:"border, limit",ant:""},
+"transcend":{pos:"verb",def:"to rise above or go beyond ordinary limits",ex:"The overview effect transcends ordinary perspective.",syn:"surpass, exceed",ant:""}
+};
+
+
+
 /* ============================================================================
    ARTICLE-A-DAY · 10-WEEK BUILT-IN READING PROGRAMME
    - 10 weeks, each activated separately by the teacher
@@ -6853,9 +7130,31 @@ function setAllAadWeeks(v){ const g={}; AAD_PROG.forEach(x=>g[x.w]=!!v); Store.s
 }
 
 /* ---- per-article progress store: {artId:{pct,ts,facts:[..]}} ---- */
-function aadProg(){ return Store.get('ican_aad_progress')||{}; }
+/* Per-student progress: keyed by the logged-in student's id (sid()), so on a
+   shared device each student sees only their OWN Read/Unread and scores.
+   Teachers/guests fall back to a 'guest' bucket that never marks student work. */
+function aadProgAll(){ return Store.get('ican_aad_progress')||{}; }
+function aadProg(){ const all=aadProgAll(); const k=sid(); return all[k]||{}; }
 function aadArtStatus(id){ return aadProg()[id]||null; }
-function aadSaveArt(id, rec){ const p=aadProg(); p[id]=rec; Store.set('ican_aad_progress',p); }
+function aadSaveArt(id, rec){ const all=aadProgAll(); const k=sid(); if(!all[k]) all[k]={}; all[k][id]=rec; Store.set('ican_aad_progress',all); }
+
+/* One-time migration: earlier builds stored progress as a flat {artId:rec} map
+   shared by everyone on the device. Move it into the current student's bucket
+   so their history is preserved, then mark migrated. Runs only for a logged-in
+   student, and only if a flat (un-nested) record is detected. */
+function aadMigrateProgress(){
+  try{
+    if(!(SESSION && SESSION.role==='student')) return;
+    const all=Store.get('ican_aad_progress')||{};
+    // a flat record has keys like 'w1a1' holding {pct,...}; a nested one has
+    // keys that are student ids holding {w1a1:{...}}.
+    const flatKeys=Object.keys(all).filter(k=>/^w\d+a\d+$/.test(k));
+    if(!flatKeys.length) return;
+    const k=sid(); if(!all[k]) all[k]={};
+    flatKeys.forEach(fk=>{ if(!all[k][fk]) all[k][fk]=all[fk]; delete all[fk]; });
+    Store.set('ican_aad_progress', all);
+  }catch(e){}
+}
 function aadFindArt(id){ for(const wk of AAD_PROG){ const a=wk.arts.find(x=>x.id===id); if(a) return {art:a, week:wk.w, theme:wk.theme}; } return null; }
 function aadWeekArts(w){ const wk=AAD_PROG.find(x=>x.w===w); return wk?wk.arts:[]; }
 function aadWeekPct(w){ const arts=aadWeekArts(w); if(!arts.length) return 0;
@@ -6901,6 +7200,7 @@ function aadWeekCardTeacherHTML(){ return `
   </div>`;}
 
 ROUTES.articleaday = function(){
+  aadMigrateProgress();
   const teacher = SESSION && SESSION.role==='teacher';
   const openW = AAD_PROG.filter(x=>aadWeekOpen(x.w));
   const readAll = AAD_PROG.reduce((s,x)=>s+aadReadCount(x.w),0);
@@ -7035,6 +7335,9 @@ function aadTtsBuild(){
   const paras=[...box.querySelectorAll('p')];
   const sentences=[];
   const src = paras.length?paras:[box];
+  // build a lookup of key-vocab words for the current article + a per-word cap
+  const keySet={}; const keyCount={};
+  if(_aadCurrent){ _aadCurrent.art.vocab.forEach(v=>{ keySet[v[0].toLowerCase()]=v[0]; keyCount[v[0].toLowerCase()]=0; }); }
   src.forEach(p=>{
     const raw=p.textContent||'';
     const parts=raw.match(/[^.!?]+[.!?]*/g)||[raw];
@@ -7051,6 +7354,9 @@ function aadTtsBuild(){
         if(!clean){ span.appendChild(document.createTextNode(tok)); return; }
         const w=document.createElement('span');
         w.className='aad-word'; w.textContent=tok; w.dataset.w=clean;
+        // is this a key-vocabulary word? mark the first 2 occurrences.
+        const lk=clean.toLowerCase();
+        if(keySet[lk] && keyCount[lk]<2){ keyCount[lk]++; w.classList.add('aad-key'); w.dataset.key=keySet[lk]; }
         span.appendChild(w);
       });
       p.appendChild(span);
@@ -7059,17 +7365,22 @@ function aadTtsBuild(){
   });
   box.dataset.ttsReady='1';
   _aadTts.sentences=sentences;
-  // attach one delegated tap handler for word-level read-aloud
+  // attach one delegated tap handler for word-level read-aloud + vocab pop-ups
   if(!box.dataset.tapBound){
     box.addEventListener('click', function(ev){
       const w = ev.target.closest ? ev.target.closest('.aad-word') : null;
       if(!w || !box.contains(w)) return;
       const word = w.dataset.w; if(!word) return;
-      // flash the tapped word, speak just that word
+      // flash the tapped word
       document.querySelectorAll('.aad-word.tapped').forEach(e=>e.classList.remove('tapped'));
       w.classList.add('tapped');
       setTimeout(()=>w.classList.remove('tapped'), 900);
-      aadSpeakWord(word);
+      if(w.dataset.key){          // key vocabulary → pop-up (also speaks the word)
+        aadShowVocabPop(w.dataset.key, w);
+      } else {                    // ordinary word → just speak it
+        aadHideVocabPop();
+        aadSpeakWord(word);
+      }
     });
     box.dataset.tapBound='1';
   }
@@ -7159,6 +7470,113 @@ function aadTtsStep(kind,dir){
    No media is embedded (links can rot / surface unsuitable content); instead we
    open trusted searches in a new tab: Wikimedia images, YouTube safe-search,
    Wikipedia and Britannica. */
+/* ---- article metadata helpers (author/source, grade band, word count) ---- */
+function aadWordCount(a){ try{ const t=(a.text||'').replace(/<[^>]+>/g,' '); return (t.match(/\b[\w'’-]+\b/g)||[]).length; }catch(e){ return 0; } }
+function aadGradeBand(lex){ // suggest grade band from Lexile (upper-secondary/college text)
+  if(lex>=1450) return 'Grades 11–12 (advanced) · college-ready';
+  if(lex>=1350) return 'Grades 10–12';
+  if(lex>=1250) return 'Grades 9–11';
+  return 'Grades 9–10';
+}
+function aadSource(a){ return a.source || 'Original text written for iCAN (AI-assisted)'; }
+
+/* details sidebar shown next to the article (ReadWorks-style) */
+function aadDetailsHTML(a, week, theme){
+  return `
+    <aside class="aad-details">
+      <h4>Details</h4>
+      <dl>
+        <dt>Genre</dt><dd>${esc(a.genre)}</dd>
+        <dt>Theme</dt><dd>Week ${week} · ${esc(theme||'')}</dd>
+        <dt>Lexile</dt><dd>~${a.lex}L</dd>
+        <dt>Best for</dt><dd>${aadGradeBand(a.lex)}</dd>
+        <dt>Length</dt><dd>${aadWordCount(a)} words · ~20 min</dd>
+        <dt>Reading skill</dt><dd>Main idea & key details</dd>
+      </dl>
+      <h4 style="margin-top:12px">Key vocabulary</h4>
+      <ul class="aad-det-vocab">
+        ${a.vocab.map(v=>`<li><a href="https://www.vocabulary.com/dictionary/${encodeURIComponent(v[0])}" target="_blank" rel="noopener">${esc(v[0])}</a></li>`).join('')}
+      </ul>
+      <h4 style="margin-top:12px">Source</h4>
+      <p class="aad-det-source">${esc(aadSource(a))}</p>
+    </aside>`;
+}
+
+/* Wrap the article HTML so that each key-vocabulary word is bold, coloured and
+   tappable for a definition pop-up. Case-insensitive, whole-word, first few
+   occurrences per word (to avoid over-marking). */
+function aadMarkVocab(html, vocab){
+  let out=html;
+  const seen={};
+  vocab.forEach(v=>{
+    const word=v[0];
+    seen[word.toLowerCase()]=0;
+    // match whole word, not inside an existing tag/attribute
+    const re=new RegExp('(?<![\\w>])('+word.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')(?![\\w<])','gi');
+    out=out.replace(re, (m)=>{
+      if(seen[word.toLowerCase()]>=2) return m;      // mark at most 2 times
+      seen[word.toLowerCase()]++;
+      return `<b class="aad-key" data-key="${escq(word)}">${m}</b>`;
+    });
+  });
+  return out;
+}
+
+/* Build and show the vocabulary pop-up for a key word. */
+function aadShowVocabPop(key, anchorEl){
+  const d = AAD_VOCAB[key.toLowerCase()] || AAD_VOCAB[key] || null;
+  // article's own fallback definition
+  let fallbackDef='';
+  if(_aadCurrent){ const hit=_aadCurrent.art.vocab.find(v=>v[0].toLowerCase()===key.toLowerCase()); if(hit) fallbackDef=hit[1]; }
+  const pos = d&&d.pos?d.pos:'';
+  const def = (d&&d.def)?d.def:(fallbackDef||'Tap “Full entry” for the definition.');
+  const ex  = d&&d.ex?d.ex:'';
+  const syn = d&&d.syn?d.syn:'';
+  const ant = d&&d.ant?d.ant:'';
+  let pop=document.getElementById('aadVocabPop');
+  if(!pop){ pop=document.createElement('div'); pop.id='aadVocabPop'; pop.className='aad-vocab-pop'; document.body.appendChild(pop); }
+  pop.innerHTML = `
+    <div class="avp-head">
+      <span class="avp-word">${esc(key)}</span>
+      ${pos?`<span class="avp-pos">${esc(pos)}</span>`:''}
+      <button class="avp-x" onclick="aadHideVocabPop()" aria-label="Close">✕</button>
+    </div>
+    <div class="avp-def">${esc(def)}</div>
+    ${ex?`<div class="avp-ex">“${esc(ex)}”</div>`:''}
+    <div class="avp-rel">
+      ${syn?`<span><b>Synonyms:</b> ${esc(syn)}</span>`:''}
+      ${ant?`<span><b>Antonyms:</b> ${esc(ant)}</span>`:''}
+    </div>
+    <div class="avp-actions">
+      <button class="btn ghost sm" onclick="aadSpeakWord('${escq(key)}')">🔊 Hear it</button>
+      <a class="btn sm teal" href="https://www.vocabulary.com/dictionary/${encodeURIComponent(key)}" target="_blank" rel="noopener">Full entry ↗</a>
+      <button class="btn sm" onclick="aadBankWord('${escq(key)}','${escq(def)}',this)">+ Bank</button>
+    </div>`;
+  // position near the tapped word
+  pop.style.display='block';
+  try{
+    const r=anchorEl.getBoundingClientRect();
+    const pw=Math.min(320, window.innerWidth-24);
+    let left=Math.min(Math.max(12, r.left+window.scrollX), window.scrollX+window.innerWidth-pw-12);
+    let top=r.bottom+window.scrollY+8;
+    pop.style.width=pw+'px'; pop.style.left=left+'px'; pop.style.top=top+'px';
+  }catch(e){}
+  // also speak the word (per teacher's choice)
+  aadSpeakWord(key);
+}
+function aadHideVocabPop(){ const p=document.getElementById('aadVocabPop'); if(p) p.style.display='none'; }
+// tap anywhere outside the pop-up (and not on a key word) closes it
+if(typeof window!=='undefined' && !window.__aadPopBound){
+  window.__aadPopBound=true;
+  document.addEventListener('click', function(ev){
+    const p=document.getElementById('aadVocabPop');
+    if(!p || p.style.display==='none') return;
+    if(p.contains(ev.target)) return;                 // inside pop-up: keep open
+    if(ev.target.closest && ev.target.closest('.aad-key')) return; // key word handled elsewhere
+    aadHideVocabPop();
+  }, true);
+}
+
 function aadExploreHTML(a){
   const topic = (a.title||'').replace(/[""'']/g,'').trim();
   const q = encodeURIComponent(topic);
@@ -7177,7 +7595,6 @@ function aadExploreHTML(a){
         <a class="aad-ex" href="${imgUrl}" target="_blank" rel="noopener"><span class="aad-ex-ic">🖼️</span><span><b>See images</b><small>Wikimedia Commons</small></span></a>
         <a class="aad-ex" href="${vidUrl}" target="_blank" rel="noopener" onclick="aadNoteSafeSearch()"><span class="aad-ex-ic">📺</span><span><b>Watch a video</b><small>YouTube · videos</small></span></a>
         <a class="aad-ex" href="${wpSearch}" target="_blank" rel="noopener"><span class="aad-ex-ic">📚</span><span><b>Read more</b><small>Wikipedia</small></span></a>
-        <a class="aad-ex" href="${britUrl}" target="_blank" rel="noopener"><span class="aad-ex-ic">📖</span><span><b>Encyclopaedia</b><small>Britannica</small></span></a>
       </div>
       <p class="aad-explore-note">🛡️ Links open a search on trusted sites. Ask an adult if you are unsure, and keep <b>Restricted Mode / SafeSearch</b> on.</p>
     </div>`;
@@ -7233,7 +7650,10 @@ function openAadArticle(id){
           <a class="aad-dict-link" href="https://www.vocabulary.com/dictionary/" target="_blank" rel="noopener" title="Look up a word on Vocabulary.com">📖 Dictionary</a>
         </div>
 
-        <div class="aad-article-text" id="aadArticleText">${a.text}</div>
+        <div class="aad-read-grid">
+          <div class="aad-article-text" id="aadArticleText">${a.text}</div>
+          ${aadDetailsHTML(a, found.week, found.theme)}
+        </div>
 
         <div class="aad-vocab-box">
           <h4>🔤 Vocabulary in this article</h4>
@@ -7373,7 +7793,7 @@ function closeAadReader(){
 
 
 /* ---------- Article-A-Day in-hub workspace ---------- */
-const AAD_CODES=[['Grade 11 Advanced (11 A)','M5NJ42'],['Grade 11 General (11 G)','6FCQ5R'],['Grade 12 General (12 G)','UKLKKR']];
+const AAD_CODES=[['iCAN myEnglishFile','3ULDQ4']];
 function aadEntries(){ return Store.get('ican_aad_journal')||[]; }
 function aadStreak(){
   const days=[...new Set(aadEntries().map(e=>e.day))];
