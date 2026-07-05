@@ -527,6 +527,20 @@ table.data tr:nth-child(even){background:#fff}
 .aad-vocab-word{display:flex; align-items:center; gap:10px; justify-content:space-between; background:#fff; border:1px solid var(--line); border-radius:9px; padding:7px 10px; font-size:.9rem}
 .aad-know-box{padding:16px 22px 20px; border-top:2px dashed var(--line); background:#fff}.aad-know-box h4{margin:0 0 3px; font-size:1.05rem}
 .aad-integrity-msg{margin:8px 0 2px; padding:8px 11px; border-radius:9px; background:#fff4e5; border:1px solid #f5cf8a; color:#8a5a00; font-size:.84rem; line-height:1.4}
+.aad-paste-warn{position:fixed; inset:0; z-index:300; display:none; align-items:center; justify-content:center; background:rgba(15,20,45,.55); padding:22px}
+.aad-paste-warn .apw-card{background:#fff; max-width:420px; width:100%; border-radius:16px; padding:22px 22px 20px; text-align:center; box-shadow:0 20px 50px rgba(10,12,40,.35)}
+.aad-paste-warn .apw-ic{font-size:2.4rem; line-height:1}
+.aad-paste-warn h3{margin:8px 0 6px; font-size:1.2rem; color:#b45309}
+.aad-paste-warn p{margin:0 0 8px; font-size:.92rem; color:#333; line-height:1.5}
+.aad-paste-warn .apw-note{font-size:.82rem; color:#8a5a00; background:#fff4e5; border-radius:8px; padding:6px 9px}
+.aad-paste-warn .btn{margin-top:6px}
+.aad-myact{border:1px solid #cfe0f5; background:#f6faff; border-radius:11px; padding:11px 13px; margin-bottom:10px}
+.aad-myact-head{font-weight:700; font-size:.92rem; color:#1f3a5c; margin-bottom:6px}
+.aad-myact-head span{font-weight:400; font-style:italic; font-size:.76rem; color:#5a7395}
+.aad-myact-stats{display:flex; gap:14px; flex-wrap:wrap; font-size:.85rem; color:#2a3a55}
+.aad-myact-stats .flagged{color:#b45309; font-weight:700}
+.aad-myact-item{border-top:1px solid #e2ecf7; padding:6px 0}
+.aad-myact-item.flagged{background:#fff6ec; border-radius:6px; padding:6px 8px}
 .aad-result{display:flex; align-items:center; gap:14px; background:#f3fbf8; border:1px solid #bfe8dc; border-radius:12px; padding:12px 14px}
 .aad-result-pct{font-size:1.7rem; font-weight:800; color:var(--teal-dk); background:#fff; border:2px solid #bfe8dc; border-radius:12px; padding:6px 12px; min-width:70px; text-align:center}
 @media(max-width:560px){ .aad-reader-top{flex-wrap:wrap} .aad-r-title{font-size:1.12rem} .aad-article-text{font-size:1rem} }
@@ -1599,6 +1613,11 @@ let CURRENT_SCREEN = "home", CURRENT_ARG = null;
 function go(screen, arg){
   CURRENT_SCREEN = screen; CURRENT_ARG = arg;
   stopSpeak(); turnOffHighlighter(); clearSpellTimer(); clearExamTimer(); window.scrollTo(0,0);
+  /* Auth guard: only these screens are reachable without a login. Everything
+     else (including Article-A-Day) requires a student or teacher session, so
+     no activity can be opened by bypassing the login. */
+  const PUBLIC=['home','studentLogin','teacherLogin'];
+  if(!SESSION && PUBLIC.indexOf(screen)===-1){ go('home'); return; }
   /* Teacher-activated access: gated activities open only when the teacher
      has activated them (typing and other engagements stay open). */
   if(SESSION && SESSION.role==='student'){
@@ -5871,8 +5890,13 @@ function drawAadWorkTable(x, cert, W, topY){
   const tableW = Math.round(W*0.68);
   const tX = (W-tableW)/2;
   let y = topY;
-  const ideas = (cert.ideas||[]).map(s=>(s||'').trim());
-  const words = (cert.words||[]).map(s=>(s||'').trim()).filter(Boolean);
+  // keep at most the two ideas, each trimmed to a length that fits ~2 lines,
+  // so the table always fits the certificate contours (no overflow/overlap).
+  function clip(s, max){ s=(s||'').trim(); return s.length>max ? s.slice(0,max-1).replace(/\s+\S*$/,'')+'…' : s; }
+  const ideas = (cert.ideas||[]).map(s=>clip(s,150)).filter(Boolean).slice(0,2);
+  let words = (cert.words||[]).map(s=>(s||'').trim()).filter(Boolean);
+  const extraWords = Math.max(0, words.length-8);
+  words = words.slice(0,8);   // show at most 8 words on the certificate
 
   // helper: wrap text inside a cell, return the number of lines used
   function cellLines(text, maxW, font){
@@ -5891,7 +5915,7 @@ function drawAadWorkTable(x, cert, W, topY){
   const numW=34, pad=10, textW=tableW-numW-pad*2;
   const lh=16;
   x.textAlign='left';
-  const rows = ideas.map((it,i)=>{ const t=it||'—'; return {n:i+1, text:t, lines:cellLines(t, textW, rowFont)}; });
+  const rows = ideas.map((it,i)=>{ const t=it||'—'; let lines=cellLines(t, textW, rowFont); if(lines.length>2){ lines=lines.slice(0,2); lines[1]=lines[1].replace(/\s+\S*$/,'')+'…'; } return {n:i+1, text:t, lines}; });
   // draw each row with a light divider
   rows.forEach(r=>{
     const rowH = Math.max(lh+8, r.lines.length*lh+8);
@@ -5916,7 +5940,7 @@ function drawAadWorkTable(x, cert, W, topY){
     x.textAlign='center'; x.fillStyle=pal.primary; x.font='italic 600 15px Georgia';
     x.fillText('Words added to their vocabulary bank', W/2, y);
     y += 8;
-    const wline = words.join('   \u00b7   ');
+    const wline = words.join('   \u00b7   ') + (extraWords>0 ? '   \u00b7   +'+extraWords+' more' : '');
     const wlines = cellLines(wline, tableW-20, '600 12.5px Georgia');
     const boxH = wlines.length*16 + 14;
     x.strokeStyle='#e4d9bf'; x.lineWidth=1; x.strokeRect(tX, y, tableW, boxH);
@@ -6191,14 +6215,13 @@ function injectHomeSidebar(){
     ['taids','🧑‍🏫','Teacher Aids','Plans, rubrics & tips (teachers)'],
     ['saids','🎒','Student Aids','Checklists & how-to help'],
     ['consent','📝','Parent Consent','Read, sign online or print'],
-    ['aad','📰','Article-A-Day','10-week reading · 20 min a day'],
     ['guide','🦉','User Guide','How to use iCAN Academy'],
     ['qa','💬','Q&A Tutor','Ask the teacher — parents & students']
   ];
   const nav=document.createElement('nav');
   nav.className='ican-sidebar'; nav.setAttribute('aria-label','iCAN Academy sections');
   nav.innerHTML = items.map((it,i)=>`
-    <button class="isb-item" onclick="${it[0]==='guide'?'toggleCoach()':(it[0]==='aad'?`go('articleaday')`:`openBarPanel('${it[0]}')`)}" title="${esc(it[3])}">
+    <button class="isb-item" onclick="${it[0]==='guide'?'toggleCoach()':`openBarPanel('${it[0]}')`}" title="${esc(it[3])}">
       <span class="isb-num">0${i+1}</span>
       <span class="isb-ic">${it[1]}</span>
       <span class="isb-lab">${esc(it[2])}</span>
@@ -7761,7 +7784,7 @@ function openAadArticle(id){
     </div>`;
   m.classList.add('show');
   // integrity tracking: when reading started, and per-idea paste flags
-  _aadIntegrity = { start: Date.now(), pasted:{1:false,2:false}, keystrokes:{1:0,2:0} };
+  _aadIntegrity = { start: Date.now(), pasted:{1:false,2:false}, keystrokes:{1:0,2:0}, pasteTries:{1:0,2:0} };
   // build sentence + tappable word spans now so tap-to-hear works immediately
   try{ aadTtsBuild(); }catch(e){}
   try{ _aadZoom = Store.get('ican_aad_zoom') || 1; aadApplyZoom(); }catch(e){}
@@ -7818,13 +7841,39 @@ let _aadIntegrity = { start:0, pasted:{1:false,2:false}, keystrokes:{1:0,2:0} };
 function aadWireIntegrity(){
   [1,2].forEach(n=>{
     const el=document.getElementById('aad_idea'+n); if(!el) return;
-    el.addEventListener('paste', function(){
-      _aadIntegrity.pasted[n]=true;
-      aadIntegrityWarn('Please write the idea in <b>your own words</b> — pasting from the text is discouraged. Your teacher can see pasted answers.');
+    if(el.dataset.integWired==='1') return; el.dataset.integWired='1';
+    _aadIntegrity.pasteTries = _aadIntegrity.pasteTries || {1:0,2:0};
+    el.addEventListener('paste', function(ev){
+      _aadIntegrity.pasteTries[n] = (_aadIntegrity.pasteTries[n]||0)+1;
+      if(_aadIntegrity.pasteTries[n]===1){
+        // FIRST attempt: block the paste and warn with a pop-up
+        ev.preventDefault();
+        aadPasteWarnPopup();
+      } else {
+        // SECOND+ attempt: allow it, but flag for the teacher
+        _aadIntegrity.pasted[n]=true;
+        aadIntegrityWarn('Pasting was recorded. Please try to write ideas in <b>your own words</b> — your teacher can see pasted answers.');
+      }
     });
     el.addEventListener('input', function(){ _aadIntegrity.keystrokes[n]++; });
   });
 }
+
+/* Prominent pop-up shown on the first paste attempt into an idea box. */
+function aadPasteWarnPopup(){
+  let m=document.getElementById('aadPasteWarn');
+  if(!m){ m=document.createElement('div'); m.id='aadPasteWarn'; m.className='aad-paste-warn'; document.body.appendChild(m); }
+  m.innerHTML=`
+    <div class="apw-card">
+      <div class="apw-ic">✋</div>
+      <h3>Write it in your own words</h3>
+      <p>Copying and pasting from the text is not allowed here. Reading is about <b>understanding</b> — say what you learned in <b>your own words</b>.</p>
+      <p class="apw-note">If you paste again, it will be recorded and your teacher will see it.</p>
+      <button class="btn teal" onclick="aadClosePasteWarn()">OK — I'll write it myself</button>
+    </div>`;
+  m.style.display='flex';
+}
+function aadClosePasteWarn(){ const m=document.getElementById('aadPasteWarn'); if(m) m.style.display='none'; }
 function aadIntegrityWarn(html){
   const box=document.getElementById('aadIntegrityMsg'); if(!box) return;
   box.innerHTML='⚠️ '+html;
@@ -7971,6 +8020,7 @@ function aadPanelHTML(){ return `
       <button class="btn sm teal" onclick="aadSave()">💾 Save today's entry</button>
       <button class="btn sm" onclick="dlAADJournal()">⬇ Download my journal (Word)</button>
     </div>
+    <div id="aadMyActivity"></div>
     <div id="aadList" style="margin-top:12px"></div>
   </div>
   <p style="font-size:.82rem;color:var(--muted);margin-top:10px">🏅 <b>Certification:</b> your teacher reviews journals and reading progress — consistent reading earns <b>Participation</b>; consistent reading + quality, in-your-own-words entries earn <b>Distinction</b>. Write ideas in <b>your own words</b>; pasted or copied answers are flagged for your teacher. Entries save on <i>this device</i>, so use the same device (or download your journal regularly).</p>`;}
@@ -7984,8 +8034,41 @@ function aadSave(){
   ['aad_title','aad_l1','aad_l2','aad_l3'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
   aadPaintList();
 }
+function aadFmtSecsShort(s){ s=s||0; const m=Math.floor(s/60); return (m?m+'m ':'')+(s%60)+'s'; }
+function aadPaintMyActivity(){
+  const box=document.getElementById('aadMyActivity'); if(!box) return;
+  if(!(SESSION && SESSION.role==='student')){ box.innerHTML=''; return; }
+  const mine=(typeof getResults==='function'?getResults():[]).filter(r=>/Article-A-Day/i.test(r.activity||'') && (r.id===SESSION.id));
+  if(!mine.length){ box.innerHTML=''; return; }
+  const reads=mine.length;
+  const secs=mine.reduce((s,r)=>s+((r.integ&&r.integ.secs)||0),0);
+  const flags=mine.filter(r=>r.integ && (r.integ.pasted || (r.integ.overlap||0)>=60)).length;
+  box.innerHTML = `
+    <div class="aad-myact">
+      <div class="aad-myact-head">📊 My reading activity <span>your teacher can see this</span></div>
+      <div class="aad-myact-stats">
+        <span>📚 Articles read: <b>${reads}</b></span>
+        <span>⏱ Time reading: <b>${aadFmtSecsShort(secs)}</b></span>
+        <span class="${flags?'flagged':''}">🛡️ Integrity flags: <b>${flags}</b></span>
+      </div>
+      <details style="margin-top:6px">
+        <summary style="cursor:pointer;font-size:.83rem;color:var(--teal-dk)">See each article</summary>
+        <div style="margin-top:6px">
+          ${mine.slice().sort((a,b)=>b.date-a.date).map(r=>{
+            const ig=r.integ||{}; const flagged = ig.pasted || (ig.overlap||0)>=60;
+            return `<div class="aad-myact-item ${flagged?'flagged':''}">
+              <div style="font-size:.85rem"><b>${esc((r.activity||'').replace(/^Article-A-Day:\s*/,''))}</b> <span class="pill">${r.percent}%</span></div>
+              <div style="font-size:.76rem;color:var(--muted)">⏱ ${aadFmtSecsShort(ig.secs)}${ig.pasted?' · ⚠ pasted':''}${(ig.overlap||0)>=60?' · ⚠ '+ig.overlap+'% matched the text':''}${flagged?'':' · ✓ your own words'}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </details>
+    </div>`;
+}
+
 function aadPaintList(){
   aadCleanLegacyJournal();
+  aadPaintMyActivity();
   const box=document.getElementById('aadList'); if(!box) return;
   const list=aadEntries();
   const sEl=document.getElementById('aadStreak'), cEl=document.getElementById('aadCount');
