@@ -525,8 +525,22 @@ table.data tr:nth-child(even){background:#fff}
 .aad-vocab-hint{margin:0 0 9px; font-size:.82rem; color:var(--muted)}
 .aad-vocab-list{display:flex; flex-direction:column; gap:7px}
 .aad-vocab-word{display:flex; align-items:center; gap:10px; justify-content:space-between; background:#fff; border:1px solid var(--line); border-radius:9px; padding:7px 10px; font-size:.9rem}
-.aad-know-box{padding:16px 22px 20px; border-top:2px dashed var(--line); background:#fff}
-.aad-know-box h4{margin:0 0 3px; font-size:1.05rem}
+.aad-know-box{padding:16px 22px 20px; border-top:2px dashed var(--line); background:#fff}.aad-know-box h4{margin:0 0 3px; font-size:1.05rem}
+.aad-integrity-msg{margin:8px 0 2px; padding:8px 11px; border-radius:9px; background:#fff4e5; border:1px solid #f5cf8a; color:#8a5a00; font-size:.84rem; line-height:1.4}
+.aad-paste-warn{position:fixed; inset:0; z-index:300; display:none; align-items:center; justify-content:center; background:rgba(15,20,45,.55); padding:22px}
+.aad-paste-warn .apw-card{background:#fff; max-width:420px; width:100%; border-radius:16px; padding:22px 22px 20px; text-align:center; box-shadow:0 20px 50px rgba(10,12,40,.35)}
+.aad-paste-warn .apw-ic{font-size:2.4rem; line-height:1}
+.aad-paste-warn h3{margin:8px 0 6px; font-size:1.2rem; color:#b45309}
+.aad-paste-warn p{margin:0 0 8px; font-size:.92rem; color:#333; line-height:1.5}
+.aad-paste-warn .apw-note{font-size:.82rem; color:#8a5a00; background:#fff4e5; border-radius:8px; padding:6px 9px}
+.aad-paste-warn .btn{margin-top:6px}
+.aad-myact{border:1px solid #cfe0f5; background:#f6faff; border-radius:11px; padding:11px 13px; margin-bottom:10px}
+.aad-myact-head{font-weight:700; font-size:.92rem; color:#1f3a5c; margin-bottom:6px}
+.aad-myact-head span{font-weight:400; font-style:italic; font-size:.76rem; color:#5a7395}
+.aad-myact-stats{display:flex; gap:14px; flex-wrap:wrap; font-size:.85rem; color:#2a3a55}
+.aad-myact-stats .flagged{color:#b45309; font-weight:700}
+.aad-myact-item{border-top:1px solid #e2ecf7; padding:6px 0}
+.aad-myact-item.flagged{background:#fff6ec; border-radius:6px; padding:6px 8px}
 .aad-result{display:flex; align-items:center; gap:14px; background:#f3fbf8; border:1px solid #bfe8dc; border-radius:12px; padding:12px 14px}
 .aad-result-pct{font-size:1.7rem; font-weight:800; color:var(--teal-dk); background:#fff; border:2px solid #bfe8dc; border-radius:12px; padding:6px 12px; min-width:70px; text-align:center}
 @media(max-width:560px){ .aad-reader-top{flex-wrap:wrap} .aad-r-title{font-size:1.12rem} .aad-article-text{font-size:1rem} }
@@ -1599,6 +1613,11 @@ let CURRENT_SCREEN = "home", CURRENT_ARG = null;
 function go(screen, arg){
   CURRENT_SCREEN = screen; CURRENT_ARG = arg;
   stopSpeak(); turnOffHighlighter(); clearSpellTimer(); clearExamTimer(); window.scrollTo(0,0);
+  /* Auth guard: only these screens are reachable without a login. Everything
+     else (including Article-A-Day) requires a student or teacher session, so
+     no activity can be opened by bypassing the login. */
+  const PUBLIC=['home','studentLogin','teacherLogin'];
+  if(!SESSION && PUBLIC.indexOf(screen)===-1){ go('home'); return; }
   /* Teacher-activated access: gated activities open only when the teacher
      has activated them (typing and other engagements stay open). */
   if(SESSION && SESSION.role==='student'){
@@ -5871,8 +5890,13 @@ function drawAadWorkTable(x, cert, W, topY){
   const tableW = Math.round(W*0.68);
   const tX = (W-tableW)/2;
   let y = topY;
-  const ideas = (cert.ideas||[]).map(s=>(s||'').trim());
-  const words = (cert.words||[]).map(s=>(s||'').trim()).filter(Boolean);
+  // keep at most the two ideas, each trimmed to a length that fits ~2 lines,
+  // so the table always fits the certificate contours (no overflow/overlap).
+  function clip(s, max){ s=(s||'').trim(); return s.length>max ? s.slice(0,max-1).replace(/\s+\S*$/,'')+'…' : s; }
+  const ideas = (cert.ideas||[]).map(s=>clip(s,150)).filter(Boolean).slice(0,2);
+  let words = (cert.words||[]).map(s=>(s||'').trim()).filter(Boolean);
+  const extraWords = Math.max(0, words.length-8);
+  words = words.slice(0,8);   // show at most 8 words on the certificate
 
   // helper: wrap text inside a cell, return the number of lines used
   function cellLines(text, maxW, font){
@@ -5891,7 +5915,7 @@ function drawAadWorkTable(x, cert, W, topY){
   const numW=34, pad=10, textW=tableW-numW-pad*2;
   const lh=16;
   x.textAlign='left';
-  const rows = ideas.map((it,i)=>{ const t=it||'—'; return {n:i+1, text:t, lines:cellLines(t, textW, rowFont)}; });
+  const rows = ideas.map((it,i)=>{ const t=it||'—'; let lines=cellLines(t, textW, rowFont); if(lines.length>2){ lines=lines.slice(0,2); lines[1]=lines[1].replace(/\s+\S*$/,'')+'…'; } return {n:i+1, text:t, lines}; });
   // draw each row with a light divider
   rows.forEach(r=>{
     const rowH = Math.max(lh+8, r.lines.length*lh+8);
@@ -5916,7 +5940,7 @@ function drawAadWorkTable(x, cert, W, topY){
     x.textAlign='center'; x.fillStyle=pal.primary; x.font='italic 600 15px Georgia';
     x.fillText('Words added to their vocabulary bank', W/2, y);
     y += 8;
-    const wline = words.join('   \u00b7   ');
+    const wline = words.join('   \u00b7   ') + (extraWords>0 ? '   \u00b7   +'+extraWords+' more' : '');
     const wlines = cellLines(wline, tableW-20, '600 12.5px Georgia');
     const boxH = wlines.length*16 + 14;
     x.strokeStyle='#e4d9bf'; x.lineWidth=1; x.strokeRect(tX, y, tableW, boxH);
@@ -6191,14 +6215,13 @@ function injectHomeSidebar(){
     ['taids','🧑‍🏫','Teacher Aids','Plans, rubrics & tips (teachers)'],
     ['saids','🎒','Student Aids','Checklists & how-to help'],
     ['consent','📝','Parent Consent','Read, sign online or print'],
-    ['aad','📰','Article-A-Day','10-week reading · 20 min a day'],
     ['guide','🦉','User Guide','How to use iCAN Academy'],
     ['qa','💬','Q&A Tutor','Ask the teacher — parents & students']
   ];
   const nav=document.createElement('nav');
   nav.className='ican-sidebar'; nav.setAttribute('aria-label','iCAN Academy sections');
   nav.innerHTML = items.map((it,i)=>`
-    <button class="isb-item" onclick="${it[0]==='guide'?'toggleCoach()':(it[0]==='aad'?`go('articleaday')`:`openBarPanel('${it[0]}')`)}" title="${esc(it[3])}">
+    <button class="isb-item" onclick="${it[0]==='guide'?'toggleCoach()':`openBarPanel('${it[0]}')`}" title="${esc(it[3])}">
       <span class="isb-num">0${i+1}</span>
       <span class="isb-ic">${it[1]}</span>
       <span class="isb-lab">${esc(it[2])}</span>
@@ -6225,8 +6248,8 @@ function injectTeacherBar(){
 function injectTeacherCards(){
   const wrap=document.querySelector('#app .wrap'); if(!wrap) return;
   const anchor=wrap.querySelector('.card'); if(!anchor) return;
-  anchor.insertAdjacentHTML('afterend', gateCardHTML()+aadWeekCardTeacherHTML()+initCardHTML()+consentCardHTML()+qaCardHTML());
-  paintGates(); paintAadWeeks(); paintInits(); paintConsents(); paintQA();
+  anchor.insertAdjacentHTML('afterend', gateCardHTML()+aadWeekCardTeacherHTML()+aadJournalsCardHTML()+initCardHTML()+consentCardHTML()+qaCardHTML());
+  paintGates(); paintAadWeeks(); paintAadJournals(); paintInits(); paintConsents(); paintQA();
 }
 
 /* ---------- Activation manager ---------- */
@@ -7197,8 +7220,62 @@ function aadWeekCardTeacherHTML(){ return `
     <div class="aad-wk-toggles" id="aadWeekToggles"></div>
   </div>`;}
 
+/* Teacher card: per-student Article-A-Day reads, journals, and integrity flags */
+function aadJournalsCardHTML(){ return `
+  <div class="card" style="margin-bottom:22px">
+    <h3 style="font-size:1.2rem;margin:0 0 4px">📚 Student journals &amp; reading integrity <span class="pill">Article-A-Day</span></h3>
+    <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Each student's own reading history, articles read, time spent, and flags for pasted or copied ideas. Students see only their own; you see everyone.</p>
+    <div id="aadJournalsBox"></div>
+  </div>`;}
+
+function aadStudentStats(){
+  // aggregate Article-A-Day results per student id
+  const res=(typeof allResults==='function'?allResults():getResults()).filter(r=>/Article-A-Day/i.test(r.activity||''));
+  const by={};
+  res.forEach(r=>{
+    const k=r.id||('name::'+(r.name||'')); 
+    if(!by[k]) by[k]={id:k, name:r.name||k, class:r.class||'', reads:0, secs:0, pasted:0, copied:0, items:[]};
+    const s=by[k];
+    s.reads++;
+    const ig=r.integ||{};
+    s.secs += ig.secs||0;
+    if(ig.pasted) s.pasted++;
+    if((ig.overlap||0)>=60) s.copied++;
+    s.items.push({date:r.date, title:(r.activity||'').replace(/^Article-A-Day:\s*/,''), pct:r.percent, ideas:r.ideas||[], ig});
+  });
+  return Object.values(by).sort((a,b)=>b.reads-a.reads);
+}
+function aadFmtSecs(s){ s=s||0; const m=Math.floor(s/60); return (m?m+'m ':'')+(s%60)+'s'; }
+function paintAadJournals(){
+  const box=document.getElementById('aadJournalsBox'); if(!box) return;
+  const stats=aadStudentStats();
+  if(!stats.length){ box.innerHTML='<p class="note">No Article-A-Day reads logged yet.</p>'; return; }
+  box.innerHTML = `
+    <div style="overflow:auto"><table class="data">
+      <tr><th>Student</th><th>Class</th><th>Articles read</th><th>Total time</th><th>⚠ Pasted</th><th>⚠ Copied ≥60%</th><th></th></tr>
+      ${stats.map((s,i)=>`<tr>
+        <td>${esc(s.name)}</td><td>${esc(s.class)}</td>
+        <td style="text-align:center">${s.reads}</td>
+        <td style="text-align:center">${aadFmtSecs(s.secs)}</td>
+        <td style="text-align:center;${s.pasted?'color:#b45309;font-weight:700':''}">${s.pasted||'—'}</td>
+        <td style="text-align:center;${s.copied?'color:#b45309;font-weight:700':''}">${s.copied||'—'}</td>
+        <td><button class="btn sm ghost" onclick="aadToggleStudent(${i})">View entries</button></td>
+      </tr>
+      <tr id="aadStuRow${i}" style="display:none"><td colspan="7" style="background:#fbfaf6">
+        ${s.items.slice().sort((a,b)=>b.date-a.date).map(it=>`
+          <div style="border-bottom:1px solid var(--line);padding:7px 2px">
+            <div style="font-size:.78rem;color:var(--muted)">${new Date(it.date).toLocaleString()} · ⏱ ${aadFmtSecs(it.ig&&it.ig.secs)} ${it.ig&&it.ig.pasted?'· <b style="color:#b45309">pasted</b>':''} ${it.ig&&(it.ig.overlap>=60)?'· <b style="color:#b45309">'+it.ig.overlap+'% matches text</b>':''}</div>
+            <b style="font-size:.9rem">${esc(it.title)}</b> <span class="pill">${it.pct}%</span>
+            <ul style="margin:4px 0 0 18px;font-size:.85rem">${(it.ideas||[]).filter(Boolean).map(f=>`<li>${esc(f)}</li>`).join('')||'<li><i>no ideas written</i></li>'}</ul>
+          </div>`).join('')}
+      </td></tr>`).join('')}
+    </table></div>`;
+}
+function aadToggleStudent(i){ const r=document.getElementById('aadStuRow'+i); if(r) r.style.display=r.style.display==='none'?'':'none'; }
+
 ROUTES.articleaday = function(){
   aadMigrateProgress();
+  aadCleanLegacyJournal();
   const teacher = SESSION && SESSION.role==='teacher';
   const openW = AAD_PROG.filter(x=>aadWeekOpen(x.w));
   const readAll = AAD_PROG.reduce((s,x)=>s+aadReadCount(x.w),0);
@@ -7698,6 +7775,7 @@ function openAadArticle(id){
           <input id="aad_idea1" placeholder="I now know that ____." value="${prev&&prev.facts?esc(prev.facts[0]||''):''}"></div>
         <div class="ed-field"><label>Idea 2 — I also learned that …</label>
           <input id="aad_idea2" placeholder="I also learned that ____." value="${prev&&prev.facts?esc(prev.facts[1]||''):''}"></div>
+        <div id="aadIntegrityMsg" class="aad-integrity-msg" style="display:none"></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:6px">
           <button class="btn teal" id="aadSubmitBtn" onclick="aadSubmitArticle()">✓ Submit & mark as read</button>
           <span id="aadSubmitMsg" style="font-size:.86rem;color:var(--muted)"></span>
@@ -7705,9 +7783,12 @@ function openAadArticle(id){
       </div>
     </div>`;
   m.classList.add('show');
+  // integrity tracking: when reading started, and per-idea paste flags
+  _aadIntegrity = { start: Date.now(), pasted:{1:false,2:false}, keystrokes:{1:0,2:0}, pasteTries:{1:0,2:0} };
   // build sentence + tappable word spans now so tap-to-hear works immediately
   try{ aadTtsBuild(); }catch(e){}
   try{ _aadZoom = Store.get('ican_aad_zoom') || 1; aadApplyZoom(); }catch(e){}
+  try{ aadWireIntegrity(); }catch(e){}
 
   // If already read, show status but still allow review (timer not restarted)
   if(prev){
@@ -7754,6 +7835,71 @@ function aadBankWord(word, def, btn){
   }catch(e){}
 }
 
+/* ---- Reading-integrity tracking (time-on-task + copy/paste + article overlap) ---- */
+let _aadIntegrity = { start:0, pasted:{1:false,2:false}, keystrokes:{1:0,2:0} };
+
+function aadWireIntegrity(){
+  [1,2].forEach(n=>{
+    const el=document.getElementById('aad_idea'+n); if(!el) return;
+    if(el.dataset.integWired==='1') return; el.dataset.integWired='1';
+    _aadIntegrity.pasteTries = _aadIntegrity.pasteTries || {1:0,2:0};
+    el.addEventListener('paste', function(ev){
+      _aadIntegrity.pasteTries[n] = (_aadIntegrity.pasteTries[n]||0)+1;
+      if(_aadIntegrity.pasteTries[n]===1){
+        // FIRST attempt: block the paste and warn with a pop-up
+        ev.preventDefault();
+        aadPasteWarnPopup();
+      } else {
+        // SECOND+ attempt: allow it, but flag for the teacher
+        _aadIntegrity.pasted[n]=true;
+        aadIntegrityWarn('Pasting was recorded. Please try to write ideas in <b>your own words</b> — your teacher can see pasted answers.');
+      }
+    });
+    el.addEventListener('input', function(){ _aadIntegrity.keystrokes[n]++; });
+  });
+}
+
+/* Prominent pop-up shown on the first paste attempt into an idea box. */
+function aadPasteWarnPopup(){
+  let m=document.getElementById('aadPasteWarn');
+  if(!m){ m=document.createElement('div'); m.id='aadPasteWarn'; m.className='aad-paste-warn'; document.body.appendChild(m); }
+  m.innerHTML=`
+    <div class="apw-card">
+      <div class="apw-ic">✋</div>
+      <h3>Write it in your own words</h3>
+      <p>Copying and pasting from the text is not allowed here. Reading is about <b>understanding</b> — say what you learned in <b>your own words</b>.</p>
+      <p class="apw-note">If you paste again, it will be recorded and your teacher will see it.</p>
+      <button class="btn teal" onclick="aadClosePasteWarn()">OK — I'll write it myself</button>
+    </div>`;
+  m.style.display='flex';
+}
+function aadClosePasteWarn(){ const m=document.getElementById('aadPasteWarn'); if(m) m.style.display='none'; }
+function aadIntegrityWarn(html){
+  const box=document.getElementById('aadIntegrityMsg'); if(!box) return;
+  box.innerHTML='⚠️ '+html;
+  box.style.display='block';
+}
+
+/* Normalise text for comparison */
+function aadNorm(s){ return (s||'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim(); }
+/* Longest overlap of an idea with the article body, as % of the idea's words.
+   Detects near-verbatim copying even without a paste event. */
+function aadOverlapPct(idea, articleHtml){
+  const ideaWords = aadNorm(idea).split(' ').filter(Boolean);
+  if(ideaWords.length<3) return 0;
+  const src = aadNorm((articleHtml||'').replace(/<[^>]+>/g,' '));
+  // find the longest run of consecutive idea-words that appears in the source
+  let best=0;
+  for(let i=0;i<ideaWords.length;i++){
+    for(let j=i+best+1;j<=ideaWords.length;j++){
+      const phrase=ideaWords.slice(i,j).join(' ');
+      if(phrase.length>=8 && src.indexOf(phrase)!==-1){ if(j-i>best) best=j-i; }
+      else break;
+    }
+  }
+  return Math.round((best/ideaWords.length)*100);
+}
+
 function aadSubmitArticle(auto){
   if(!_aadCurrent) return;
   const id=_aadCurrent.art.id;
@@ -7761,15 +7907,30 @@ function aadSubmitArticle(auto){
   const filled=[i1,i2].filter(Boolean);
   const pct = filled.length===2?100 : filled.length===1?50 : 0;
 
-  aadSaveArt(id, { pct, ts:Date.now(), facts:[i1,i2], week:_aadCurrent.week, title:_aadCurrent.art.title, auto:!!auto });
+  // ---- integrity metrics ----
+  const secs = _aadIntegrity && _aadIntegrity.start ? Math.max(0, Math.round((Date.now()-_aadIntegrity.start)/1000)) : 0;
+  const artHtml = _aadCurrent.art.text || '';
+  const ov1 = i1 ? aadOverlapPct(i1, artHtml) : 0;
+  const ov2 = i2 ? aadOverlapPct(i2, artHtml) : 0;
+  const overlap = Math.max(ov1, ov2);
+  const pasted = !!(_aadIntegrity && (_aadIntegrity.pasted[1] || _aadIntegrity.pasted[2]));
+  const copySuspect = pasted || overlap>=60;   // flag if pasted OR heavily copied from text
+  const integrity = { secs, pasted, overlap, ov1, ov2, copySuspect };
+
+  aadSaveArt(id, { pct, ts:Date.now(), facts:[i1,i2], week:_aadCurrent.week, title:_aadCurrent.art.title, auto:!!auto, integ:integrity });
 
   // mirror the idea(s) into the Book of Knowledge journal (once)
   if(filled.length){
     const j=aadEntries();
     if(!j.some(e=>e.artId===id)){
-      j.push({ day:new Date().toISOString().slice(0,10), title:_aadCurrent.art.title, artId:id, facts:filled, ts:Date.now() });
-      Store.set('ican_aad_journal', j);
+      j.push({ day:new Date().toISOString().slice(0,10), title:_aadCurrent.art.title, artId:id, facts:filled, ts:Date.now(), secs, pasted, overlap });
+      aadSaveEntries(j);
     }
+  }
+
+  // gentle live reminder if copying was detected
+  if(copySuspect && filled.length){
+    aadIntegrityWarn('It looks like an idea closely matches the article text. Try to <b>say it in your own words</b> next time — your teacher can see this.');
   }
 
   // log a result for the teacher dashboard + certificates pipeline
@@ -7777,11 +7938,12 @@ function aadSubmitArticle(auto){
     // words this student banked from THIS article (for the certificate record)
     let bankedWords=[];
     try{ bankedWords = getAllVocab().filter(v=>v.source==='aad' && v.artId===id).map(v=>v.word); }catch(e){}
+    const mm=Math.floor(secs/60), ss=secs%60, tstr=(mm?mm+'m ':'')+ss+'s';
     saveResult({ date:Date.now(), name:SESSION.name, class:SESSION.class, code:SESSION.code, id:SESSION.id,
       skill:'Reading', activity:'Article-A-Day: '+_aadCurrent.art.title,
       score:filled.length, max:2, percent:pct,
-      ideas:[i1,i2], words:bankedWords,
-      detail:`Week ${_aadCurrent.week} · ${_aadCurrent.art.genre} · ${filled.length}/2 ideas${auto?' · auto-locked (time up)':''}` });
+      ideas:[i1,i2], words:bankedWords, integ:integrity,
+      detail:`Week ${_aadCurrent.week} · ${_aadCurrent.art.genre} · ${filled.length}/2 ideas · ⏱ ${tstr}${pasted?' · ⚠ pasted':''}${overlap>=60?' · ⚠ '+overlap+'% matches text':''}${auto?' · auto-locked (time up)':''}` });
   }
 
   // lock the reader
@@ -7813,7 +7975,27 @@ function closeAadReader(){
 
 /* ---------- Article-A-Day in-hub workspace ---------- */
 const AAD_CODES=[['iCAN myEnglishFile','3ULDQ4']];
-function aadEntries(){ return Store.get('ican_aad_journal')||[]; }
+/* Per-student Book of Knowledge journal: keyed by the logged-in student's id,
+   so each student sees only their own entries. Teacher tools use aadAllEntries()
+   to see everyone. Legacy flat entries (an array) are cleaned once. */
+function aadJournalAll(){ const v=Store.get('ican_aad_journal'); return (v && !Array.isArray(v))? v : {}; }
+function aadEntries(){ const all=aadJournalAll(); return all[sid()]||[]; }
+function aadAllEntries(){ // [{sid,name,class,code,entries:[...]}] for teacher view
+  const all=aadJournalAll(); const students=Store.get('ican_students')||{};
+  return Object.keys(all).map(k=>{ const meta=students[k]||{}; return {sid:k, name:meta.name||k, class:meta.class||'', code:meta.code||'', entries:all[k]||[]}; });
+}
+function aadSaveEntries(list){ const all=aadJournalAll(); all[sid()]=list; Store.set('ican_aad_journal',all); }
+function aadCleanLegacyJournal(){
+  try{
+    if(Store.get('ican_aad_journal_cleaned_v2')) return;
+    const v=Store.get('ican_aad_journal');
+    Store.set('ican_aad_journal_cleaned_v2', true);
+    if(Array.isArray(v)){ // ownerless legacy array — archive and clear
+      if(!Store.get('ican_aad_journal_legacy_archive')) Store.set('ican_aad_journal_legacy_archive', v);
+      Store.set('ican_aad_journal', {});
+    }
+  }catch(e){}
+}
 function aadStreak(){
   const days=[...new Set(aadEntries().map(e=>e.day))];
   let n=0; const d=new Date();
@@ -7823,21 +8005,9 @@ function aadStreak(){
   return n;
 }
 function aadPanelHTML(){ return `
-  <p style="font-size:.92rem;margin:0 0 10px"><b>Mastering Reading Comprehension — Grades 9–12.</b> Read one short ReadWorks article every day (about <b>10 minutes</b>), then capture what you learned in your <b>Book of Knowledge</b> below. Your entries build toward <b>Participation</b> and <b>Distinction</b> certificates at the end of the contest month.</p>
-  <div class="card" style="background:#fbfaf6;margin-bottom:12px">
-    <b>1 · Join your ReadWorks class (one time)</b>
-    <ol style="margin:6px 0 6px 18px;font-size:.88rem;line-height:1.55">
-      <li>Go to <a href="https://www.readworks.org/student" target="_blank" rel="noopener">www.readworks.org/student</a></li>
-      <li>Enter your <b>class code</b>: <table style="margin:6px 0;border-collapse:collapse">${AAD_CODES.map(c=>`<tr><td style="border:1px solid var(--line);padding:3px 10px;font-size:.85rem">${c[0]}</td><td style="border:1px solid var(--line);padding:3px 10px"><b>${c[1]}</b></td></tr>`).join('')}</table>If your class is not listed, ask your teacher for your code.</li>
-      <li>Default password: <b>1234</b> (change it after first sign-in).</li>
-    </ol>
-  </div>
-  <div class="card" style="background:#fbfaf6;margin-bottom:12px">
-    <b>2 · Daily routine</b>
-    <p style="font-size:.88rem;margin:4px 0">Open your assigned <b>Article-A-Day set</b> on ReadWorks → read today's article (~10 min) → come back here and record 2–3 things you learned.</p>
-  </div>
+  <p style="font-size:.92rem;margin:0 0 10px">Your <b>Book of Knowledge</b> collects the two ideas you write after each Article-A-Day text. Entries you make in the reading programme appear here automatically; you can also add one manually below. This journal shows <b>only your own</b> entries.</p>
   <div class="card" style="background:#fff">
-    <b>3 · 📖 Book of Knowledge — today's entry</b>
+    <b>📖 Book of Knowledge — today's entry</b>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:8px 0 4px">
       <span class="pill done">🔥 Streak: <b id="aadStreak">0</b> day(s)</span>
       <span class="pill">🗂 Entries: <b id="aadCount">0</b></span>
@@ -7850,20 +8020,55 @@ function aadPanelHTML(){ return `
       <button class="btn sm teal" onclick="aadSave()">💾 Save today's entry</button>
       <button class="btn sm" onclick="dlAADJournal()">⬇ Download my journal (Word)</button>
     </div>
+    <div id="aadMyActivity"></div>
     <div id="aadList" style="margin-top:12px"></div>
   </div>
-  <p style="font-size:.82rem;color:var(--muted);margin-top:10px">🏅 <b>Certification:</b> your teacher reviews journals and ReadWorks progress at month's end — consistent daily reading earns <b>Participation</b>; consistent reading + quality entries earn <b>Distinction</b>. Entries save on <i>this device</i>, so use the same device (or download your journal regularly).</p>`;}
+  <p style="font-size:.82rem;color:var(--muted);margin-top:10px">🏅 <b>Certification:</b> your teacher reviews journals and reading progress — consistent reading earns <b>Participation</b>; consistent reading + quality, in-your-own-words entries earn <b>Distinction</b>. Write ideas in <b>your own words</b>; pasted or copied answers are flagged for your teacher. Entries save on <i>this device</i>, so use the same device (or download your journal regularly).</p>`;}
 function aadSave(){
   const t=(val('aad_title')||'').trim(), l1=(val('aad_l1')||'').trim(), l2=(val('aad_l2')||'').trim(), l3=(val('aad_l3')||'').trim();
   if(!t){ alert('Add the article title.'); return; }
   if(!l1&&!l2&&!l3){ alert('Write at least one thing you learned.'); return; }
   const list=aadEntries();
   list.push({ day:new Date().toISOString().slice(0,10), title:t, facts:[l1,l2,l3].filter(Boolean), ts:Date.now() });
-  Store.set('ican_aad_journal', list);
+  aadSaveEntries(list);
   ['aad_title','aad_l1','aad_l2','aad_l3'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
   aadPaintList();
 }
+function aadFmtSecsShort(s){ s=s||0; const m=Math.floor(s/60); return (m?m+'m ':'')+(s%60)+'s'; }
+function aadPaintMyActivity(){
+  const box=document.getElementById('aadMyActivity'); if(!box) return;
+  if(!(SESSION && SESSION.role==='student')){ box.innerHTML=''; return; }
+  const mine=(typeof getResults==='function'?getResults():[]).filter(r=>/Article-A-Day/i.test(r.activity||'') && (r.id===SESSION.id));
+  if(!mine.length){ box.innerHTML=''; return; }
+  const reads=mine.length;
+  const secs=mine.reduce((s,r)=>s+((r.integ&&r.integ.secs)||0),0);
+  const flags=mine.filter(r=>r.integ && (r.integ.pasted || (r.integ.overlap||0)>=60)).length;
+  box.innerHTML = `
+    <div class="aad-myact">
+      <div class="aad-myact-head">📊 My reading activity <span>your teacher can see this</span></div>
+      <div class="aad-myact-stats">
+        <span>📚 Articles read: <b>${reads}</b></span>
+        <span>⏱ Time reading: <b>${aadFmtSecsShort(secs)}</b></span>
+        <span class="${flags?'flagged':''}">🛡️ Integrity flags: <b>${flags}</b></span>
+      </div>
+      <details style="margin-top:6px">
+        <summary style="cursor:pointer;font-size:.83rem;color:var(--teal-dk)">See each article</summary>
+        <div style="margin-top:6px">
+          ${mine.slice().sort((a,b)=>b.date-a.date).map(r=>{
+            const ig=r.integ||{}; const flagged = ig.pasted || (ig.overlap||0)>=60;
+            return `<div class="aad-myact-item ${flagged?'flagged':''}">
+              <div style="font-size:.85rem"><b>${esc((r.activity||'').replace(/^Article-A-Day:\s*/,''))}</b> <span class="pill">${r.percent}%</span></div>
+              <div style="font-size:.76rem;color:var(--muted)">⏱ ${aadFmtSecsShort(ig.secs)}${ig.pasted?' · ⚠ pasted':''}${(ig.overlap||0)>=60?' · ⚠ '+ig.overlap+'% matched the text':''}${flagged?'':' · ✓ your own words'}</div>
+            </div>`;
+          }).join('')}
+        </div>
+      </details>
+    </div>`;
+}
+
 function aadPaintList(){
+  aadCleanLegacyJournal();
+  aadPaintMyActivity();
   const box=document.getElementById('aadList'); if(!box) return;
   const list=aadEntries();
   const sEl=document.getElementById('aadStreak'), cEl=document.getElementById('aadCount');
@@ -7881,7 +8086,7 @@ function dlAADJournal(){
   <p>Name: ____________________ &nbsp;&nbsp; Class: ________ &nbsp;&nbsp; Total entries: <b>${list.length}</b> &nbsp;&nbsp; Current streak: <b>${aadStreak()} day(s)</b></p>
   <table><tr><th style="width:14%">Date</th><th style="width:26%">Article</th><th>What I learned (Book of Knowledge)</th></tr>
   ${list.map(e=>`<tr><td>${e.day}</td><td>${esc(e.title)}</td><td><ul>${e.facts.map(f=>`<li>${esc(f)}</li>`).join('')}</ul></td></tr>`).join('') || '<tr><td></td><td></td><td></td></tr>'}</table>
-  <p style="font-size:9pt;color:#777"><i>Article-A-Day routine powered by ReadWorks.org · 10 minutes a day · certificates for Participation and Distinction.</i></p>`);
+  <p style="font-size:9pt;color:#777"><i>iCAN Article-A-Day · Book of Knowledge journal · ideas written in the learner's own words.</i></p>`);
 }
 
 /* ====================== DOWNLOADABLE DOCUMENTS (.doc) ====================== */
