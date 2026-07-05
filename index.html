@@ -2811,7 +2811,7 @@ const ROUTES = {
       </div>
     </div>`;
     renderCodeList();
-    if(online){ refreshCloud(()=>{ if(CURRENT_SCREEN==='teacher') { const r2=allResults(); if(r2.length!==res.length){ ROUTES.teacher(); } } }); }
+    if(online){ refreshCloud(()=>{ if(CURRENT_SCREEN==='teacher') { qaMergeCloudReplies(); const r2=allResults(); if(r2.length!==res.length){ ROUTES.teacher(); } else { if(typeof paintQA==='function') paintQA(); if(typeof paintAadJournals==='function') paintAadJournals(); } } }); }
   }
 };
 
@@ -5599,12 +5599,17 @@ function renderCoachTopics(){
 }
 function renderCoachQuick(){
   const q=document.getElementById('coachQuick'); if(!q)return;
-  q.innerHTML=COACH_NAV.map(([lab,r])=>`<button onclick="coachGo('${r}')">${lab}</button>`).join('');
+  // Navigation buttons only appear after login — nothing to bypass when logged out.
+  if(!coachLoggedIn()){ q.innerHTML='<div style="font-size:.82rem;color:var(--muted);padding:2px 0">Sign in as a student or teacher on the home screen to jump to activities.</div>'; return; }
+  const isTeacher = SESSION.role==='teacher';
+  q.innerHTML=COACH_NAV.filter(([lab,r])=> r!=='teacher' || isTeacher).map(([lab,r])=>`<button onclick="coachGo('${r}')">${lab}</button>`).join('');
 }
 function coachTip(key){
   const h=COACH_HELP[key]; const b=document.getElementById('coachBody'); if(!h||!b)return;
-  const canGo = h.route && !(h.route==='teacher' && !(coachLoggedIn() && SESSION.role==='teacher'));
-  b.innerHTML=`<div class="cbot"><b>${h.t}</b><br>${h.m}${canGo?`<div class="cgo"><button class="coach-btn" onclick="coachGo('${h.route}')">Take me there →</button></div>`:''}</div>`;
+  // "Take me there" only appears when logged in (teacher routes need a teacher).
+  const canGo = coachLoggedIn() && h.route && !(h.route==='teacher' && SESSION.role!=='teacher');
+  const note = (!coachLoggedIn() && h.route) ? `<div class="cgo" style="font-size:.8rem;color:var(--muted)">Sign in on the home screen to open this.</div>` : '';
+  b.innerHTML=`<div class="cbot"><b>${h.t}</b><br>${h.m}${canGo?`<div class="cgo"><button class="coach-btn" onclick="coachGo('${h.route}')">Take me there →</button></div>`:note}</div>`;
 }
 function coachGo(route){
   const b=document.getElementById('coachBody');
@@ -6435,34 +6440,69 @@ function exportConsents(){
   }
 }
 
-/* ---------- Q&A inbox (teacher) ---------- */
+/* ---------- Q&A inbox (teacher) — cloud-aware ---------- */
 function getQA(){ return Store.get('ican_qa')||[]; }
+function qaKey(q){ return (q.date||'')+'|'+(q.name||'')+'|'+((q.q||'').slice(0,40)); }
+/* Merge locally-stored questions with any synced from the cloud (other devices). */
+function allQA(){
+  const local=getQA(); const seen=new Set(local.map(qaKey)); const merged=local.slice();
+  (CLOUD_CACHE||[]).forEach(r=>{ if(r && r.type==='question' && !seen.has(qaKey(r))){ seen.add(qaKey(r)); merged.push(Object.assign({reply:'',done:false},r)); } });
+  return merged.sort((a,b)=>(a.date||0)-(b.date||0));
+}
+/* Apply teacher replies (kept in a keyed map, and synced from cloud) to a question. */
+function qaReplies(){ return Store.get('ican_qa_replies')||{}; }
+function qaMergeCloudReplies(){
+  const replies=qaReplies(); let changed=false;
+  (CLOUD_CACHE||[]).forEach(r=>{ if(r && r.type==='qa_reply' && r.key){
+    const cur=replies[r.key];
+    if(!cur || (r.date||0)>(cur.date||0)){ replies[r.key]={reply:r.reply, done:!!r.reply, date:r.date||Date.now()}; changed=true; }
+  }});
+  if(changed) Store.set('ican_qa_replies', replies);
+}
 function qaCardHTML(){ return `
   <div class="card" id="qaCard" style="margin-bottom:22px">
     <h3 style="font-size:1.2rem">💬 Q&A Tutor — inbox</h3>
-    <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Questions from parents and students land here. Reply asynchronously below — your reply appears in the asker's Q&A panel on the same device (or set your WhatsApp number in the configuration to also take questions live).</p>
+    <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Questions from parents and students land here. With cloud sync set up (below), questions from any device appear here and your replies go back to the asker. Without it, only questions asked on this device show.</p>
     <div id="qaInbox"></div>
   </div>`;}
 function paintQA(){
   const box=document.getElementById('qaInbox'); if(!box) return;
-  const l=getQA();
-  box.innerHTML = l.length ? l.slice().reverse().map((q,ri)=>{
-    const i=l.length-1-ri;
+  const replies=qaReplies();
+  const l=allQA().map(q=>{ const r=replies[qaKey(q)]; return r?Object.assign({},q,{reply:r.reply,done:r.done}):q; });
+  box.innerHTML = l.length ? l.slice().reverse().map((q)=>{
+    const k=qaKey(q);
     return `<div class="qa-row ${q.done?'qa-done':''}">
       <div style="flex:1;min-width:220px">
         <div style="font-size:.78rem;color:var(--muted)">${new Date(q.date).toLocaleString()} · <b>${esc(q.name||'Anonymous')}</b> (${esc(q.role)})</div>
         <div style="margin:3px 0">${esc(q.q)}</div>
         ${q.reply?`<div class="qa-reply">↳ ${esc(q.reply)}</div>`:''}
         <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap">
-          <input id="qar_${i}" placeholder="Type a reply…" value="${esc(q.reply||'')}" style="flex:1;min-width:180px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:.82rem">
-          <button class="btn sm teal" onclick="saveQAReply(${i})">Reply</button>
-          <button class="btn sm ghost" onclick="toggleQADone(${i})">${q.done?'Reopen':'Mark answered'}</button>
+          <input id="qar_${esc(k)}" placeholder="Type a reply…" value="${esc(q.reply||'')}" style="flex:1;min-width:180px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:.82rem">
+          <button class="btn sm teal" onclick="saveQAReply('${escq(k)}')">Reply</button>
+          <button class="btn sm ghost" onclick="toggleQADone('${escq(k)}')">${q.done?'Reopen':'Mark answered'}</button>
         </div>
       </div>
     </div>`; }).join('') : `<p class="note">No questions yet. Parents and students can ask from the 💬 Q&A Tutor on the homepage bar.</p>`;
 }
-function saveQAReply(i){ const l=getQA(); if(!l[i]) return; const e=document.getElementById('qar_'+i); l[i].reply=(e&&e.value||'').trim(); l[i].done=!!l[i].reply; Store.set('ican_qa',l); paintQA(); }
-function toggleQADone(i){ const l=getQA(); if(!l[i]) return; l[i].done=!l[i].done; Store.set('ican_qa',l); paintQA(); }
+function qaFindByKey(k){ return allQA().find(q=>qaKey(q)===k); }
+function saveQAReply(k){
+  const e=document.getElementById('qar_'+k); const reply=(e&&e.value||'').trim();
+  // update local question in place if present
+  const local=getQA(); const idx=local.findIndex(x=>qaKey(x)===k);
+  if(idx>=0){ local[idx].reply=reply; local[idx].done=!!reply; Store.set('ican_qa',local); }
+  // keyed reply map (covers cloud-only questions)
+  const replies=qaReplies(); replies[k]={reply, done:!!reply, date:Date.now()}; Store.set('ican_qa_replies',replies);
+  // push reply to the cloud so the asker's device can pull it
+  try{ cloudSave({ type:'qa_reply', key:k, date:Date.now(), reply }); }catch(e2){}
+  paintQA();
+}
+function toggleQADone(k){
+  const replies=qaReplies(); const q=qaFindByKey(k)||{}; const cur=replies[k]||{reply:q.reply||'',done:!!q.done};
+  cur.done=!cur.done; cur.date=Date.now(); replies[k]=cur; Store.set('ican_qa_replies',replies);
+  const local=getQA(); const idx=local.findIndex(x=>qaKey(x)===k);
+  if(idx>=0){ local[idx].done=cur.done; Store.set('ican_qa',local); }
+  paintQA();
+}
 
 /* ---------- student mini-bar ---------- */
 function injectStudentBar(){
@@ -6525,7 +6565,8 @@ function openBarPanel(key){
   else if(key==='taids'){ head.innerHTML=H('🧑‍🏫','Teacher Aids','printable plans, rubrics, tips & differentiation'); body.innerHTML=taidsPanelHTML(); }
   else if(key==='saids'){ head.innerHTML=H('🎒','Student Aids','checklists, storyboards & always-open practice'); body.innerHTML=saidsPanelHTML(); }
   else if(key==='consent'){ head.innerHTML=H('📝','Declaration for Parents','sign online, or print and return'); body.innerHTML=consentPanelHTML(); }
-  else if(key==='qa'){ head.innerHTML=H('💬','Q&A Tutor','ask the teacher — replies come back here'); body.innerHTML=qaPanelHTML(); }
+  else if(key==='qa'){ head.innerHTML=H('💬','Q&A Tutor','ask the teacher — replies come back here'); body.innerHTML=qaPanelHTML();
+    try{ if(navigator.onLine && cloudUrl()){ refreshCloud(()=>{ qaMergeCloudReplies(); const bb=document.getElementById('barBody'); if(bb) bb.innerHTML=qaPanelHTML(); }); } }catch(e){} }
   else if(key==='kp'){ head.innerHTML=H('🧠','RWD Pedagogical Grounding','multiliteracies knowledge processes'); body.innerHTML=kpPanelHTML(); }
   else if(key==='inits'){ head.innerHTML=H('🚀','Initiatives','published by your teacher'); body.innerHTML=initsPanelHTML(); }
   else if(key==='aad'){ head.innerHTML=H('📰','Article-A-Day','10 minutes a day · powered by ReadWorks'); body.innerHTML=aadPanelHTML(); setTimeout(aadPaintList,50); }
@@ -6641,12 +6682,12 @@ function qaPanelHTML(){
     ${wa?`<a class="btn" target="_blank" rel="noopener" href="https://wa.me/${wa}?text=${encodeURIComponent('Question about iCAN Academy: ')}">🟢 Ask live on WhatsApp</a>`:''}
   </div>
   <div id="qa_msg" style="font-size:.85rem;margin-top:8px;color:var(--teal-dk)"></div>
-  ${l.length?`<div style="margin-top:14px"><b style="font-size:.95rem">Questions asked on this device</b>
-    ${l.slice().reverse().map(q=>`<div class="qa-row"><div>
+  ${l.length?`<div style="margin-top:14px"><b style="font-size:.95rem">My questions</b>
+    ${l.slice().reverse().map(q=>{ const rep=qaReplies()[qaKey(q)]; const reply=(rep&&rep.reply)||q.reply; return `<div class="qa-row"><div>
       <div style="font-size:.78rem;color:var(--muted)">${new Date(q.date).toLocaleString()} · ${esc(q.name||'Anonymous')} (${esc(q.role)})</div>
       <div style="margin:2px 0">${esc(q.q)}</div>
-      ${q.reply?`<div class="qa-reply">↳ <b>Teacher:</b> ${esc(q.reply)}</div>`:'<div style="font-size:.78rem;color:var(--muted)">Awaiting reply…</div>'}
-    </div></div>`).join('')}</div>`:''}`;
+      ${reply?`<div class="qa-reply">↳ <b>Teacher:</b> ${esc(reply)}</div>`:'<div style="font-size:.78rem;color:var(--muted)">Awaiting reply…</div>'}
+    </div></div>`;}).join('')}</div>`:''}`;
 }
 function askQA(){
   const q=(val('qa_q')||'').trim(); const msg=document.getElementById('qa_msg');
