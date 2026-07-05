@@ -473,6 +473,21 @@ table.data tr:nth-child(even){background:#fff}
 /* sentence highlight while reading aloud */
 .aad-sent{transition:background .15s}
 .aad-sent.on{background:#ffe9a8; border-radius:4px; box-shadow:0 0 0 3px #ffe9a8}
+/* tap-to-hear any word */
+.aad-word{cursor:pointer; border-radius:3px; transition:background .12s}
+.aad-word:hover{background:#e8f0ff}
+.aad-word.tapped{background:#bfe0d6; box-shadow:0 0 0 2px #bfe0d6}
+.aad-article-text{ -webkit-tap-highlight-color:transparent }
+/* explore-further panel */
+.aad-explore{margin-top:18px; border:1px solid #d7e3f7; border-radius:12px; padding:12px 14px; background:#f7faff}
+.aad-explore h4{margin:0 0 3px; font-size:1rem}
+.aad-explore-links{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:8px; margin-top:8px}
+.aad-ex{display:flex; align-items:center; gap:10px; text-decoration:none; border:1px solid #cfe0f5; background:#fff; border-radius:10px; padding:9px 11px; color:#1f2233; transition:.15s}
+.aad-ex:hover{border-color:#7aa7e0; background:#eef5ff; transform:translateY(-1px)}
+.aad-ex-ic{font-size:1.35rem; line-height:1}
+.aad-ex b{display:block; font-size:.9rem}
+.aad-ex small{color:var(--muted); font-size:.74rem}
+.aad-explore-note{margin:9px 0 0; font-size:.76rem; color:#5a6b85}
 @media(max-width:560px){ .aad-read-tools{gap:8px} .aad-dict-link{margin-left:0} .aad-read-tools input[type=range]{width:76px} }
 .aad-article-text{font-family:Georgia,serif; font-size:1.06rem; line-height:1.72; color:#1f2233}
 .aad-article-text p{margin:0 0 14px}
@@ -7013,7 +7028,8 @@ function aadSpeakWord(w){
 }
 
 function aadTtsBuild(){
-  // Split the article into sentence spans we can highlight while reading.
+  // Split the article into sentence spans (for highlighting) that each contain
+  // tappable word spans (for tap-to-hear differentiation support).
   const box=document.getElementById('aadArticleText'); if(!box) return [];
   if(box.dataset.ttsReady==='1') return _aadTts.sentences;
   const paras=[...box.querySelectorAll('p')];
@@ -7022,18 +7038,41 @@ function aadTtsBuild(){
   src.forEach(p=>{
     const raw=p.textContent||'';
     const parts=raw.match(/[^.!?]+[.!?]*/g)||[raw];
-    p.innerHTML=''; // rebuild with wrapped sentence spans
+    p.innerHTML=''; // rebuild with wrapped sentence + word spans
     parts.forEach(s=>{
       const t=s.trim(); if(!t){ p.appendChild(document.createTextNode(s)); return; }
       const span=document.createElement('span');
-      span.className='aad-sent'; span.textContent=s;
-      span.dataset.si=sentences.length;
+      span.className='aad-sent'; span.dataset.si=sentences.length;
+      // split the sentence into words + the whitespace/punctuation between them
+      const tokens = s.match(/(\s+)|([^\s]+)/g) || [s];
+      tokens.forEach(tok=>{
+        if(/^\s+$/.test(tok)){ span.appendChild(document.createTextNode(tok)); return; }
+        const clean = tok.replace(/[^A-Za-z'’-]/g,''); // word to speak (strip punctuation)
+        if(!clean){ span.appendChild(document.createTextNode(tok)); return; }
+        const w=document.createElement('span');
+        w.className='aad-word'; w.textContent=tok; w.dataset.w=clean;
+        span.appendChild(w);
+      });
       p.appendChild(span);
       sentences.push({el:span, text:t});
     });
   });
   box.dataset.ttsReady='1';
   _aadTts.sentences=sentences;
+  // attach one delegated tap handler for word-level read-aloud
+  if(!box.dataset.tapBound){
+    box.addEventListener('click', function(ev){
+      const w = ev.target.closest ? ev.target.closest('.aad-word') : null;
+      if(!w || !box.contains(w)) return;
+      const word = w.dataset.w; if(!word) return;
+      // flash the tapped word, speak just that word
+      document.querySelectorAll('.aad-word.tapped').forEach(e=>e.classList.remove('tapped'));
+      w.classList.add('tapped');
+      setTimeout(()=>w.classList.remove('tapped'), 900);
+      aadSpeakWord(word);
+    });
+    box.dataset.tapBound='1';
+  }
   return sentences;
 }
 
@@ -7116,6 +7155,35 @@ function aadTtsStep(kind,dir){
   }
 }
 
+/* Safe, launch-on-tap enrichment links built from the article's own topic.
+   No media is embedded (links can rot / surface unsuitable content); instead we
+   open trusted searches in a new tab: Wikimedia images, YouTube safe-search,
+   Wikipedia and Britannica. */
+function aadExploreHTML(a){
+  const topic = (a.title||'').replace(/[""'']/g,'').trim();
+  const q = encodeURIComponent(topic);
+  const wiki = encodeURIComponent(topic.replace(/\s+/g,'_'));
+  const imgUrl  = 'https://commons.wikimedia.org/w/index.php?search='+q+'&title=Special:MediaSearch&type=image';
+  const vidUrl  = 'https://www.youtube.com/results?search_query='+q+'&sp=EgIQAQ%253D%253D'; // sp filter = Video type; safe-search set below
+  const vidSafe = 'https://www.youtube.com/results?search_query='+q; // fallback plain search
+  const wpUrl   = 'https://en.wikipedia.org/wiki/'+wiki;
+  const wpSearch= 'https://en.wikipedia.org/w/index.php?search='+q;
+  const britUrl = 'https://www.britannica.com/search?query='+q;
+  return `
+    <div class="aad-explore">
+      <h4>🌐 Explore this topic further</h4>
+      <p class="aad-vocab-hint">Optional — open in a new tab to see pictures, watch a video, or read more about <b>${esc(topic)}</b>.</p>
+      <div class="aad-explore-links">
+        <a class="aad-ex" href="${imgUrl}" target="_blank" rel="noopener"><span class="aad-ex-ic">🖼️</span><span><b>See images</b><small>Wikimedia Commons</small></span></a>
+        <a class="aad-ex" href="${vidUrl}" target="_blank" rel="noopener" onclick="aadNoteSafeSearch()"><span class="aad-ex-ic">📺</span><span><b>Watch a video</b><small>YouTube · videos</small></span></a>
+        <a class="aad-ex" href="${wpSearch}" target="_blank" rel="noopener"><span class="aad-ex-ic">📚</span><span><b>Read more</b><small>Wikipedia</small></span></a>
+        <a class="aad-ex" href="${britUrl}" target="_blank" rel="noopener"><span class="aad-ex-ic">📖</span><span><b>Encyclopaedia</b><small>Britannica</small></span></a>
+      </div>
+      <p class="aad-explore-note">🛡️ Links open a search on trusted sites. Ask an adult if you are unsure, and keep <b>Restricted Mode / SafeSearch</b> on.</p>
+    </div>`;
+}
+function aadNoteSafeSearch(){ /* placeholder hook; safe-search is a device/account setting */ }
+
 function openAadArticle(id){
   const found = aadFindArt(id); if(!found) return;
   // students blocked if the week is not open
@@ -7181,6 +7249,8 @@ function openAadArticle(id){
               </div>`).join('')}
           </div>
         </div>
+
+        ${aadExploreHTML(a)}
       </div>
 
       <div class="aad-know-box" id="aadKnowBox">
@@ -7197,6 +7267,8 @@ function openAadArticle(id){
       </div>
     </div>`;
   m.classList.add('show');
+  // build sentence + tappable word spans now so tap-to-hear works immediately
+  try{ aadTtsBuild(); }catch(e){}
 
   // If already read, show status but still allow review (timer not restarted)
   if(prev){
