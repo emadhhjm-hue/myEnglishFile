@@ -545,6 +545,46 @@ table.data tr:nth-child(even){background:#fff}
 .aad-result-pct{font-size:1.7rem; font-weight:800; color:var(--teal-dk); background:#fff; border:2px solid #bfe8dc; border-radius:12px; padding:6px 12px; min-width:70px; text-align:center}
 @media(max-width:560px){ .aad-reader-top{flex-wrap:wrap} .aad-r-title{font-size:1.12rem} .aad-article-text{font-size:1rem} }
 
+
+/* ---------- STEM·STREAM Lab ---------- */
+.stem-hero{background:linear-gradient(135deg,#0e1130 0%,#1c2260 55%,#3b2a7a 100%);border-radius:20px;padding:30px 28px;color:#fff;display:grid;gap:22px;box-shadow:var(--shadow);margin-top:8px}
+@media(min-width:820px){.stem-hero{grid-template-columns:1.6fr 1fr;align-items:center}}
+.stem-hero h1{color:#fff;font-size:clamp(1.9rem,4.5vw,2.7rem)}
+.stem-kicker{letter-spacing:.2em;text-transform:uppercase;font-size:.68rem;opacity:.75;margin-bottom:8px}
+.stem-tag{font-family:"Fraunces",Georgia,serif;font-size:1.25rem;margin:8px 0 6px;color:#ffd23f}
+.stem-sub{font-size:.92rem;opacity:.9;margin:0;max-width:520px}
+.stem-hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stem-hero-stats div{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:12px;text-align:center}
+.stem-hero-stats b{display:block;font-family:"Fraunces";font-size:1.5rem;color:#ffd23f}
+.stem-hero-stats span{font-size:.72rem;opacity:.85;line-height:1.3;display:block;margin-top:2px}
+.stem-h2{font-family:"Fraunces",Georgia,serif;font-size:1.5rem;color:var(--ink);margin:28px 0 4px}
+.stem-letters{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.stem-letter{background:#fff;border:1px solid var(--line);border-top:6px solid var(--lc);border-radius:14px;padding:14px;position:relative}
+.stem-letter .sl-big{font-family:"Fraunces";font-weight:800;font-size:2rem;color:var(--lc);line-height:1}
+.stem-letter .sl-word{font-weight:600;color:var(--ink);margin:2px 0 6px}
+.stem-letter .sl-desc{font-size:.8rem;color:var(--muted);line-height:1.5}
+.stem-letter .sl-badge{display:inline-block;margin-top:8px;background:var(--lc);color:#fff;font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:50px}
+.stem-mnum{background:var(--ink);color:#ffd23f;font-size:.7rem;letter-spacing:.1em;padding:4px 10px;border-radius:50px;font-weight:600}
+.stem-unit-card{transition:.15s}.stem-unit-card:hover{transform:translateY(-3px)}
+.stem-map{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:8px}
+.stem-map-chip{background:#fff;border:1px solid var(--line);border-left:5px solid var(--lc);border-radius:10px;padding:9px 12px;font-size:.82rem;color:var(--slate);display:flex;gap:10px;align-items:baseline}
+.stem-map-chip b{font-family:"Fraunces";font-size:1.05rem;color:var(--lc)}
+.stem-ch-head{margin-top:30px;background:linear-gradient(135deg,#15183A,#8B5CF6);border-radius:16px;padding:18px 22px;color:#fff}
+.stem-ch-head h2{color:#fff;font-size:1.5rem;margin:0}
+.stem-ch-head p{margin:6px 0 0;font-size:.9rem;opacity:.92}
+.stem-stage{border:1px solid var(--line);border-left:6px solid var(--sc);border-radius:14px;padding:18px;margin-top:16px;background:#fff}
+.stem-stage h3{font-size:1.15rem;display:flex;align-items:center;gap:10px;margin:0 0 10px}
+.stem-stage-n{background:var(--sc);color:#fff;width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-family:"Lexend";font-size:.85rem;flex:none}
+.stem-spark-banner{margin-top:26px;background:linear-gradient(120deg,#b45309,#f59e0b);border-radius:16px;padding:20px 22px;color:#fff;display:flex;gap:16px;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:var(--shadow);transition:.15s}
+.stem-spark-banner:hover{transform:translateY(-2px)}
+.stem-dash-banner{margin-top:22px;width:100%;text-align:left;border:none;cursor:pointer;background:linear-gradient(120deg,#0e1130 0%,#26308a 55%,#7A2FD0 100%);border-radius:18px;padding:20px 24px;color:#fff;display:flex;gap:18px;align-items:center;justify-content:space-between;box-shadow:var(--shadow);transition:.15s;position:relative;overflow:hidden}
+.stem-dash-banner:hover{transform:translateY(-3px)}
+.stem-dash-banner .sdb-ic{font-size:2.4rem}
+.stem-dash-banner h3{color:#fff;font-size:1.35rem;margin:0 0 3px}
+.stem-dash-banner p{margin:0;font-size:.86rem;opacity:.9;max-width:560px}
+.stem-dash-banner .sdb-go{background:#ffd23f;color:#15183A;font-weight:700;border-radius:10px;padding:10px 16px;white-space:nowrap;font-size:.9rem}
+.stem-fun-card{transition:.15s}.stem-fun-card:hover{transform:translateY(-3px)}
+
 </style>
 </head>
 <body>
@@ -1805,6 +1845,15 @@ const ROUTES = {
         <div class="hub-foot">Tap any circle to begin. Tap 📰 <b>Article-A-Day</b> for daily reading, or 🎓 <b>Exams &amp; Quizzes</b> for full-length exams and differentiated practice.</div>
         <div class="hub-copyright">© 2026 Emad Ali Mohamed · <i>Developer of iCAN my English File — a multiliteracy hub for EFL learners</i></div>
       </div>
+
+      <button class="stem-dash-banner" onclick="go('stemlab')">
+        <span class="sdb-ic">🚀</span>
+        <span style="flex:1">
+          <h3>STEM·STREAM Lab <span style="font-size:.75rem;background:#ffd23f;color:#15183A;border-radius:50px;padding:2px 10px;vertical-align:middle;font-family:Lexend">NEW</span></h3>
+          <p>Six real-world science missions — clean water, solar ovens, Mars landers — where you <b>read</b> the research, <b>write</b> the reasoning and <b>design</b> the solution. Plus the Spark Lab: 12 experiments just for wonder.</p>
+        </span>
+        <span class="sdb-go">Launch →</span>
+      </button>
 
       <div class="grid c2" style="margin-top:22px">
         <button onclick="go('toolsRes')" style="text-align:left;border:1.5px dashed var(--line);background:#fff;border-radius:14px;padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px">
@@ -6167,7 +6216,8 @@ function gateDefs(){ return [
   {key:'listenQuiz', icon:'🎧', label:'Listening comprehension quizzes'},
   {key:'diag',       icon:'🧭', label:'Diagnostic test'},
   {key:'exams',      icon:'🎓', label:'Exams, quizzes & mock tests'},
-  {key:'aad',        icon:'📰', label:'Article-A-Day (10-week reading)'}
+  {key:'aad',        icon:'📰', label:'Article-A-Day (10-week reading)'},
+  {key:'stem',       icon:'🚀', label:'STEM·STREAM Lab missions (RWD challenges)'}
 ];}
 function gateKeyOf(screen){
   return ({
@@ -6182,7 +6232,8 @@ function gateKeyOf(screen){
     revise:'revise', reviseTask:'revise',
     wstudio:'wstudio', markTask:'wstudio', inferTask:'wstudio', oreoTask:'wstudio',
     listenComp:'listenQuiz', spellQuiz:'spelling',
-    articleaday:'aad'
+    articleaday:'aad',
+    stemUnit:'stem'
   })[screen]||null;
 }
 function gates(){ return Store.get('ican_gates')||{}; }
@@ -6243,6 +6294,7 @@ function injectTeacherBar(){
     <button class="chip" onclick="document.getElementById('gateCard').scrollIntoView({behavior:'smooth'})">🔓 Activation</button>
     <button class="chip" onclick="document.getElementById('initCard').scrollIntoView({behavior:'smooth'})">🚀 Initiatives</button>
     <button class="chip" onclick="go('articleaday')">📰 Article-A-Day</button>
+    <button class="chip" onclick="go('stemlab')">🚀 STEM·STREAM Lab</button>
     <button class="chip" onclick="openBarPanel('taids')">🧑‍🏫 Lesson plans & AI aids</button>
     <button class="chip" onclick="openBarPanel('kp')">🧠 RWD grounding (KP)</button>
     <button class="chip" onclick="document.getElementById('consentCard').scrollIntoView({behavior:'smooth'})">📝 Consent log</button>
@@ -6515,6 +6567,7 @@ function injectStudentBar(){
     <button class="chip" onclick="go('readingCourse')">📖 Reading Course${lk('readCourse')}</button>
     <button class="chip" onclick="go('writingCourse')">✍️ Writing Course${lk('writeCourse')}</button>
     <button class="chip" onclick="go('dstudio')">🎨 Design Studio${lk('design')}</button>
+    <button class="chip" onclick="go('stemlab')">🚀 STEM·STREAM Lab${lk('stem')}</button>
     <button class="chip" onclick="go('exams')">🎓 Exams & Quizzes${lk('exams')}</button>
     <button class="chip" onclick="go('articleaday')">📰 Article-A-Day${lk('aad')}</button>
     <button class="chip" onclick="go('typing')">⌨️ Typing</button>
@@ -8583,6 +8636,473 @@ function refreshGateCard(){
   if(itemArea) itemArea.innerHTML = itemGateHTML();
   paintGates();
 }
+
+/* =========================================================================
+   STEM · STREAM LAB — an RWD-integrated science strand
+   Read it → Write it → Design it. Six missions + Spark Lab ideas.
+   © 2026 Emad Ali Mohamed · iCAN Academy
+   ========================================================================= */
+
+const STEM_LETTERS = [
+  {l:'S', word:'Science',     color:'#0FA98B', desc:'Ask questions about the natural world, form a hypothesis, test it fairly, and explain what the evidence shows.'},
+  {l:'T', word:'Technology',  color:'#5b8def', desc:'Use tools — from rulers and thermometers to cameras and apps — to measure, record, document and share your findings.'},
+  {l:'R', word:'Reading',     color:'#E6464B', desc:'Research before you build. Read scientific texts, diagrams and data to understand the problem — reading with a purpose.'},
+  {l:'E', word:'Engineering', color:'#F5A301', desc:'Design, build, test and improve a solution. Fail, learn why, and iterate — that is how engineers think.'},
+  {l:'A', word:'Arts',        color:'#8B5CF6', desc:'Make your ideas visible and persuasive: sketches, labelled diagrams, models, posters, videos and pitches.'},
+  {l:'M', word:'Maths',       color:'#15183A', desc:'Measure, count, compare and calculate. Numbers turn "I think it works" into "here is the evidence that it works."'}
+];
+
+const STEM_OBJECTIVES = [
+  '<b>Investigate like a scientist:</b> move through the full cycle — question → hypothesis → fair test → evidence → conclusion.',
+  '<b>Integrate the disciplines:</b> use Science, Technology, Engineering, Arts and Maths together in one real project, not as separate subjects.',
+  '<b>Read to research (R):</b> extract facts, vocabulary and ideas from scientific texts and data — reading with a real purpose.',
+  '<b>Write to reason (W):</b> write hypotheses, claim–evidence–reasoning paragraphs, observation logs, reports and pitches in English.',
+  '<b>Design to communicate (D):</b> build a working artefact and a multimodal product (diagram, poster, video, pitch) that explains it.',
+  '<b>Collaborate and present:</b> work in team roles, then present your solution in English — clearly, confidently, persuasively.'
+];
+
+/* Six missions. Each ends in a full RWD challenge. */
+const STEM_UNITS = [
+{
+  id:'u1', icon:'💧', theme:'Environment · SDG 6', title:'The Clean Water Mission',
+  drivingQ:'How can we turn dirty water into clearer, safer water using simple materials?',
+  purpose:'Understand how filtration separates particles from water, and engineer a working multi-layer filter — the same principle used in real water-treatment plants.',
+  contribution:'Clean water is one of humanity\u2019s biggest challenges: millions of people worldwide lack safe drinking water. Your prototype models the first stage of real water treatment and connects to UN Sustainable Development Goal 6 — Clean Water and Sanitation.',
+  efl:'You will learn water and process vocabulary (filter, layer, particle, gravel, charcoal, cloudy, clear) and practise <b>process writing</b> — describing steps in order using <i>first, next, then, after that, finally</i>.',
+  streamMap:{S:'Why water becomes cloudy; how layers trap particles', T:'Photograph before/after; time the flow', R:'Research brief on water scarcity and filtration', E:'Design, build and improve a layered filter', A:'Labelled cross-section diagram of your filter', M:'Measure water clarity on a 1–5 scale; time each trial'},
+  materials:['A large plastic bottle, cut in half (teacher does the cutting)','Cotton or gauze','Clean sand and small gravel','Activated charcoal (from a pet shop) — optional but powerful','"Dirty" water: water mixed with soil (never test drink it!)','A jug, a timer, and a phone/camera to document'],
+  roles:['<b>Reader–Researcher</b> — leads the research reading and checks facts','<b>Recorder–Writer</b> — writes the hypothesis, log and results','<b>Designer–Builder</b> — leads construction and testing','<b>Speaker–Presenter</b> — explains the filter and presents results'],
+  steps:['<b>Predict:</b> write a hypothesis — "If we layer cotton, then charcoal, then sand, then gravel, the water will…"','<b>Build:</b> turn the bottle top upside-down like a funnel. Layer from bottom to top: cotton → charcoal → sand → gravel.','<b>Test:</b> pour the same amount of dirty water through. Time how long it takes and rate the clarity of what comes out (1 = very cloudy, 5 = clear).','<b>Iterate:</b> change ONE variable (layer order, layer thickness, adding a second pass) and test again.','<b>Compare:</b> record every trial in a results table — this is your evidence.','<b>Conclude:</b> which design worked best, and <i>why</i>? Link your answer to what each layer does.'],
+  safety:'Never drink any water used in this experiment — a clear result is not a safe result. Real drinking water is also disinfected, which our filter cannot do.',
+  finalProduct:'A working bottle filter + a labelled cross-section diagram + a short "How our filter works" process paragraph in English.',
+  challenge:{
+    read:{
+      title:'Why the World Is Thirsty',
+      text:'<p>Look at a photo of Earth from space and you see a blue planet — yet almost all of that water is salty ocean. Less than one percent of the world\u2019s water is fresh and reachable, and people, farms and factories all compete for it. In hot, dry regions, the pressure is even greater: some countries must clean and reuse water many times, or remove salt from seawater at great cost.</p><p>Before water reaches a tap, it usually passes through a treatment plant. The first stage is surprisingly simple: the water travels through layers of sand and gravel, which trap soil, leaves and other particles. Charcoal is often added because its surface is full of microscopic holes that grab chemicals and smells the way a sponge grabs spills. Only after filtering is the water disinfected to remove germs that are far too small for any filter to catch.</p><p>Engineers measure success in numbers, not opinions. They test how cloudy the water is before and after each stage, and they keep improving the design until the numbers say it works. A filter, in other words, is never finished — it is only the best version so far.</p>',
+      questions:[
+        {q:'Why is fresh water scarce even though Earth looks blue from space?', options:['Most of Earth\u2019s water is salty ocean water','Fresh water evaporates too quickly','Oceans are actually very small','People drink most of it every day'], answer:0, exp:'The text says almost all of Earth\u2019s water is salty ocean; less than 1% is fresh and reachable.'},
+        {q:'In a treatment plant, what do the sand and gravel layers do?', options:['They add healthy minerals','They trap soil, leaves and other particles','They make the water taste sweet','They kill all the germs'], answer:1, exp:'Sand and gravel physically trap particles — the first stage of treatment.'},
+        {q:'Why is charcoal useful in a filter?', options:['It makes the water black so germs die','It is heavier than sand','Its surface has microscopic holes that grab chemicals and smells','It heats the water'], answer:2, exp:'Charcoal\u2019s microscopic holes catch chemicals and smells "the way a sponge grabs spills."'},
+        {q:'Why must water be disinfected after filtering?', options:['Filters make the water dirty again','Germs are too small for any filter to catch','Disinfecting adds a nice colour','The law says filters are illegal'], answer:1, exp:'The text explains germs are far too small for a filter — so disinfection is a separate, necessary step.'}
+      ]
+    },
+    write:{
+      prompt:'Write a <b>claim–evidence–reasoning</b> paragraph (80+ words) answering: <i>Which filter design cleaned the water best, and why?</i> State your claim, give your evidence (your clarity ratings and times), and explain the reasoning — what did each layer do?',
+      starters:['Our best design was… because…','The evidence shows that… (clarity rating, time)','The charcoal layer worked like… ','Therefore, we conclude that…']
+    },
+    design:{
+      brief:'Design a <b>public-awareness artefact</b>: a labelled cross-section diagram or poster of your best filter, made for younger students. It must name every layer, show the direction of water flow with arrows, and include one "Did you know?" fact from the reading. Optional: photograph your real filter and add captions in English.',
+      criteria:['Every layer is labelled with the correct English word','Arrows clearly show the direction of water flow','It includes one accurate fact from the reading','A younger student could understand it without help','It includes our clarity ratings (the evidence)','It looks deliberate: neat, titled, and signed by the team']
+    }
+  }
+},
+{
+  id:'u2', icon:'☀️', theme:'Energy · SDG 7', title:'The Solar Kitchen',
+  drivingQ:'Can sunshine really cook food — and how hot can a pizza box get?',
+  purpose:'Discover how reflection, absorption and insulation work together to capture solar energy, and engineer a solar oven that reaches the highest possible temperature.',
+  contribution:'Solar cooking is a real technology used where fuel is scarce or expensive. Your oven models the physics behind solar power — the energy source at the heart of the UAE\u2019s Masdar City and Noor Abu Dhabi, one of the world\u2019s largest solar plants. SDG 7: Affordable and Clean Energy.',
+  efl:'You will practise <b>prediction sentences</b> with the first conditional (<i>If we angle the flap, the temperature will rise</i>) and temperature/energy vocabulary (reflect, absorb, trap, insulate, degrees).',
+  streamMap:{S:'How sunlight becomes heat; reflection and absorption', T:'Use a thermometer and record readings over time', R:'Research brief on solar energy', E:'Build and angle-tune a pizza-box oven', A:'Design an "oven user manual" with drawings', M:'Plot temperature vs. time; compare designs in °C'},
+  materials:['A pizza box (clean!)','Aluminium foil and clear plastic wrap','Black paper or card (the absorber)','Tape, ruler, wooden stick (to prop the flap)','A thermometer','Something to melt: chocolate on a cracker, or s\u2019mores'],
+  roles:['<b>Reader–Researcher</b> — finds the science of reflect/absorb/trap','<b>Recorder–Writer</b> — logs temperatures every 5 minutes','<b>Designer–Builder</b> — cuts, folds, angles and improves','<b>Speaker–Presenter</b> — presents the temperature graph'],
+  steps:['<b>Build:</b> cut a flap in the box lid, line it with foil (the mirror). Line the box floor with black paper (the absorber). Seal the flap window with plastic wrap (the trap).','<b>Predict:</b> write three "If…, then…" sentences before testing.','<b>Test:</b> place the oven in direct sun. Record the inside temperature every 5 minutes for 30 minutes.','<b>Iterate:</b> change ONE thing — flap angle, more foil, double plastic layer — and test again.','<b>Cook:</b> when your best design is ready, melt the chocolate. Time it!','<b>Conclude:</b> which change raised the temperature most, and why?'],
+  safety:'The inside of a good solar oven gets genuinely hot — handle with care. Never leave it unattended, and never use glass that could crack.',
+  finalProduct:'A working solar oven + a temperature–time graph + an illustrated one-page "user manual" in English.',
+  challenge:{
+    read:{
+      title:'Cooking with the Sky',
+      text:'<p>Every hour, the sun delivers more energy to Earth than all of humanity uses in a year. The challenge has never been the supply — it is the capture. A solar oven captures sunlight using three jobs, each done by a different material.</p><p>First, a shiny surface such as aluminium foil <em>reflects</em> sunlight, bouncing extra rays into the box like a mirror aimed at a target. Second, a dark surface <em>absorbs</em> the light and turns it into heat; black materials absorb almost all visible light, which is why a black car seat burns your legs in summer. Third, a clear layer such as plastic wrap <em>traps</em> the warm air inside, working like the glass of a greenhouse: light gets in easily, but heat struggles to get out.</p><p>Engineers in sunny countries have scaled this idea up dramatically. Solar farms in the UAE desert use thousands of mirrors and panels to power hundreds of thousands of homes. A pizza-box oven and a giant solar plant are, at heart, the same machine — one melts chocolate, the other runs a city.</p>',
+      questions:[
+        {q:'What is the main challenge with solar energy, according to the text?', options:['The sun does not produce enough energy','Capturing the energy, not the supply of it','Sunlight is dangerous to touch','Solar energy only works at night'], answer:1, exp:'The sun supplies more than enough — "the challenge has never been the supply — it is the capture."'},
+        {q:'In a solar oven, what is the job of the aluminium foil?', options:['To absorb light and become hot','To trap warm air inside','To reflect extra sunlight into the box','To keep the food clean'], answer:2, exp:'Shiny foil reflects rays into the box like a mirror.'},
+        {q:'Why is the bottom of the oven black?', options:['Black absorbs almost all visible light and turns it into heat','Black is easier to clean','Black reflects the most light','It hides burnt food'], answer:0, exp:'Dark surfaces absorb light and convert it to heat — like a black car seat in summer.'},
+        {q:'The plastic wrap works "like the glass of a greenhouse" because…', options:['it melts in the sun','it lets light in but makes it hard for heat to escape','it reflects all the sunlight away','plants grow better under it'], answer:1, exp:'Light passes in easily; heat struggles to get out — that is the greenhouse effect in miniature.'}
+      ]
+    },
+    write:{
+      prompt:'Write a short <b>science report</b> (80+ words): your hypothesis ("If…, then…"), your method (what you changed), your results (highest temperature and time), and your conclusion. Use at least two of these words correctly: <i>reflect, absorb, trap, insulate</i>.',
+      starters:['Our hypothesis was: If we…, then the temperature will…','We tested this by changing…','The highest temperature we recorded was… °C after… minutes.','This happened because the black paper… and the foil…']
+    },
+    design:{
+      brief:'Design a <b>user manual</b> for your solar oven, as if it will be sold in a shop: a product name and logo, a labelled diagram showing the reflector, absorber and trap, three numbered "How to use" steps in clear imperative English, and one safety warning. Optional: film a 60-second advert.',
+      criteria:['The three parts (reflect / absorb / trap) are labelled correctly','"How to use" steps are written as clear imperatives (Place…, Angle…, Wait…)','It includes a real temperature result as proof it works','It has a product name and a safety warning','Our temperature graph or table appears somewhere','A stranger could build or use the oven from our manual alone']
+    }
+  }
+},
+{
+  id:'u3', icon:'🌉', theme:'Structures · Engineering', title:'Bridge Works',
+  drivingQ:'What shapes make a bridge strong — and how much weight can paper really hold?',
+  purpose:'Explore how shape, not just material, creates strength. Discover why triangles and arches appear in every great bridge, then engineer a paper bridge that carries the maximum load.',
+  contribution:'Structural engineering keeps every building, bridge and tower standing. The same shape principles you test here hold up the Sheikh Zayed Bridge in Abu Dhabi — famous for its wave-like arches. Your data shows how engineers choose designs with evidence, not guesses.',
+  efl:'You will practise <b>comparatives and superlatives</b> (<i>stronger than, the strongest, twice as much weight as</i>) and structure vocabulary (beam, arch, span, load, collapse, support).',
+  streamMap:{S:'Forces: how load spreads through a shape', T:'Photograph each design; record failure points', R:'Research brief on bridge shapes', E:'Build beam, arch and folded designs; test to failure', A:'Draw your bridge designs before building them', M:'Count coins/weights held; compare loads as numbers'},
+  materials:['A4 paper (a fixed budget — e.g. 3 sheets per bridge)','Tape (a fixed length — e.g. 30 cm per bridge)','Two stacks of books (the "banks"), 20 cm apart','Coins or weights, all the same size','Ruler, camera, results table'],
+  roles:['<b>Reader–Researcher</b> — explains why triangles and arches are strong','<b>Recorder–Writer</b> — records every load until collapse','<b>Designer–Builder</b> — folds, builds and rebuilds','<b>Speaker–Presenter</b> — announces the results like a sports commentator'],
+  steps:['<b>Baseline:</b> lay one flat sheet across the gap. Add coins to the centre until it collapses. Record the number — that is the score to beat.','<b>Design:</b> sketch two stronger designs before touching the paper (fold into a beam? corrugate like a fan? curve into an arch?).','<b>Build & test:</b> same paper budget, same gap, same coin position. Test each design to failure.','<b>Iterate:</b> take your best design and improve one feature. Test again.','<b>Compare:</b> make a results chart — flat vs. beam vs. arch vs. improved.','<b>Conclude:</b> write the rule you discovered: "Shape X was strongest because…"'],
+  safety:'Coins fall when bridges collapse — keep feet clear and test over a desk, not the floor.',
+  finalProduct:'A tested paper bridge + a results chart + a "design rule" statement with comparative sentences.',
+  challenge:{
+    read:{
+      title:'The Secret Strength of Shapes',
+      text:'<p>Hold a sheet of paper flat and it droops under its own weight. Fold the same sheet into a fan of zigzag pleats and it will suddenly carry a stack of coins. Nothing about the paper changed — only its shape. This is the first secret of structural engineering: strength comes from geometry as much as from material.</p><p>Two shapes appear again and again. The <em>triangle</em> is the only shape that cannot change its angles without breaking a side, so frames built from triangles refuse to twist or lean. The <em>arch</em> works differently: it carries weight by squeezing it along its curve and pushing it out to the supports at each end, which is why stone arches built by the Romans still stand after two thousand years.</p><p>Engineers never trust a shape until they have tested it to failure. Loading a design until it collapses is not a mistake — it is the point. The number at which a structure fails tells engineers exactly how much safety margin a real bridge needs. Every elegant bridge you have ever crossed stands on a mountain of deliberate, carefully recorded collapses.</p>',
+      questions:[
+        {q:'What changed when the drooping paper became strong?', options:['Its material','Its shape','Its colour','Its weight'], answer:1, exp:'"Nothing about the paper changed — only its shape."'},
+        {q:'Why are triangles special in engineering?', options:['They are the cheapest shape to build','They cannot change their angles without breaking a side','They look the most beautiful','They weigh less than other shapes'], answer:1, exp:'A triangle\u2019s angles are locked — frames of triangles refuse to twist or lean.'},
+        {q:'How does an arch carry weight?', options:['By squeezing the load along its curve to the supports','By floating on water','By bending in the middle like a spring','By hanging from cables'], answer:0, exp:'The arch pushes the load along its curve and out to the supports at each end.'},
+        {q:'Why do engineers test designs until they collapse?', options:['Because breaking things is fun','To find out exactly how much load a design can take','Because materials are free','To avoid doing mathematics'], answer:1, exp:'The failure number tells engineers what safety margin a real structure needs.'}
+      ]
+    },
+    write:{
+      prompt:'Write a <b>results commentary</b> (80+ words) comparing your bridge designs. Use at least three comparative or superlative forms (<i>stronger than, the strongest, twice as much as, the weakest</i>). End with your design rule: what makes a paper bridge strong?',
+      starters:['The flat sheet was the weakest design: it held only…','Our arch was … times stronger than…','The strongest design of all was… It held…','Our design rule is: …, because the shape…']
+    },
+    design:{
+      brief:'Design an <b>engineer\u2019s poster</b> presenting your bridge investigation: sketches of every design tested, a bar chart of the loads they held, one photo (or drawing) of the winning bridge, and your design rule written as a headline. Imagine it hanging at a real engineering firm.',
+      criteria:['Every design tested appears with its load number','A bar chart compares the results visually','The design rule is written as a clear headline sentence','Comparative language is used correctly at least twice','The winning design has a labelled diagram','The poster has a title, team names and a tidy layout']
+    }
+  }
+},
+{
+  id:'u4', icon:'🥚', theme:'Space · Physics', title:'The Egg-Drop Lander',
+  drivingQ:'How do you land something fragile — an egg, a robot, an astronaut — without breaking it?',
+  purpose:'Investigate impact forces and how crumple zones, cushions and parachutes absorb them, then engineer a lander that protects a raw egg from a high drop.',
+  contribution:'This is a real aerospace problem: NASA\u2019s Mars rovers landed inside giant airbags, and the UAE\u2019s Hope Probe team solved the same physics to reach Mars orbit in 2021. Car crumple zones and bicycle helmets use the identical principle — spreading an impact over more time to make it survivable.',
+  efl:'You will practise <b>cause-and-effect language</b> (<i>the cotton absorbed the shock, so…; as a result…; this caused…</i>) and write a Mission Report in the past tense.',
+  streamMap:{S:'Impact force, gravity and shock absorption', T:'Film drops in slow motion to see the impact', R:'Research brief on landing technology', E:'Design and build a protective lander', A:'Name your mission; design a mission patch/logo', M:'Measure drop height; calculate the survival rate across trials'},
+  materials:['One raw egg per team (plus one spare — budget matters!)','Recyclables: cardboard, paper, cotton, straws, balloons, plastic bags','Tape and string (fixed budget)','Measuring tape; a safe drop spot agreed with your teacher','A phone for slow-motion video'],
+  roles:['<b>Reader–Researcher</b> — studies how real landers survive','<b>Recorder–Writer</b> — writes the mission log and report','<b>Designer–Builder</b> — engineers the lander','<b>Speaker–Presenter</b> — runs the countdown and presents the result'],
+  steps:['<b>Research:</b> how do real spacecraft land? (Airbags, parachutes, crumple structures, sky cranes.)','<b>Design:</b> sketch your lander and label how each part absorbs the impact.','<b>Build:</b> construct it within the materials budget. Name the mission!','<b>Test low first:</b> drop from 1 metre. Egg survives? Raise the height. Film in slow motion.','<b>Iterate:</b> after any failure, examine the wreck like an investigator: exactly where did the force reach the egg? Fix that path.','<b>Report:</b> write the mission report — height achieved, design features, what failed, what saved it.'],
+  safety:'Drop only in the agreed spot with people well clear below. Wash hands after handling raw egg, and clean any breaks immediately.',
+  finalProduct:'A tested egg lander + a slow-motion drop video + a past-tense Mission Report with a mission patch.',
+  challenge:{
+    read:{
+      title:'How to Land on Mars (and in Your Playground)',
+      text:'<p>The hardest part of a journey to Mars is not the 480 million kilometres of travel — it is the final minute. Engineers call it landing; physics calls it an impact. When a moving object stops suddenly, the force of the stop depends on time: the shorter the stop, the more violent the force. A dropped phone that hits tile stops in a fraction of a millisecond, which is why it cracks. The same phone landing on a sofa stops slowly — and survives.</p><p>Every landing technology is a trick for stretching out that stopping time. Parachutes slow the fall before impact. Airbags — used to bounce NASA\u2019s early rovers safely across the Martian surface — squash gradually, spreading the stop over precious extra milliseconds. Car crumple zones do the same job in a crash: the front of the car is designed to fold up so the passengers stop gently while the metal stops hard.</p><p>An egg-drop lander is this exact engineering problem in miniature. The egg is your astronaut. Anything you add — cotton, balloons, cardboard folds — is buying time. Every extra millisecond of stopping time is a smaller force on the shell.</p>',
+      questions:[
+        {q:'According to the text, what does the force of an impact depend on?', options:['The colour of the object','How long the object takes to stop','The temperature of the ground','The age of the object'], answer:1, exp:'"The shorter the stop, the more violent the force" — stopping time decides the force.'},
+        {q:'Why does a phone survive landing on a sofa but not on tile?', options:['Sofas are magnetic','The sofa lets the phone stop slowly','Tile makes phones heavier','The phone bounces higher on tile'], answer:1, exp:'The sofa stretches the stopping time, so the force is smaller.'},
+        {q:'How did NASA\u2019s early rovers land safely on Mars?', options:['They landed in water','Astronauts caught them','Inside airbags that squashed gradually and bounced','They never actually landed'], answer:2, exp:'Airbags spread the stop over extra milliseconds — the rovers bounced to a safe stop.'},
+        {q:'In the egg-drop challenge, what are the cotton and balloons really doing?', options:['Making the lander heavier so it falls faster','Buying extra stopping time so the force on the egg is smaller','Keeping the egg warm','Making the lander look professional'], answer:1, exp:'"Anything you add… is buying time" — more stopping time means less force on the shell.'}
+      ]
+    },
+    write:{
+      prompt:'Write your <b>Mission Report</b> (80+ words) in the past tense: mission name, drop height, what happened, and the cause-and-effect chain (<i>the balloon hit first, so it absorbed…, as a result the egg…</i>). If the egg broke, report honestly — investigators respect the truth.',
+      starters:['Mission … launched from a height of … metres.','On impact, the … hit the ground first, so…','As a result, the force on the egg…','If we flew this mission again, we would… because…']
+    },
+    design:{
+      brief:'Design a <b>mission showcase</b>: a labelled diagram of your lander showing exactly how each part stretches the stopping time, plus a mission patch (logo) with the mission name. Optional gold level: edit your slow-motion footage into a 30-second "mission film" with English captions.',
+      criteria:['Each protective part is labelled with its job (absorb / slow / spread)','The physics idea — buying stopping time — is stated somewhere in our own words','The mission has a name and a designed patch/logo','The drop height and result (survived / broke) are reported honestly','The diagram is clear enough for another team to copy our design','Cause-and-effect language appears at least twice']
+    }
+  }
+},
+{
+  id:'u5', icon:'🌱', theme:'Food security · SDG 2', title:'The Desert Farm',
+  drivingQ:'How can we grow food in the desert using as little water as possible?',
+  purpose:'Investigate what plants really need by running a fair-test growing experiment, and explore how greenhouses and smart watering let dry countries grow their own food.',
+  contribution:'The UAE imports most of its food, so growing more locally — with less water — is a national mission. High-tech farms in Abu Dhabi already grow tomatoes and leafy greens in the desert using a fraction of normal water. Your experiment models exactly the questions those agri-engineers ask. SDG 2: Zero Hunger.',
+  efl:'You will keep an <b>observation journal</b> — short daily entries in the past tense (<i>Day 4: the cress in the sealed bag grew 8&nbsp;mm; the open cup stayed dry</i>) — the genre real scientists use every day.',
+  streamMap:{S:'What seeds need: water, light, warmth — tested fairly', T:'Photograph growth daily; measure with a ruler', R:'Research brief on desert farming', E:'Build a mini bottle-greenhouse that recycles its own water', A:'Turn your journal into an illustrated growth timeline', M:'Measure heights in mm; average your plants; graph growth over days'},
+  materials:['Fast seeds: cress, beans or lentils','Cotton pads or tissue as a growing bed','Clear cups and one clear bottle or zip-bag (the greenhouse)','Water, a spoon (for equal watering), a ruler','Labels for each cup — fair tests need clear labels'],
+  roles:['<b>Reader–Researcher</b> — leads research on what plants need','<b>Recorder–Writer</b> — keeps the daily journal','<b>Designer–Builder</b> — builds the greenhouse and watering system','<b>Speaker–Presenter</b> — presents the growth graph at the end'],
+  steps:['<b>Set up a fair test:</b> identical cups, identical seeds. Change ONE variable per cup: (a) normal watering, (b) half water, (c) half water inside a sealed clear bag or bottle — the greenhouse.','<b>Predict:</b> which cup will grow best? Write your hypothesis.','<b>Observe daily:</b> measure every plant in millimetres; write one journal line per cup per day; photograph.','<b>Watch the greenhouse:</b> notice the water droplets on the plastic — where did they come from? That is your water being recycled.','<b>Graph:</b> after 7–10 days, plot growth curves for each cup.','<b>Conclude:</b> which setup grew the most per drop of water — and what does that mean for desert farming?'],
+  safety:'Wash hands after handling soil or seeds. Do not eat the sprouts unless your teacher confirms they are food-safe seeds grown hygienically.',
+  finalProduct:'A living mini-farm + a daily observation journal + a growth graph + a recommendation sentence for desert farmers.',
+  challenge:{
+    read:{
+      title:'Farming Where It Never Rains',
+      text:'<p>A tomato grown in an open desert field is mostly a machine for losing water: the sun pulls moisture out of the soil and the leaves faster than roots can drink it. For decades, the answer in hot countries was simply to import food from somewhere rainier. Today, engineers are trying a different answer — change the environment around the plant instead of the plant\u2019s location.</p><p>A greenhouse is the simplest version of this idea. Its clear walls let sunlight in but stop the wind and hold the moist air, so water that evaporates from the soil and leaves condenses on the cool plastic and drips back down. The plant drinks the same water again and again. Modern desert farms push this further: some grow plants with their roots in nutrient-rich water instead of soil, using up to ninety percent less water than an open field, while sensors decide exactly when and how much to water — no guessing, no waste.</p><p>The surprising conclusion is that the desert may be a good place to farm after all: sunshine is the one ingredient it has in unlimited supply. The scarce ingredient, water, is exactly what clever design can recycle.</p>',
+      questions:[
+        {q:'Why is an open desert field a hard place to grow a tomato?', options:['Tomatoes dislike sunshine','The sun pulls water out faster than the roots can drink','Deserts have too much rain','The soil is too cold'], answer:1, exp:'The plant is "a machine for losing water" — evaporation beats the roots.'},
+        {q:'How does a greenhouse recycle water?', options:['It pumps in seawater','Evaporated water condenses on the plastic and drips back down','Robots collect rain from outside','The plants stop needing water'], answer:1, exp:'Moist air condenses on the cool clear walls and returns to the soil — the plant drinks it again.'},
+        {q:'How much less water can modern soil-free desert farms use compared to open fields?', options:['About 10% less','About half','Up to 90% less','They use no water at all'], answer:2, exp:'The text says up to ninety percent less water.'},
+        {q:'Why might the desert actually be a good place to farm?', options:['Deserts have the best soil in the world','Sunshine is unlimited there, and water can be recycled by design','Food grows faster in the heat automatically','There are no insects in the desert'], answer:1, exp:'The one unlimited ingredient is sunshine; clever design recycles the scarce one, water.'}
+      ]
+    },
+    write:{
+      prompt:'Using your journal, write a <b>science summary</b> (80+ words) in the past tense: what you tested, what you observed day by day (pick the key days), and your conclusion — which setup grew the most per drop of water? Finish with one recommendation sentence for a desert farmer.',
+      starters:['We planted … seeds in three cups and changed only…','By Day 4, the greenhouse cup had grown…, while…','We noticed droplets on the plastic, which showed that…','Our recommendation for desert farmers is… because…']
+    },
+    design:{
+      brief:'Design an <b>illustrated growth timeline</b>: your daily photos or drawings arranged along a line, each with its measurement and one journal sentence, ending with your growth graph and your recommendation as a headline. Make it beautiful enough to hang in the science corridor.',
+      criteria:['At least five days of observations appear in order','Every entry has a measurement in millimetres','The greenhouse water-recycling moment is shown or explained','The growth graph compares all cups','The final recommendation is written as a clear headline','Past-tense journal language is used correctly']
+    }
+  }
+},
+{
+  id:'u6', icon:'♻️', theme:'Sustainability · SDG 12', title:'Trash to Treasure',
+  drivingQ:'Can you invent something genuinely useful out of things people throw away?',
+  purpose:'Apply the full design cycle — empathise, define, ideate, prototype, test — to turn waste materials into a working product, then sell the idea with a persuasive pitch.',
+  contribution:'The average person produces over a kilogram of waste every day, and most packaging is used once and thrown away. Reuse and redesign are core to the circular economy the UAE is building toward its Net Zero 2050 goal. Your invention is a small, real answer to SDG 12: Responsible Consumption and Production.',
+  efl:'This is the most language-rich mission: you will write and perform a <b>60-second persuasive pitch</b> — problem, solution, demonstration, call to action — the same genre used on shows like Shark Tank and at science fairs worldwide.',
+  streamMap:{S:'Material properties: what is each waste item good at?', T:'Film and edit your pitch or product demo', R:'Research brief on the circular economy', E:'Prototype a working product from waste', A:'Product design, branding, and the art of persuasion', M:'Count the waste items saved; estimate impact if the whole school did it'},
+  materials:['Clean waste from home: bottles, boxes, caps, cans, fabric, cardboard tubes','Scissors, tape, glue, string, markers','A "problem wall": sticky notes of everyday annoyances to solve','A phone for the pitch video'],
+  roles:['<b>Reader–Researcher</b> — investigates the problem you chose','<b>Recorder–Writer</b> — drafts the pitch script','<b>Designer–Builder</b> — leads the prototype','<b>Speaker–Presenter</b> — delivers the pitch (everyone speaks at least one line)'],
+  steps:['<b>Empathise & define:</b> list real everyday problems (tangled cables, hot desks, lost pencils, thirsty plants during holidays). Choose one.','<b>Ideate:</b> sketch three different inventions from your waste pile that could solve it. No judging yet — quantity first.','<b>Select & prototype:</b> pick the strongest idea and build it. It must actually work, not just look like it works.','<b>Test with users:</b> give it to another team to use. Watch silently. Record what confuses or fails.','<b>Iterate:</b> fix the top problem users found.','<b>Pitch:</b> write and rehearse the 60-second pitch: the problem, your solution, a live demonstration, and a call to action.'],
+  safety:'Wash all containers; adult help for cutting cans or hard plastic — cut edges are sharp. Tape over any sharp edge before user testing.',
+  finalProduct:'A working invention made of waste + a brand name and logo + a rehearsed 60-second pitch (live or on video).',
+  challenge:{
+    read:{
+      title:'The Economy That Throws Nothing Away',
+      text:'<p>Pick up any plastic bottle and you are holding a strange story: material engineered to last for centuries, designed to be used for minutes. This is the "take–make–throw" economy, and its arithmetic is brutal — most packaging is used once, and much of it ends up buried or burned within a year of being made.</p><p>The alternative has a name: the circular economy. Instead of a straight line from factory to bin, materials move in loops — repaired, refilled, reused, and only recycled as a last resort. The order matters, because recycling, useful as it is, still costs energy to melt and remake things. Reuse costs almost nothing: a jar becomes a pencil pot in ten seconds, saving all the energy a recycling plant would have spent.</p><p>Designers are the key players in this loop. A product designed with screws instead of glue can be repaired; a package designed to be refilled never becomes waste at all. Inventors who look at rubbish and see raw material are not just tidying up — they are practising the most in-demand design skill of the next fifty years.</p>',
+      questions:[
+        {q:'What is the "strange story" of the plastic bottle?', options:['It is made from recycled glass','It lasts centuries but is used for minutes','It cannot hold water for long','It is grown on farms'], answer:1, exp:'Engineered to last centuries, designed to be used for minutes — that mismatch is the problem.'},
+        {q:'In a circular economy, how do materials move?', options:['In a straight line from factory to bin','In loops: repaired, refilled, reused, then recycled','Only by ship','From bin to factory to bin'], answer:1, exp:'Loops replace the straight line — repair, refill, reuse, and recycle only as a last resort.'},
+        {q:'Why is reuse better than recycling, according to the text?', options:['Recycling is illegal','Reuse costs almost no energy, while recycling must melt and remake things','Reused things are always prettier','Recycling only works for paper'], answer:1, exp:'A jar becomes a pencil pot in seconds; recycling spends energy melting and remaking.'},
+        {q:'Why are designers "the key players" in the circular economy?', options:['They decide the colours of products','Design choices (screws vs. glue, refillable packages) decide whether a product can loop','They own the recycling plants','They write the laws about waste'], answer:1, exp:'Repairability and refillability are decided at the design stage — before anything becomes waste.'}
+      ]
+    },
+    write:{
+      prompt:'Write your <b>60-second pitch script</b> (80+ words) with four parts: the problem (make us feel it), your solution (name it!), the demonstration (what we will see), and the call to action. Use at least two persuasive devices: a question to the audience, a number, or the word <i>imagine</i>.',
+      starters:['Have you ever…? Every day, people…','Meet [product name] — made entirely from…','Watch what happens when I…','Join us: if every class in this school…, we would save…']
+    },
+    design:{
+      brief:'Design the <b>launch package</b> for your invention: the working prototype, a brand name and logo drawn or printed, and the pitch — performed live or filmed as a 60-second video with every team member speaking. Gold level: add a poster showing how your product loops (reuse → repair → recycle).',
+      criteria:['The prototype genuinely works — we demonstrated it','It is made mostly of reused waste materials','The pitch has all four parts: problem, solution, demo, call to action','Every team member speaks at least one line','The brand name and logo appear on the product or poster','We stated the impact with a number (items saved, uses per week…)']
+    }
+  }
+}
+];
+
+/* Spark Lab — quick smart experiments for fun + a language twist */
+const STEM_FUN = [
+ {icon:'🍇', title:'Dancing Raisins', tag:'Density · 5 min', tryIt:'Drop raisins into a glass of clear fizzy water and watch them dive and rise for several minutes.', science:'Bubbles of carbon-dioxide gas stick to the raisin\u2019s wrinkly skin and lift it like tiny balloons; at the surface the bubbles pop and the raisin sinks again — a buoyancy cycle.', efl:'Commentate the action live using the present continuous: "It\u2019s rising… the bubbles are popping… it\u2019s sinking again!"'},
+ {icon:'🥛', title:'Colour-Storm Milk', tag:'Surface tension · 5 min', tryIt:'Pour milk in a plate, add drops of food colouring, then touch the centre with a cotton bud dipped in dish soap.', science:'Soap breaks the milk\u2019s surface tension and chases the fat molecules; the colours race outward, making the invisible chemistry visible.', efl:'Write three "when" sentences: "When the soap touches the milk, the colours explode outward."'},
+ {icon:'🌈', title:'Density Rainbow', tag:'Density · 10 min', tryIt:'Slowly layer honey, dish soap, coloured water and oil in a clear glass — pour each over the back of a spoon.', science:'Each liquid has a different density (mass packed into the same space), so they stack instead of mixing — heaviest at the bottom.', efl:'Practise superlatives: "Honey is the densest; oil is the lightest of the four."'},
+ {icon:'🍋', title:'Lemon Battery', tag:'Electrochemistry · 15 min', tryIt:'Push a copper coin and a zinc-coated nail into a lemon, connect wires to a small LED or buzzer. Add more lemons in a chain for more power.', science:'Two different metals in the lemon\u2019s acid swap electrons at different rates — the imbalance pushes a small electric current through the wire.', efl:'Write the method as numbered imperatives: "Insert the nail. Connect the wire. Observe the light."'},
+ {icon:'💎', title:'Overnight Crystals', tag:'Chemistry · 2 days', tryIt:'Stir salt or sugar into very warm water until no more dissolves, hang a string in the jar, and wait a day or two.', science:'As the water cools and evaporates it can hold less dissolved solid, so particles rejoin in ordered patterns — crystals are geometry you can grow.', efl:'Keep a two-day mini-journal in the past tense: "By morning, small cubes had formed on the string."'},
+ {icon:'🎈', title:'Balloon Rocket', tag:'Forces · 10 min', tryIt:'Thread a straw onto a long string stretched across the room, tape an inflated (not tied!) balloon to the straw, and release.', science:'Air rushes backward out of the balloon and the balloon rushes forward — Newton\u2019s third law: every action has an equal and opposite reaction.', efl:'Make predictions with "will": "If we add a second balloon, it will travel further." Then test your sentence!'},
+ {icon:'🚁', title:'Paper Helicopter', tag:'Air resistance · 10 min', tryIt:'Cut and fold a paper strip into a two-blade "helicopter", add a paper-clip weight, and drop it from height — it spins all the way down.', science:'Air pushes up against the falling blades; because the blades are angled, the push turns into spin, which slows the fall — the same idea as a maple seed.', efl:'Comparative testing talk: "The longer blades spin more slowly than the short ones."'},
+ {icon:'🕵️', title:'Invisible Ink', tag:'Chemistry · 15 min', tryIt:'Write a secret message with lemon juice and a cotton bud. Let it dry, then have an adult warm the paper near a lamp or iron — the message appears in brown.', science:'Lemon juice weakens the paper fibres; gentle heat makes those spots oxidise (react with air) and darken before the rest of the paper does.', efl:'Exchange secret messages in English — the reader must reply to what the message says. Reading with real stakes!'},
+ {icon:'🧪', title:'Oobleck', tag:'States of matter · 10 min', tryIt:'Mix roughly two parts cornstarch with one part water. Punch it — solid. Let your hand rest — it swallows you slowly.', science:'Oobleck is a non-Newtonian fluid: under sudden force its particles jam together like a solid; under gentle force they slide past each other like a liquid.', efl:'Describe the paradox with contrast linkers: "Although it looks like a liquid, it behaves like a solid when you hit it."'},
+ {icon:'🧭', title:'DIY Compass', tag:'Magnetism · 10 min', tryIt:'Stroke a needle with a magnet 30 times in one direction, lay it on a small piece of floating cork or leaf in a bowl of water — it swings to point north.', science:'Stroking aligns the needle\u2019s magnetic domains so it becomes a weak magnet; floating freely, it rotates to line up with Earth\u2019s magnetic field.', efl:'Give and follow directions: "The needle points north, so the window is east of us." Navigate the classroom in English.'},
+ {icon:'🚀', title:'Straw Rockets', tag:'Projectiles · 15 min', tryIt:'Roll a paper rocket around a pencil, seal the nose, slide it over a straw and launch with one sharp puff. Measure every flight.', science:'Your puff pressurises the air inside; the rocket rides the escaping air. Launch angle matters — around 45° gives the longest flight.', efl:'Run a measured tournament and report results with numbers: "Rocket 2 flew 3.4 metres — 60 cm further than Rocket 1."'},
+ {icon:'🌪️', title:'Bottle Tornado', tag:'Fluid dynamics · 10 min', tryIt:'Fill a bottle two-thirds with water (a drop of soap and glitter helps), swirl it hard in circles, then hold it upside down — a spinning vortex appears.', science:'Swirling gives the water rotational momentum; as it drains, the spin tightens into a funnel because the water speeds up as it moves toward the centre — like a real tornado.', efl:'Write a mini news report: "A tornado was spotted in Grade 9 today. Witnesses said…" — past simple and passive voice in action.'}
+];
+
+function findStemUnit(id){ return STEM_UNITS.find(u=>u.id===id); }
+
+/* drafts for stem writing/design boxes */
+function stemDraftKey(id){ return (typeof sid==='function'? sid() : 'anon')+'::stem_'+id; }
+function stemGetDraft(id){ return (Store.get('ican_stem_drafts')||{})[stemDraftKey(id)]||''; }
+function stemSaveDraft(id, elId){ const all=Store.get('ican_stem_drafts')||{}; const el=document.getElementById(elId); if(!el) return; all[stemDraftKey(id)]=el.value; Store.set('ican_stem_drafts',all); }
+function stemWordCount(t){ return (t||'').trim()? (t||'').trim().split(/\s+/).length : 0; }
+function stemUpdateWc(unitId){
+  const el=document.getElementById('stemW_'+unitId); const out=document.getElementById('stemWc_'+unitId);
+  if(!el||!out) return; const n=stemWordCount(el.value);
+  out.innerHTML = n+' words '+(n>=80?'<span style="color:var(--teal-dk)">✓ target reached</span>':'<span style="color:var(--muted)">(target: 80+)</span>');
+}
+
+/* ---------------- ROUTES ---------------- */
+ROUTES.stemlab = function(){
+  const rwdRow = [
+    ['📖','READ','Investigate','Every mission opens with real research reading: texts, data and diagrams you read because the build depends on it. This is the R in STREAM — reading with a purpose.','#12a585'],
+    ['✍️','WRITE','Reason','Hypotheses, observation journals, claim–evidence–reasoning paragraphs, reports and pitches — writing is how scientists think on paper.','#e6464b'],
+    ['🎨','DESIGN','Create','The build itself plus the multimodal product that explains it: diagrams, posters, manuals, videos, pitches. Design is where all the letters meet.','#8B5CF6']
+  ];
+  app().innerHTML = `
+  <div class="wrap screen">
+    <button class="back" onclick="go('dashboard')">← Home</button>
+    <div class="stem-hero">
+      <div class="stem-hero-txt">
+        <div class="stem-kicker">iCAN Academy · Science Strand</div>
+        <h1>🚀 STEM·STREAM Lab</h1>
+        <p class="stem-tag">Read it. Write it. <b>Design it.</b></p>
+        <p class="stem-sub">Six real-world missions where English is the language of science: research the problem, reason in writing, then engineer and present a solution. Every mission ends in an RWD Challenge and a certificate.</p>
+      </div>
+      <div class="stem-hero-stats">
+        <div><b>6</b><span>missions</span></div>
+        <div><b>3</b><span>stages each<br>R · W · D</span></div>
+        <div><b>12</b><span>Spark Lab<br>experiments</span></div>
+        <div><b>🏅</b><span>certificate<br>per mission</span></div>
+      </div>
+    </div>
+
+    <h2 class="stem-h2">What the letters mean — and how they work <i>together</i></h2>
+    <p style="color:var(--muted);max-width:760px;margin:4px 0 12px"><b>STEM</b> integrates Science, Technology, Engineering and Maths to solve real problems. <b>STREAM</b> adds the two letters that make it a <i>literacy</i>: <b>R</b>eading (research) and <b>A</b>rts (design &amp; communication). In this Lab, no letter works alone — a mission is complete only when all of them have done their job on the same problem.</p>
+    <div class="stem-letters">
+      ${STEM_LETTERS.map(x=>`<div class="stem-letter" style="--lc:${x.color}"><div class="sl-big">${x.l}</div><div class="sl-word">${x.word}</div><div class="sl-desc">${x.desc}</div>${(x.l==='R'||x.l==='A')?'<div class="sl-badge">the literacy letter</div>':''}</div>`).join('')}
+    </div>
+
+    <h2 class="stem-h2">How this fits the RWD framework</h2>
+    <p style="color:var(--muted);max-width:760px;margin:4px 0 12px">STEM gives RWD its <b>problems</b>; RWD gives STREAM its <b>literacy engine</b>. Each mission runs the full cycle — and in the Challenge, all three stages are scored, because in this Lab reading and writing are not the wrapper around the build: they are part of the science.</p>
+    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+      ${rwdRow.map(r=>`<div class="card" style="border-top:5px solid ${r[4]}"><div style="font-size:1.6rem">${r[0]}</div><h3 style="font-size:1.15rem;margin:4px 0 2px">${r[1]} <span style="font-family:Lexend;font-size:.8rem;color:var(--muted);font-weight:400">→ ${r[2]}</span></h3><p style="font-size:.88rem;color:var(--slate);margin:6px 0 0">${r[3]}</p></div>`).join('')}
+    </div>
+
+    <div class="card" style="margin-top:18px;background:#fbfcff">
+      <h3 style="font-size:1.15rem;margin-top:0">📋 Course specification</h3>
+      <div class="grid c2" style="gap:14px">
+        <div>
+          <b style="font-size:.85rem;color:var(--ink)">Objectives — by the end of this course you will:</b>
+          <ul style="margin:6px 0 0;padding-left:18px;color:var(--slate);font-size:.9rem">${STEM_OBJECTIVES.map(o=>`<li style="margin:5px 0">${o}</li>`).join('')}</ul>
+        </div>
+        <div style="font-size:.9rem;color:var(--slate)">
+          <b style="font-size:.85rem;color:var(--ink)">How it runs</b>
+          <p style="margin:6px 0"><b>Format:</b> 6 missions · one per week or fortnight · teams of 4 with rotating roles (Reader–Researcher, Recorder–Writer, Designer–Builder, Speaker–Presenter).</p>
+          <p style="margin:6px 0"><b>Each mission:</b> briefing → research reading → hands-on experiment (iterate!) → RWD Challenge → certificate.</p>
+          <p style="margin:6px 0"><b>Challenge scoring:</b> Read 25% · Write 35% · Design 40% — every literacy is a scored event.</p>
+          <p style="margin:6px 0"><b>Grand finale:</b> missions build toward an inter-class or inter-school STREAM Challenge, where teams compete across the same three stages.</p>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="stem-h2" style="margin-top:26px">🛰️ The Missions</h2>
+    <div class="grid c2" style="margin-top:8px">
+      ${STEM_UNITS.map((u,i)=>`
+        <div class="item-row stem-unit-card" style="flex-direction:column;align-items:flex-start">
+          <div style="display:flex;justify-content:space-between;width:100%;align-items:center"><div style="font-size:2rem">${u.icon}</div><span class="stem-mnum">Mission ${i+1}</span></div>
+          <span class="genre-tag">${u.theme}</span>
+          <h3 style="font-size:1.2rem;margin:2px 0">${u.title}</h3>
+          <p style="font-size:.86rem;color:var(--muted);margin:2px 0 0"><i>${u.drivingQ}</i></p>
+          <div class="meta">${typeof doneTag==='function'?doneTag('STEM·STREAM',u.title):''}</div>
+          <button class="btn sm" style="margin-top:10px" onclick="go('stemUnit','${u.id}')">Open mission →</button>
+        </div>`).join('')}
+    </div>
+
+    <div class="stem-spark-banner" onclick="go('stemFun')">
+      <div><div style="font-size:2rem">⚡</div><h3 style="color:#fff;font-size:1.3rem;margin:4px 0 2px">Spark Lab — smart ideas to try for fun</h3>
+      <p style="margin:0;font-size:.9rem;opacity:.92">Twelve quick experiments — dancing raisins, lemon batteries, bottle tornadoes — each with the science explained and an English twist. No grades, just wonder.</p></div>
+      <span class="btn sm" style="background:#fff;color:var(--ink);white-space:nowrap">Enter Spark Lab →</span>
+    </div>
+  </div>`;
+};
+
+ROUTES.stemUnit = function(id){
+  const u=findStemUnit(id); if(!u){ go('stemlab'); return; }
+  const c=u.challenge;
+  const wDraft=stemGetDraft(id+'_w'), dDraft=stemGetDraft(id+'_d');
+  app().innerHTML = `
+  <div class="wrap screen">
+    <button class="back" onclick="go('stemlab')">← STEM·STREAM Lab</button>
+    <div style="font-size:2.2rem">${u.icon}</div>
+    <span class="genre-tag">${u.theme}</span>
+    <h1 style="font-size:2rem">${u.title}</h1>
+    <div class="card" style="border-color:var(--coral)"><p style="margin:0"><b>Driving question.</b> <i>${u.drivingQ}</i></p></div>
+
+    <div class="grid c2" style="margin-top:16px">
+      <div class="card"><h3 style="font-size:1.05rem;margin-top:0">🎯 Purpose</h3><p style="font-size:.9rem;color:var(--slate);margin:0">${u.purpose}</p></div>
+      <div class="card"><h3 style="font-size:1.05rem;margin-top:0">🌍 Why it matters</h3><p style="font-size:.9rem;color:var(--slate);margin:0">${u.contribution}</p></div>
+    </div>
+    <div class="card" style="margin-top:14px;border-left:5px solid var(--teal)"><h3 style="font-size:1.05rem;margin-top:0">🗣️ The English connection</h3><p style="font-size:.9rem;color:var(--slate);margin:0">${u.efl}</p></div>
+
+    <h3 class="sub" style="margin-top:22px">The STREAM map — every letter has a job</h3>
+    <div class="stem-map">${Object.keys(u.streamMap).map(k=>{ const L=STEM_LETTERS.find(x=>x.l===k); return `<div class="stem-map-chip" style="--lc:${L.color}"><b>${k}</b><span>${u.streamMap[k]}</span></div>`;}).join('')}</div>
+
+    <div class="grid c2" style="margin-top:18px">
+      <div class="card"><h3 style="font-size:1.05rem;margin-top:0">👥 Who is involved</h3><ul style="margin:0;padding-left:18px;font-size:.9rem;color:var(--slate)">${u.roles.map(r=>`<li style="margin:5px 0">${r}</li>`).join('')}</ul><p class="note" style="margin:8px 0 0">Rotate roles between missions so everyone plays every part.</p></div>
+      <div class="card"><h3 style="font-size:1.05rem;margin-top:0">🧰 Materials</h3><ul style="margin:0;padding-left:18px;font-size:.9rem;color:var(--slate)">${u.materials.map(m=>`<li style="margin:5px 0">${m}</li>`).join('')}</ul></div>
+    </div>
+
+    <h3 class="sub" style="margin-top:22px">🔬 How to run the experiment</h3>
+    <div class="teach"><ol style="margin:0;padding-left:20px">${u.steps.map(s=>`<li style="margin:8px 0">${s}</li>`).join('')}</ol></div>
+    <div class="card" style="margin-top:10px;background:#fff8f0;border-color:#f0c48a"><p style="margin:0;font-size:.88rem"><b>⚠️ Safety.</b> ${u.safety}</p></div>
+    <div class="card" style="margin-top:10px;border-left:5px solid var(--amber)"><p style="margin:0;font-size:.92rem"><b>🏁 Final product.</b> ${u.finalProduct}</p></div>
+
+    <div class="stem-ch-head"><h2>🏆 The RWD Challenge</h2><p>Three stages, all scored: <b>Read 25%</b> · <b>Write 35%</b> · <b>Design 40%</b>. Complete all three, then submit for your mission certificate.</p></div>
+
+    <div class="stem-stage" style="--sc:#12a585">
+      <h3><span class="stem-stage-n">1</span> 📖 READ — ${c.read.title}</h3>
+      <div class="card" style="line-height:1.7">${c.read.text}</div>
+      <div id="stemQuiz" style="margin-top:12px">${c.read.questions.map((q,i)=>`
+        <div class="q" data-si="${i}"><div class="qhead">${i+1}. ${q.q}</div>
+          ${q.options.map((o,j)=>`<label class="opt"><input type="radio" name="sq${i}" value="${j}"><span>${o}</span></label>`).join('')}
+          <div class="feedback hidden"></div></div>`).join('')}
+      </div>
+    </div>
+
+    <div class="stem-stage" style="--sc:#e6464b">
+      <h3><span class="stem-stage-n">2</span> ✍️ WRITE — reason like a scientist</h3>
+      <p style="font-size:.92rem;color:var(--slate)">${c.write.prompt}</p>
+      <div style="background:var(--mist);border-radius:10px;padding:10px 14px;margin:8px 0"><b style="font-size:.8rem;color:var(--ink)">Sentence starters</b><ul style="margin:4px 0 0;padding-left:18px;font-size:.86rem;color:var(--slate)">${c.write.starters.map(s=>`<li style="margin:3px 0">${s}</li>`).join('')}</ul></div>
+      <div class="field"><label>Your writing (saves automatically)</label>
+        <textarea id="stemW_${u.id}" style="min-height:150px" oninput="stemSaveDraft('${u.id}_w','stemW_${u.id}');stemUpdateWc('${u.id}')" placeholder="Write here…">${esc(wDraft)}</textarea></div>
+      <div id="stemWc_${u.id}" style="font-size:.85rem;color:var(--muted)"></div>
+    </div>
+
+    <div class="stem-stage" style="--sc:#8B5CF6">
+      <h3><span class="stem-stage-n">3</span> 🎨 DESIGN — make it and show it</h3>
+      <p style="font-size:.92rem;color:var(--slate)"><b>The brief.</b> ${c.design.brief}</p>
+      <div class="field" style="margin-top:10px"><label>Describe your design / artefact (what you made, how it works, what you would improve)</label>
+        <textarea id="stemD_${u.id}" style="min-height:110px" oninput="stemSaveDraft('${u.id}_d','stemD_${u.id}')" placeholder="Describe what your team made…">${esc(dDraft)}</textarea></div>
+      <p class="note">Attach a photo or file of your artefact: <input type="file" id="stemF_${u.id}" accept="image/*,.pdf,.ppt,.pptx,.mp4" style="font-size:.85rem"> — the filename is recorded with your submission.</p>
+      <b style="font-size:.85rem;color:var(--ink)">Self-check — tick what your design truly achieves:</b>
+      <ul class="rubric" id="stemCrit_${u.id}">${c.design.criteria.map((cr,i)=>`<li><input type="checkbox" id="scr_${u.id}_${i}"><label for="scr_${u.id}_${i}">${cr}</label></li>`).join('')}</ul>
+    </div>
+
+    <button class="btn teal" style="width:100%;margin-top:14px" onclick="stemSubmit('${u.id}')">Submit the RWD Challenge →</button>
+    <div id="stemResult" style="margin-top:14px"></div>
+  </div>`;
+  stemUpdateWc(u.id);
+};
+
+function stemSubmit(id){
+  const u=findStemUnit(id); if(!u) return; const c=u.challenge;
+  /* READ — auto-mark MCQs */
+  let rScore=0; const rMax=c.read.questions.length; let unanswered=0;
+  c.read.questions.forEach((q,i)=>{
+    const qEl=document.querySelector(`.q[data-si="${i}"]`); if(!qEl) return;
+    const sel=qEl.querySelector(`input[name="sq${i}"]:checked`); const chosen=sel? +sel.value : -1;
+    if(chosen===-1) unanswered++;
+    const fb=qEl.querySelector('.feedback'); fb.classList.remove('hidden');
+    qEl.querySelectorAll('.opt').forEach((o,j)=>{ o.classList.remove('correct','wrong'); if(j===q.answer) o.classList.add('correct'); if(j===chosen&&chosen!==q.answer) o.classList.add('wrong'); });
+    if(chosen===q.answer){ rScore++; fb.classList.add('good'); fb.textContent='✓ Correct. '+q.exp; }
+    else { fb.classList.remove('good'); fb.textContent=(chosen===-1?'No answer chosen. ':'Not quite. ')+q.exp; }
+  });
+  /* WRITE — words + reasoning language */
+  const wEl=document.getElementById('stemW_'+id); const wTxt=wEl?wEl.value:''; const words=stemWordCount(wTxt);
+  const hasReason=/\b(because|so |therefore|as a result|which means|this shows)\b/i.test(wTxt);
+  let wScore = words>=80 ? (hasReason?4:3) : words>=40 ? 2 : words>0 ? 1 : 0; const wMax=4;
+  /* DESIGN — description + self-checked criteria */
+  const dEl=document.getElementById('stemD_'+id); const dTxt=dEl?dEl.value:''; const dWords=stemWordCount(dTxt);
+  const crits=Array.from(document.querySelectorAll('#stemCrit_'+id+' input')).filter(x=>x.checked).length;
+  const critMax=c.design.criteria.length;
+  let dScore=(dWords>=30?2:dWords>0?1:0)+Math.round(crits/critMax*4); const dMax=6;
+  const fEl=document.getElementById('stemF_'+id); const fname=(fEl&&fEl.files&&fEl.files[0])?fEl.files[0].name:'';
+  /* Weighted total: R 25 · W 35 · D 40 */
+  const pct=Math.round((rScore/rMax)*25 + (wScore/wMax)*35 + (dScore/dMax)*40);
+  const tier = pct>=85?'Outstanding':pct>=65?'At-level':'Emerging';
+  const box=document.getElementById('stemResult');
+  const bar=(lab,val,max,col)=>`<div style="margin:6px 0"><div style="display:flex;justify-content:space-between;font-size:.82rem"><b>${lab}</b><span>${val}/${max}</span></div><div style="background:var(--mist);border-radius:6px;height:9px"><div style="width:${Math.round(val/max*100)}%;background:${col};height:9px;border-radius:6px"></div></div></div>`;
+  box.innerHTML=`<div class="card" style="border-color:var(--teal)">
+    <h3 style="margin-top:0">Mission result: ${pct}% · <span style="color:${pct>=85?'var(--teal-dk)':pct>=65?'#b8860b':'var(--coral-dk)'}">${tier}</span></h3>
+    ${bar('📖 Read (25%)',rScore,rMax,'#12a585')}
+    ${bar('✍️ Write (35%)',wScore,wMax,'#e6464b')}
+    ${bar('🎨 Design (40%)',dScore,dMax,'#8B5CF6')}
+    <p style="font-size:.88rem;color:var(--slate);margin:10px 0 0">
+      ${unanswered?`⚠️ ${unanswered} reading question(s) unanswered. `:''}
+      ${words<80?`✍️ Your writing is ${words} words — reach 80+ for full credit. `:''}
+      ${words>=80&&!hasReason?`✍️ Strong length — now add reasoning language (<i>because, therefore, as a result</i>). `:''}
+      ${dWords<30?`🎨 Describe your artefact in a little more detail (30+ words). `:''}
+      ${crits<critMax?`🎨 ${critMax-crits} self-check criteria still unticked — can you improve the design to earn them honestly? `:''}
+      ${pct>=85?'🏅 Outstanding mission — a certificate has been added to My Certificates.':'A certificate for this attempt has been saved — you can improve and resubmit any time.'}
+      ${fname?`<br>📎 Attached: <b>${esc(fname)}</b>`:''}
+    </p></div>`;
+  try{ saveResult({date:Date.now(), name:SESSION?SESSION.name:'', class:SESSION?SESSION.class:'', skill:'STEM·STREAM', activity:u.title, score:pct, max:100, percent:pct, words:words, detail:`R ${rScore}/${rMax} · W ${wScore}/${wMax} · D ${dScore}/${dMax}${fname?' · file: '+fname:''}`}); }catch(e){}
+  try{ box.scrollIntoView({behavior:'smooth'}); }catch(e){}
+}
+
+ROUTES.stemFun = function(){
+  app().innerHTML = `
+  <div class="wrap screen">
+    <button class="back" onclick="go('stemlab')">← STEM·STREAM Lab</button>
+    <h1 style="font-size:2.2rem">⚡ Spark Lab</h1>
+    <p style="color:var(--muted);max-width:720px">Smart, quick STEM ideas to experiment with and enjoy — kitchen-table science with real explanations. Each card tells you how to try it, why it works, and an <b>English twist</b> that turns the wonder into language practice. No scores here; curiosity is the point.</p>
+    <p class="note" style="max-width:720px">Always check with an adult before using heat, sharp tools or anything you might taste. Scientists are careful people.</p>
+    <div class="grid c2" style="margin-top:14px">
+      ${STEM_FUN.map(f=>`
+        <div class="card stem-fun-card">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:1.9rem">${f.icon}</div><span class="genre-tag">${f.tag}</span></div>
+          <h3 style="font-size:1.15rem;margin:6px 0 4px">${f.title}</h3>
+          <p style="font-size:.88rem;margin:4px 0"><b>Try it:</b> ${f.tryIt}</p>
+          <p style="font-size:.88rem;margin:4px 0;color:var(--slate)"><b>The science:</b> ${f.science}</p>
+          <p style="font-size:.88rem;margin:4px 0;color:var(--teal-dk)"><b>🗣️ English twist:</b> ${f.efl}</p>
+        </div>`).join('')}
+    </div>
+    <div class="card" style="margin-top:18px;background:#fbfcff;border-style:dashed">
+      <p style="margin:0;font-size:.9rem"><b>Loved one of these?</b> Turn it into a mini-mission: write a hypothesis before you start, measure something during, and explain the result to someone in English afterwards. That is the whole scientific method — hiding inside the fun.</p>
+    </div>
+  </div>`;
+};
 
 /* boot */
 go('home');
