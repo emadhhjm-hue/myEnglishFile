@@ -1651,15 +1651,15 @@ const ROUTES = {
       <div class="lr-grid">
         <div class="lr-left">
           <div class="lr-brand">${tree}<div><h1 class="rwd-title">RWD</h1><div class="rwd-sub">READ · WRITE · DESIGN</div></div></div>
-          <p class="rwd-cap">A multiliteracies space for English, Grades 9–12. Read to think, write to say it, design to share it.</p>
-          <p class="rwd-slogan">iCAN.<br>Where learners belong.<br>Where learners grow.</p>
+          <p class="rwd-cap">A multiliteracies learning space for EFL where learners read, write, and design.</p>
+          <p class="rwd-slogan">iCAN, where learners belong and grow!</p>
           <div class="lr-roles">
             <button class="lr-role role-student" onclick="go('studentLogin')"><span class="lr-ic">🎓</span> I'm a student</button>
             <button class="lr-role role-teacher" onclick="go('teacherLogin')"><span class="lr-ic">📋</span> I'm a teacher</button>
           </div>
           <div class="lr-copyright">
             <div>© 2026 Emad Ali Mohamed</div>
-            <div class="lr-caption">iCAN my English File · RWD-oriented literacy hub for EFL learners</div>
+            <div class="lr-caption">Developer of iCAN my English File — a multiliteracy hub for EFL learners</div>
           </div>
         </div>
         <div class="lr-web">
@@ -1693,7 +1693,6 @@ const ROUTES = {
             </g>
           </svg>
           <p class="tri-cap">Read &#8596; Write &#8596; Design — <b>Iterative RWD Process for 21st Century Multiliteracies Learning</b></p>
-          <p class="tri-note"><i>Note.</i> Adapted from Cope &amp; Kalantzis, 2009, 2023, 2025</p>
           <!-- floating icons removed -->
         </div>
       </div>
@@ -1785,7 +1784,7 @@ const ROUTES = {
             ${bee?`<text x="${cx}" y="${cy+38}" text-anchor="middle" fill="#ffe39a" font-size="11" font-weight="700" letter-spacing="0.03em">Say · Spell · Say</text>`:(r==='articleaday'?`<text x="${cx}" y="${cy+38}" text-anchor="middle" fill="#ffe39a" font-size="10.5" font-weight="700">Read · 20 min</text>`:'')}</g>`; }).join('')}
         </svg>
         <div class="hub-foot">Tap any circle to begin. Tap 📰 <b>Article-A-Day</b> for daily reading, or 🎓 <b>Exams &amp; Quizzes</b> for full-length exams and differentiated practice.</div>
-        <div class="hub-copyright">© 2026 Emad Ali Mohamed · <i>iCAN my English File — RWD-oriented literacy hub for EFL learners</i></div>
+        <div class="hub-copyright">© 2026 Emad Ali Mohamed · <i>Developer of iCAN my English File — a multiliteracy hub for EFL learners</i></div>
       </div>
 
       <div class="grid c2" style="margin-top:22px">
@@ -7144,15 +7143,14 @@ function aadSaveArt(id, rec){ const all=aadProgAll(); const k=sid(); if(!all[k])
    student, and only if a flat (un-nested) record is detected. */
 function aadMigrateProgress(){
   try{
-    if(!(SESSION && SESSION.role==='student')) return;
+    if(Store.get('ican_aad_progress_cleaned_v2')) return;
     const all=Store.get('ican_aad_progress')||{};
-    // a flat record has keys like 'w1a1' holding {pct,...}; a nested one has
-    // keys that are student ids holding {w1a1:{...}}.
     const flatKeys=Object.keys(all).filter(k=>/^w\d+a\d+$/.test(k));
+    Store.set('ican_aad_progress_cleaned_v2', true);
     if(!flatKeys.length) return;
-    const k=sid(); if(!all[k]) all[k]={};
-    flatKeys.forEach(fk=>{ if(!all[k][fk]) all[k][fk]=all[fk]; delete all[fk]; });
+    const archive={}; flatKeys.forEach(fk=>{ archive[fk]=all[fk]; delete all[fk]; });
     Store.set('ican_aad_progress', all);
+    if(!Store.get('ican_aad_progress_legacy_archive')) Store.set('ican_aad_progress_legacy_archive', archive);
   }catch(e){}
 }
 function aadFindArt(id){ for(const wk of AAD_PROG){ const a=wk.arts.find(x=>x.id===id); if(a) return {art:a, week:wk.w, theme:wk.theme}; } return null; }
@@ -7565,6 +7563,20 @@ function aadShowVocabPop(key, anchorEl){
   aadSpeakWord(key);
 }
 function aadHideVocabPop(){ const p=document.getElementById('aadVocabPop'); if(p) p.style.display='none'; }
+
+/* Reader text zoom (+/-) for readers who need larger or smaller print.
+   Scales the article body font; the chosen size is remembered across articles. */
+let _aadZoom = 1;
+function aadApplyZoom(){
+  const box=document.getElementById('aadArticleText');
+  if(box){ box.style.fontSize = (1.06*_aadZoom).toFixed(3)+'rem'; }
+  const l=document.getElementById('aadZoomVal'); if(l) l.textContent=Math.round(_aadZoom*100)+'%';
+}
+function aadZoom(dir){
+  _aadZoom = Math.min(1.8, Math.max(0.8, _aadZoom + dir*0.1));
+  try{ Store.set('ican_aad_zoom', _aadZoom); }catch(e){}
+  aadApplyZoom();
+}
 // tap anywhere outside the pop-up (and not on a key word) closes it
 if(typeof window!=='undefined' && !window.__aadPopBound){
   window.__aadPopBound=true;
@@ -7647,6 +7659,12 @@ function openAadArticle(id){
             <button class="aad-step" onclick="aadTtsStep('vol',1)" aria-label="Louder">+</button>
             <span class="aad-sl-val" id="aadVolVal">100%</span>
           </div>
+          <div class="aad-slider aad-zoom">
+            <span class="aad-sl-lab">Text size</span>
+            <button class="aad-step" onclick="aadZoom(-1)" aria-label="Smaller text">A−</button>
+            <span class="aad-sl-val" id="aadZoomVal">100%</span>
+            <button class="aad-step" onclick="aadZoom(1)" aria-label="Larger text">A+</button>
+          </div>
           <a class="aad-dict-link" href="https://www.vocabulary.com/dictionary/" target="_blank" rel="noopener" title="Look up a word on Vocabulary.com">📖 Dictionary</a>
         </div>
 
@@ -7689,6 +7707,7 @@ function openAadArticle(id){
   m.classList.add('show');
   // build sentence + tappable word spans now so tap-to-hear works immediately
   try{ aadTtsBuild(); }catch(e){}
+  try{ _aadZoom = Store.get('ican_aad_zoom') || 1; aadApplyZoom(); }catch(e){}
 
   // If already read, show status but still allow review (timer not restarted)
   if(prev){
