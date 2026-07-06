@@ -585,6 +585,25 @@ table.data tr:nth-child(even){background:#fff}
 .stem-dash-banner .sdb-go{background:#ffd23f;color:#15183A;font-weight:700;border-radius:10px;padding:10px 16px;white-space:nowrap;font-size:.9rem}
 .stem-fun-card{transition:.15s}.stem-fun-card:hover{transform:translateY(-3px)}
 
+
+/* ---------- STEM·STREAM: cycle, briefing, plan strip, UAE badge ---------- */
+@media(min-width:720px){ .grid.c3{grid-template-columns:repeat(3,1fr)} }
+.rwd-orbit{animation:rwdSpin 16s linear infinite; transform-origin:110px 110px}
+.rwd-orbit2{animation:rwdSpinRev 24s linear infinite; transform-origin:110px 110px}
+@keyframes rwdSpin{to{transform:rotate(360deg)}}
+@keyframes rwdSpinRev{to{transform:rotate(-360deg)}}
+.rwd-op{display:flex;gap:20px;flex-wrap:wrap;align-items:center;margin-top:6px}
+.rwd-op svg{flex:0 0 230px;max-width:250px}
+.rwd-op-slices{flex:1;min-width:260px;display:flex;flex-direction:column;gap:10px}
+.rwd-slice{background:#fff;border:1px solid var(--line);border-left:5px solid var(--sc);border-radius:12px;padding:10px 14px;font-size:.9rem;color:var(--slate)}
+.stem-path-chip{display:inline-block;background:#fff;border:1.5px dashed var(--line);border-radius:999px;padding:5px 12px;font-size:.82rem;margin:3px 4px 0 0;color:var(--ink);font-weight:600}
+.stem-brief{background:linear-gradient(120deg,#15183A,#3b2a72);color:#fff;border-radius:14px;padding:16px 18px;margin:10px 0 8px;font-size:.95rem;line-height:1.7}
+.stem-brief b{color:#ffd23f}
+.stem-plan-strip{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0 2px;color:var(--muted);font-size:.8rem}
+.stem-phase{background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:5px 12px;font-size:.79rem;font-weight:600;color:var(--ink)}
+.stem-phase.cp{border-color:var(--amber);background:#fff7dd}
+.uae-badge{display:inline-block;background:#0b6b3a;color:#fff;border-radius:999px;padding:2px 9px;font-size:.62rem;font-weight:700;letter-spacing:.08em;margin-left:8px;vertical-align:middle}
+.hub-stem circle:first-of-type{filter:drop-shadow(0 0 10px rgba(201,177,255,.45))}
 </style>
 </head>
 <body>
@@ -1833,16 +1852,19 @@ const ROUTES = {
           <circle cx="450" cy="260" r="68" fill="#0e1130" stroke="rgba(255,255,255,.9)" stroke-width="2.5"/>
           <text x="450" y="270" text-anchor="middle" font-family="Fraunces,serif" font-weight="800" font-size="34">
             <tspan fill="#ffffff">i</tspan><tspan fill="#ff5a5f">C</tspan><tspan fill="#34d39a">A</tspan><tspan fill="#5b8def">N</tspan></text>
-          ${[["spelldrill","🐝","Spell & Drill",450,60],["grammar","🧩","Grammar",130,118],["articleaday","📰","Article-A-Day",770,118],["typing","⌨️","Type",130,455],["diagnostic","🧭","Diagnostic",770,455],["exams","🎓","Exams & Quizzes",450,525]].map(([r,ic,lab,cx,cy])=>{
-            const bee = r==='spelldrill';
-            const rad = bee?60:55;
-            return `<g class="hub-s${bee?' hub-bee':''}" onclick="go('${r}')">
-            <circle cx="${cx}" cy="${cy}" r="${rad}" fill="${bee?'#3a2a06':'#13322c'}" stroke="${bee?'#ffd23f':'rgba(255,255,255,.8)'}" stroke-width="${bee?'4':'2.5'}"/>
-            <text x="${cx}" y="${cy-(bee?9:7)}" text-anchor="middle" font-size="${bee?34:(r==='articleaday'?24:27)}">${ic}</text>
-            <text x="${cx}" y="${cy+(bee?18:22)}" text-anchor="middle" fill="#ffffff" font-size="${bee?19:(r==='articleaday'?15:18)}" font-weight="700">${lab}</text>
-            ${bee?`<text x="${cx}" y="${cy+38}" text-anchor="middle" fill="#ffe39a" font-size="11" font-weight="700" letter-spacing="0.03em">Say · Spell · Say</text>`:(r==='articleaday'?`<text x="${cx}" y="${cy+38}" text-anchor="middle" fill="#ffe39a" font-size="10.5" font-weight="700">Read · 20 min</text>`:'')}</g>`; }).join('')}
+          ${[["spellType","🐝","Spelling & Typing",450,60,"Say it · Spell it · Type it"],["grammar","🧩","Grammar",130,118,""],["articleaday","📰","Article-A-Day",770,118,"Read · 20 min"],["stemlab","🚀","STEM·STREAM",130,455,"Read · Write · Design"],["diagnostic","🧭","Diagnostic",770,455,""],["exams","🎓","Exams & Quizzes",450,525,""]].map(([r,ic,lab,cx,cy,sub])=>{
+            const bee = r==='spellType', stem = r==='stemlab';
+            const rad = (bee||stem)?60:55;
+            const fill = bee?'#3a2a06':(stem?'#1a1440':'#13322c');
+            const strk = bee?'#ffd23f':(stem?'#c9b1ff':'rgba(255,255,255,.8)');
+            const labSize = bee?13.5:(stem?15:(r==='articleaday'?15:18));
+            return `<g class="hub-s${bee?' hub-bee':''}${stem?' hub-stem':''}" onclick="go('${r}')">
+            <circle cx="${cx}" cy="${cy}" r="${rad}" fill="${fill}" stroke="${strk}" stroke-width="${(bee||stem)?'4':'2.5'}"/>
+            <text x="${cx}" y="${cy-((bee||stem)?9:7)}" text-anchor="middle" font-size="${(bee||stem)?32:(r==='articleaday'?24:27)}">${ic}</text>
+            <text x="${cx}" y="${cy+((bee||stem)?18:22)}" text-anchor="middle" fill="#ffffff" font-size="${labSize}" font-weight="700">${lab}</text>
+            ${sub?`<text x="${cx}" y="${cy+((bee||stem)?34:38)}" text-anchor="middle" fill="#ffe39a" font-size="10.5" font-weight="700" letter-spacing="0.02em">${sub}</text>`:''}</g>`; }).join('')}
         </svg>
-        <div class="hub-foot">Tap any circle to begin. Tap 📰 <b>Article-A-Day</b> for daily reading, or 🎓 <b>Exams &amp; Quizzes</b> for full-length exams and differentiated practice.</div>
+        <div class="hub-foot">Tap any circle to begin.</div>
         <div class="hub-copyright">© 2026 Emad Ali Mohamed · <i>Developer of iCAN my English File — a multiliteracy hub for EFL learners</i></div>
       </div>
 
@@ -5611,7 +5633,7 @@ const COACH_NAV=[
   ["🧭 Diagnostic","diagnostic"],["🎨 Design","dstudio"],["⌨️ Typing","typing"]
 ];
 const COACH_HELP={
-  start:   {t:"How to use iCAN", m:"Sign in with your name, then tap any circle on your hub. <b>Read · Write · Design</b> sit in the middle; Spell & Drill, Grammar, Vocabulary, Diagnostic, Type and Exams orbit around them. Everything you finish is saved for your teacher."},
+  start:   {t:"How to use iCAN", m:"Sign in with your name, then tap any circle on your hub. <b>Read · Write · Design</b> sit in the middle; Spelling & Typing, Grammar, Article-A-Day, STEM·STREAM, Diagnostic and Exams orbit around them. Everything you finish is saved for your teacher."},
   reading: {t:"📖 Reading", route:"readingCourse", m:"Open a text, use <b>▶ Read to me</b> if you like, then answer the comprehension for an instant score. <b>Tip:</b> slide to the <b>Supported</b> version if a text feels hard, and always do the self-check to think a little deeper."},
   writing: {t:"✍️ Writing", route:"writingCourse", m:"Each lesson runs Study → Drill → Practice → Challenge. <b>Tip:</b> write your own attempt <i>before</i> revealing the model, then use the checklist to improve a second draft."},
   spelling:{t:"🐝 Spell & Drill", route:"spelldrill", m:"Hear the word, then <b>Say · Spell · Say</b> before you type. <b>Tip:</b> start with <b>Standard</b> (10 fresh words each round) and use <b>Extra</b> for silent letters and homophones. Words you practise are saved to your vocabulary bank automatically."},
@@ -6217,7 +6239,7 @@ function gateDefs(){ return [
   {key:'diag',       icon:'🧭', label:'Diagnostic test'},
   {key:'exams',      icon:'🎓', label:'Exams, quizzes & mock tests'},
   {key:'aad',        icon:'📰', label:'Article-A-Day (10-week reading)'},
-  {key:'stem',       icon:'🚀', label:'STEM·STREAM Lab missions (RWD challenges)'}
+  {key:'stem',       icon:'🚀', label:'STEM·STREAM missions (RWD challenges)'}
 ];}
 function gateKeyOf(screen){
   return ({
@@ -8644,27 +8666,27 @@ function refreshGateCard(){
    ========================================================================= */
 
 const STEM_LETTERS = [
-  {l:'S', word:'Science',     color:'#0FA98B', desc:'Ask questions about the natural world, form a hypothesis, test it fairly, and explain what the evidence shows.'},
-  {l:'T', word:'Technology',  color:'#5b8def', desc:'Use tools — from rulers and thermometers to cameras and apps — to measure, record, document and share your findings.'},
-  {l:'R', word:'Reading',     color:'#E6464B', desc:'Research before you build. Read scientific texts, diagrams and data to understand the problem — reading with a purpose.'},
-  {l:'E', word:'Engineering', color:'#F5A301', desc:'Design, build, test and improve a solution. Fail, learn why, and iterate — that is how engineers think.'},
-  {l:'A', word:'Arts',        color:'#8B5CF6', desc:'Make your ideas visible and persuasive: sketches, labelled diagrams, models, posters, videos and pitches.'},
-  {l:'M', word:'Maths',       color:'#15183A', desc:'Measure, count, compare and calculate. Numbers turn "I think it works" into "here is the evidence that it works."'}
+  {l:'S', word:'Science',     color:'#0FA98B', desc:'Question, hypothesise, test fairly, explain the evidence.'},
+  {l:'T', word:'Technology',  color:'#5b8def', desc:'Use tools and apps to measure, record and share.'},
+  {l:'R', word:'Reading',     color:'#E6464B', desc:'Read texts, data and diagrams — research with a purpose.'},
+  {l:'E', word:'Engineering', color:'#F5A301', desc:'Design, build, test, improve — iterate like an engineer.'},
+  {l:'A', word:'Arts',        color:'#8B5CF6', desc:'Make ideas visible: diagrams, models, posters, pitches.'},
+  {l:'M', word:'Maths',       color:'#15183A', desc:'Measure, compare, calculate — evidence in numbers.'}
 ];
 
 const STEM_OBJECTIVES = [
-  '<b>Investigate like a scientist:</b> move through the full cycle — question → hypothesis → fair test → evidence → conclusion.',
-  '<b>Integrate the disciplines:</b> use Science, Technology, Engineering, Arts and Maths together in one real project, not as separate subjects.',
-  '<b>Read to research (R):</b> extract facts, vocabulary and ideas from scientific texts and data — reading with a real purpose.',
-  '<b>Write to reason (W):</b> write hypotheses, claim–evidence–reasoning paragraphs, observation logs, reports and pitches in English.',
-  '<b>Design to communicate (D):</b> build a working artefact and a multimodal product (diagram, poster, video, pitch) that explains it.',
-  '<b>Collaborate and present:</b> work in team roles, then present your solution in English — clearly, confidently, persuasively.'
+  '<b>Investigate:</b> question → hypothesis → fair test → evidence → conclusion.',
+  '<b>Integrate:</b> use all of S·T·R·E·A·M on one real problem.',
+  '<b>Read to research · Write to reason · Design to communicate</b> — in English.',
+  '<b>Collaborate:</b> work in roles, iterate, then present persuasively.'
 ];
 
 /* Six missions. Each ends in a full RWD challenge. */
 const STEM_UNITS = [
 {
   id:'u1', icon:'💧', theme:'Environment · SDG 6', title:'The Clean Water Mission',
+  scenario:'A sandstorm has muddied the only water tank at a Liwa desert camp — and the next delivery is days away.',
+  mission:'Engineer a layered filter that makes the muddy water visibly clearer — and prove it with numbers.',
   drivingQ:'How can we turn dirty water into clearer, safer water using simple materials?',
   purpose:'Understand how filtration separates particles from water, and engineer a working multi-layer filter — the same principle used in real water-treatment plants.',
   contribution:'Clean water is one of humanity\u2019s biggest challenges: millions of people worldwide lack safe drinking water. Your prototype models the first stage of real water treatment and connects to UN Sustainable Development Goal 6 — Clean Water and Sanitation.',
@@ -8698,6 +8720,8 @@ const STEM_UNITS = [
 },
 {
   id:'u2', icon:'☀️', theme:'Energy · SDG 7', title:'The Solar Kitchen',
+  scenario:'Masdar City sets your team a challenge: cook something using zero electricity — only Abu Dhabi sunshine.',
+  mission:'Build a solar cooker, track its temperature curve, and explain the energy path.',
   drivingQ:'Can sunshine really cook food — and how hot can a pizza box get?',
   purpose:'Discover how reflection, absorption and insulation work together to capture solar energy, and engineer a solar oven that reaches the highest possible temperature.',
   contribution:'Solar cooking is a real technology used where fuel is scarce or expensive. Your oven models the physics behind solar power — the energy source at the heart of the UAE\u2019s Masdar City and Noor Abu Dhabi, one of the world\u2019s largest solar plants. SDG 7: Affordable and Clean Energy.',
@@ -8731,6 +8755,8 @@ const STEM_UNITS = [
 },
 {
   id:'u3', icon:'🌉', theme:'Structures · Engineering', title:'Bridge Works',
+  scenario:'A wadi flood has cut the road between two villages; supplies must cross a 30 cm gap — today.',
+  mission:'Build the strongest paper bridge per gram of material — and report where it failed, and why.',
   drivingQ:'What shapes make a bridge strong — and how much weight can paper really hold?',
   purpose:'Explore how shape, not just material, creates strength. Discover why triangles and arches appear in every great bridge, then engineer a paper bridge that carries the maximum load.',
   contribution:'Structural engineering keeps every building, bridge and tower standing. The same shape principles you test here hold up the Sheikh Zayed Bridge in Abu Dhabi — famous for its wave-like arches. Your data shows how engineers choose designs with evidence, not guesses.',
@@ -8763,40 +8789,9 @@ const STEM_UNITS = [
   }
 },
 {
-  id:'u4', icon:'🥚', theme:'Space · Physics', title:'The Egg-Drop Lander',
-  drivingQ:'How do you land something fragile — an egg, a robot, an astronaut — without breaking it?',
-  purpose:'Investigate impact forces and how crumple zones, cushions and parachutes absorb them, then engineer a lander that protects a raw egg from a high drop.',
-  contribution:'This is a real aerospace problem: NASA\u2019s Mars rovers landed inside giant airbags, and the UAE\u2019s Hope Probe team solved the same physics to reach Mars orbit in 2021. Car crumple zones and bicycle helmets use the identical principle — spreading an impact over more time to make it survivable.',
-  efl:'You will practise <b>cause-and-effect language</b> (<i>the cotton absorbed the shock, so…; as a result…; this caused…</i>) and write a Mission Report in the past tense.',
-  streamMap:{S:'Impact force, gravity and shock absorption', T:'Film drops in slow motion to see the impact', R:'Research brief on landing technology', E:'Design and build a protective lander', A:'Name your mission; design a mission patch/logo', M:'Measure drop height; calculate the survival rate across trials'},
-  materials:['One raw egg per team (plus one spare — budget matters!)','Recyclables: cardboard, paper, cotton, straws, balloons, plastic bags','Tape and string (fixed budget)','Measuring tape; a safe drop spot agreed with your teacher','A phone for slow-motion video'],
-  roles:['<b>Reader–Researcher</b> — studies how real landers survive','<b>Recorder–Writer</b> — writes the mission log and report','<b>Designer–Builder</b> — engineers the lander','<b>Speaker–Presenter</b> — runs the countdown and presents the result'],
-  steps:['<b>Research:</b> how do real spacecraft land? (Airbags, parachutes, crumple structures, sky cranes.)','<b>Design:</b> sketch your lander and label how each part absorbs the impact.','<b>Build:</b> construct it within the materials budget. Name the mission!','<b>Test low first:</b> drop from 1 metre. Egg survives? Raise the height. Film in slow motion.','<b>Iterate:</b> after any failure, examine the wreck like an investigator: exactly where did the force reach the egg? Fix that path.','<b>Report:</b> write the mission report — height achieved, design features, what failed, what saved it.'],
-  safety:'Drop only in the agreed spot with people well clear below. Wash hands after handling raw egg, and clean any breaks immediately.',
-  finalProduct:'A tested egg lander + a slow-motion drop video + a past-tense Mission Report with a mission patch.',
-  challenge:{
-    read:{
-      title:'How to Land on Mars (and in Your Playground)',
-      text:'<p>The hardest part of a journey to Mars is not the 480 million kilometres of travel — it is the final minute. Engineers call it landing; physics calls it an impact. When a moving object stops suddenly, the force of the stop depends on time: the shorter the stop, the more violent the force. A dropped phone that hits tile stops in a fraction of a millisecond, which is why it cracks. The same phone landing on a sofa stops slowly — and survives.</p><p>Every landing technology is a trick for stretching out that stopping time. Parachutes slow the fall before impact. Airbags — used to bounce NASA\u2019s early rovers safely across the Martian surface — squash gradually, spreading the stop over precious extra milliseconds. Car crumple zones do the same job in a crash: the front of the car is designed to fold up so the passengers stop gently while the metal stops hard.</p><p>An egg-drop lander is this exact engineering problem in miniature. The egg is your astronaut. Anything you add — cotton, balloons, cardboard folds — is buying time. Every extra millisecond of stopping time is a smaller force on the shell.</p>',
-      questions:[
-        {q:'According to the text, what does the force of an impact depend on?', options:['The colour of the object','How long the object takes to stop','The temperature of the ground','The age of the object'], answer:1, exp:'"The shorter the stop, the more violent the force" — stopping time decides the force.'},
-        {q:'Why does a phone survive landing on a sofa but not on tile?', options:['Sofas are magnetic','The sofa lets the phone stop slowly','Tile makes phones heavier','The phone bounces higher on tile'], answer:1, exp:'The sofa stretches the stopping time, so the force is smaller.'},
-        {q:'How did NASA\u2019s early rovers land safely on Mars?', options:['They landed in water','Astronauts caught them','Inside airbags that squashed gradually and bounced','They never actually landed'], answer:2, exp:'Airbags spread the stop over extra milliseconds — the rovers bounced to a safe stop.'},
-        {q:'In the egg-drop challenge, what are the cotton and balloons really doing?', options:['Making the lander heavier so it falls faster','Buying extra stopping time so the force on the egg is smaller','Keeping the egg warm','Making the lander look professional'], answer:1, exp:'"Anything you add… is buying time" — more stopping time means less force on the shell.'}
-      ]
-    },
-    write:{
-      prompt:'Write your <b>Mission Report</b> (80+ words) in the past tense: mission name, drop height, what happened, and the cause-and-effect chain (<i>the balloon hit first, so it absorbed…, as a result the egg…</i>). If the egg broke, report honestly — investigators respect the truth.',
-      starters:['Mission … launched from a height of … metres.','On impact, the … hit the ground first, so…','As a result, the force on the egg…','If we flew this mission again, we would… because…']
-    },
-    design:{
-      brief:'Design a <b>mission showcase</b>: a labelled diagram of your lander showing exactly how each part stretches the stopping time, plus a mission patch (logo) with the mission name. Optional gold level: edit your slow-motion footage into a 30-second "mission film" with English captions.',
-      criteria:['Each protective part is labelled with its job (absorb / slow / spread)','The physics idea — buying stopping time — is stated somewhere in our own words','The mission has a name and a designed patch/logo','The drop height and result (survived / broke) are reported honestly','The diagram is clear enough for another team to copy our design','Cause-and-effect language appears at least twice']
-    }
-  }
-},
-{
   id:'u5', icon:'🌱', theme:'Food security · SDG 2', title:'The Desert Farm',
+  scenario:'The UAE imports most of its food. Your school wants a micro-farm that sips water instead of gulping it.',
+  mission:'Grow seedlings under different conditions and recommend the most water-wise setup — with data.',
   drivingQ:'How can we grow food in the desert using as little water as possible?',
   purpose:'Investigate what plants really need by running a fair-test growing experiment, and explore how greenhouses and smart watering let dry countries grow their own food.',
   contribution:'The UAE imports most of its food, so growing more locally — with less water — is a national mission. High-tech farms in Abu Dhabi already grow tomatoes and leafy greens in the desert using a fraction of normal water. Your experiment models exactly the questions those agri-engineers ask. SDG 2: Zero Hunger.',
@@ -8830,6 +8825,8 @@ const STEM_UNITS = [
 },
 {
   id:'u6', icon:'♻️', theme:'Sustainability · SDG 12', title:'Trash to Treasure',
+  scenario:'Your school bin fills daily with \u201cwaste\u201d that is really raw material wearing a disguise.',
+  mission:'Invent a useful product from discarded materials and pitch its value in English.',
   drivingQ:'Can you invent something genuinely useful out of things people throw away?',
   purpose:'Apply the full design cycle — empathise, define, ideate, prototype, test — to turn waste materials into a working product, then sell the idea with a persuasive pitch.',
   contribution:'The average person produces over a kilogram of waste every day, and most packaging is used once and thrown away. Reuse and redesign are core to the circular economy the UAE is building toward its Net Zero 2050 goal. Your invention is a small, real answer to SDG 12: Responsible Consumption and Production.',
@@ -8858,6 +8855,112 @@ const STEM_UNITS = [
     design:{
       brief:'Design the <b>launch package</b> for your invention: the working prototype, a brand name and logo drawn or printed, and the pitch — performed live or filmed as a 60-second video with every team member speaking. Gold level: add a poster showing how your product loops (reuse → repair → recycle).',
       criteria:['The prototype genuinely works — we demonstrated it','It is made mostly of reused waste materials','The pitch has all four parts: problem, solution, demo, call to action','Every team member speaks at least one line','The brand name and logo appear on the product or poster','We stated the impact with a number (items saved, uses per week…)']
+    }
+  }
+}
+,
+{
+  id:'u7', icon:'🌡️', theme:'🇦🇪 UAE Series · Urban heat · SDG 11', title:'Cool the Courtyard',
+  scenario:'At break time your courtyard hits 45\u00B0C — and the principal has budget for exactly ONE cooling fix.',
+  mission:'Heat-map the school with real measurements, then pitch one evidence-based solution.',
+  drivingQ:'Why is our schoolyard so hot — and what single change would cool it most?',
+  purpose:'Measure the urban-heat effect on your own campus, then design and defend one evidence-based cooling solution.',
+  contribution:'Gulf cities fight heat with shade, light surfaces and greenery. Your heat map and proposal mirror what urban planners in Abu Dhabi and Dubai really do — and your school could actually adopt the winning idea.',
+  efl:'The language of <b>persuasion backed by data</b>: <i>our measurements show…, therefore we propose…, although X costs more, it…</i> — an argument essay with your own evidence inside it.',
+  streamMap:{S:'How surfaces absorb and radiate heat', T:'Thermometer or weather app; photos of hot spots', R:'Research brief on urban heat islands', E:'Design a shading or surface fix for one real spot', A:'Colour-coded heat map + before/after visual', M:'Record temperatures; compare places and times'},
+  materials:['A thermometer (or phone weather data plus sun/shade readings)','Clipboards, paper, coloured pens','A simple sketch map of the school grounds','Card, fabric scraps, sticks and clay for the solution model'],
+  roles:['<b>Reader–Researcher</b> — leads the research reading and checks facts','<b>Recorder–Writer</b> — writes the hypothesis, log and results','<b>Designer–Builder</b> — leads construction and testing','<b>Speaker–Presenter</b> — explains the design and presents results'],
+  steps:['<b>Read</b> the brief on why cities cook, and list two cooling strategies it mentions.','<b>Measure:</b> at the same time of day, record the temperature at 4–5 spots — full sun, shade, near walls, on any grass.','<b>Map it:</b> colour your school map from cool (blue) to hot (red) using your readings.','<b>Choose the target:</b> the hottest spot students actually use.','<b>Design ONE fix</b> — shade sail, trees, light-coloured surface, green wall — and model it or draw before/after.','<b>Estimate the effect</b> using the reading, and prepare the 2-minute pitch.'],
+  safety:'Take sun readings in short turns, drink water, and never run the field study during peak-heat warnings.',
+  finalProduct:'A data-based heat map of your school + a model or before/after visual of one cooling fix + a written proposal.',
+  challenge:{
+    read:{
+      title:'Why Cities Cook',
+      text:'<p>Stand in a field at noon and then on a car park, and your feet already know the science: cities are hotter than the countryside around them. Dark surfaces like asphalt soak up the sun\u2019s energy all day and release it slowly all evening, while walls and paving trap warm air between them. Scientists call this the urban heat island effect.</p><p>The good news is that the effect can be reversed with design. Shade is the fastest fix: a surface out of direct sun can be dramatically cooler — sometimes around ten degrees or more compared with dark paving in full sunlight. Light-coloured, reflective surfaces bounce energy away instead of storing it, and trees do double work, casting shade while cooling the air as water evaporates from their leaves.</p><p>City planners do not guess where to spend their budget. They measure first, building heat maps that show exactly where people suffer most, and only then decide where a tree, a canopy or a lighter surface will help the greatest number of people. The map, not the opinion, makes the decision.</p>',
+      questions:[
+        {q:'What causes the urban heat island effect?', options:['Cities have more people breathing','Dark surfaces store the sun\u2019s energy and buildings trap warm air','Cities are closer to the sun','Air conditioners cool the streets too much'], answer:1, exp:'Dark surfaces soak up energy and walls trap warm air — that is the heat island.'},
+        {q:'Why are trees described as doing \u201cdouble work\u201d?', options:['They give shade and cool the air as water evaporates from leaves','They grow twice a year','They reflect sunlight like mirrors','They store heat for winter'], answer:0, exp:'Trees shade the ground AND cool the air through evaporation.'},
+        {q:'What do light-coloured surfaces do?', options:['Store energy for the evening','Bounce the sun\u2019s energy away instead of storing it','Melt in strong sun','Attract more heat than dark ones'], answer:1, exp:'Reflective, light surfaces bounce energy away.'},
+        {q:'How do planners decide where to spend a cooling budget?', options:['They choose the newest street','They ask which spot looks nicest','They measure first and let the heat map decide','They always plant trees everywhere'], answer:2, exp:'The text says they measure first — the map, not the opinion, decides.'}
+      ]
+    },
+    write:{
+      prompt:'Write the <b>formal proposal</b> to your principal (80+ words): state the problem with your own measurements, propose ONE fix for one real location, support it with the reading, and predict the effect.',
+      starters:['Our measurements show that…','Therefore, we propose… at…','According to the research, this can…','As a result, students would…']
+    },
+    design:{
+      brief:'Design the <b>pitch pack</b>: your colour-coded heat map plus a before/after visual (model, drawing or poster) of the fix — clear enough that the principal decides in two minutes.',
+      criteria:['The heat map uses real readings from at least 4 locations','The target spot is one students actually use','The visual clearly shows before vs after','It references our readings AND the research brief','The proposed fix is realistic for a school budget','It looks deliberate: titled, labelled, signed by the team']
+    }
+  }
+},
+{
+  id:'u8', icon:'🌊', theme:'🇦🇪 UAE Series · Marine science · SDG 14', title:'Gulf Guardians — the Oil-Spill Clean-Up',
+  scenario:'A tanker incident has spilled oil near a Gulf mangrove. A seabird — your feather — is already coated.',
+  mission:'Fair-test clean-up materials on a model spill and brief the response team on the best method.',
+  drivingQ:'Which material removes the most oil from water — without removing the ocean too?',
+  purpose:'Model an oil spill and fair-test clean-up materials, the way real response teams choose their tools.',
+  contribution:'The Gulf is one of the busiest oil-shipping regions on Earth; its mangroves, coral and wildlife depend on fast, smart spill response. Your tested ranking models the real decision responders must make in hours.',
+  efl:'The language of <b>reporting and recommending</b>: formal incident-report style — <i>We tested…, The results show…, We recommend…</i>',
+  streamMap:{S:'Why oil floats and clings — density and adhesion', T:'Time each clean-up; photograph before/after', R:'Research brief on spill response', E:'Design a contain-then-absorb clean-up method', A:'A spill-response infographic card', M:'Measure oil removed vs water lost; rank the materials'},
+  materials:['A tray of water — your ocean','Two spoons of vegetable oil — the spill','A feather — the seabird','Test rescuers: cotton pads, sponge, paper towel, a spoon','A straw or string — the containment boom','Small cups for measuring what each material removes'],
+  roles:['<b>Reader–Researcher</b> — leads the research reading and checks facts','<b>Recorder–Writer</b> — writes the log, table and incident report','<b>Designer–Builder</b> — runs the spill tests fairly','<b>Speaker–Presenter</b> — delivers the response-team briefing'],
+  steps:['<b>Read</b> the brief and note the order real teams work in: contain first, then recover.','<b>Make the spill:</b> same water, same oil amount for every test — a fair test or it proves nothing.','<b>Contain it:</b> circle the slick with your straw/string boom before touching it.','<b>Test each rescuer</b> for the same fixed time; collect what it removed into a cup.','<b>Measure and rank:</b> most oil removed, least water stolen. Record every trial.','<b>Rescue the feather:</b> dip it in the spill, observe, then clean it with your winning material.'],
+  safety:'Vegetable oil only — never fuels or chemicals. Protect the table, wash hands after, and pour used oil into the bin, never the sink.',
+  finalProduct:'A tested ranking of clean-up materials + a spill-response card + the team incident report.',
+  challenge:{
+    read:{
+      title:'When Oil Meets Water',
+      text:'<p>Oil and water refuse to mix, and oil is the lighter of the two — so a spill does not sink, it spreads. Within hours a small leak can stretch into a thin shining sheen across a huge area, which is why speed decides everything in a real response.</p><p>The danger to wildlife is not only poison. Oil clings to a seabird\u2019s feathers and destroys their clever structure, so the bird loses its waterproofing and its warmth; a coated bird can freeze in warm water. Mangroves and coral suffer too, because oil coats the surfaces where life begins.</p><p>Response teams work in a strict order. First they contain the slick with floating barriers called booms, so it cannot spread further. Only then do they recover it, using skimmers and absorbent materials chosen for one talent: grabbing oil while leaving the water behind. The best absorbent is not the one that soaks up the most liquid — it is the one that soaks up the most oil.</p>',
+      questions:[
+        {q:'Why does spilled oil spread instead of sinking?', options:['It is heavier than water','It is lighter than water and floats','Fish push it around','Waves dissolve it instantly'], answer:1, exp:'Oil is lighter than water — so it floats and spreads into a sheen.'},
+        {q:'Why is a coated seabird in danger even in warm water?', options:['Oil makes it too heavy to fly forever','Oil ruins the feather structure, so it loses waterproofing and warmth','Oil attracts predators','Oil blinds it permanently'], answer:1, exp:'Oil destroys the feather structure — the bird loses waterproofing and warmth.'},
+        {q:'What do response teams do FIRST?', options:['Absorb the oil with cotton','Contain the slick with booms','Rescue every fish','Add soap to dissolve it'], answer:1, exp:'Contain first with booms, then recover — the strict order in the text.'},
+        {q:'What makes an absorbent material the best choice?', options:['It soaks up the most liquid of any kind','It grabs the most oil while leaving the water behind','It is the cheapest','It smells the nicest'], answer:1, exp:'The best absorbent takes oil, not water.'}
+      ]
+    },
+    write:{
+      prompt:'Write the <b>incident report</b> (80+ words): what happened, what your team tested, the results with numbers, and your recommendation to the response team.',
+      starters:['At [time], approximately… of oil entered…','We contained the slick using… and then tested…','The results show that… removed the most oil while…','We therefore recommend…']
+    },
+    design:{
+      brief:'Design the <b>spill-response card</b>: an infographic showing the sequence contain → recover → rescue with arrows, your ranked best material, and one fact from the reading — usable by a team that has 60 seconds to read it.',
+      criteria:['The contain → recover → rescue sequence is clear with arrows','Our tested ranking appears with real numbers','It includes one accurate fact from the reading','A stranger could act on it in 60 seconds','Labels use correct English spill vocabulary','It looks deliberate: titled, neat, signed by the team']
+    }
+  }
+},
+{
+  id:'u9', icon:'💠', theme:'🇦🇪 UAE Series · Water & energy · SDG 6+7', title:'Desalination Station',
+  scenario:'The UAE drinks the sea: most tap water starts as salt water. Your camp has seawater, sunshine and plastic wrap.',
+  mission:'Build a solar still that harvests fresh water from salt water — and measure every drop.',
+  drivingQ:'How can sunshine turn salt water into fresh water — one drop at a time?',
+  purpose:'Build a solar still and watch the water cycle in miniature: evaporation leaves the salt behind, condensation returns pure water.',
+  contribution:'Most UAE tap water begins as seawater. Your still models the oldest desalination idea on Earth — and shows exactly why engineers race to make the process cheaper and greener.',
+  efl:'The language of <b>process explanation</b>: <i>the water evaporates…, it condenses on…, then it drips into…</i> — present simple plus sequencing, the explanation genre exam writers love.',
+  streamMap:{S:'Evaporation and condensation — the water cycle in a bowl', T:'Photograph the stages; optional time-lapse', R:'Research brief on desalination', E:'Build and improve a solar still', A:'A labelled how-it-works diagram', M:'Measure salt water in, fresh drops out — calculate the yield'},
+  materials:['A large bowl','A small cup or glass (shorter than the bowl)','Cling film and tape','A small clean stone or coin — the weight','Salty water: warm water + 2 spoons of salt, stirred','A sunny windowsill or outdoor spot, and a measuring spoon'],
+  roles:['<b>Reader–Researcher</b> — leads the research reading and checks facts','<b>Recorder–Writer</b> — logs amounts, times and observations','<b>Designer–Builder</b> — builds and improves the still','<b>Speaker–Presenter</b> — explains the water\u2019s journey'],
+  steps:['<b>Read</b> the brief and sketch the journey a water drop will take before you build.','<b>Mix and measure:</b> a known amount of salty water into the bowl; stand the empty cup in the centre.','<b>Seal it:</b> cover the bowl with cling film and place the stone on top, directly above the cup, so the film dips.','<b>Deploy:</b> leave it in strong sun for 2–4 hours. Observe: mist on the film, then drops sliding to the low point.','<b>Harvest and measure</b> the fresh water collected in the cup. Where did the salt stay?','<b>Iterate:</b> change ONE variable — darker bowl, warmer spot, tighter seal — and compare yields.'],
+  safety:'Do not drink or taste any water in this experiment. Success is measured in drops collected, not sips.',
+  finalProduct:'A working solar still + a labelled diagram of the water\u2019s journey + a measured yield report (amount in vs drops out).',
+  challenge:{
+    read:{
+      title:'Drinking the Sea',
+      text:'<p>Turn on a tap in the UAE and there is a good chance the water in your glass began its journey in the Gulf. The country is one of the world\u2019s leaders in desalination — removing salt from seawater — because rain is rare and rivers are rarer still.</p><p>The simplest desalination method copies nature\u2019s own water cycle. When the sun heats salty water, only the water evaporates; the salt is left behind. If the rising vapour meets a cool surface, it condenses back into liquid — now fresh — and gravity will deliver every drop to wherever the surface leans. A solar still is nothing more than this cycle, trapped in a bowl.</p><p>At city scale, however, desalination is hungry work: separating salt from the sea takes enormous amounts of energy. That is why engineers keep hunting for improvements, from better membranes to solar-powered plants — because when a country drinks the sea, every drop of efficiency matters.</p>',
+      questions:[
+        {q:'Why does the UAE rely on desalination?', options:['Its rivers are too fast to use','Rain is rare and rivers are rarer','Seawater is healthier','Desalination is free'], answer:1, exp:'Rain is rare and rivers rarer — so the sea supplies the tap.'},
+        {q:'When salty water evaporates, what happens to the salt?', options:['It evaporates first','It turns into gas with the water','It is left behind','It becomes sugar'], answer:2, exp:'Only the water evaporates; the salt stays behind.'},
+        {q:'What must the rising vapour meet to become liquid again?', options:['A cool surface','More salt','Strong wind','Direct flame'], answer:0, exp:'Vapour condenses on a cool surface — like the cling film.'},
+        {q:'Why do engineers keep improving desalination?', options:['The law forces them to','It uses enormous energy, so every efficiency matters','Salt is valuable jewellery','Plants get bored'], answer:1, exp:'Desalination is energy-hungry — efficiency is the race.'}
+      ]
+    },
+    write:{
+      prompt:'Write a <b>process explanation</b> (80+ words) tracing one drop\u2019s journey through your still — from salty bowl to fresh cup — using sequence and cause language, and include your measured amounts.',
+      starters:['First, the sun heats… so the water…','The salt, however, …','Next, the vapour meets… and condenses…','Finally, … which is why we collected…']
+    },
+    design:{
+      brief:'Design the <b>how-it-works diagram</b>: a labelled cross-section of your still with arrows tracing the water\u2019s journey, the yield stated (in vs out), and one fact from the reading. Optional: a photo sequence of the real build with captions.',
+      criteria:['Every part is labelled with the correct English word','Arrows trace the full journey: evaporate → condense → drip → collect','The measured yield appears (amount in vs out)','It includes one accurate fact from the reading','It explains where the salt ends up','It looks deliberate: titled, neat, signed by the team']
     }
   }
 }
@@ -8894,66 +8997,99 @@ function stemUpdateWc(unitId){
 
 /* ---------------- ROUTES ---------------- */
 ROUTES.stemlab = function(){
-  const rwdRow = [
-    ['📖','READ','Investigate','Every mission opens with real research reading: texts, data and diagrams you read because the build depends on it. This is the R in STREAM — reading with a purpose.','#12a585'],
-    ['✍️','WRITE','Reason','Hypotheses, observation journals, claim–evidence–reasoning paragraphs, reports and pitches — writing is how scientists think on paper.','#e6464b'],
-    ['🎨','DESIGN','Create','The build itself plus the multimodal product that explains it: diagrams, posters, manuals, videos, pitches. Design is where all the letters meet.','#8B5CF6']
+  const slices = [
+    ['#12a585','📖','READ','Students investigate: search and read the brief, texts, data and diagrams — research with a purpose.'],
+    ['#e6464b','✍️','WRITE','Students reason: summarise, ideate, hypothesise — then report and pitch. Writing is thinking on paper.'],
+    ['#8B5CF6','🎨','DESIGN','Students create: the artefact, model, diagram or pitch — then loop back to read and write again.']
   ];
+  const cyc = `
+  <svg viewBox="0 0 220 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RWD cycle — non-sequential: read, write, design in any order">
+    <g class="rwd-orbit"><circle cx="110" cy="110" r="78" fill="none" stroke="#b9b6d6" stroke-width="2" stroke-dasharray="7 9"/>
+      <path d="M110 24 l7 13 h-14 z" fill="#12a585"/>
+      <path d="M110 24 l7 13 h-14 z" fill="#e6464b" transform="rotate(120 110 110)"/>
+      <path d="M110 24 l7 13 h-14 z" fill="#8B5CF6" transform="rotate(240 110 110)"/></g>
+    <g class="rwd-orbit2"><circle cx="110" cy="110" r="52" fill="none" stroke="#d9d8e6" stroke-width="1.6" stroke-dasharray="3 7"/>
+      <circle cx="110" cy="58" r="3.5" fill="#F5A301"/>
+      <circle cx="110" cy="58" r="3.5" fill="#F5A301" transform="rotate(120 110 110)"/>
+      <circle cx="110" cy="58" r="3.5" fill="#F5A301" transform="rotate(240 110 110)"/></g>
+    <circle cx="110" cy="32" r="26" fill="#12a585"/><text x="110" y="40" text-anchor="middle" fill="#fff" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="22">R</text>
+    <circle cx="42" cy="149" r="26" fill="#e6464b"/><text x="42" y="157" text-anchor="middle" fill="#fff" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="22">W</text>
+    <circle cx="178" cy="149" r="26" fill="#8B5CF6"/><text x="178" y="157" text-anchor="middle" fill="#fff" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="22">D</text>
+    <circle cx="110" cy="110" r="30" fill="#15183A" stroke="#fff" stroke-width="2.5"/>
+    <text x="110" y="117" text-anchor="middle" fill="#ffd23f" font-family="Fraunces,Georgia,serif" font-weight="800" font-size="15">RWD</text>
+  </svg>`;
   app().innerHTML = `
   <div class="wrap screen">
     <button class="back" onclick="go('dashboard')">← Home</button>
     <div class="stem-hero">
       <div class="stem-hero-txt">
         <div class="stem-kicker">iCAN Academy · Science Strand</div>
-        <h1>🚀 STEM·STREAM Lab</h1>
+        <h1>🚀 STEM·STREAM</h1>
         <p class="stem-tag">Read it. Write it. <b>Design it.</b></p>
-        <p class="stem-sub">Six real-world missions where English is the language of science: research the problem, reason in writing, then engineer and present a solution. Every mission ends in an RWD Challenge and a certificate.</p>
+        <p class="stem-sub">Real-world missions where English is the language of science. Each mission ends in a scored RWD Challenge and a certificate.</p>
       </div>
       <div class="stem-hero-stats">
-        <div><b>6</b><span>missions</span></div>
+        <div><b>${STEM_UNITS.length}</b><span>missions</span></div>
         <div><b>3</b><span>stages each<br>R · W · D</span></div>
-        <div><b>12</b><span>Spark Lab<br>experiments</span></div>
+        <div><b>${STEM_FUN.length}</b><span>Spark Lab<br>experiments</span></div>
         <div><b>🏅</b><span>certificate<br>per mission</span></div>
       </div>
     </div>
 
-    <h2 class="stem-h2">What the letters mean — and how they work <i>together</i></h2>
-    <p style="color:var(--muted);max-width:760px;margin:4px 0 12px"><b>STEM</b> integrates Science, Technology, Engineering and Maths to solve real problems. <b>STREAM</b> adds the two letters that make it a <i>literacy</i>: <b>R</b>eading (research) and <b>A</b>rts (design &amp; communication). In this Lab, no letter works alone — a mission is complete only when all of them have done their job on the same problem.</p>
+    <h2 class="stem-h2">STREAM Rationale</h2>
+    <p style="color:var(--muted);max-width:760px;margin:4px 0 12px"><b>STEM</b> = Science · Technology · Engineering · Maths, integrated to solve real problems. <b>STREAM</b> adds <b>R</b>eading and <b>A</b>rts — research and design — turning problem-solving into a <i>literacy</i>. No letter works alone: a mission is complete only when all six have done their job on the same problem.</p>
     <div class="stem-letters">
       ${STEM_LETTERS.map(x=>`<div class="stem-letter" style="--lc:${x.color}"><div class="sl-big">${x.l}</div><div class="sl-word">${x.word}</div><div class="sl-desc">${x.desc}</div>${(x.l==='R'||x.l==='A')?'<div class="sl-badge">the literacy letter</div>':''}</div>`).join('')}
     </div>
 
-    <h2 class="stem-h2">How this fits the RWD framework</h2>
-    <p style="color:var(--muted);max-width:760px;margin:4px 0 12px">STEM gives RWD its <b>problems</b>; RWD gives STREAM its <b>literacy engine</b>. Each mission runs the full cycle — and in the Challenge, all three stages are scored, because in this Lab reading and writing are not the wrapper around the build: they are part of the science.</p>
-    <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
-      ${rwdRow.map(r=>`<div class="card" style="border-top:5px solid ${r[4]}"><div style="font-size:1.6rem">${r[0]}</div><h3 style="font-size:1.15rem;margin:4px 0 2px">${r[1]} <span style="font-family:Lexend;font-size:.8rem;color:var(--muted);font-weight:400">→ ${r[2]}</span></h3><p style="font-size:.88rem;color:var(--slate);margin:6px 0 0">${r[3]}</p></div>`).join('')}
-    </div>
-
-    <div class="card" style="margin-top:18px;background:#fbfcff">
-      <h3 style="font-size:1.15rem;margin-top:0">📋 Course specification</h3>
-      <div class="grid c2" style="gap:14px">
+    <h2 class="stem-h2">RWD operationalizing STEM·STREAM</h2>
+    <p style="color:var(--muted);max-width:760px;margin:4px 0 12px">RWD is the engine, not a queue. Missions may run <b>Read → Write → Design</b>, or <b>Read → Design → Write</b> (reporting what you read and made), or start from Design — and always loop back until the product is right.</p>
+    <div class="rwd-op">
+      ${cyc}
+      <div class="rwd-op-slices">
+        ${slices.map(s=>`<div class="rwd-slice" style="--sc:${s[0]}"><b style="color:${s[0]}">${s[1]} ${s[2]}</b> — ${s[3]}</div>`).join('')}
         <div>
-          <b style="font-size:.85rem;color:var(--ink)">Objectives — by the end of this course you will:</b>
-          <ul style="margin:6px 0 0;padding-left:18px;color:var(--slate);font-size:.9rem">${STEM_OBJECTIVES.map(o=>`<li style="margin:5px 0">${o}</li>`).join('')}</ul>
-        </div>
-        <div style="font-size:.9rem;color:var(--slate)">
-          <b style="font-size:.85rem;color:var(--ink)">How it runs</b>
-          <p style="margin:6px 0"><b>Format:</b> 6 missions · one per week or fortnight · teams of 4 with rotating roles (Reader–Researcher, Recorder–Writer, Designer–Builder, Speaker–Presenter).</p>
-          <p style="margin:6px 0"><b>Each mission:</b> briefing → research reading → hands-on experiment (iterate!) → RWD Challenge → certificate.</p>
-          <p style="margin:6px 0"><b>Challenge scoring:</b> Read 25% · Write 35% · Design 40% — every literacy is a scored event.</p>
-          <p style="margin:6px 0"><b>Grand finale:</b> missions build toward an inter-class or inter-school STREAM Challenge, where teams compete across the same three stages.</p>
+          <span class="stem-path-chip">R → W → D</span>
+          <span class="stem-path-chip">R → D → W</span>
+          <span class="stem-path-chip">D → R → W</span>
+          <span class="stem-path-chip">…and back again ↺</span>
         </div>
       </div>
     </div>
 
+    <div class="card" style="margin-top:18px;background:#fbfcff">
+      <h3 style="font-size:1.1rem;margin-top:0">📋 Lesson plan at a glance</h3>
+      <div class="grid c2" style="gap:14px;font-size:.88rem;color:var(--slate)">
+        <div><b style="color:var(--ink)">Objectives</b><ul style="margin:5px 0 0;padding-left:18px">${STEM_OBJECTIVES.map(o=>`<li style="margin:4px 0">${o}</li>`).join('')}</ul></div>
+        <div><b style="color:var(--ink)">Expected outcomes</b><ul style="margin:5px 0 0;padding-left:18px"><li style="margin:4px 0">A tested artefact + evidence with real numbers.</li><li style="margin:4px 0">A written product per mission: report, proposal or explanation.</li><li style="margin:4px 0">A presented pitch in English — and a mission certificate.</li></ul></div>
+        <div><b style="color:var(--ink)">Tools</b><p style="margin:5px 0 0">Reading brief + data · science notebook · household/craft materials · thermometer, timer, camera · optional Canva / Scratch to document and share.</p></div>
+        <div><b style="color:var(--ink)">STREAM inside RWD</b><p style="margin:5px 0 0"><b style="color:#12a585">Read</b> carries S + R (research) · <b style="color:#e6464b">Write</b> carries M + language (evidence, reasoning) · <b style="color:#8B5CF6">Design</b> carries E + A + T (build, visualise, document).</p></div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;align-items:center">
+        <button class="btn sm teal" onclick="stemLessonPlanDoc()">📥 Teacher lesson plan (Word)</button>
+        <span style="font-size:.82rem;color:var(--muted)">Full STREAM implementation plan: phases, timings, and how each subject teacher coaches the roles.</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;background:#fbfcff">
+      <h3 style="font-size:1.1rem;margin-top:0">📐 Course specification</h3>
+      <div style="font-size:.88rem;color:var(--slate)">
+        <p style="margin:5px 0"><b>Format:</b> team missions · 4 rotating roles · one mission per week or fortnight.</p>
+        <p style="margin:5px 0"><b>Flow:</b> briefing → research → plan <i>(teacher-approved)</i> → build &amp; test → report &amp; pitch.</p>
+        <p style="margin:5px 0"><b>Scoring:</b> Read 25 · Write 35 · Design 40 — every literacy is a scored event.</p>
+        <p style="margin:5px 0"><b>Finale:</b> missions build toward an inter-class / inter-school STREAM Challenge.</p>
+      </div>
+    </div>
+
     <h2 class="stem-h2" style="margin-top:26px">🛰️ The Missions</h2>
+    <p style="color:var(--muted);max-width:760px;margin:4px 0 8px">Five core missions plus the <b>🇦🇪 UAE Series</b> — three ADNOC-style national challenges. Every mission: scenario → guided plan → build → scored RWD Challenge → certificate.</p>
     <div class="grid c2" style="margin-top:8px">
       ${STEM_UNITS.map((u,i)=>`
         <div class="item-row stem-unit-card" style="flex-direction:column;align-items:flex-start">
-          <div style="display:flex;justify-content:space-between;width:100%;align-items:center"><div style="font-size:2rem">${u.icon}</div><span class="stem-mnum">Mission ${i+1}</span></div>
+          <div style="display:flex;justify-content:space-between;width:100%;align-items:center"><div style="font-size:2rem">${u.icon}</div><span class="stem-mnum">Mission ${i+1}${u.theme.indexOf('🇦🇪')>-1?'<span class="uae-badge">UAE SERIES</span>':''}</span></div>
           <span class="genre-tag">${u.theme}</span>
           <h3 style="font-size:1.2rem;margin:2px 0">${u.title}</h3>
-          <p style="font-size:.86rem;color:var(--muted);margin:2px 0 0"><i>${u.drivingQ}</i></p>
+          <p style="font-size:.86rem;color:var(--muted);margin:2px 0 0"><i>${u.scenario}</i></p>
           <div class="meta">${typeof doneTag==='function'?doneTag('STEM·STREAM',u.title):''}</div>
           <button class="btn sm" style="margin-top:10px" onclick="go('stemUnit','${u.id}')">Open mission →</button>
         </div>`).join('')}
@@ -8961,7 +9097,7 @@ ROUTES.stemlab = function(){
 
     <div class="stem-spark-banner" onclick="go('stemFun')">
       <div><div style="font-size:2rem">⚡</div><h3 style="color:#fff;font-size:1.3rem;margin:4px 0 2px">Spark Lab — smart ideas to try for fun</h3>
-      <p style="margin:0;font-size:.9rem;opacity:.92">Twelve quick experiments — dancing raisins, lemon batteries, bottle tornadoes — each with the science explained and an English twist. No grades, just wonder.</p></div>
+      <p style="margin:0;font-size:.9rem;opacity:.92">Quick experiments — dancing raisins, lemon batteries, bottle tornadoes — the science explained, plus an English twist. No grades, just wonder.</p></div>
       <span class="btn sm" style="background:#fff;color:var(--ink);white-space:nowrap">Enter Spark Lab →</span>
     </div>
   </div>`;
@@ -8973,11 +9109,19 @@ ROUTES.stemUnit = function(id){
   const wDraft=stemGetDraft(id+'_w'), dDraft=stemGetDraft(id+'_d');
   app().innerHTML = `
   <div class="wrap screen">
-    <button class="back" onclick="go('stemlab')">← STEM·STREAM Lab</button>
+    <button class="back" onclick="go('stemlab')">← STEM·STREAM</button>
     <div style="font-size:2.2rem">${u.icon}</div>
     <span class="genre-tag">${u.theme}</span>
     <h1 style="font-size:2rem">${u.title}</h1>
-    <div class="card" style="border-color:var(--coral)"><p style="margin:0"><b>Driving question.</b> <i>${u.drivingQ}</i></p></div>
+    <div class="stem-brief"><b>📡 Mission briefing.</b> ${u.scenario}<br><b>🎯 Your mission:</b> ${u.mission}<br><span style="opacity:.85;font-size:.86rem"><i>Driving question: ${u.drivingQ}</i></span></div>
+    <div class="stem-plan-strip">
+      <span class="stem-phase">1 · Briefing</span><span>→</span>
+      <span class="stem-phase">2 · Research 📖</span><span>→</span>
+      <span class="stem-phase cp">3 · Plan ✍️ ✔ teacher-approved</span><span>→</span>
+      <span class="stem-phase">4 · Build &amp; Test 🔬</span><span>→</span>
+      <span class="stem-phase">5 · Report &amp; Pitch 🎤</span>
+    </div>
+    <p class="note" style="margin:4px 0 0">Plan-driven rule: <b>no build before the plan is approved.</b> Teachers: <a onclick="stemLessonPlanDoc()" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">download the STREAM lesson plan (Word)</a>.</p>
 
     <div class="grid c2" style="margin-top:16px">
       <div class="card"><h3 style="font-size:1.05rem;margin-top:0">🎯 Purpose</h3><p style="font-size:.9rem;color:var(--slate);margin:0">${u.purpose}</p></div>
@@ -9076,7 +9220,7 @@ function stemSubmit(id){
       ${crits<critMax?`🎨 ${critMax-crits} self-check criteria still unticked — can you improve the design to earn them honestly? `:''}
       ${pct>=85?'🏅 Outstanding mission — a certificate has been added to My Certificates.':'A certificate for this attempt has been saved — you can improve and resubmit any time.'}
       ${fname?`<br>📎 Attached: <b>${esc(fname)}</b>`:''}
-    </p></div>`;
+    </p><div style="margin-top:12px"><button class="btn sm" onclick="stemCert('${id}',${pct})">🏅 Download mission certificate (PDF)</button></div></div>`;
   try{ saveResult({date:Date.now(), name:SESSION?SESSION.name:'', class:SESSION?SESSION.class:'', skill:'STEM·STREAM', activity:u.title, score:pct, max:100, percent:pct, words:words, detail:`R ${rScore}/${rMax} · W ${wScore}/${wMax} · D ${dScore}/${dMax}${fname?' · file: '+fname:''}`}); }catch(e){}
   try{ box.scrollIntoView({behavior:'smooth'}); }catch(e){}
 }
@@ -9084,7 +9228,7 @@ function stemSubmit(id){
 ROUTES.stemFun = function(){
   app().innerHTML = `
   <div class="wrap screen">
-    <button class="back" onclick="go('stemlab')">← STEM·STREAM Lab</button>
+    <button class="back" onclick="go('stemlab')">← STEM·STREAM</button>
     <h1 style="font-size:2.2rem">⚡ Spark Lab</h1>
     <p style="color:var(--muted);max-width:720px">Smart, quick STEM ideas to experiment with and enjoy — kitchen-table science with real explanations. Each card tells you how to try it, why it works, and an <b>English twist</b> that turns the wonder into language practice. No scores here; curiosity is the point.</p>
     <p class="note" style="max-width:720px">Always check with an adult before using heat, sharp tools or anything you might taste. Scientists are careful people.</p>
@@ -9103,6 +9247,163 @@ ROUTES.stemFun = function(){
     </div>
   </div>`;
 };
+
+
+/* ---------- Spelling & Typing chooser (merged hub node) ---------- */
+ROUTES.spellType = function(){
+  app().innerHTML = `
+  <div class="wrap screen">
+    <button class="back" onclick="go('dashboard')">← Home</button>
+    <h1 style="font-size:2.1rem">🐝⌨️ Spelling &amp; Typing</h1>
+    <p style="color:var(--muted);max-width:640px">Two keyboard-and-ear workouts. Spell it right — then type it fast.</p>
+    <div class="grid c2" style="margin-top:14px">
+      <button onclick="go('spelldrill')" style="text-align:left;background:#fff;border:2px solid var(--amber);border-radius:16px;padding:22px;cursor:pointer">
+        <div style="font-size:2rem">🐝</div><h3 style="font-size:1.25rem;margin:6px 0 4px">Spell &amp; Drill</h3>
+        <p style="margin:0;font-size:.88rem;color:var(--muted)">Say · Spell · Say. Hear the word, spell it before you type it — fresh words every round.</p>
+        <span class="btn sm" style="margin-top:12px;display:inline-block">Start spelling →</span>
+      </button>
+      <button onclick="go('typing')" style="text-align:left;background:#fff;border:2px solid var(--line);border-radius:16px;padding:22px;cursor:pointer">
+        <div style="font-size:2rem">⌨️</div><h3 style="font-size:1.25rem;margin:6px 0 4px">Typing Practice</h3>
+        <p style="margin:0;font-size:.88rem;color:var(--muted)">Accuracy first, speed second — real sentences, live words-per-minute.</p>
+        <span class="btn sm ghost" style="margin-top:12px;display:inline-block">Start typing →</span>
+      </button>
+    </div>
+  </div>`;
+};
+
+/* ---------- Mission certificate: designed PDF (landscape) ---------- */
+function stemCert(id,pct){
+  if(!(window.jspdf&&window.jspdf.jsPDF)){ alert('PDF library is still loading — please try again in a moment.'); return; }
+  const u=findStemUnit(id); if(!u) return;
+  const nm=(SESSION&&SESSION.name)?SESSION.name:'Student';
+  const cls=(SESSION&&SESSION.class)?SESSION.class:'';
+  const tier = pct>=85?'Outstanding':pct>=65?'Achieved':'Emerging';
+  const kind = pct>=65?'CERTIFICATE OF ACHIEVEMENT':'CERTIFICATE OF PARTICIPATION';
+  const doc=new window.jspdf.jsPDF('l','pt','a4');
+  const W=doc.internal.pageSize.getWidth(), H=doc.internal.pageSize.getHeight();
+  /* night-sky ground + inner panel */
+  doc.setFillColor(21,24,58); doc.rect(0,0,W,H,'F');
+  doc.setFillColor(28,32,74); doc.roundedRect(24,24,W-48,H-48,16,16,'F');
+  doc.setDrawColor(255,210,63); doc.setLineWidth(2.2); doc.roundedRect(34,34,W-68,H-68,12,12,'S');
+  doc.setDrawColor(139,92,246); doc.setLineWidth(1); doc.roundedRect(40,40,W-80,H-80,10,10,'S');
+  /* faint orbit rings top-left & bottom-right */
+  doc.setDrawColor(90,96,150); doc.setLineWidth(1);
+  doc.circle(70,70,90,'S'); doc.circle(W-70,H-70,110,'S');
+  /* STREAM band */
+  const cols=[[15,169,139],[91,141,239],[230,70,75],[245,163,1],[139,92,246],[255,210,63]];
+  const Ls=['S','T','R','E','A','M'], bw=34, gap=10, x0=(W-(6*bw+5*gap))/2;
+  Ls.forEach((L,i)=>{ const c=cols[i];
+    doc.setFillColor(c[0],c[1],c[2]); doc.roundedRect(x0+i*(bw+gap),56,bw,bw,7,7,'F');
+    doc.setTextColor(i===5?21:255,i===5?24:255,i===5?58:255); doc.setFont('helvetica','bold'); doc.setFontSize(19);
+    doc.text(L, x0+i*(bw+gap)+bw/2, 56+bw/2+7, {align:'center'}); });
+  /* headings */
+  doc.setTextColor(255,210,63); doc.setFont('helvetica','bold'); doc.setFontSize(11);
+  doc.text('i C A N   A C A D E M Y   ·   S T E M · S T R E A M   M I S S I O N', W/2, 118, {align:'center'});
+  doc.setTextColor(255,255,255); doc.setFont('times','bold'); doc.setFontSize(32);
+  doc.text(kind, W/2, 152, {align:'center'});
+  doc.setFont('times','italic'); doc.setFontSize(13); doc.setTextColor(214,216,236);
+  doc.text('Read it. Write it. Design it.', W/2, 172, {align:'center'});
+  /* name */
+  doc.setFont('times','bolditalic'); doc.setFontSize(34); doc.setTextColor(255,255,255);
+  doc.text(nm, W/2, 216, {align:'center'});
+  doc.setDrawColor(255,210,63); doc.setLineWidth(1.4);
+  const nw=Math.min(doc.getTextWidth(nm)+60, W-260); doc.line(W/2-nw/2,226,W/2+nw/2,226);
+  doc.setFont('helvetica','normal'); doc.setFontSize(12); doc.setTextColor(214,216,236);
+  doc.text((cls?('Class '+cls+' — '):'')+'has completed the full RWD Challenge of', W/2, 248, {align:'center'});
+  doc.setFont('times','bold'); doc.setFontSize(21); doc.setTextColor(255,255,255);
+  doc.text('Mission: '+u.title, W/2, 276, {align:'center'});
+  doc.setFont('helvetica','normal'); doc.setFontSize(11.5); doc.setTextColor(214,216,236);
+  doc.text('Score '+pct+'%  ·  '+tier+'  —  Read 25 · Write 35 · Design 40: every literacy, scored.', W/2, 298, {align:'center'});
+  /* RWD medallions */
+  const rw=[['R',18,165,133],['W',230,70,75],['D',139,92,246]];
+  rw.forEach((r,i)=>{ const cx=W/2+(i-1)*66;
+    doc.setFillColor(r[1],r[2],r[3]); doc.circle(cx,336,17,'F');
+    doc.setDrawColor(255,255,255); doc.setLineWidth(1.2); doc.circle(cx,336,17,'S');
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(15); doc.text(r[0],cx,341,{align:'center'}); });
+  /* hexagon seal, right side */
+  const hx=W-118, hy=H-118, hr=44; const pts=[];
+  for(let a=0;a<6;a++){ const t=Math.PI/180*(60*a-30); pts.push([hx+hr*Math.cos(t), hy+hr*Math.sin(t)]); }
+  doc.setDrawColor(255,210,63); doc.setLineWidth(2);
+  for(let a=0;a<6;a++){ const p=pts[a], q=pts[(a+1)%6]; doc.line(p[0],p[1],q[0],q[1]); }
+  doc.setFillColor(21,24,58); doc.circle(hx,hy,30,'F');
+  doc.setTextColor(255,255,255); doc.setFont('times','bolditalic'); doc.setFontSize(16); doc.text('iCAN',hx,hy+1,{align:'center'});
+  doc.setFont('helvetica','bold'); doc.setFontSize(7); doc.setTextColor(255,210,63); doc.text('MISSION SEAL',hx,hy+14,{align:'center'});
+  /* date + signatures */
+  const dt=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  doc.setDrawColor(214,216,236); doc.setLineWidth(1);
+  doc.line(96,H-92,286,H-92); doc.line(W/2-95,H-92,W/2+95,H-92);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(214,216,236);
+  doc.text('Class Teacher',191,H-78,{align:'center'});
+  doc.text('STEM·STREAM Coordinator',W/2,H-78,{align:'center'});
+  doc.text('Awarded on '+dt,191,H-108,{align:'center'});
+  doc.setFontSize(9); doc.setTextColor(151,156,196);
+  doc.text('iCAN my English File — a multiliteracy hub for EFL learners', W/2, H-52, {align:'center'});
+  doc.save('STEM-STREAM_'+u.title.replace(/[^A-Za-z0-9]+/g,'_')+'_'+nm.replace(/\s+/g,'_')+'.pdf');
+}
+
+/* ---------- STREAM implementation lesson plan: downloadable Word document ---------- */
+function stemLessonPlanDoc(){
+  const td='border:1px solid #444;padding:6pt 8pt;font-size:10pt;vertical-align:top';
+  const th='border:1px solid #444;padding:6pt 8pt;font-size:10pt;background:#15183A;color:#fff;text-align:left';
+  const missions=STEM_UNITS.map((u,i)=>`<tr><td style="${td}">${i+1}</td><td style="${td}"><b>${u.title}</b><br><i style="color:#555">${u.theme.replace(/<[^>]*>/g,'')}</i></td><td style="${td}">${u.scenario}</td><td style="${td}">${u.finalProduct}</td></tr>`).join('');
+  const doc=`<!DOCTYPE html><html xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><title>STREAM Lesson Plan</title></head>
+  <body style="font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#222">
+  <div style="text-align:center;border-bottom:3pt solid #15183A;padding-bottom:8pt;margin-bottom:12pt">
+    <h1 style="margin:0;color:#15183A;font-size:20pt">iCAN Academy — STEM·STREAM Implementation Lesson Plan</h1>
+    <p style="margin:4pt 0 0;color:#666"><i>Read it. Write it. Design it. — the RWD framework operationalizing STREAM</i></p>
+  </div>
+  <table style="border-collapse:collapse;width:100%;margin-bottom:12pt">
+    <tr><td style="${td}"><b>School:</b> ____________________</td><td style="${td}"><b>Teacher(s):</b> ____________________</td><td style="${td}"><b>Date:</b> ____________</td></tr>
+    <tr><td style="${td}"><b>Grade / Class:</b> ____________</td><td style="${td}"><b>Duration:</b> 90–120 min (or 2 lessons)</td><td style="${td}"><b>Mission #:</b> ____ of ${STEM_UNITS.length}</td></tr>
+  </table>
+  <h2 style="color:#15183A;font-size:13pt">1 · Objectives</h2>
+  <ul style="margin-top:4pt"><li>Investigate: question → hypothesis → fair test → evidence → conclusion.</li>
+  <li>Integrate all of S·T·R·E·A·M on one real problem.</li>
+  <li>Read to research, write to reason, design to communicate — in English.</li>
+  <li>Collaborate in roles; iterate; present persuasively.</li></ul>
+  <h2 style="color:#15183A;font-size:13pt">2 · Expected outcomes</h2>
+  <ul style="margin-top:4pt"><li>A tested artefact with recorded evidence (numbers, photos, tables).</li>
+  <li>A written product: hypothesis + report / proposal / explanation (80+ words).</li>
+  <li>A team pitch in English; a mission certificate per student.</li></ul>
+  <h2 style="color:#15183A;font-size:13pt">3 · Tools &amp; materials</h2>
+  <p style="margin-top:4pt">Mission reading brief and data (in iCAN → STEM·STREAM) · science notebooks · mission materials list (see the mission page) · thermometer / timer / camera as required · optional Canva or Scratch for documenting and sharing.</p>
+  <h2 style="color:#15183A;font-size:13pt">4 · Lesson flow — the RWD phases (non-sequential: loop as needed)</h2>
+  <table style="border-collapse:collapse;width:100%;margin-top:4pt">
+    <tr><th style="${th}">Phase</th><th style="${th}">Time</th><th style="${th}">Teacher</th><th style="${th}">Students</th><th style="${th}">STREAM</th></tr>
+    <tr><td style="${td}"><b>1 · Briefing</b></td><td style="${td}">10'</td><td style="${td}">Present the scenario and mission prompt; form teams and assign roles.</td><td style="${td}">Restate the mission in their own words; agree roles.</td><td style="${td}">—</td></tr>
+    <tr><td style="${td}"><b>2 · Research (READ)</b></td><td style="${td}">20'</td><td style="${td}">Guide the reading; push for evidence, not opinion.</td><td style="${td}">Read the brief and data; extract 3 facts + 1 number; answer the comprehension check.</td><td style="${td}">S · R</td></tr>
+    <tr><td style="${td}"><b>3 · Plan (WRITE) — CHECKPOINT</b></td><td style="${td}">15'</td><td style="${td}"><b>Approve each plan before any building.</b> Check: hypothesis, labelled sketch, fair test.</td><td style="${td}">Write the hypothesis and plan; sketch and label the design.</td><td style="${td}">M · E · Lang</td></tr>
+    <tr><td style="${td}"><b>4 · Build &amp; Test (DESIGN)</b></td><td style="${td}">40'</td><td style="${td}">Safety officer + chief skeptic; require measured trials and one iteration.</td><td style="${td}">Build, test, record data, improve one variable, retest.</td><td style="${td}">E · A · T · M</td></tr>
+    <tr><td style="${td}"><b>5 · Report &amp; Pitch</b></td><td style="${td}">15'</td><td style="${td}">Chair the pitches; score with the R25/W35/D40 rubric.</td><td style="${td}">Deliver the written product and a 2-minute pitch; submit in iCAN for the certificate.</td><td style="${td}">A · Lang</td></tr>
+  </table>
+  <h2 style="color:#15183A;font-size:13pt">5 · Cross-subject coaching — who coaches what</h2>
+  <table style="border-collapse:collapse;width:100%;margin-top:4pt">
+    <tr><th style="${th}">Subject teacher</th><th style="${th}">Coaches students to…</th></tr>
+    <tr><td style="${td}"><b>Science (Physics / Chemistry / Biology)</b></td><td style="${td}">Form testable hypotheses; run fair tests; explain results with correct concepts (density, energy, evaporation, forces, ecosystems).</td></tr>
+    <tr><td style="${td}"><b>Mathematics</b></td><td style="${td}">Measure accurately; average repeated trials; build tables and graphs; calculate yields, ratios and efficiency scores.</td></tr>
+    <tr><td style="${td}"><b>Computer / ICT</b></td><td style="${td}">Document with photos and time-lapse; present data digitally; optional Scratch or slides for the pitch.</td></tr>
+    <tr><td style="${td}"><b>Art &amp; Design</b></td><td style="${td}">Sketch and label; design diagrams, posters, infographics and models that communicate at a glance.</td></tr>
+    <tr><td style="${td}"><b>English / Languages</b></td><td style="${td}">Genre coaching: hypotheses, procedures, claim–evidence–reasoning, formal proposals and reports; rehearse the pitch.</td></tr>
+    <tr><td style="${td}"><b>Homeroom / Advisory</b></td><td style="${td}">Team roles, rotation, collaboration norms and reflection.</td></tr>
+  </table>
+  <h2 style="color:#15183A;font-size:13pt">6 · Assessment</h2>
+  <p style="margin-top:4pt"><b>RWD Challenge scoring:</b> Read 25% (comprehension check) · Write 35% (length + reasoning language) · Design 40% (description + honest self-check criteria). ≥85% Outstanding · ≥65% Achieved · below: Emerging (resubmission encouraged). Each submission mints a mission certificate in iCAN.</p>
+  <h2 style="color:#15183A;font-size:13pt">7 · Differentiation &amp; safety</h2>
+  <ul style="margin-top:4pt"><li><b>Support:</b> sentence starters (provided per mission), word banks, partner reading, extended time.</li>
+  <li><b>Stretch:</b> extra variable to test; convert results to graphs; lead the pitch Q&amp;A.</li>
+  <li><b>Safety:</b> follow the mission safety line verbatim; teacher handles cutting/heat; never taste experiments.</li></ul>
+  <h2 style="color:#15183A;font-size:13pt">Appendix · Mission catalogue</h2>
+  <table style="border-collapse:collapse;width:100%;margin-top:4pt">
+    <tr><th style="${th}">#</th><th style="${th}">Mission</th><th style="${th}">Scenario</th><th style="${th}">Final product</th></tr>
+    ${missions}
+  </table>
+  <p style="margin-top:14pt;color:#666;font-size:9pt;text-align:center">© iCAN Academy · STEM·STREAM — generated from the live mission catalogue.</p>
+  </body></html>`;
+  const blob=new Blob(['\ufeff'+doc],{type:'application/msword'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='STREAM_Lesson_Plan_iCAN.doc'; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },800);
+}
 
 /* boot */
 go('home');
