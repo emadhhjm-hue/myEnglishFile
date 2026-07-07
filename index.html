@@ -2690,7 +2690,7 @@ const ROUTES = {
       <h1 style="font-size:2.2rem">✏️ Manage content</h1>
       <p style="color:var(--muted);max-width:700px">Add your own readings, design briefs, writing lessons and speaking prompts — no code needed. They appear for students inside the matching course (under a “Teacher-added” section). Saved on this device; use <b>Publish / Backup</b> to share them or move them between devices.</p>
       <div class="tabs">
-        ${[["reading","📖 Readings"],["writing","✍️ Writing lessons"],["design","🎨 Design briefs"],["speaking","🎤 Speaking prompts"],["spelling","📗 Textbook spelling"],["share","☁️ Publish / Backup"]]
+        ${[["reading","📖 Readings"],["writing","✍️ Writing lessons"],["design","🎨 Design briefs"],["speaking","🎤 Speaking prompts"],["spelling","📗 Textbook spelling"],["stem","🚀 STEM·STREAM missions"],["share","☁️ Publish / Backup"]]
           .map(([k,l])=>`<button class="${tab===k?'on':''}" onclick="go('content',{tab:'${k}'})">${l}</button>`).join('')}
       </div>
       <div id="contentBody"></div>
@@ -3288,41 +3288,111 @@ function showSpeakCat(i){
       <p style="margin:0 0 12px;font-size:1.05rem;color:var(--ink)">${p}</p>
       ${s.cat.includes('Presentation')?`<p class="note" style="margin-bottom:12px">📎 Upload slides: <input type="file" id="ppt_${i}_${k}" accept=".ppt,.pptx,.pdf,image/*" style="font-size:.85rem"> <span style="font-size:.8rem">(filename recorded; add a backend to store the file)</span></p>`:''}
       <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-        <button class="btn sm dark" onclick="startRec(${i},${k})">● Record / transcribe</button>
-        <button class="btn sm ghost" onclick="stopRec()">■ Stop</button>
+        <button class="btn sm dark" onclick="audioStart(${i},${k})">🎙️ Record audio</button>
+        <button class="btn sm ghost" onclick="audioStop(${i},${k})">■ Stop recording</button>
+        <button class="btn sm" onclick="txStart(${i},${k})">📝 Live transcribe</button>
+        <button class="btn sm ghost" onclick="txStop()">■ Stop transcribing</button>
         <span style="font-size:.8rem;color:var(--muted)" id="recStatus_${i}_${k}"></span>
+      </div>
+      <p class="note" style="margin:8px 0 0">Record and transcribe are separate — you control both. Nothing stops until <b>you</b> tap Stop. You can re-record as many times as you like; the latest saved take is stored for you and your teacher.</p>
+      <audio id="audio_${i}_${k}" controls style="display:none;margin-top:10px;width:100%"></audio>
+      <div id="audioActions_${i}_${k}" style="display:none;margin-top:6px;gap:6px;flex-wrap:wrap">
+        <button class="btn sm ghost" onclick="audioClear(${i},${k})">🗑 Delete take</button>
+        <button class="btn sm ghost" onclick="audioDownload(${i},${k})">⬇ Download</button>
       </div>
       <div class="transcript" id="trans_${i}_${k}" style="margin-top:12px">Your spoken words will appear here…</div>
       <button class="btn sm teal" style="margin-top:10px" onclick="saveSpeaking(${i},${k},${JSON.stringify(s.cat)})">Save attempt</button>
       <span id="spkSaved_${i}_${k}" style="font-size:.82rem;color:var(--teal-dk);margin-left:8px"></span>
     </div>`).join('');
 }
-let REC=null, REC_TARGET=null;
-function startRec(i,k){
+/* --- Speech-to-text (live transcribe) --- */
+let TX=null, TX_TARGET=null, TX_LAST_FINAL="";
+function txStart(i,k){
   const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
   const status=document.getElementById(`recStatus_${i}_${k}`);
-  if(!SR){ status.textContent="Speech-to-text isn't supported in this browser — try Chrome. You can still speak aloud and self-assess."; return; }
-  stopRec();
-  REC=new SR(); REC.continuous=true; REC.interimResults=true; REC.lang='en-US';
-  REC_TARGET=document.getElementById(`trans_${i}_${k}`); REC_TARGET.textContent="";
-  status.textContent="● Listening…";
-  let finalT="";
-  REC.onresult=e=>{ let interim=""; for(let n=e.resultIndex;n<e.results.length;n++){ const t=e.results[n][0].transcript; if(e.results[n].isFinal) finalT+=t+" "; else interim+=t; } REC_TARGET.textContent=finalT+interim; };
-  REC.onerror=e=>{ status.textContent="Mic error: "+e.error; };
-  REC.onend=()=>{ status.textContent="■ Stopped"; };
-  try{ REC.start(); }catch(e){ status.textContent="Couldn't start — check microphone permission."; }
+  if(!SR){ if(status) status.textContent="Live transcription isn't supported here — try Chrome/Edge. Audio recording still works."; return; }
+  txStop();
+  TX=new SR(); TX.continuous=true; TX.interimResults=true; TX.lang='en-US';
+  TX_TARGET=document.getElementById(`trans_${i}_${k}`); TX_TARGET.textContent=""; TX_LAST_FINAL="";
+  if(status) status.textContent="📝 Live transcribing… tap Stop transcribing when you finish.";
+  TX.onresult=e=>{
+    let interim=""; let newFinal="";
+    for(let n=e.resultIndex;n<e.results.length;n++){
+      const t=(e.results[n][0].transcript||'').trim();
+      if(e.results[n].isFinal){ newFinal+=t+' '; } else { interim+=t+' '; }
+    }
+    if(newFinal){ TX_LAST_FINAL+=newFinal; }
+    if(TX_TARGET) TX_TARGET.textContent = (TX_LAST_FINAL+interim).replace(/\s+/g,' ').trim();
+  };
+  TX.onerror=e=>{ if(status) status.textContent="Transcription error: "+e.error; };
+  TX.onend=()=>{ /* stopped by user */ };
+  try{ TX.start(); }catch(e){ if(status) status.textContent="Couldn't start — check microphone permission."; }
 }
-function stopRec(){ if(REC){ try{REC.stop();}catch(e){} REC=null; } }
+function txStop(){ if(TX){ try{TX.stop();}catch(e){} TX=null; } }
+/* backward compatibility (any old callers) */
+function startRec(i,k){ txStart(i,k); }
+function stopRec(){ txStop(); }
+
+/* --- Audio recording (MediaRecorder) --- */
+let AUDIO_REC=null, AUDIO_CHUNKS=[], AUDIO_STREAM=null, AUDIO_KEY=null;
+const AUDIO_BLOBS={}; // key -> {blob, url}
+async function audioStart(i,k){
+  const status=document.getElementById(`recStatus_${i}_${k}`);
+  if(!navigator.mediaDevices || !window.MediaRecorder){ if(status) status.textContent="Audio recording isn't supported here — try Chrome/Edge."; return; }
+  if(AUDIO_REC && AUDIO_REC.state==='recording'){ if(status) status.textContent="Already recording — tap Stop first."; return; }
+  try{
+    AUDIO_STREAM = await navigator.mediaDevices.getUserMedia({audio:true});
+    AUDIO_CHUNKS = [];
+    AUDIO_KEY = i+"_"+k;
+    const mime = (window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported('audio/webm')) ? 'audio/webm' : '';
+    AUDIO_REC = mime ? new MediaRecorder(AUDIO_STREAM, {mimeType:mime}) : new MediaRecorder(AUDIO_STREAM);
+    AUDIO_REC.ondataavailable = ev => { if(ev.data && ev.data.size) AUDIO_CHUNKS.push(ev.data); };
+    AUDIO_REC.onstop = () => {
+      const blob = new Blob(AUDIO_CHUNKS, {type: AUDIO_REC.mimeType || 'audio/webm'});
+      const url = URL.createObjectURL(blob);
+      AUDIO_BLOBS[AUDIO_KEY] = {blob, url, size: blob.size};
+      const au = document.getElementById(`audio_${i}_${k}`); if(au){ au.src=url; au.style.display='block'; }
+      const acts = document.getElementById(`audioActions_${i}_${k}`); if(acts){ acts.style.display='flex'; }
+      if(status) status.textContent="✓ Take saved locally ("+Math.round(blob.size/1024)+" KB). Play, keep, delete, or download.";
+      if(AUDIO_STREAM){ AUDIO_STREAM.getTracks().forEach(t=>t.stop()); AUDIO_STREAM=null; }
+      AUDIO_REC=null;
+    };
+    AUDIO_REC.start();
+    if(status) status.textContent="🎙️ Recording… tap Stop recording when you finish.";
+  }catch(e){ if(status) status.textContent="Mic permission denied or unavailable."; }
+}
+function audioStop(i,k){
+  const status=document.getElementById(`recStatus_${i}_${k}`);
+  if(!AUDIO_REC){ if(status) status.textContent="No active recording."; return; }
+  try{ AUDIO_REC.stop(); }catch(e){}
+}
+function audioClear(i,k){
+  const key=i+"_"+k; const rec=AUDIO_BLOBS[key];
+  if(rec){ try{URL.revokeObjectURL(rec.url);}catch(e){} delete AUDIO_BLOBS[key]; }
+  const au=document.getElementById(`audio_${i}_${k}`); if(au){ try{au.pause&&au.pause();}catch(e){} try{au.removeAttribute('src');}catch(e){} au.style.display='none'; }
+  const acts=document.getElementById(`audioActions_${i}_${k}`); if(acts){ acts.style.display='none'; }
+  const status=document.getElementById(`recStatus_${i}_${k}`); if(status) status.textContent="Take deleted. Record a new one when you are ready.";
+}
+function audioDownload(i,k){
+  const rec=AUDIO_BLOBS[i+"_"+k]; if(!rec) return;
+  const a=document.createElement('a'); a.href=rec.url;
+  const ext = (rec.blob.type||'').indexOf('webm')>=0?'webm':'audio';
+  a.download='speaking_'+(SESSION&&SESSION.name?SESSION.name.replace(/\s+/g,'_'):'me')+'_'+i+'-'+k+'.'+ext;
+  document.body.appendChild(a); a.click(); setTimeout(()=>a.remove(),400);
+}
 function saveSpeaking(i,k,cat){
   const t=document.getElementById(`trans_${i}_${k}`).textContent.trim();
   const words=t&&t!=="Your spoken words will appear here…"? t.split(/\s+/).filter(Boolean).length : 0;
   const fileEl=document.getElementById(`ppt_${i}_${k}`); const file=fileEl&&fileEl.files[0];
+  const audio = AUDIO_BLOBS[i+"_"+k];
+  const audioNote = audio? ", audio recorded ("+Math.round(audio.size/1024)+" KB, kept on this device)" : "";
   if(SESSION&&SESSION.role==="student"){
     saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,
       skill:"Speaking",activity:cat,score:null,max:null,percent:null,
-      detail:`${words} spoken words`+(file?`, slides: ${file.name}`:'')});
+      detail:`${words} transcribed words`+(file?`, slides: ${file.name}`:'')+audioNote,
+      hasAudio: !!audio, transcript: t.length<800 ? t : t.slice(0,800)+'…'});
   }
-  document.getElementById(`spkSaved_${i}_${k}`).textContent=`✓ Saved (${words} words${file?', slides attached':''})`;
+  document.getElementById(`spkSaved_${i}_${k}`).textContent=`✓ Saved (${words} words${file?', slides attached':''}${audio?', audio kept':''})`;
 }
 
 /* =========================================================================
@@ -3726,7 +3796,89 @@ function cMsg(t, ok){ const m=document.getElementById('cMsg'); if(m){ m.style.co
 
 function renderContentTab(tab){
   const b=document.getElementById('contentBody'); if(!b)return;
-  b.innerHTML = tab==='reading'?readingEditor() : tab==='writing'?writingEditor() : tab==='design'?designEditor() : tab==='speaking'?speakingEditor() : tab==='spelling'?spellingEditor() : shareEditor();
+  b.innerHTML = tab==='reading'?readingEditor() : tab==='writing'?writingEditor() : tab==='design'?designEditor() : tab==='speaking'?speakingEditor() : tab==='spelling'?spellingEditor() : tab==='stem'?stemMissionEditor() : shareEditor();
+}
+function customStemMissions(){ return Store.get('ican_stem_custom')||[]; }
+function saveCustomStemMission(){
+  const title=(val('cs_title')||'').trim();
+  const scenario=(val('cs_scenario')||'').trim();
+  const drivingQ=(val('cs_dq')||'').trim();
+  const readTitle=(val('cs_read_title')||'').trim();
+  const readText=(val('cs_read_text')||'').trim();
+  const writePrompt=(val('cs_write_prompt')||'').trim();
+  const designBrief=(val('cs_design_brief')||'').trim();
+  const criteriaRaw=(val('cs_criteria')||'').trim();
+  const mcqRaw=(val('cs_mcq')||'').trim();
+  const msg=document.getElementById('cs_msg');
+  if(!title||!scenario||!readText||!writePrompt||!designBrief){
+    msg.innerHTML='<span style="color:var(--coral-dk)">Please complete title, scenario, reading text, write prompt and design brief.</span>'; return;
+  }
+  // Parse MCQs: format "Question | opt1 | opt2 | opt3 | opt4 | correctIndex"
+  const mcq=[];
+  mcqRaw.split(/\n+/).forEach(line=>{
+    const parts=line.split('|').map(s=>s.trim()); if(parts.length<6) return;
+    const a=parseInt(parts[5],10); if(isNaN(a)||a<0||a>3) return;
+    mcq.push({q:parts[0], o:parts.slice(1,5), a:a});
+  });
+  while(mcq.length<4){ mcq.push({q:'(add a question)', o:['—','—','—','—'], a:0}); }
+  const crit=criteriaRaw?criteriaRaw.split(/\n+/).map(s=>s.trim()).filter(Boolean):[
+    'The artefact meets the design brief','It is labelled clearly in English','It uses at least one fact from the reading',
+    'Evidence and measurements are included','The team name and mission are shown','It is honest, original team work'];
+  const mission = {
+    id:'cs_'+Date.now(), title, icon:'🧪', theme:'👩‍🏫 Teacher-added mission',
+    scenario, mission:writePrompt, drivingQ:drivingQ||'What did your team discover?',
+    purpose:'Teacher-designed mission — read, write and design around a real problem.',
+    contribution:'Shows the RWD cycle in one coordinated project.',
+    efl:'Task-based English tied to a real design context.',
+    streamMap:{S:'Investigate the problem',T:'Use appropriate tools',R:'Reflect and refine',E:'Design an artefact that works',A:'Present your findings',M:'Justify with numbers'},
+    materials:['as specified by the teacher'],
+    roles:['engineer','writer','presenter'],
+    steps:['Read the text carefully','Plan your response and design','Build and test','Write it up','Present to the class'],
+    safety:'Follow standard classroom safety.',
+    finalProduct:'A written response + a labelled artefact/poster.',
+    visual:'<svg viewBox="0 0 340 190" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto"><rect width="340" height="190" fill="#fbf9ff" rx="10"/><text x="170" y="102" font-size="42" text-anchor="middle">🧪</text><text x="170" y="150" font-size="12" text-anchor="middle" fill="#555">Teacher-designed mission</text></svg>',
+    model:'Your teacher will share the model answer in class after your submission — for now, focus on your own honest attempt.',
+    challenge:{
+      read:{title:readTitle||title, text:readText, questions:mcq.slice(0,4)},
+      write:{prompt:writePrompt, starters:['Our team found that…','The evidence shows…','Because of this,…','Therefore we…']},
+      design:{brief:designBrief, criteria:crit.slice(0,8)}
+    }
+  };
+  const list=customStemMissions(); list.push(mission); Store.set('ican_stem_custom', list);
+  ['cs_title','cs_scenario','cs_dq','cs_read_title','cs_read_text','cs_write_prompt','cs_design_brief','cs_criteria','cs_mcq'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  msg.innerHTML='<span style="color:var(--teal-dk)">✓ Mission added. Students see it under STEM·STREAM → The Missions.</span>';
+  renderContentTab('stem');
+}
+function deleteCustomStemMission(i){
+  if(!confirm('Delete this mission?')) return;
+  const list=customStemMissions(); list.splice(i,1); Store.set('ican_stem_custom', list);
+  renderContentTab('stem');
+}
+function stemMissionEditor(){
+  const list=customStemMissions();
+  return `<div class="card">
+    <h3 style="font-size:1.2rem">Create a STEM·STREAM mission</h3>
+    <p style="color:var(--muted);font-size:.9rem;margin-top:0">Design your own RWD mission — students see it under <b>STEM·STREAM → The Missions</b>. Every mission runs Read → Write → Design and is scored 25/35/40 like the built-in missions.</p>
+    <div class="ed-field"><label>Mission title</label><input id="cs_title" placeholder="e.g. Save the Mangroves"></div>
+    <div class="ed-field"><label>Scenario (a 2–3 sentence real-world hook)</label><textarea id="cs_scenario" style="min-height:70px" placeholder="Rising temperatures threaten a coastal mangrove nursery near Abu Dhabi…"></textarea></div>
+    <div class="ed-field"><label>Driving question (optional)</label><input id="cs_dq" placeholder="What change would protect the seedlings this summer?"></div>
+    <div class="ed-field"><label>📖 Reading — title</label><input id="cs_read_title" placeholder="Why the World Is Thirsty"></div>
+    <div class="ed-field"><label>📖 Reading — full text (100–250 words)</label><textarea id="cs_read_text" style="min-height:140px" placeholder="Paste or write the reading text students will read (with 🔊 read-to-me and zoom)."></textarea></div>
+    <div class="ed-field"><label>📖 Reading — 4 comprehension MCQs (one per line: <i>Question | A | B | C | D | correctIndex(0-3)</i>)</label>
+      <textarea id="cs_mcq" style="min-height:120px;font-family:monospace;font-size:.85rem" placeholder="What causes evaporation? | wind | sun\u2019s heat | cold air | pipes | 1
+Which stage removes salt? | boil | filter | plant | pipes | 2
+…"></textarea></div>
+    <div class="ed-field"><label>✍️ Write prompt (what students will write)</label><textarea id="cs_write_prompt" style="min-height:70px" placeholder="Write a claim-evidence-reasoning paragraph explaining which filter design cleaned the water best…"></textarea></div>
+    <div class="ed-field"><label>🎨 Design brief</label><textarea id="cs_design_brief" style="min-height:70px" placeholder="Design a labelled poster showing the water\u2019s journey from sea to tap. Include arrows and one \u201cDid you know?\u201d fact."></textarea></div>
+    <div class="ed-field"><label>🎨 Design criteria — one per line (optional, uses defaults if empty)</label><textarea id="cs_criteria" style="min-height:80px" placeholder="Every part labelled in English&#10;Arrows show how it works&#10;Uses one fact from the reading&#10;…"></textarea></div>
+    <div id="cs_msg" style="font-size:.9rem;margin:6px 0"></div>
+    <button class="btn" onclick="saveCustomStemMission()">Add mission</button>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3 style="font-size:1.2rem">Your teacher-added missions (${list.length})</h3>
+    ${list.length? list.map((m,i)=>`<div class="item-row"><div><b>${esc(m.title)}</b><div class="meta">${esc(m.scenario.slice(0,120))}${m.scenario.length>120?'…':''}</div></div><button class="btn ghost sm" onclick="deleteCustomStemMission(${i})">✕ Remove</button></div>`).join('')
+      : '<p class="note">No custom missions yet. Add one above — it appears for students straight away, with its own certificate.</p>'}
+  </div>`;
 }
 function spellingEditor(){
   const list=textbookDrills();
@@ -5799,7 +5951,8 @@ function challengeSubmit(id){
 const COACH_NAV=[
   ["📝 Exams","exams"],["📖 Reading","readingCourse"],["✍️ Writing","writingCourse"],
   ["🐝 Spell & Drill","spelldrill"],["📚 Vocabulary","vocab"],["🧩 Grammar","grammar"],
-  ["🧭 Diagnostic","diagnostic"],["🎨 Design","dstudio"],["⌨️ Typing","typing"]
+  ["🧭 Diagnostic","diagnostic"],["🎨 Design","dstudio"],["⌨️ Typing","typing"],
+  ["🚀 STEM·STREAM","stemlab"],["🧒 Young Learners","ylhub"]
 ];
 const COACH_HELP={
   start:   {t:"How to use iCAN", m:"Sign in with your name, then tap any circle on your hub. <b>Read · Write · Design</b> sit in the middle; Spelling & Typing, Grammar, Article-A-Day, STEM·STREAM, Diagnostic and Exams orbit around them. Everything you finish is saved for your teacher."},
@@ -5812,6 +5965,8 @@ const COACH_HELP={
   diagnostic:{t:"🧭 Diagnostic", route:"diagnostic", m:"Take the <b>pre</b>-test to find your level, the <b>mid</b>-test to check progress, and the <b>post</b>-test at the end. <b>Tip:</b> don't revise first — it's meant to show your true starting point."},
   design:  {t:"🎨 Design", route:"dstudio", m:"Create a poster or artefact on the canvas and share it. <b>Tip:</b> match your design to its <b>audience and purpose</b>, and follow the brief's checklist."},
   typing:  {t:"⌨️ Typing", route:"typing", m:"Build speed and accuracy. <b>Tip:</b> keep your eyes on the text, not the keys — accuracy first, and speed follows."},
+  stemstream:{t:"🚀 STEM·STREAM", route:"stemlab", m:"Real-world engineering missions run on the RWD cycle. <b>Read</b> a short science text (with 🔊 read-to-me + zoom), <b>Write</b> a claim-evidence-reasoning paragraph, then <b>Design</b> your artefact and upload it in the PowerPoint template. Every mission is scored 25/35/40 (R/W/D) and mints a certificate. <b>Tip:</b> plan your test in writing <i>before</i> you build — engineers let the data decide."},
+  yl:      {t:"🧒 Young Learners", route:"ylhub", m:"A fun-sized RWD world for Grades 1–8. Picture readers with 🔊 <b>Read-to-me</b>, tap-any-word pronunciation + meaning, standard <b>and</b> extended texts, and a game after every practice. Also: 50 mini-quizzes, exam practice for six skills, Multimodal Studio (charts, maps, comics), a Flipbook Maker and Drawing Pad. <b>Tip:</b> struggling readers should turn on read-to-me for a first listen, then read again while tapping any tricky word."},
   teacher: {t:"👩‍🏫 For teachers", route:"teacher", m:"From your dashboard: open <b>Manage content</b> to add readings, writing lessons, speaking prompts and textbook spelling lists; use <b>Analytics</b> to see each student's skills and an intervention plan; share access codes so students can log in."}
 };
 function coachLoggedIn(){ return (typeof SESSION!=='undefined') && SESSION && !!SESSION.role; }
@@ -5872,12 +6027,14 @@ function coachAsk(){
     [/diagnos|placement|level/,"diagnostic"],
     [/design|poster|canvas/,"design"],
     [/typ|keyboard/,"typing"],
+    [/stem|stream|mission|engineer|artefact|rwd/,"stemstream"],
+    [/young|kid|child|primary|grade\s?[1-8]|little|yl\b|flipbook|multimodal|picture reader|mini.?quiz/,"yl"],
     [/teacher|manage|analytic|class code/,"teacher"]
   ];
   let key=null; for(const [re,k] of rules){ if(re.test(t)){ key=k; break; } }
   if(!key && /how|use|start|begin|guide|help|where|tip/.test(t)) key='start';
   if(key){ coachTip(key); }
-  else { b.innerHTML=`<div class="cbot">I can explain any of these — just tap a topic below, or ask “how do I…”. I can help with Reading, Writing, Spell &amp; Drill, Exams, Grammar, Vocabulary, Diagnostic, Design, Typing.</div>`; renderCoachTopics(); }
+  else { b.innerHTML=`<div class="cbot">I can explain any of these — just tap a topic below, or ask “how do I…”. I can help with Reading, Writing, Spell &amp; Drill, Exams, Grammar, Vocabulary, Diagnostic, Design, Typing, STEM·STREAM and Young Learners.</div>`; renderCoachTopics(); }
 }
 
 /* ===================== CREATION TOOLS POP-UP ===================== */
@@ -8675,8 +8832,12 @@ function allItemIds(){
   try{ allChallenges().forEach(d=>ids.push({id:d.id, label:d.title||d.id, group:'Design Studio'})); }catch(e){}
   // Full exams
   try{ EXAMS.forEach((e,i)=>ids.push({id:'exam_'+i, label:e.label, group:'Full-length Exams'})); }catch(e){}
-  // Grammar topics
-  try{ Object.keys(GRM).forEach(lv=>{ GRM[lv].topics.forEach(t=>ids.push({id:t.id, label:t.topic, group:'Grammar ('+lv+')'})) }); }catch(e){}
+  // Grammar topics (Grammar Lab - GRAMMAR object) + mixed practices
+  try{ Object.keys(GRAMMAR).forEach(lv=>{ (GRAMMAR[lv].topics||[]).forEach(t=>ids.push({id:t.id, label:t.title, group:'Grammar Lab ('+GRAMMAR[lv].label+')'})) }); }catch(e){}
+  try{ Object.keys(GR_MIXED||{}).forEach(lv=>{ (GR_MIXED[lv]||[]).forEach((seed,i)=>ids.push({id:'grmix_'+lv+'_'+seed, label:(GRAMMAR[lv]?GRAMMAR[lv].label:lv)+' — Mixed practice '+(i+1), group:'Grammar Lab ('+(GRAMMAR[lv]?GRAMMAR[lv].label:lv)+')'})); }); }catch(e){}
+  try{ (GR_CHALLENGES||[]).forEach(c=>ids.push({id:'grchal_'+c.id, label:c.title, group:'Grammar Lab (challenges)'})); }catch(e){}
+  // Teacher-added STEM missions
+  try{ (customStemMissions()||[]).forEach(m=>ids.push({id:m.id, label:m.title, group:'STEM·STREAM (teacher-added)'})); }catch(e){}
   // Reading practice
   try{ READING.forEach(r=>ids.push({id:'rp_'+r.title.replace(/\s/g,'_'), label:r.title, group:'Reading Practice'})); }catch(e){}
   // Writing practice
@@ -8725,6 +8886,24 @@ function lockGrammarButtons(){
     if(!m) return;
     if(!itemGateOpen(m[1])){
       btn.disabled = true; btn.style.opacity = '0.45'; btn.style.pointerEvents = 'none';
+      btn.insertAdjacentHTML('afterbegin','<span style="font-size:1.2em">🔒 </span>');
+    }
+  });
+  document.querySelectorAll('button[onclick*="startGrMixed"]').forEach(btn=>{
+    const m = (btn.getAttribute('onclick')||'').match(/startGrMixed\('([^']+)'\s*,\s*(\d+)/);
+    if(!m) return;
+    const id='grmix_'+m[1]+'_'+m[2];
+    if(!itemGateOpen(id)){
+      btn.disabled=true; btn.style.opacity='0.45'; btn.style.pointerEvents='none';
+      btn.insertAdjacentHTML('afterbegin','<span style="font-size:1.2em">🔒 </span>');
+    }
+  });
+  document.querySelectorAll('button[onclick*="startGrChallenge"]').forEach(btn=>{
+    const m = (btn.getAttribute('onclick')||'').match(/startGrChallenge\((\d+)/);
+    if(!m) return;
+    const id='grchal_'+m[1];
+    if(!itemGateOpen(id)){
+      btn.disabled=true; btn.style.opacity='0.45'; btn.style.pointerEvents='none';
       btn.insertAdjacentHTML('afterbegin','<span style="font-size:1.2em">🔒 </span>');
     }
   });
@@ -9169,7 +9348,8 @@ const STEM_FUN = [
  {icon:'🌪️', title:'Bottle Tornado', tag:'Fluid dynamics · 10 min', tryIt:'Fill a bottle two-thirds with water (a drop of soap and glitter helps), swirl it hard in circles, then hold it upside down — a spinning vortex appears.', science:'Swirling gives the water rotational momentum; as it drains, the spin tightens into a funnel because the water speeds up as it moves toward the centre — like a real tornado.', efl:'Write a mini news report: "A tornado was spotted in Grade 9 today. Witnesses said…" — past simple and passive voice in action.'}
 ];
 
-function findStemUnit(id){ return STEM_UNITS.find(u=>u.id===id); }
+function allStemUnits(){ try{ return STEM_UNITS.concat(customStemMissions()); }catch(e){ return STEM_UNITS; } }
+function findStemUnit(id){ return allStemUnits().find(u=>u.id===id); }
 
 /* drafts for stem writing/design boxes */
 function stemDraftKey(id){ return (typeof sid==='function'? sid() : 'anon')+'::stem_'+id; }
@@ -9240,8 +9420,6 @@ ROUTES.stemlab = function(){
         <div>
           <span class="stem-path-chip">R → W → D</span>
           <span class="stem-path-chip">R → D → W</span>
-          <span class="stem-path-chip">D → R → W</span>
-          <span class="stem-path-chip">…and back again ↺</span>
         </div>
       </div>
     </div>
@@ -9273,7 +9451,7 @@ ROUTES.stemlab = function(){
     <h2 class="stem-h2" style="margin-top:26px">🛰️ The Missions</h2>
     <p style="color:var(--muted);max-width:760px;margin:4px 0 8px">Five core missions plus the <b>🇦🇪 UAE Series</b> — three ADNOC-style national challenges. Every mission: scenario → guided plan → build → scored RWD Challenge → certificate.</p>
     <div class="grid c2" style="margin-top:8px">
-      ${STEM_UNITS.map((u,i)=>`
+      ${allStemUnits().map((u,i)=>`
         <div class="item-row stem-unit-card" style="flex-direction:column;align-items:flex-start">
           <div style="display:flex;justify-content:space-between;width:100%;align-items:center"><div style="font-size:2rem">${u.icon}</div><span class="stem-mnum">Mission ${i+1}${u.theme.indexOf('🇦🇪')>-1?'<span class="uae-badge">UAE SERIES</span>':''}</span></div>
           <span class="genre-tag">${u.theme}</span>
@@ -9817,26 +9995,246 @@ const YL_READERS=[
 ];
 
 const YL_MM=[
-{id:'m1',mode:'Infographic',icon:'📊',title:'Healthy Plate',obj:'Interpret an infographic; read proportions.',svg:'<svg viewBox="0 0 340 180" style="width:100%"><rect width="340" height="180" fill="#fff" rx="10"/><circle cx="110" cy="92" r="62" fill="#f4f6fa" stroke="#ccd"/><path d="M110 92 L110 30 A62 62 0 0 1 168 110 Z" fill="#8fce8f"/><path d="M110 92 L168 110 A62 62 0 0 1 74 146 Z" fill="#f2c078"/><path d="M110 92 L74 146 A62 62 0 0 1 110 30 Z" fill="#e59ac0"/><text x="132" y="66" font-size="11">vegetables ½</text><text x="120" y="132" font-size="11">grains ¼</text><text x="40" y="96" font-size="11">protein ¼</text><rect x="216" y="40" width="104" height="104" rx="10" fill="#eaf4fb"/><text x="268" y="66" font-size="12" text-anchor="middle" font-weight="700" fill="#28527a">Drink</text><text x="268" y="88" font-size="26" text-anchor="middle">💧</text><text x="268" y="116" font-size="11" text-anchor="middle" fill="#456">water, not soda</text></svg>',
- qs:[{t:'mcq',q:'Which food group fills HALF the plate?',o:['Grains','Vegetables','Protein','Sweets'],a:1},{t:'mcq',q:'What drink does the infographic suggest?',o:['Soda','Juice','Water','Tea'],a:2},{t:'gap',s:'Grains fill one ___ of the plate.',a:['quarter','1/4','fourth']}]},
-{id:'m2',mode:'Table',icon:'📋',title:'Class Timetable',obj:'Read a table; cross-reference rows and columns.',svg:'<svg viewBox="0 0 340 150" style="width:100%"><rect width="340" height="150" fill="#fff" rx="10"/><g font-size="11" fill="#333"><rect x="20" y="20" width="300" height="26" fill="#15183A"/><text x="60" y="37" fill="#fff">Day</text><text x="150" y="37" fill="#fff">8:00</text><text x="240" y="37" fill="#fff">10:00</text><rect x="20" y="46" width="300" height="26" fill="#f4f6fa"/><text x="45" y="63">Sunday</text><text x="140" y="63">Maths</text><text x="232" y="63">English</text><rect x="20" y="72" width="300" height="26" fill="#fff"/><text x="45" y="89">Monday</text><text x="140" y="89">Science</text><text x="240" y="89">Sport</text><rect x="20" y="98" width="300" height="26" fill="#f4f6fa"/><text x="45" y="115">Tuesday</text><text x="145" y="115">Art</text><text x="235" y="115">Maths</text></g></svg>',
- qs:[{t:'mcq',q:'What is at 10:00 on Monday?',o:['Maths','English','Sport','Art'],a:2},{t:'mcq',q:'When is Art?',o:['Sunday 8:00','Monday 10:00','Tuesday 8:00','Tuesday 10:00'],a:2},{t:'gap',s:'On Sunday at 8:00 the class has ___.',a:['maths','math']}]},
-{id:'m3',mode:'Venn diagram',icon:'⭕',title:'Cats vs Dogs',obj:'Compare and contrast using a Venn diagram.',svg:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#fff" rx="10"/><circle cx="130" cy="90" r="62" fill="#e59ac0" opacity=".55"/><circle cx="210" cy="90" r="62" fill="#7fb3d9" opacity=".55"/><text x="92" y="40" font-size="12" font-weight="700" fill="#a04a72">CATS</text><text x="222" y="40" font-size="12" font-weight="700" fill="#28527a">DOGS</text><g font-size="10.5" fill="#333"><text x="84" y="82">purr</text><text x="80" y="100">climb trees</text><text x="150" y="82">pets</text><text x="148" y="98">four legs</text><text x="146" y="114">need care</text><text x="232" y="82">bark</text><text x="228" y="100">love walks</text></g></svg>',
- qs:[{t:'mcq',q:'What belongs to BOTH circles?',o:['Bark','Purr','Four legs','Climb trees'],a:2},{t:'mcq',q:'Which is only for dogs?',o:['Love walks','Purr','Climb trees','Need care'],a:0},{t:'gap',s:'The middle part shows what cats and dogs ___.',a:['share','have in common']}]},
-{id:'m4',mode:'Flags',icon:'🚩',title:'Reading Flags',obj:'Decode colour symbolism; connect visuals to meaning.',svg:'<svg viewBox="0 0 340 150" style="width:100%"><rect width="340" height="150" fill="#fff" rx="10"/><g><rect x="30" y="30" width="120" height="80" fill="#fff" stroke="#999"/><rect x="30" y="30" width="30" height="80" fill="#e6464b"/><rect x="60" y="30" width="90" height="26.7" fill="#2f9e5f"/><rect x="60" y="83.3" width="90" height="26.7" fill="#222"/><text x="90" y="128" font-size="11" text-anchor="middle" fill="#456">UAE 🇦🇪</text></g><g font-size="10.5" fill="#333"><text x="190" y="46">🟩 green — growth</text><text x="190" y="66">⬜ white — peace</text><text x="190" y="86">⬛ black — strength</text><text x="190" y="106">🟥 red — courage</text></g></svg>',
- qs:[{t:'mcq',q:'Which colour stands for peace?',o:['Green','White','Black','Red'],a:1},{t:'mcq',q:'Where is the red band on the UAE flag?',o:['On top','On the right','On the left side','At the bottom'],a:2},{t:'gap',s:'Green stands for ___.',a:['growth']}]},
-{id:'m5',mode:'Poster',icon:'🪧',title:'Save Water Poster',obj:'Identify a poster\u2019s message, audience and persuasive features.',svg:'<svg viewBox="0 0 340 180" style="width:100%"><rect width="340" height="180" fill="#eaf4fb" rx="10"/><rect x="70" y="14" width="200" height="152" rx="8" fill="#fff" stroke="#7fb3d9" stroke-width="3"/><text x="170" y="44" font-size="17" text-anchor="middle" font-weight="800" fill="#1e4d75">EVERY DROP COUNTS</text><path d="M170 60 c-16 24-16 38 0 46 c16-8 16-22 0-46 z" fill="#5bb3e6"/><text x="170" y="132" font-size="11" text-anchor="middle" fill="#345">Turn off the tap while brushing.</text><text x="170" y="152" font-size="10" text-anchor="middle" fill="#789">— your school eco club</text></svg>',
- qs:[{t:'mcq',q:'What is the poster\u2019s message?',o:['Buy more water','Every drop counts','Swim daily','Drink soda'],a:1},{t:'mcq',q:'What action does it ask for?',o:['Wash the car','Turn off the tap while brushing','Take long showers','Water plants at noon'],a:1},{t:'gap',s:'The poster was made by the school ___ club.',a:['eco']}]},
-{id:'m6',mode:'Diagram',icon:'🦋',title:'Butterfly Life Cycle',obj:'Read a cycle diagram; sequence stages.',svg:'<svg viewBox="0 0 340 180" style="width:100%"><rect width="340" height="180" fill="#fff" rx="10"/><g font-size="11" fill="#333" text-anchor="middle"><circle cx="170" cy="40" r="24" fill="#f2e8d5"/><text x="170" y="36">egg</text><text x="170" y="52" font-size="14">🥚</text><circle cx="272" cy="92" r="24" fill="#e8f7ee"/><text x="272" y="88">caterpillar</text><text x="272" y="104" font-size="14">🐛</text><circle cx="170" cy="146" r="24" fill="#f4f0fb"/><text x="170" y="142">chrysalis</text><text x="170" y="158" font-size="14">🛡️</text><circle cx="68" cy="92" r="24" fill="#fdf0f6"/><text x="68" y="88">butterfly</text><text x="68" y="104" font-size="14">🦋</text></g><g stroke="#999" stroke-width="2" fill="#999"><path d="M196 52 L248 76" /><path d="M248 118 L196 138"/><path d="M144 138 L92 114"/><path d="M92 70 L144 48"/></g></svg>',
- qs:[{t:'mcq',q:'What comes right after the egg?',o:['Butterfly','Chrysalis','Caterpillar','Another egg'],a:2},{t:'mcq',q:'What kind of diagram is this?',o:['A bar chart','A cycle','A map','A table'],a:1},{t:'gap',s:'The caterpillar becomes a ___ before the butterfly.',a:['chrysalis']}]},
-{id:'m7',mode:'Bar chart',icon:'📶',title:'Favourite Fruits Survey',obj:'Read a bar chart; compare quantities.',svg:'<svg viewBox="0 0 340 180" style="width:100%"><rect width="340" height="180" fill="#fff" rx="10"/><g><rect x="60" y="70" width="40" height="80" fill="#e6464b"/><rect x="130" y="40" width="40" height="110" fill="#F5A301"/><rect x="200" y="95" width="40" height="55" fill="#8fce8f"/><rect x="270" y="115" width="40" height="35" fill="#8B5CF6"/></g><g font-size="11" text-anchor="middle" fill="#333"><text x="80" y="166">🍎 8</text><text x="150" y="166">🥭 11</text><text x="220" y="166">🍏 5.5→6</text><text x="290" y="166">🍇 3</text></g><text x="20" y="24" font-size="12" fill="#456">Class 5B votes</text></svg>',
- qs:[{t:'mcq',q:'Which fruit got the MOST votes?',o:['Apple','Mango','Green apple','Grapes'],a:1},{t:'mcq',q:'How many more votes did mango get than grapes?',o:['3','5','8','11'],a:2},{t:'gap',s:'The apple received ___ votes.',a:['8','eight']}]},
-{id:'m8',mode:'Timeline',icon:'🕰️',title:'A Day in My Life',obj:'Read a timeline; use time expressions.',svg:'<svg viewBox="0 0 340 130" style="width:100%"><rect width="340" height="130" fill="#fff" rx="10"/><path d="M30 70 H310" stroke="#8899aa" stroke-width="3"/><g font-size="10.5" text-anchor="middle" fill="#333"><circle cx="60" cy="70" r="6" fill="#F5A301"/><text x="60" y="52">6:30</text><text x="60" y="94">wake up</text><circle cx="140" cy="70" r="6" fill="#e6464b"/><text x="140" y="52">7:30</text><text x="140" y="94">school</text><circle cx="220" cy="70" r="6" fill="#2f9e5f"/><text x="220" y="52">3:00</text><text x="220" y="94">football</text><circle cx="292" cy="70" r="6" fill="#8B5CF6"/><text x="292" y="52">9:00</text><text x="292" y="94">sleep</text></g></svg>',
- qs:[{t:'mcq',q:'What happens at 3:00?',o:['School','Football','Sleep','Wake up'],a:1},{t:'mcq',q:'How long after waking does school start?',o:['30 minutes','One hour','Two hours','Right away'],a:1},{t:'gap',s:'The day ends with sleep at ___ o\u2019clock.',a:['9','nine']}]},
-{id:'m9',mode:'Map',icon:'🗺️',title:'Treasure Island Map',obj:'Read a simple map with a key; give directions.',svg:'<svg viewBox="0 0 340 180" style="width:100%"><rect width="340" height="180" fill="#dbeef8" rx="10"/><path d="M60 40 q120-30 220 20 q20 60-40 100 q-140 20-180-40 q-20-50 0-80 z" fill="#e8dcae" stroke="#b5a15f"/><text x="110" y="80" font-size="16">⛰️</text><text x="200" y="70" font-size="16">🌴🌴</text><text x="150" y="130" font-size="16">🏠</text><text x="240" y="128" font-size="16">❌</text><path d="M162 124 q40 12 72 0" stroke="#a04a2a" stroke-width="2" stroke-dasharray="4 4" fill="none"/><g font-size="9.5" fill="#345"><text x="24" y="160">Key: ⛰️ mountain · 🌴 forest · 🏠 village · ❌ treasure</text></g><text x="150" y="106" font-size="10" fill="#345">N ↑</text></svg>',
- qs:[{t:'mcq',q:'What does ❌ mark on the map?',o:['A school','The treasure','A ship','Danger'],a:1},{t:'mcq',q:'The treasure lies in which direction from the village?',o:['North','West','East','Under it'],a:2},{t:'gap',s:'⛰️ in the key stands for a ___.',a:['mountain']}]},
-{id:'m10',mode:'Comic strip',icon:'💬',title:'The Lost Pencil (comic)',obj:'Read a comic; follow dialogue and infer feelings.',svg:'<svg viewBox="0 0 340 150" style="width:100%"><rect width="340" height="150" fill="#fff" rx="10"/><g><rect x="16" y="20" width="96" height="110" fill="#f8f8ff" stroke="#999"/><rect x="122" y="20" width="96" height="110" fill="#f8f8ff" stroke="#999"/><rect x="228" y="20" width="96" height="110" fill="#f8f8ff" stroke="#999"/></g><g font-size="9.5" fill="#333"><rect x="24" y="28" width="80" height="26" rx="8" fill="#eaf4fb"/><text x="30" y="45">Where is my pencil?!</text><text x="52" y="110" font-size="18">😟</text><rect x="130" y="28" width="80" height="26" rx="8" fill="#eaf4fb"/><text x="140" y="45">Take mine, friend.</text><text x="160" y="110" font-size="18">🤝</text><rect x="236" y="28" width="80" height="26" rx="8" fill="#fdf0f6"/><text x="248" y="45">Thank you! 💜</text><text x="268" y="110" font-size="18">😊</text></g></svg>',
- qs:[{t:'mcq',q:'How does the boy feel in panel 1?',o:['Happy','Worried','Sleepy','Angry'],a:1},{t:'mcq',q:'What does the friend do?',o:['Laughs','Hides the pencil','Shares his pencil','Calls the teacher'],a:2},{t:'gap',s:'In panel 3 the boy says thank ___.',a:['you']}]}
+{id:'m1',lv:'A',mode:'Infographic',icon:'📊',title:'Healthy Plate',obj:'Interpret proportions in an infographic; connect visual claim to a companion text.',
+ svg:'<svg viewBox="0 0 340 180" style="width:100%"><rect width="340" height="180" fill="#fff" rx="10"/><circle cx="110" cy="92" r="62" fill="#f4f6fa" stroke="#ccd"/><path d="M110 92 L110 30 A62 62 0 0 1 168 110 Z" fill="#8fce8f"/><path d="M110 92 L168 110 A62 62 0 0 1 74 146 Z" fill="#f2c078"/><path d="M110 92 L74 146 A62 62 0 0 1 110 30 Z" fill="#e59ac0"/><text x="132" y="66" font-size="11">vegetables ½</text><text x="120" y="132" font-size="11">grains ¼</text><text x="40" y="96" font-size="11">protein ¼</text><rect x="216" y="40" width="104" height="104" rx="10" fill="#eaf4fb"/><text x="268" y="66" font-size="12" text-anchor="middle" font-weight="700" fill="#28527a">Drink</text><text x="268" y="88" font-size="26" text-anchor="middle">💧</text><text x="268" y="116" font-size="11" text-anchor="middle" fill="#456">water, not soda</text></svg>',
+ text:'Nutritionists suggest a simple picture called the Healthy Plate. On this plate, non-starchy vegetables cover half the surface, while whole grains and lean protein each take a quarter. The Healthy Plate also reminds families to drink water rather than sweet sodas, because sugary drinks add empty calories with no useful nutrients.',
+ qs:[{t:'mcq',q:'Which group covers HALF the plate?',o:['Grains','Vegetables','Protein','Sweets'],a:1},
+     {t:'mcq',q:'The infographic and text agree that water is better than soda because…',o:['soda is more expensive','soda adds empty calories','water tastes better','soda is not sold nearby'],a:1},
+     {t:'tfng',s:'The text explicitly says vegetables must be starchy.',a:'F'},
+     {t:'tfng',s:'The Healthy Plate design was invented in the UAE.',a:'NG'},
+     {t:'short',q:'In your own words, explain what "empty calories" means and give one example. (2–3 sentences)'}]},
+{id:'m2',lv:'A',mode:'Table',icon:'📋',title:'Class Timetable',obj:'Read a two-way table; infer a small routine problem.',
+ svg:'<svg viewBox="0 0 340 150" style="width:100%"><rect width="340" height="150" fill="#fff" rx="10"/><g font-size="11" fill="#333"><rect x="20" y="20" width="300" height="26" fill="#15183A"/><text x="60" y="37" fill="#fff">Day</text><text x="150" y="37" fill="#fff">8:00</text><text x="240" y="37" fill="#fff">10:00</text><rect x="20" y="46" width="300" height="26" fill="#f4f6fa"/><text x="45" y="63">Sunday</text><text x="140" y="63">Maths</text><text x="232" y="63">English</text><rect x="20" y="72" width="300" height="26" fill="#fff"/><text x="45" y="89">Monday</text><text x="140" y="89">Science</text><text x="240" y="89">Sport</text><rect x="20" y="98" width="300" height="26" fill="#f4f6fa"/><text x="45" y="115">Tuesday</text><text x="145" y="115">Art</text><text x="235" y="115">Maths</text></g></svg>',
+ text:'Ali forgot his art materials this week. His father drives him to school only in the morning. Once at school, Ali cannot leave the campus before 3 pm. He remembered he has Art at 8 am on Tuesday.',
+ qs:[{t:'mcq',q:'Which cell in the table matches Ali\u2019s worry?',o:['Sun 8:00','Mon 10:00','Tue 8:00','Tue 10:00'],a:2},
+     {t:'mcq',q:'When can Ali\u2019s father drop off the missing art bag?',o:['Tuesday morning','Tuesday 3 pm','Any time','Only Sunday'],a:0},
+     {t:'tfng',s:'Ali has Maths on two different days.',a:'T'},
+     {t:'tfng',s:'Sport happens twice per week.',a:'NG'},
+     {t:'short',q:'Suggest ONE clever solution Ali could tell his father, using the timetable. (1–2 sentences)'}]},
+{id:'m3',lv:'A',mode:'Venn diagram',icon:'⭕',title:'Cats vs Dogs',obj:'Read a Venn diagram; distinguish shared vs unique features.',
+ svg:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#fff" rx="10"/><circle cx="130" cy="90" r="62" fill="#e59ac0" opacity=".55"/><circle cx="210" cy="90" r="62" fill="#7fb3d9" opacity=".55"/><text x="92" y="40" font-size="12" font-weight="700" fill="#a04a72">CATS</text><text x="222" y="40" font-size="12" font-weight="700" fill="#28527a">DOGS</text><g font-size="10.5" fill="#333"><text x="84" y="82">purr</text><text x="80" y="100">climb trees</text><text x="150" y="82">pets</text><text x="148" y="98">four legs</text><text x="146" y="114">need care</text><text x="232" y="82">bark</text><text x="228" y="100">love walks</text></g></svg>',
+ text:'Cats and dogs are the world\u2019s most popular pets. Both need daily care, food and love. Yet each has habits that make it special: cats often purr and climb, while most dogs love long walks and bark to greet visitors.',
+ qs:[{t:'mcq',q:'Which feature belongs to BOTH circles?',o:['Bark','Purr','Four legs','Climb trees'],a:2},
+     {t:'mcq',q:'A vet writes: "This animal purrs but never barks." According to the diagram, it is a…',o:['dog','cat','bird','fish'],a:1},
+     {t:'tfng',s:'The text says dogs bark to warn visitors of danger.',a:'F'},
+     {t:'tfng',s:'Purring is a sign that a cat is sick.',a:'NG'},
+     {t:'short',q:'Choose two other animals and list one thing they share and one thing that differs. (2–3 sentences)'}]},
+{id:'m4',lv:'A',mode:'Flags',icon:'🚩',title:'Reading the UAE Flag',obj:'Decode colour symbolism; connect a symbol to national values.',
+ svg:'<svg viewBox="0 0 340 150" style="width:100%"><rect width="340" height="150" fill="#fff" rx="10"/><g><rect x="30" y="30" width="120" height="80" fill="#fff" stroke="#999"/><rect x="30" y="30" width="30" height="80" fill="#e6464b"/><rect x="60" y="30" width="90" height="26.7" fill="#2f9e5f"/><rect x="60" y="83.3" width="90" height="26.7" fill="#222"/><text x="90" y="128" font-size="11" text-anchor="middle" fill="#456">UAE flag</text></g><g font-size="10.5" fill="#333"><text x="190" y="46">🟩 green — growth &amp; prosperity</text><text x="190" y="66">⬜ white — peace &amp; honesty</text><text x="190" y="86">⬛ black — strength &amp; defeat of enemies</text><text x="190" y="106">🟥 red — courage &amp; sacrifice of the ancestors</text></g></svg>',
+ text:'The UAE flag was raised for the first time on 2 December 1971, the day of the Union. Its four colours were carefully chosen. Green suggests the growth of the young nation, white speaks of peace, black recalls the strength of past struggles, and red — placed vertically on the hoist side — represents courage and the sacrifice of the ancestors who defended the land.',
+ qs:[{t:'mcq',q:'Which colour is on the LEFT side of the flag?',o:['Green','White','Black','Red'],a:3},
+     {t:'mcq',q:'Which colour would best represent hope for the future, based on the text?',o:['Red','Black','Green','White'],a:2},
+     {t:'tfng',s:'The flag was designed in the year 1971.',a:'T'},
+     {t:'tfng',s:'Each Emirate designed one colour of the flag.',a:'NG'},
+     {t:'short',q:'A country wants a flag that means "unity and hope". Which two colours would you choose, and why? (2–3 sentences)'}]},
+{id:'m5',lv:'B',mode:'Poster',icon:'🪧',title:'Save Water Poster',obj:'Identify audience, message and persuasive features of a poster.',
+ svg:'<svg viewBox="0 0 340 180" style="width:100%"><rect width="340" height="180" fill="#eaf4fb" rx="10"/><rect x="70" y="14" width="200" height="152" rx="8" fill="#fff" stroke="#7fb3d9" stroke-width="3"/><text x="170" y="44" font-size="17" text-anchor="middle" font-weight="800" fill="#1e4d75">EVERY DROP COUNTS</text><path d="M170 60 c-16 24-16 38 0 46 c16-8 16-22 0-46 z" fill="#5bb3e6"/><text x="170" y="132" font-size="11" text-anchor="middle" fill="#345">Turn off the tap while brushing.</text><text x="170" y="152" font-size="10" text-anchor="middle" fill="#789">— your school eco club</text></svg>',
+ text:'Behind the poster lies a serious problem: in the UAE, most drinking water is produced by expensive desalination plants that use large amounts of energy. Every drop wasted at a bathroom sink represents energy already spent — and money too. The eco club therefore chose a short, bold slogan and a single clear action so the message could stick in the mind of any student.',
+ qs:[{t:'mcq',q:'Which is the poster\u2019s BIG idea?',o:['Save power','Every drop counts','Recycle plastic','Grow trees'],a:1},
+     {t:'mcq',q:'Which persuasive feature is used?',o:['A chart of data','A short bold slogan','A long paragraph','A song'],a:1},
+     {t:'tfng',s:'The text explains WHY saving water matters in the UAE.',a:'T'},
+     {t:'tfng',s:'The poster is aimed at people who work in banks.',a:'F'},
+     {t:'short',q:'Design your own three-word slogan for a "Save Electricity" poster. Explain your word choice. (2–3 sentences)'}]},
+{id:'m6',lv:'B',mode:'Diagram',icon:'🦋',title:'Butterfly Life Cycle',obj:'Read a cycle diagram; connect visual sequence with a scientific text.',
+ svg:'<svg viewBox="0 0 340 180" style="width:100%"><rect width="340" height="180" fill="#fff" rx="10"/><g font-size="11" fill="#333" text-anchor="middle"><circle cx="170" cy="40" r="24" fill="#f2e8d5"/><text x="170" y="36">egg</text><text x="170" y="52" font-size="14">🥚</text><circle cx="272" cy="92" r="24" fill="#e8f7ee"/><text x="272" y="88">caterpillar</text><text x="272" y="104" font-size="14">🐛</text><circle cx="170" cy="146" r="24" fill="#f4f0fb"/><text x="170" y="142">chrysalis</text><text x="170" y="158" font-size="14">🛡️</text><circle cx="68" cy="92" r="24" fill="#fdf0f6"/><text x="68" y="88">butterfly</text><text x="68" y="104" font-size="14">🦋</text></g><g stroke="#999" stroke-width="2" fill="#999"><path d="M196 52 L248 76" /><path d="M248 118 L196 138"/><path d="M144 138 L92 114"/><path d="M92 70 L144 48"/></g></svg>',
+ text:'A butterfly undergoes complete metamorphosis in four dramatic stages. Egg comes first, laid on a leaf. Next hatches a hungry caterpillar that eats and grows rapidly. The caterpillar then forms a hard case called a chrysalis, inside which its body reorganises. Finally the adult butterfly emerges, dries its wings, and flies away to lay new eggs — completing the cycle.',
+ qs:[{t:'mcq',q:'Inside the chrysalis, the caterpillar\u2019s body…',o:['eats leaves','sleeps only','reorganises',' hibernates for winter'],a:2},
+     {t:'mcq',q:'Which stage comes RIGHT before the butterfly?',o:['Egg','Caterpillar','Chrysalis','Another butterfly'],a:2},
+     {t:'tfng',s:'A butterfly life cycle has four stages.',a:'T'},
+     {t:'tfng',s:'Every caterpillar becomes a moth.',a:'NG'},
+     {t:'short',q:'What does "metamorphosis" mean? Use one example from the text. (2 sentences)'}]},
+{id:'m7',lv:'B',mode:'Bar chart',icon:'📶',title:'Favourite Fruits Survey',obj:'Read a bar chart; support conclusions with numbers from a text.',
+ svg:'<svg viewBox="0 0 340 180" style="width:100%"><rect width="340" height="180" fill="#fff" rx="10"/><g><rect x="60" y="70" width="40" height="80" fill="#e6464b"/><rect x="130" y="40" width="40" height="110" fill="#F5A301"/><rect x="200" y="95" width="40" height="55" fill="#8fce8f"/><rect x="270" y="115" width="40" height="35" fill="#8B5CF6"/></g><g font-size="11" text-anchor="middle" fill="#333"><text x="80" y="166">🍎 8</text><text x="150" y="166">🥭 11</text><text x="220" y="166">🍏 6</text><text x="290" y="166">🍇 3</text></g><text x="20" y="24" font-size="12" fill="#456">Class 5B votes (28 students)</text></svg>',
+ text:'Class 5B has 28 students. When Ms Salma asked each student to name a single favourite fruit, mango took the lead by a clear margin. Some students noted that they only tried mango recently at a UAE farmers\u2019 market, which they enjoyed with their families in October.',
+ qs:[{t:'mcq',q:'Which fruit is the CLEAR winner?',o:['Apple','Mango','Green apple','Grapes'],a:1},
+     {t:'mcq',q:'How many students in total voted?',o:['24','28','32','40'],a:1},
+     {t:'tfng',s:'More students chose mango than apple and green apple combined.',a:'F'},
+     {t:'tfng',s:'The survey was carried out in November.',a:'NG'},
+     {t:'short',q:'If mango were removed from the list, which fruit would probably win? Give a reason. (2 sentences)'}]},
+{id:'m8',lv:'A',mode:'Timeline',icon:'🕰️',title:'A Day in My Life',obj:'Read a timeline; use time expressions to describe a routine.',
+ svg:'<svg viewBox="0 0 340 130" style="width:100%"><rect width="340" height="130" fill="#fff" rx="10"/><path d="M30 70 H310" stroke="#8899aa" stroke-width="3"/><g font-size="10.5" text-anchor="middle" fill="#333"><circle cx="60" cy="70" r="6" fill="#F5A301"/><text x="60" y="52">6:30</text><text x="60" y="94">wake up</text><circle cx="140" cy="70" r="6" fill="#e6464b"/><text x="140" y="52">7:30</text><text x="140" y="94">school</text><circle cx="220" cy="70" r="6" fill="#2f9e5f"/><text x="220" y="52">3:00</text><text x="220" y="94">football</text><circle cx="292" cy="70" r="6" fill="#8B5CF6"/><text x="292" y="52">9:00</text><text x="292" y="94">sleep</text></g></svg>',
+ text:'Salem enjoys football but complains he never has time for homework. His timeline shows his daily plan on a school day.',
+ qs:[{t:'mcq',q:'What is missing from Salem\u2019s day?',o:['Breakfast','Sleep','A homework slot','School'],a:2},
+     {t:'mcq',q:'How long from waking to sleep?',o:['12 hours','13.5 hours','14.5 hours','24 hours'],a:2},
+     {t:'tfng',s:'The timeline shows Salem eats dinner at 8 pm.',a:'NG'},
+     {t:'tfng',s:'Sport comes after school in this plan.',a:'T'},
+     {t:'short',q:'Suggest ONE change that would help Salem finish homework — refer to the timeline. (1–2 sentences)'}]},
+{id:'m9',lv:'B',mode:'Map',icon:'🗺️',title:'Treasure Island Map',obj:'Read a map with a key; describe directions using cardinal terms.',
+ svg:'<svg viewBox="0 0 340 180" style="width:100%"><rect width="340" height="180" fill="#dbeef8" rx="10"/><path d="M60 40 q120-30 220 20 q20 60-40 100 q-140 20-180-40 q-20-50 0-80 z" fill="#e8dcae" stroke="#b5a15f"/><text x="110" y="80" font-size="16">⛰️</text><text x="200" y="70" font-size="16">🌴🌴</text><text x="150" y="130" font-size="16">🏠</text><text x="240" y="128" font-size="16">❌</text><path d="M162 124 q40 12 72 0" stroke="#a04a2a" stroke-width="2" stroke-dasharray="4 4" fill="none"/><g font-size="9.5" fill="#345"><text x="24" y="160">Key: ⛰️ mountain · 🌴 forest · 🏠 village · ❌ treasure</text></g><text x="150" y="106" font-size="10" fill="#345">N ↑</text></svg>',
+ text:'A pirate\u2019s letter says: "Land at the beach, ignore the forest, then walk east from the little village. Where the two great palm trees split, dig deep."',
+ qs:[{t:'mcq',q:'From the village, the treasure lies to the…',o:['North','West','East','South'],a:2},
+     {t:'mcq',q:'What clue MATCHES the map?',o:['The mountain has snow','Two palms mark the spot','The village has a well','There is a river'],a:1},
+     {t:'tfng',s:'The map has a compass rose.',a:'T'},
+     {t:'tfng',s:'The pirate came from Spain.',a:'NG'},
+     {t:'short',q:'Write ONE careful direction sentence to a friend so they can find ❌ from the mountain. (1–2 sentences)'}]},
+{id:'m10',lv:'A',mode:'Comic strip',icon:'💬',title:'The Lost Pencil',obj:'Read dialogue in speech bubbles; infer feelings and character.',
+ svg:'<svg viewBox="0 0 340 150" style="width:100%"><rect width="340" height="150" fill="#fff" rx="10"/><g><rect x="16" y="20" width="96" height="110" fill="#f8f8ff" stroke="#999"/><rect x="122" y="20" width="96" height="110" fill="#f8f8ff" stroke="#999"/><rect x="228" y="20" width="96" height="110" fill="#f8f8ff" stroke="#999"/></g><g font-size="9.5" fill="#333"><rect x="24" y="28" width="80" height="26" rx="8" fill="#eaf4fb"/><text x="30" y="45">Where is my pencil?!</text><text x="52" y="110" font-size="18">😟</text><rect x="130" y="28" width="80" height="26" rx="8" fill="#eaf4fb"/><text x="140" y="45">Take mine, friend.</text><text x="160" y="110" font-size="18">🤝</text><rect x="236" y="28" width="80" height="26" rx="8" fill="#fdf0f6"/><text x="248" y="45">Thank you! 💜</text><text x="268" y="110" font-size="18">😊</text></g></svg>',
+ text:'Every comic uses three tools: pictures, speech bubbles, and a story that moves from panel to panel.',
+ qs:[{t:'mcq',q:'How does the boy feel in panel 1?',o:['Happy','Worried','Sleepy','Angry'],a:1},
+     {t:'mcq',q:'The friend\u2019s action shows he is…',o:['selfish','kind','shy','angry'],a:1},
+     {t:'tfng',s:'The comic tells its story in three panels.',a:'T'},
+     {t:'tfng',s:'The boy loses his pencil at home.',a:'NG'},
+     {t:'short',q:'Draw or describe a fourth panel. What does the friend say next? (1–2 sentences)'}]},
+{id:'m11',lv:'A',mode:'Road signs',icon:'🛑',title:'Signs on the Road',obj:'Decode shape + colour semantics of road signs.',
+ svg:'<svg viewBox="0 0 340 150" style="width:100%"><rect width="340" height="150" fill="#eef4fb" rx="10"/><polygon points="60,25 90,25 110,45 110,75 90,95 60,95 40,75 40,45" fill="#e6464b"/><text x="75" y="66" font-size="15" fill="#fff" text-anchor="middle" font-weight="800">STOP</text><polygon points="170,90 200,35 230,90" fill="#fff" stroke="#e6464b" stroke-width="5"/><text x="200" y="80" font-size="18" text-anchor="middle">🐪</text><circle cx="290" cy="62" r="32" fill="#2f6fb5"/><text x="290" y="72" font-size="22" text-anchor="middle">🚶</text><g font-size="9.5" fill="#456" text-anchor="middle"><text x="75" y="118">must stop</text><text x="200" y="118">warning</text><text x="290" y="118">people walking</text></g></svg>',
+ text:'Road signs share a secret language. Red usually means DANGER or PROHIBITION. Triangles WARN. Circles COMMAND — usually blue for what you MUST do.',
+ qs:[{t:'mcq',q:'Why is the STOP sign red?',o:['To look pretty','It signals danger','It matches the road','It costs less'],a:1},
+     {t:'mcq',q:'Where would the camel warning sign be MOST useful?',o:['In a city centre','On a desert highway','Inside a school','In a swimming pool'],a:1},
+     {t:'tfng',s:'Blue circular signs give commands.',a:'T'},
+     {t:'tfng',s:'Green triangles warn about heavy rain.',a:'NG'},
+     {t:'short',q:'Design a sign for a NEW rule at your school. Say its shape, colour and message. (2–3 sentences)'}]},
+{id:'m12',lv:'A',mode:'Emoji sequence',icon:'😃',title:'A Story Without Words',obj:'Read a picture sequence; retell events in order.',
+ svg:'<svg viewBox="0 0 340 120" style="width:100%"><rect width="340" height="120" fill="#fff" rx="10"/><g font-size="34" text-anchor="middle"><text x="50" y="70">👦⚽</text><text x="150" y="70">🥅</text><text x="250" y="70">😃🏆</text></g><g stroke="#999" stroke-width="2.5" fill="#999"><path d="M92 60 h24"/><path d="M112 54 l10 6-10 6z"/><path d="M186 60 h24"/><path d="M206 54 l10 6-10 6z"/></g><text x="170" y="106" font-size="10" fill="#789" text-anchor="middle">read the pictures left to right</text></svg>',
+ text:'Even without words, a picture sequence can tell a full story: a beginning (what happened), a middle (something changed), and an end (how it finished).',
+ qs:[{t:'mcq',q:'What is the boy\u2019s GOAL in the story?',o:['To sleep','To score','To eat','To read'],a:1},
+     {t:'mcq',q:'The story\u2019s three panels match…',o:['past-present-future','beginning-middle-end','morning-noon-night','question-answer-reason'],a:1},
+     {t:'tfng',s:'The boy plays with a friend in this story.',a:'NG'},
+     {t:'tfng',s:'The final emoji shows a happy feeling.',a:'T'},
+     {t:'short',q:'Rewrite this story using ONE sentence per panel. (3 sentences)'}]},
+{id:'m13',lv:'A',mode:'Invitation',icon:'🎂',title:'The Birthday Invitation',obj:'Find who / when / where; identify the tone of a card.',
+ svg:'<svg viewBox="0 0 340 160" style="width:100%"><rect width="340" height="160" fill="#fdf0f6" rx="10"/><rect x="60" y="14" width="220" height="132" rx="10" fill="#fff" stroke="#e59ac0" stroke-width="3"/><text x="170" y="42" font-size="15" text-anchor="middle" font-weight="800" fill="#a04a72">You are invited! 🎂</text><g font-size="12" fill="#345" text-anchor="middle"><text x="170" y="68">Sara\u2019s Birthday Party</text><text x="170" y="90">Friday · 4 PM</text><text x="170" y="112">Green Park</text><text x="170" y="134" font-size="10" fill="#a04a72">Bring a smile!</text></g></svg>',
+ text:'The words "Bring a smile!" at the bottom of the card make it clear that Sara\u2019s family expects a friendly party, not an expensive one.',
+ qs:[{t:'mcq',q:'The tone of the card is best described as…',o:['formal','friendly','angry','sad'],a:1},
+     {t:'mcq',q:'The line "Bring a smile" suggests…',o:['bring food only','no gifts required','wear pink','arrive at 5 pm'],a:1},
+     {t:'tfng',s:'The party is at Sara\u2019s house.',a:'F'},
+     {t:'tfng',s:'The party lasts for two hours.',a:'NG'},
+     {t:'short',q:'Write ONE polite reply, saying you can attend. (1–2 sentences)'}]},
+{id:'m14',lv:'A',mode:'Forecast',icon:'⛅',title:'The Weather Forecast',obj:'Read icons and numbers; make a decision from data.',
+ svg:'<svg viewBox="0 0 340 140" style="width:100%"><rect width="340" height="140" fill="#eaf4fb" rx="10"/><g text-anchor="middle"><rect x="30" y="24" width="84" height="92" rx="10" fill="#fff"/><text x="72" y="46" font-size="11" fill="#456">Sunday</text><text x="72" y="78" font-size="26">☀️</text><text x="72" y="104" font-size="13" font-weight="800" fill="#c2452f">42°</text><rect x="128" y="24" width="84" height="92" rx="10" fill="#fff"/><text x="170" y="46" font-size="11" fill="#456">Monday</text><text x="170" y="78" font-size="26">☁️</text><text x="170" y="104" font-size="13" font-weight="800" fill="#456">38°</text><rect x="226" y="24" width="84" height="92" rx="10" fill="#fff"/><text x="268" y="46" font-size="11" fill="#456">Tuesday</text><text x="268" y="78" font-size="26">🌧️</text><text x="268" y="104" font-size="13" font-weight="800" fill="#28527a">33°</text></g></svg>',
+ text:'The school picnic committee needs the driest AND coolest day. They will not accept above 40°C for safety.',
+ qs:[{t:'mcq',q:'Which day should the committee CHOOSE?',o:['Sunday','Monday','Tuesday','Any day'],a:1},
+     {t:'mcq',q:'Why NOT Tuesday?',o:['It is too hot','It is a school day','It is rainy','It is too cold'],a:2},
+     {t:'tfng',s:'Monday is 4°C cooler than Sunday.',a:'T'},
+     {t:'tfng',s:'The committee will bring umbrellas.',a:'NG'},
+     {t:'short',q:'Write the committee\u2019s decision in one sentence, with a reason. (1 sentence)'}]},
+{id:'m15',lv:'A',mode:'Price list',icon:'🧃',title:'The Juice Shop Menu',obj:'Compute totals; select a best-value option.',
+ svg:'<svg viewBox="0 0 340 140" style="width:100%"><rect width="340" height="140" fill="#fff8e8" rx="10"/><text x="170" y="30" font-size="14" text-anchor="middle" font-weight="800" fill="#8a6d00">🧃 Fresh Juice — Price List</text><g font-size="13" fill="#345"><text x="60" y="62">🍊 Orange</text><text x="250" y="62">5 AED</text><text x="60" y="88">🥭 Mango</text><text x="250" y="88">7 AED</text><text x="60" y="114">🍋 Lemon-mint</text><text x="250" y="114">6 AED</text></g><path d="M50 70 h240 M50 96 h240" stroke="#e8d9a8"/></svg>',
+ text:'A tourist has exactly 12 AED and wants TWO different flavours.',
+ qs:[{t:'mcq',q:'Which pair fits the tourist\u2019s budget?',o:['Orange + Mango','Mango + Lemon-mint','Orange + Lemon-mint','Any pair'],a:2},
+     {t:'mcq',q:'What is the difference in price between the cheapest and most expensive?',o:['1 AED','2 AED','3 AED','5 AED'],a:1},
+     {t:'tfng',s:'A mango costs more than a lemon-mint.',a:'T'},
+     {t:'tfng',s:'There is a family discount at this shop.',a:'NG'},
+     {t:'short',q:'Suggest a NEW flavour and a fair price for the menu. Give a reason. (1–2 sentences)'}]},
+{id:'m16',lv:'A',mode:'Height chart',icon:'📏',title:'How Tall Are We?',obj:'Compare measurements; describe differences with -er / by X cm.',
+ svg:'<svg viewBox="0 0 340 160" style="width:100%"><rect width="340" height="160" fill="#f0fbe8" rx="10"/><g><rect x="60" y="60" width="46" height="80" rx="6" fill="#8fce8f"/><rect x="150" y="42" width="46" height="98" rx="6" fill="#f2a1c5"/><rect x="240" y="68" width="46" height="72" rx="6" fill="#7fb3d9"/></g><g font-size="11" text-anchor="middle" fill="#345"><text x="83" y="54">Ali · 130 cm</text><text x="173" y="36">Sara · 142 cm</text><text x="263" y="62">Omar · 125 cm</text></g><path d="M40 140 h270" stroke="#889" stroke-width="2"/></svg>',
+ text:'Height changes fast in Grade 6. In one year, most students grow between 5 and 8 cm.',
+ qs:[{t:'mcq',q:'Who is TALLER than Omar but SHORTER than Sara?',o:['Ali','Sara','Omar','No one'],a:0},
+     {t:'mcq',q:'How much MORE is Sara than Omar?',o:['12 cm','15 cm','17 cm','20 cm'],a:2},
+     {t:'tfng',s:'Sara grew 17 cm this year.',a:'NG'},
+     {t:'tfng',s:'Ali is 5 cm taller than Omar.',a:'T'},
+     {t:'short',q:'Predict Omar\u2019s height in one year, using the text. Show your thinking. (2 sentences)'}]},
+{id:'m17',lv:'A',mode:'Animated diagram',icon:'🚦',title:'The Traffic Light (watch it!)',obj:'Interpret an animated sequence; connect colour to instruction and moment.',
+ svg:'<svg viewBox="0 0 340 160" style="width:100%"><rect width="340" height="160" fill="#eef4fb" rx="10"/><rect x="140" y="16" width="60" height="130" rx="14" fill="#2b2b3f"/><circle cx="170" cy="42" r="17" fill="#e6464b"><animate attributeName="opacity" values="1;1;0.15;0.15;0.15;1" dur="6s" repeatCount="indefinite"/></circle><circle cx="170" cy="81" r="17" fill="#FFD23F"><animate attributeName="opacity" values="0.15;0.15;1;0.15;0.15;0.15" dur="6s" repeatCount="indefinite"/></circle><circle cx="170" cy="120" r="17" fill="#2f9e5f"><animate attributeName="opacity" values="0.15;0.15;0.15;1;1;0.15" dur="6s" repeatCount="indefinite"/></circle><g font-size="10.5" fill="#456"><text x="216" y="46">stop</text><text x="216" y="85">get ready</text><text x="216" y="124">go</text></g></svg>',
+ text:'A traffic light saves lives by giving three clear instructions, one at a time. Green tells drivers to move; yellow warns them to slow down; red commands them to stop. The sequence is always the same, so drivers can predict the next colour.',
+ qs:[{t:'mcq',q:'The yellow light INSTRUCTS drivers to…',o:['Speed up','Get ready to stop','Turn back','Turn the radio down'],a:1},
+     {t:'mcq',q:'Predicting the next colour helps drivers because…',o:['it saves fuel','they can act safely in time','it is a nice game','it is the law'],a:1},
+     {t:'tfng',s:'The colours run: red → yellow → green → yellow → red.',a:'T'},
+     {t:'tfng',s:'The traffic light was invented in the UAE.',a:'NG'},
+     {t:'short',q:'What might happen if the yellow light disappeared? Give a reason. (1–2 sentences)'}]},
+{id:'m18',lv:'B',mode:'Recipe',icon:'🥗',title:'Fruit Salad Recipe',obj:'Read procedural imperative text; check quantities and order.',
+ svg:'<svg viewBox="0 0 340 160" style="width:100%"><rect width="340" height="160" fill="#fff" rx="10"/><text x="170" y="28" font-size="14" text-anchor="middle" font-weight="800" fill="#2f6f47">🥗 Fruit Salad — serves 4</text><g font-size="12" fill="#345"><text x="40" y="58">1️⃣ Wash the fruit well.</text><text x="40" y="82">2️⃣ Chop it into small pieces.</text><text x="40" y="106">3️⃣ Mix everything in a big bowl.</text><text x="40" y="130">4️⃣ Add yogurt and serve cold.</text></g><text x="290" y="95" font-size="30">🍓🍌</text></svg>',
+ text:'Recipes use imperative verbs like "wash", "chop", "mix". These give commands to the cook. A serving means one person\u2019s share.',
+ qs:[{t:'mcq',q:'To make 8 servings, you should…',o:['double every ingredient','halve every ingredient','keep the same amounts','only add yogurt'],a:0},
+     {t:'mcq',q:'"Wash", "chop" and "mix" are all…',o:['nouns','imperative verbs','adjectives','adverbs'],a:1},
+     {t:'tfng',s:'The recipe uses ice cream.',a:'F'},
+     {t:'tfng',s:'The recipe can be made in 5 minutes.',a:'NG'},
+     {t:'short',q:'Add ONE optional step to make the salad healthier. Explain briefly. (1–2 sentences)'}]},
+{id:'m19',lv:'B',mode:'Timetable',icon:'🚌',title:'Catching Bus 12',obj:'Read a bus timetable; use arithmetic on times.',
+ svg:'<svg viewBox="0 0 340 150" style="width:100%"><rect width="340" height="150" fill="#fff" rx="10"/><rect x="24" y="18" width="292" height="26" fill="#15183A"/><g font-size="11" fill="#fff"><text x="40" y="35">Bus 12 → School Street</text><text x="240" y="35">ride: 20 min</text></g><g font-size="12" fill="#345"><rect x="24" y="44" width="292" height="26" fill="#f4f6fa"/><text x="40" y="61">Leaves: 7:00</text><text x="220" y="61">arrives 7:20</text><rect x="24" y="70" width="292" height="26" fill="#fff"/><text x="40" y="87">Leaves: 7:30</text><text x="220" y="87">arrives 7:50</text><rect x="24" y="96" width="292" height="26" fill="#f4f6fa"/><text x="40" y="113">Leaves: 8:00</text><text x="220" y="113">arrives 8:20</text></g><text x="30" y="140" font-size="10" fill="#789">School starts at 7:45!</text></svg>',
+ text:'Salem\u2019s house is 10 minutes\u2019 walk from the bus stop. He wants to arrive at school with at least 5 minutes to spare.',
+ qs:[{t:'mcq',q:'Which bus MUST Salem catch?',o:['7:00','7:30','8:00','It does not matter'],a:0},
+     {t:'mcq',q:'At what time must Salem leave home to catch that bus?',o:['6:50','6:55','7:00','7:20'],a:0},
+     {t:'tfng',s:'The 8:00 bus makes him late.',a:'T'},
+     {t:'tfng',s:'Bus 12 is a school-owned bus.',a:'NG'},
+     {t:'short',q:'What ONE change could make the 7:30 bus a safe choice for Salem? (1–2 sentences)'}]},
+{id:'m20',lv:'B',mode:'Floor plan',icon:'🏫',title:'The School Map',obj:'Interpret a floor plan; describe positions with beside / opposite / next to.',
+ svg:'<svg viewBox="0 0 340 160" style="width:100%"><rect width="340" height="160" fill="#f4f6fa" rx="10"/><g stroke="#8899aa" fill="#fff"><rect x="30" y="26" width="86" height="52"/><rect x="120" y="26" width="86" height="52"/><rect x="30" y="94" width="86" height="52"/><rect x="120" y="94" width="86" height="52"/></g><g font-size="11" text-anchor="middle" fill="#345"><text x="73" y="55">📚 Library</text><text x="163" y="55">🎨 Art</text><text x="73" y="123">🏀 Gym</text><text x="163" y="123">🍽️ Canteen</text></g><path d="M226 26 v120" stroke="#8899aa" stroke-dasharray="5 4"/><text x="272" y="86" font-size="11" fill="#456" text-anchor="middle">➡️ Main entrance</text></svg>',
+ text:'A visitor asks: "I need lunch and then a quiet spot to read." The receptionist points to the map.',
+ qs:[{t:'mcq',q:'The visitor should go first to the…',o:['Gym','Canteen','Library','Art room'],a:1},
+     {t:'mcq',q:'And then, for reading, to the room…',o:['diagonally opposite','opposite the entrance','next to the gym','on the second floor'],a:0},
+     {t:'tfng',s:'The Library is OPPOSITE the Canteen on the floor plan.',a:'T'},
+     {t:'tfng',s:'The school has an outdoor swimming pool.',a:'NG'},
+     {t:'short',q:'Explain the visitor\u2019s route in one sentence, using LEFT / RIGHT. (1 sentence)'}]},
+{id:'m21',lv:'B',mode:'Food label',icon:'🏷️',title:'Read the Label',obj:'Extract nutrition data; interpret a safety warning.',
+ svg:'<svg viewBox="0 0 340 160" style="width:100%"><rect width="340" height="160" fill="#fff" rx="10"/><rect x="80" y="14" width="180" height="132" rx="8" fill="#f8f8ff" stroke="#8899aa" stroke-width="2"/><g font-size="11.5" fill="#345"><text x="98" y="40" font-weight="800">Choco-Oat Bar</text><text x="98" y="64">Serving: 1 bar</text><text x="98" y="86">Energy: 210 kcal</text><text x="98" y="108">Sugar: 18 g</text><text x="98" y="132" fill="#c2452f" font-weight="700">⚠ Contains nuts</text></g></svg>',
+ text:'Doctors say adults should not eat more than 30 g of added sugar per day.',
+ qs:[{t:'mcq',q:'How much of the daily sugar limit is in ONE bar?',o:['about a quarter','about a half','about two-thirds','more than double'],a:2},
+     {t:'mcq',q:'Who MUST NOT eat this bar?',o:['Runners','People allergic to nuts','Teachers','Everyone'],a:1},
+     {t:'tfng',s:'Eating three bars would exceed the sugar limit.',a:'T'},
+     {t:'tfng',s:'The bar is made in Al Ain.',a:'NG'},
+     {t:'short',q:'Design one clear warning sentence for the front of this package. (1 sentence)'}]},
+{id:'m22',lv:'B',mode:'Pie chart',icon:'🥧',title:'Pets in Class 6A',obj:'Reason about halves and quarters; connect proportions to numbers.',
+ svg:'<svg viewBox="0 0 340 160" style="width:100%"><rect width="340" height="160" fill="#fff" rx="10"/><circle cx="120" cy="82" r="56" fill="#f4f6fa" stroke="#ccd"/><path d="M120 82 L120 26 A56 56 0 0 1 120 138 Z" fill="#f2a1c5"/><path d="M120 82 L120 138 A56 56 0 0 1 64 82 Z" fill="#7fb3d9"/><path d="M120 82 L64 82 A56 56 0 0 1 120 26 Z" fill="#8fce8f"/><g font-size="11" fill="#345"><text x="210" y="56">🐱 Cats — half</text><text x="210" y="86">🐟 Fish — quarter</text><text x="210" y="116">🐦 Birds — quarter</text></g></svg>',
+ text:'Class 6A has 24 students. Every student has ONE pet, and the survey shows what pet.',
+ qs:[{t:'mcq',q:'How many students have cats?',o:['6','8','12','24'],a:2},
+     {t:'mcq',q:'What do FISH and BIRDS together equal?',o:['a quarter','a half','the whole class','one third'],a:1},
+     {t:'tfng',s:'6 students have birds.',a:'T'},
+     {t:'tfng',s:'Two students have both a cat and a fish.',a:'NG'},
+     {t:'short',q:'Convert "a quarter" to a percentage. Explain in one sentence. (1 sentence)'}]},
+{id:'m23',lv:'B',mode:'Calendar',icon:'🗓️',title:'The Class Calendar',obj:'Count days between events; distinguish a test from a trip.',
+ svg:'<svg viewBox="0 0 340 160" style="width:100%"><rect width="340" height="160" fill="#fff" rx="10"/><text x="170" y="26" font-size="13" text-anchor="middle" font-weight="800" fill="#28527a">October</text><g font-size="10.5" fill="#345" text-anchor="middle">'+(function(){let s='';for(let d=1;d<=28;d++){const x=48+((d-1)%7)*40,y=52+Math.floor((d-1)/7)*26;s+='<text x="'+x+'" y="'+y+'">'+d+'</text>';}return s;})()+'</g><circle cx="288" cy="74" r="12" fill="none" stroke="#e6464b" stroke-width="2.5"/><circle cx="288" cy="126" r="12" fill="none" stroke="#2f9e5f" stroke-width="2.5"/><text x="316" y="78" font-size="9" fill="#c2452f">test</text><text x="316" y="130" font-size="9" fill="#2f6f47">trip</text></svg>',
+ text:'Ms Ivy said: "You have TWO weeks after the test to prepare for the trip."',
+ qs:[{t:'mcq',q:'On which date is the TRIP?',o:['14 Oct','21 Oct','28 Oct','30 Oct'],a:2},
+     {t:'mcq',q:'How many days BETWEEN test and trip?',o:['7','10','14','21'],a:2},
+     {t:'tfng',s:'The test happens in the second week of October.',a:'T'},
+     {t:'tfng',s:'The trip is a science-museum trip.',a:'NG'},
+     {t:'short',q:'Suggest a study plan of 3 items for the two weeks between events. (2 sentences)'}]},
+{id:'m24',lv:'B',mode:'Pictograph',icon:'📘',title:'Books We Read',obj:'Apply a symbol key; multiply icons by their value.',
+ svg:'<svg viewBox="0 0 340 150" style="width:100%"><rect width="340" height="150" fill="#fff" rx="10"/><g font-size="13" fill="#345"><text x="34" y="46">Ali</text><text x="100" y="46" font-size="16">📘📘📘</text><text x="34" y="80">Sara</text><text x="100" y="80" font-size="16">📘📘📘📘</text><text x="34" y="114">Omar</text><text x="100" y="114" font-size="16">📘</text></g><rect x="216" y="36" width="104" height="40" rx="8" fill="#eaf4fb"/><text x="268" y="52" font-size="10" text-anchor="middle" fill="#28527a" font-weight="700">KEY</text><text x="268" y="68" font-size="10.5" text-anchor="middle" fill="#345">📘 = 2 books</text></svg>',
+ text:'The library sets a goal: any student who reads 6+ books gets a bronze badge.',
+ qs:[{t:'mcq',q:'Who has EARNED a bronze badge?',o:['Only Ali','Only Sara','Only Omar','Both Ali and Sara'],a:3},
+     {t:'mcq',q:'Sara read HOW MANY more books than Omar?',o:['3','6','7','8'],a:1},
+     {t:'tfng',s:'Ali read 6 books.',a:'T'},
+     {t:'tfng',s:'The badge is silver, not bronze.',a:'F'},
+     {t:'short',q:'Propose a new badge rule that would include Omar. (1–2 sentences)'}]},
+{id:'m25',lv:'C',mode:'Line graph',icon:'📈',title:'A Day of Desert Heat',obj:'Describe the rise and fall of a line graph; connect data to a text.',
+ svg:'<svg viewBox="0 0 340 160" style="width:100%"><rect width="340" height="160" fill="#fff" rx="10"/><path d="M50 130 H310 M50 130 V26" stroke="#8899aa" stroke-width="2"/><path d="M60 96 L170 40 L290 72" fill="none" stroke="#e6464b" stroke-width="3.5"/><g fill="#e6464b"><circle cx="60" cy="96" r="5"/><circle cx="170" cy="40" r="5"/><circle cx="290" cy="72" r="5"/></g><g font-size="10.5" fill="#345" text-anchor="middle"><text x="60" y="148">6 am · 28°</text><text x="170" y="148">12 pm · 43°</text><text x="290" y="148">6 pm · 36°</text></g><text x="40" y="20" font-size="10" fill="#789">°C</text></svg>',
+ text:'Meteorologists observe that desert temperature does not rise and fall smoothly. The steepest change usually happens between morning and noon, driven by direct sunlight. After sunset, dry desert air loses heat quickly.',
+ qs:[{t:'mcq',q:'When was the STEEPEST rise?',o:['6 am → 12 pm','12 pm → 6 pm','6 am → 6 pm','No rise at all'],a:0},
+     {t:'mcq',q:'The line falls after noon MOSTLY because…',o:['the wind stops','clouds appear','the sun is lower','the humidity drops'],a:2},
+     {t:'tfng',s:'The temperature climbed by 15°C in the morning.',a:'T'},
+     {t:'tfng',s:'It rained heavily at 3 pm.',a:'NG'},
+     {t:'short',q:'Predict the temperature at 9 pm and explain your reasoning. (2 sentences)'}]},
+{id:'m26',lv:'C',mode:'Flowchart',icon:'🔀',title:'Should I Recycle It?',obj:'Follow a decision flowchart; apply yes/no logic to real objects.',
+ svg:'<svg viewBox="0 0 340 180" style="width:100%"><rect width="340" height="180" fill="#f4f6fa" rx="10"/><rect x="112" y="12" width="116" height="30" rx="8" fill="#15183A"/><text x="170" y="32" font-size="10.5" fill="#fff" text-anchor="middle">Plastic, paper or metal?</text><path d="M140 42 l-56 26 M200 42 l56 26" stroke="#8899aa" stroke-width="2"/><text x="96" y="60" font-size="9.5" fill="#2f6f47">yes</text><text x="238" y="60" font-size="9.5" fill="#c2452f">no</text><rect x="26" y="68" width="118" height="28" rx="8" fill="#fff" stroke="#8899aa"/><text x="85" y="86" font-size="10" text-anchor="middle" fill="#345">Is it clean?</text><rect x="216" y="68" width="100" height="28" rx="8" fill="#c9c9c9"/><text x="266" y="86" font-size="10" text-anchor="middle" fill="#333">General waste</text><path d="M60 96 l-14 26 M110 96 l14 26" stroke="#8899aa" stroke-width="2"/><text x="34" y="112" font-size="9.5" fill="#2f6f47">yes</text><text x="126" y="112" font-size="9.5" fill="#c2452f">no</text><rect x="14" y="122" width="94" height="28" rx="8" fill="#bfeee3"/><text x="61" y="140" font-size="10" text-anchor="middle" fill="#0a7d67">♻️ Recycle bin</text><rect x="118" y="122" width="94" height="28" rx="8" fill="#fff2c9"/><text x="165" y="140" font-size="10" text-anchor="middle" fill="#8a6d00">Wash it first</text></svg>',
+ text:'Councils explain that a recycling stream can be spoiled by a single greasy pizza box or a bottle full of juice — because the whole batch may then be thrown away.',
+ qs:[{t:'mcq',q:'A greasy pizza box should go where, per the flowchart?',o:['Recycle bin','Wash and recycle','General waste','Bury it'],a:2},
+     {t:'mcq',q:'A metal soda can, empty and rinsed, goes to…',o:['Wash it first','Recycle bin','General waste','The library'],a:1},
+     {t:'tfng',s:'A dirty bottle can spoil a whole batch of recycling.',a:'T'},
+     {t:'tfng',s:'Recycling in the UAE is free forever.',a:'NG'},
+     {t:'short',q:'Explain, in your OWN words, why "clean" is such an important step. (2 sentences)'}]},
+{id:'m27',lv:'C',mode:'Animated diagram',icon:'💧',title:'The Water Cycle (watch it!)',obj:'Read animated cycle; name evaporation, condensation, precipitation.',
+ svg:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#eaf4fb" rx="10"/><circle cx="52" cy="36" r="16" fill="#FFD23F"/><path d="M20 140 q60-16 150-6 q90 10 150 0 v36 h-320 z" fill="#7fb3d9"/><ellipse cx="220" cy="46" rx="42" ry="18" fill="#fff"/><ellipse cx="252" cy="52" rx="30" ry="14" fill="#f0f4fa"/><circle cx="110" cy="120" r="4" fill="#5bb3e6"><animate attributeName="cy" values="120;60;60" dur="4s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0.4;0" dur="4s" repeatCount="indefinite"/></circle><text x="86" y="96" font-size="9.5" fill="#1e4d75">1 evaporation ↑</text><text x="196" y="26" font-size="9.5" fill="#456">2 condensation</text><g fill="#2f7bb5"><circle cx="236" cy="76" r="3"><animate attributeName="cy" values="76;122" dur="1.6s" repeatCount="indefinite"/></circle><circle cx="252" cy="72" r="3"><animate attributeName="cy" values="72;122" dur="1.9s" repeatCount="indefinite"/></circle></g><text x="252" y="104" font-size="9.5" fill="#1e4d75">3 precipitation ↓</text></svg>',
+ text:'The Sun\u2019s energy powers the whole water cycle. Without heat, evaporation would stop, clouds would not form, and rain would not fall. Scientists say the cycle links oceans, atmosphere and land in one giant system.',
+ qs:[{t:'mcq',q:'What POWERS the entire water cycle?',o:['Wind','Sun\u2019s energy','Rivers','Volcanoes'],a:1},
+     {t:'mcq',q:'If the Sun\u2019s heat suddenly stopped for a week, the FIRST thing to stop would be…',o:['condensation','precipitation','evaporation','sunset'],a:2},
+     {t:'tfng',s:'Rain is another word for precipitation.',a:'T'},
+     {t:'tfng',s:'The cycle uses electricity from a plant.',a:'F'},
+     {t:'short',q:'Explain WHY the water cycle is called a "cycle" and not a "line". (2 sentences)'}]},
+{id:'m28',lv:'C',mode:'Advertisement',icon:'📢',title:'Reading an Advert',obj:'Identify persuasive techniques: urgency, social proof, brand promise.',
+ svg:'<svg viewBox="0 0 340 160" style="width:100%"><rect width="340" height="160" fill="#15183A" rx="10"/><text x="170" y="44" font-size="20" text-anchor="middle" font-weight="800" fill="#FFD23F">ZOOM Trainers 👟</text><text x="170" y="72" font-size="12" text-anchor="middle" fill="#fff" font-style="italic">Run faster. Feel lighter.</text><rect x="96" y="86" width="148" height="30" rx="15" fill="#e6464b"/><text x="170" y="106" font-size="13" text-anchor="middle" fill="#fff" font-weight="800">50% OFF — this week only!</text><text x="170" y="140" font-size="14" text-anchor="middle" fill="#FFD23F">★★★★★ 2,000 happy runners</text></svg>',
+ text:'Advertisers use TIME PRESSURE (urgency), SOCIAL PROOF (many people already love it) and a BRAND PROMISE (a benefit you will feel). A clever reader spots these tools and decides — is the promise really true?',
+ qs:[{t:'mcq',q:'"50% OFF — this week only!" is an example of…',o:['social proof','urgency','brand promise','a scientific fact'],a:1},
+     {t:'mcq',q:'The five stars work as…',o:['a price tag','social proof','a warning','a size chart'],a:1},
+     {t:'tfng',s:'The advert makes a testable claim about lightness.',a:'F'},
+     {t:'tfng',s:'The trainers were tested by the UAE athletics federation.',a:'NG'},
+     {t:'short',q:'Write ONE question you would ask before you buy these trainers. (1 sentence)'}]},
+{id:'m29',lv:'C',mode:'Family tree',icon:'🌳',title:'Ali\u2019s Family Tree',obj:'Trace kinship terms accurately; identify sides of the family.',
+ svg:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#f0fbe8" rx="10"/><g font-size="11" text-anchor="middle" fill="#345"><rect x="128" y="14" width="84" height="30" rx="8" fill="#fff" stroke="#8fce8f"/><text x="170" y="34">👴 Salem</text><rect x="52" y="72" width="84" height="30" rx="8" fill="#fff" stroke="#8fce8f"/><text x="94" y="92">👨 Omar</text><rect x="204" y="72" width="84" height="30" rx="8" fill="#fff" stroke="#8fce8f"/><text x="246" y="92">👩 Mona</text><rect x="18" y="128" width="76" height="30" rx="8" fill="#fff" stroke="#8fce8f"/><text x="56" y="148">👦 Ali</text><rect x="106" y="128" width="76" height="30" rx="8" fill="#fff" stroke="#8fce8f"/><text x="144" y="148">👧 Sara</text></g><g stroke="#8fce8f" stroke-width="2"><path d="M170 44 v14 M94 58 h152 M94 58 v14 M246 58 v14 M94 102 v12 M56 114 h88 M56 114 v14 M144 114 v14"/></g></svg>',
+ text:'On this simplified tree, Omar and Mona are brother and sister, both children of Salem. Ali and Sara are Omar\u2019s children.',
+ qs:[{t:'mcq',q:'Who is Sara\u2019s PATERNAL AUNT?',o:['Salem','Omar','Mona','Ali'],a:2},
+     {t:'mcq',q:'Salem is Ali\u2019s…',o:['brother','father','grandfather','uncle'],a:2},
+     {t:'tfng',s:'Ali and Sara are cousins.',a:'F'},
+     {t:'tfng',s:'Salem is married to Mona.',a:'NG'},
+     {t:'short',q:'Explain why Mona is called Sara\u2019s AUNT, not COUSIN. (1–2 sentences)'}]},
+{id:'m30',lv:'C',mode:'Book cover',icon:'📕',title:'Judge This Cover',obj:'Predict genre and content from title, image and blurb.',
+ svg:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#f4f0fb" rx="10"/><rect x="104" y="12" width="132" height="146" rx="6" fill="#1c2452"/><text x="170" y="44" font-size="12" text-anchor="middle" font-weight="800" fill="#FFD23F">The Secret of</text><text x="170" y="60" font-size="12" text-anchor="middle" font-weight="800" fill="#FFD23F">the Sand Dune</text><path d="M120 118 q30-22 50-8 q26-16 46 6 v22 h-96 z" fill="#d9a05b"/><text x="170" y="106" font-size="18" text-anchor="middle">🗝️</text><text x="170" y="150" font-size="8.5" text-anchor="middle" fill="#cfd6ff">A mystery under the desert stars — L. Haddad</text></svg>',
+ text:'Book covers are a form of advertising. The image hints at genre, the title suggests theme, and the blurb (short description) sets the mood. Together they help a reader predict — before the first page — whether the book is fiction or non-fiction, and roughly what to expect.',
+ qs:[{t:'mcq',q:'The most likely GENRE is…',o:['textbook','biography','mystery','cookbook'],a:2},
+     {t:'mcq',q:'Which cover element best hints at the SETTING?',o:['The key','The sand-dune shape','The stars','All of these'],a:3},
+     {t:'tfng',s:'The blurb is at the bottom of the cover.',a:'T'},
+     {t:'tfng',s:'The book has 240 pages.',a:'NG'},
+     {t:'short',q:'From cover clues alone, list TWO predictions about the story. (2 sentences)'}]}
 ];
 
 /* ---------- 50 one-question mini-quizzes (type the answer) ---------- */
@@ -9933,10 +10331,134 @@ function ylWord(el){
   try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(raw); u.lang='en-GB'; u.rate=0.85; speechSynthesis.speak(u);}catch(e){}
   document.querySelectorAll('.ylw-pop').forEach(p=>p.remove());
   const pop=document.createElement('div'); pop.className='ylw-pop';
-  const mean=YL_GLOSS[raw];
-  pop.innerHTML='<b>🔊 '+raw+'</b><br>'+(mean?esc(mean):'<a target="_blank" rel="noopener" href="https://www.vocabulary.com/dictionary/'+encodeURIComponent(raw)+'">meaning on vocabulary.com ↗</a>');
-  el.appendChild(pop); setTimeout(()=>pop.remove(),3500);
+  let entry = (YL_GLOSS && YL_GLOSS[raw]) || (window.YL_DICT && (YL_DICT[raw] || YL_DICT[raw.replace(/s$/,'')] || YL_DICT[raw.replace(/ed$/,'')] || YL_DICT[raw.replace(/ing$/,'')] || YL_DICT[raw.replace(/ies$/,'y')]));
+  // if the reader supplied only a plain string, wrap it
+  if(typeof entry==='string') entry={pos:'',def:entry,ex:''};
+  if(entry){
+    pop.innerHTML='<div class="ylw-word">🔊 '+raw+(entry.pos?' <em class="ylw-pos">('+entry.pos+')</em>':'')+'</div>'
+      +'<div class="ylw-def">'+esc(entry.def)+'</div>'
+      +(entry.ex?'<div class="ylw-ex">e.g. '+esc(entry.ex)+'</div>':'')
+      +(entry.syn?'<div class="ylw-syn">similar: '+esc(entry.syn)+'</div>':'');
+  } else {
+    pop.innerHTML='<div class="ylw-word">🔊 '+raw+'</div><div class="ylw-def">No entry in the class dictionary — try the 📖 dictionary tool at the top for a full definition.</div>';
+  }
+  el.appendChild(pop);
+  const close=(ev)=>{ if(!pop.contains(ev.target)&&ev.target!==el){ pop.remove(); document.removeEventListener('click',close,true);} };
+  setTimeout(()=>document.addEventListener('click',close,true),50);
+  setTimeout(()=>{ if(pop.parentNode) pop.remove(); },7000);
 }
+/* ---------- Offline mini-dictionary: pos + definition + example + synonyms ---------- */
+const YL_DICT = {
+  cat:{pos:'noun',def:'a small furry animal that people keep as a pet',ex:'The cat sleeps on the sofa.',syn:'kitten'},
+  dog:{pos:'noun',def:'a friendly animal with four legs that many families keep',ex:'The dog runs in the park.'},
+  falcon:{pos:'noun',def:'a fast bird of prey; the national bird of the UAE',ex:'A falcon can dive very fast.',syn:'hawk'},
+  falcons:{pos:'noun (plural)',def:'more than one falcon',ex:'Falcons are hunters.'},
+  hunter:{pos:'noun',def:'a person or animal that catches other animals for food',ex:'A lion is a hunter.'},
+  hunters:{pos:'noun (plural)',def:'people or animals that hunt',ex:'Wolves are hunters.'},
+  peregrine:{pos:'adjective/noun',def:'a kind of falcon known for very fast flying',ex:'The peregrine falcon is fastest.'},
+  prey:{pos:'noun',def:'an animal that is hunted by another animal',ex:'Rabbits are the falcon\u2019s prey.'},
+  dive:{pos:'verb',def:'to move down very quickly through the air or water',ex:'The bird dives to catch fish.',syn:'drop, plunge'},
+  dives:{pos:'verb',def:'moves down quickly through air or water',ex:'It dives at 300 km/h.'},
+  symbol:{pos:'noun',def:'a picture or thing that stands for an idea',ex:'A dove is a symbol of peace.',syn:'sign'},
+  pride:{pos:'noun',def:'a good feeling about who you are or what you did',ex:'She felt pride after winning.'},
+  clever:{pos:'adjective',def:'quick to learn and understand',ex:'What a clever idea!',syn:'smart, bright'},
+  amazing:{pos:'adjective',def:'very surprising or wonderful',ex:'That was amazing!',syn:'awesome, brilliant'},
+  train:{pos:'verb',def:'to teach a person or animal a skill by practice',ex:'We train the puppy every day.',syn:'coach'},
+  trained:{pos:'verb (past)',def:'taught skills by practice',ex:'He trained the falcon.'},
+  hospital:{pos:'noun',def:'a place where sick people or animals are cared for',ex:'The hospital is near the school.'},
+  soft:{pos:'adjective',def:'nice to touch, not hard',ex:'The blanket is soft.',syn:'gentle'},
+  lazy:{pos:'adjective',def:'not wanting to move or work',ex:'The lazy cat sleeps all day.'},
+  chase:{pos:'verb',def:'to run after someone or something',ex:'Dogs chase cats.',syn:'follow'},
+  chases:{pos:'verb',def:'runs after someone or something',ex:'The cat chases the ball.'},
+  team:{pos:'noun',def:'a group of people who play or work together',ex:'Our team won the match.',syn:'group'},
+  teams:{pos:'noun (plural)',def:'more than one team'},
+  coach:{pos:'noun',def:'the person who teaches or trains a team',ex:'The coach shouted from the side.',syn:'trainer'},
+  goal:{pos:'noun',def:'a point scored in football, or something you want to achieve',ex:'He scored a goal!'},
+  score:{pos:'verb',def:'to get a point in a game',ex:'She scores every match.'},
+  scores:{pos:'verb',def:'gets a point in a game'},
+  cheer:{pos:'verb',def:'to shout happily to support a team',ex:'We cheer for our team.',syn:'clap, shout'},
+  win:{pos:'verb',def:'to be first or best in a game',ex:'They win almost every match.'},
+  friend:{pos:'noun',def:'a person you like and know well',ex:'She is my best friend.',syn:'mate, buddy'},
+  friends:{pos:'noun (plural)',def:'people you like and know'},
+  breakfast:{pos:'noun',def:'the first meal of the day',ex:'I eat breakfast at 7.'},
+  honey:{pos:'noun',def:'sweet, sticky food made by bees',ex:'Bees make honey.',syn:'nectar'},
+  bread:{pos:'noun',def:'a food baked from flour and water',ex:'We buy fresh bread daily.'},
+  dates:{pos:'noun (plural)',def:'sweet brown fruit from palm trees',ex:'Dates are a UAE favourite.'},
+  together:{pos:'adverb',def:'with other people at the same time',ex:'We work together.'},
+  smell:{pos:'verb',def:'to notice something with your nose',ex:'I smell the bread.'},
+  smells:{pos:'verb',def:'notices with the nose OR gives off a scent'},
+  strong:{pos:'adjective',def:'having a lot of power or health',ex:'Milk makes bones strong.',syn:'powerful'},
+  desert:{pos:'noun',def:'a very dry land with a lot of sand',ex:'The UAE has a huge desert.'},
+  camel:{pos:'noun',def:'a large animal with humps that lives in the desert',ex:'A camel can walk far without water.'},
+  dune:{pos:'noun',def:'a hill made of sand',ex:'We climbed a big dune.'},
+  dunes:{pos:'noun (plural)',def:'hills made of sand'},
+  bumpy:{pos:'adjective',def:'not smooth; going up and down',ex:'The road was bumpy.'},
+  campfire:{pos:'noun',def:'a small fire made outside',ex:'We sat by the campfire.'},
+  quiet:{pos:'adjective',def:'making very little noise',ex:'The library is quiet.',syn:'silent, calm'},
+  stars:{pos:'noun (plural)',def:'bright points of light in the night sky',ex:'The stars are bright tonight.'},
+  millions:{pos:'noun (plural)',def:'a very very big number',ex:'Millions of stars filled the sky.'},
+  recycle:{pos:'verb',def:'to use old things again to make new things',ex:'We recycle paper.'},
+  recycling:{pos:'noun/verb',def:'using old things again'},
+  plastic:{pos:'noun',def:'a light material made in factories, used for bags and bottles',ex:'Plastic can pollute the sea.'},
+  paper:{pos:'noun',def:'a thin material we write and print on',ex:'Please save paper.'},
+  bin:{pos:'noun',def:'a container for rubbish',ex:'Put it in the bin.',syn:'trash can'},
+  bins:{pos:'noun (plural)',def:'more than one bin'},
+  clean:{pos:'adjective/verb',def:'without dirt; to make something not dirty',ex:'Clean your desk.'},
+  planet:{pos:'noun',def:'a very big round object in space, like Earth',ex:'Earth is our planet.'},
+  litter:{pos:'noun',def:'rubbish left in the wrong place',ex:'The park had a lot of litter.',syn:'trash, waste'},
+  proud:{pos:'adjective',def:'feeling pleased about what you did',ex:'She is proud of her project.'},
+  poster:{pos:'noun',def:'a big printed sheet with a message or picture',ex:'They made a save-water poster.'},
+  seed:{pos:'noun',def:'a small part of a plant that grows into a new plant',ex:'Plant one seed in each pot.'},
+  seeds:{pos:'noun (plural)',def:'more than one seed'},
+  soil:{pos:'noun',def:'the top layer of earth where plants grow',ex:'Good soil helps plants grow.'},
+  grow:{pos:'verb',def:'to become bigger over time',ex:'Kids grow fast!'},
+  grows:{pos:'verb',def:'becomes bigger over time'},
+  flower:{pos:'noun',def:'the colourful part of a plant',ex:'A rose is a beautiful flower.',syn:'blossom, bloom'},
+  wait:{pos:'verb',def:'to stay in one place until something happens',ex:'Wait for me here.'},
+  patient:{pos:'adjective',def:'able to wait calmly',ex:'Be patient — the flower will bloom.'},
+  sprout:{pos:'noun',def:'a small new plant just coming out of a seed',ex:'A green sprout appeared!'},
+  water:{pos:'noun/verb',def:'the clear liquid we drink; to give water to plants',ex:'We water the plants daily.'},
+  drop:{pos:'noun',def:'a very small amount of a liquid',ex:'Every drop counts.'},
+  seawater:{pos:'noun',def:'water from the sea (which has salt)',ex:'Seawater is salty.'},
+  salt:{pos:'noun',def:'a white substance from the sea used to season food',ex:'Add a pinch of salt.'},
+  energy:{pos:'noun',def:'the power needed to do work',ex:'Solar panels give us energy.',syn:'power'},
+  pipes:{pos:'noun (plural)',def:'long tubes that carry liquid or gas',ex:'Pipes bring water home.'},
+  tap:{pos:'noun',def:'the place where water comes out at a sink',ex:'Turn off the tap.',syn:'faucet'},
+  desalination:{pos:'noun',def:'the process of removing salt from seawater',ex:'The UAE uses desalination.'},
+  evaporate:{pos:'verb',def:'to change from liquid to vapour',ex:'Water evaporates in the sun.'},
+  evaporates:{pos:'verb',def:'changes from liquid to vapour'},
+  precious:{pos:'adjective',def:'very valuable, must be looked after',ex:'Water is precious in the desert.',syn:'valuable'},
+  treatment:{pos:'noun',def:'the process of dealing with or cleaning something',ex:'Water needs treatment.'},
+  screen:{pos:'noun',def:'the flat part of a phone or TV that shows images',ex:'Don\u2019t sit too close to the screen.'},
+  brain:{pos:'noun',def:'the part inside your head that helps you think',ex:'Sleep is good for the brain.'},
+  sleep:{pos:'verb/noun',def:'to close your eyes and rest at night',ex:'I sleep at 9.',syn:'rest, doze'},
+  bright:{pos:'adjective',def:'giving off a lot of light',ex:'The sun is bright.',syn:'shiny'},
+  habit:{pos:'noun',def:'something you do very often',ex:'Reading is a good habit.'},
+  argue:{pos:'verb',def:'to give reasons for or against an idea',ex:'She argues for cleaner beaches.'},
+  melatonin:{pos:'noun',def:'a body chemical that helps you sleep',ex:'Screens can lower melatonin.'},
+  groggy:{pos:'adjective',def:'tired and slow after waking up',ex:'I feel groggy on Monday.'},
+  device:{pos:'noun',def:'a machine like a phone or tablet',ex:'Put your device away.',syn:'gadget'},
+  kindness:{pos:'noun',def:'the quality of being nice and helpful',ex:'A little kindness goes a long way.'},
+  smile:{pos:'verb/noun',def:'to move your mouth to show you are happy',ex:'Please smile!'},
+  helper:{pos:'noun',def:'a person who helps others',ex:'Be a helper today.',syn:'assistant'},
+  secret:{pos:'noun',def:'something you do not tell others',ex:'Can you keep a secret?'},
+  note:{pos:'noun',def:'a short written message',ex:'She left a note on my desk.',syn:'message'},
+  ripple:{pos:'noun',def:'a small wave that moves outward',ex:'A stone makes a ripple in water.'},
+  anonymous:{pos:'adjective',def:'without a name; unknown',ex:'They sent an anonymous gift.'},
+  courage:{pos:'noun',def:'being brave enough to do something hard',ex:'It takes courage to speak up.',syn:'bravery'},
+  gratitude:{pos:'noun',def:'the feeling of being thankful',ex:'She wrote a thank-you note out of gratitude.'},
+  // extras for common words in readers
+  little:{pos:'adjective',def:'small in size',ex:'A little cat sat on the mat.',syn:'small, tiny'},
+  garden:{pos:'noun',def:'a place with plants and flowers, often near a house',ex:'Our garden has roses.'},
+  morning:{pos:'noun',def:'the early part of the day',ex:'I read in the morning.'},
+  afternoon:{pos:'noun',def:'the part of the day after noon',ex:'We play in the afternoon.'},
+  jump:{pos:'verb',def:'to push off the ground with your legs',ex:'Cats jump high.',syn:'leap, hop'},
+  jumps:{pos:'verb',def:'pushes off the ground with the legs'},
+  ball:{pos:'noun',def:'a round object used in many games',ex:'Kick the ball.'},
+  milk:{pos:'noun',def:'a white drink from cows or goats',ex:'I drink milk every day.'},
+  sun:{pos:'noun',def:'the bright star that gives Earth light and heat',ex:'The sun rose at 6.'}
+};
+
 function ylSpeak(txt,btn){
   if(!('speechSynthesis' in window)){ alert('Text-to-speech is not supported here.'); return; }
   if(speechSynthesis.speaking){ speechSynthesis.cancel(); if(btn) btn.textContent='🔊 Read to me'; return; }
@@ -10003,8 +10525,8 @@ ROUTES.ylhub=function(){
     <p style="color:var(--muted);margin:2px 0 10px;font-size:.9rem">Every reader: <b>Standard</b> text (quick quiz: 2 MCQ + 1 gap-fill) and an <b>Extended</b> text (double length: more MCQs, gap-fills, True/False/Not Given + a short written answer) — and a game at the end. Levels: 🟢 A (Gr 1–3) · 🔵 B (Gr 4–6) · 🟣 C (Gr 7–8).</p>
     <div class="grid c2">${YL_READERS.map(r=>`<div class="item-row" style="align-items:center"><div style="font-size:1.9rem">${r.icon}</div><div style="flex:1"><span class="yl-lv yl-lv${r.lv}">${r.lv}</span> <b>${r.title}</b><div class="meta">🎯 ${r.obj} ${typeof doneTag==='function'?doneTag('Young Learners',r.title):''}</div></div><button class="btn sm" onclick="go('ylReader','${r.id}')">Open →</button></div>`).join('')}</div>
 
-    <h2 class="stem-h2">🖼️ Multimodal Studio — texts that are not words</h2>
-    <p style="color:var(--muted);margin:2px 0 10px;font-size:.9rem">Infographics, tables, Venn diagrams, flags, posters, charts, timelines, maps and comics are texts too — read them like a detective.</p>
+    <h2 class="stem-h2">🖼️ Interpreting Multimodal Texts</h2>
+    <p style="color:var(--muted);margin:2px 0 10px;font-size:.9rem">Read visuals AND a short companion text side by side. Answer questions that need thinking — not just looking — and connect verbal to non-verbal meaning.</p>
     <div class="grid c2">${YL_MM.map(m=>`<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">${m.icon}</div><div style="flex:1"><span class="genre-tag">${m.mode}</span> <b>${m.title}</b><div class="meta">🎯 ${m.obj}</div></div><button class="btn sm" onclick="go('ylMM','${m.id}')">Read it →</button></div>`).join('')}</div>
 
     <div class="grid c2" style="margin-top:20px">
@@ -10017,7 +10539,8 @@ ROUTES.ylhub=function(){
 };
 function ylDictGo(){ const w=(val('ylDict')||'').trim(); if(!w) return; window.open('https://www.vocabulary.com/dictionary/'+encodeURIComponent(w),'_blank','noopener'); }
 
-ROUTES.ylReader=function(id,mode){
+ROUTES.ylReader=function(compound){
+  const [id, mode] = String(compound||'').split(':');
   const r=YL_READERS.find(x=>x.id===id); if(!r){go('ylhub');return;}
   try{speechSynthesis.cancel();}catch(e){}
   YL_GLOSS=r.gloss||{};
@@ -10030,7 +10553,7 @@ ROUTES.ylReader=function(id,mode){
     <p class="note" style="margin:2px 0 8px">🎯 <b>Objective:</b> ${r.obj}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px">
       <button class="btn sm ${ext?'ghost':''}" onclick="go('ylReader','${r.id}')">📄 Standard text</button>
-      <button class="btn sm ${ext?'':'ghost'}" onclick="go('ylReader','${r.id}','ext')">📚 Extended text</button>
+      <button class="btn sm ${ext?'':'ghost'}" onclick="go('ylReader','${r.id}:ext')">📚 Extended text</button>
       <button class="btn sm ghost" id="ylTts" onclick="ylSpeak(document.getElementById('ylTxt').textContent,this)">🔊 Read to me</button>
       <button class="btn sm ghost" onclick="ylZoomBox('ylTxt',-1)">A−</button>
       <button class="btn sm ghost" onclick="ylZoomBox('ylTxt',1)">A+</button>
@@ -10074,7 +10597,7 @@ ROUTES.ylMM=function(id){
   app().innerHTML=`
   <div class="wrap screen">
     <button class="back" onclick="go('ylhub')">← Young Learners</button>
-    <span class="genre-tag">${m.mode} — a text without many words</span>
+    <span class="genre-tag">${m.mode} — multimodal literacy — visual + verbal</span>
     <h1 style="font-size:1.8rem">${m.icon} ${m.title}</h1>
     <p class="note">🎯 <b>Objective:</b> ${m.obj}</p>
     <div class="card stem-visual">${m.svg}</div>
