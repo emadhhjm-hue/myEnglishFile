@@ -109,6 +109,30 @@ textarea{min-height:150px; resize:vertical; line-height:1.6}
 .level-slider[data-level="scaffolded"] .knob{background:var(--teal)}
 .level-slider[data-level="standard"] button:first-of-type{color:#fff}
 .level-slider[data-level="scaffolded"] button:last-of-type{color:#fff}
+.level-slider[data-level="advanced"] .knob{background:var(--coral-dk)}
+.level-slider[data-level="advanced"] button:last-of-type{color:#fff}
+/* ---------- reading course: skill grid ---------- */
+.rc-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(255px,1fr)); gap:14px; margin-top:16px}
+.rc-card{position:relative; border:1px solid var(--line); border-left:5px solid var(--sk,#888); border-radius:14px; background:#fff;
+  padding:16px 16px 14px; display:flex; flex-direction:column; gap:6px; transition:transform .18s, box-shadow .18s; cursor:pointer}
+.rc-card:hover{transform:translateY(-3px); box-shadow:var(--shadow)}
+.rc-card .rc-n{position:absolute; top:12px; right:14px; font-family:"Fraunces",Georgia,serif; font-size:1.5rem; font-weight:700; color:var(--sk,#888); opacity:.28}
+.rc-card .rc-ic{font-size:1.6rem; line-height:1}
+.rc-card h3{font-family:"Lexend"; font-size:1.05rem; margin:2px 40px 0 0; color:var(--ink)}
+.rc-card .rc-strap{font-size:.8rem; color:var(--muted)}
+.rc-card .rc-bar{height:6px; border-radius:6px; background:var(--mist); overflow:hidden; margin-top:8px}
+.rc-card .rc-bar span{display:block; height:100%; background:var(--sk,#888); border-radius:6px; transition:width .4s}
+.rc-card .rc-meta{display:flex; justify-content:space-between; align-items:center; font-size:.75rem; color:var(--muted); margin-top:6px}
+.rc-card.rc-full{border-left-color:var(--teal)}
+.rc-card.rc-full .rc-meta b{color:var(--teal-dk)}
+.skill-hero{border:1px solid var(--line); border-left:6px solid var(--sk,#888); border-radius:16px; background:#fff; padding:18px 20px; margin:6px 0 14px}
+.skill-hero .sh-top{display:flex; align-items:center; gap:12px}
+.skill-hero .sh-ic{font-size:2rem}
+.skill-hero h1{font-size:1.9rem; margin:0}
+.skill-hero .sh-strap{color:var(--muted); font-size:.85rem; letter-spacing:.04em; text-transform:uppercase; font-weight:600}
+.skill-how{margin:10px 0 0; padding-left:20px} .skill-how li{margin:4px 0; font-size:.95rem}
+.skill-trap{background:var(--mist); border-radius:10px; padding:10px 14px; margin-top:12px; font-size:.9rem}
+.tier-note{font-size:.8rem; color:var(--muted); margin:6px 0 0}
 .passage{font-family:"Lexend"; max-width:680px}
 .passage p{margin:0 0 1em} .passage h3{font-size:1.7rem; margin:0 0 6px}
 .genre-tag{display:inline-block; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--coral-dk); font-weight:600; margin-bottom:4px}
@@ -1454,149 +1478,393 @@ let WC_LEVEL="beginner";
    questions that reveal a model answer + justification so the student
    self-grades. Each lesson ends with a design challenge (the RWD bridge).
    ========================================================================= */
-const RCOURSE = {
-  beginner:{ label:"Beginner", tag:"Getting started", blurb:"Short, real-world texts. Read for meaning, then check yourself.", units:[
-    {id:"u1", title:"Unit 1 · Informal & everyday texts", lessons:[
-      {id:"rb1", title:"My week without a phone", field:"Digital wellbeing", register:"Informal", type:"Blog post",
-       text:`<p><i>From Maya's blog</i></p><p>Last week my family tried a challenge: seven days without our phones. I thought I would be bored to death. Day one was the worst — my hand kept reaching for a phone that wasn't there!</p><p>But something strange happened. I started noticing things again: the taste of breakfast, my little brother's terrible jokes, the way the sky turns pink in the evening. I read two whole books. I slept better. By day five, I didn't even miss it.</p><p>I'm back on my phone now, but I've kept one rule: no screens after nine o'clock. Funny how giving something up can hand something back.</p>`,
-       mcqs:[
-         {q:"What was the family's challenge?", options:["No television for a week","Seven days without phones","Reading two books","Sleeping early"], answer:1, exp:"They went seven days without their phones."},
-         {q:"How did Maya feel on day one?", options:["Relaxed","It was the worst","Excited","Angry"], answer:1, exp:"She says day one was the worst — she kept reaching for her phone."},
-         {q:"Which good change did she NOT mention?", options:["Sleeping better","Reading two books","Getting fitter","Noticing small things"], answer:2, exp:"She mentions sleep, reading and noticing things — not fitness."},
-         {q:"What rule did she keep afterwards?", options:["No phone at meals","No screens after nine","Only one book a week","No phone at school"], answer:1, exp:"She kept the 'no screens after nine o'clock' rule."}
-       ],
-       selfcheck:[
-         {q:"In your own words, what does Maya mean by 'giving something up can hand something back'?", model:"A possible answer tours around this idea: by giving up her phone, she <i>gained</i> other things — better sleep, real moments, two books. Justify it from the last paragraph, where she lists what she got back. (Inference + justification.)"},
-         {q:"Is this text formal or informal? Give one clue from the text.", model:"Informal. Clues include the first-person 'I', casual phrases like 'bored to death', and exclamation marks — it reads like a personal blog, not a report."}
-       ],
-       design:"Design an infographic poster: '5 healthy screen-time habits for teenagers.'", designId:"d_climate"}
-    ]},
-    {id:"u2", title:"Unit 2 · Formal & informational texts", lessons:[
-      {id:"rb2", title:"Why bees matter", field:"Science · environment", register:"Formal", type:"Information text",
-       text:`<p>Bees are small, but our food depends on them. When a bee visits a flower to drink nectar, yellow dust called pollen sticks to its body. As the bee flies to the next flower, some pollen rubs off. This is called <b>pollination</b>, and it helps plants make seeds and fruit.</p><p>About one in three bites of the food we eat exists because of pollinators like bees. Apples, strawberries, almonds and many vegetables need them. Sadly, bee numbers are falling because of pollution, disease and the loss of wild flowers.</p><p>People can help in simple ways: planting flowers, avoiding harmful sprays, and leaving wild corners in gardens for bees to feed.</p>`,
-       mcqs:[
-         {q:"What is pollination?", options:["Bees drinking nectar","Pollen moving between flowers, helping plants make seeds","Flowers opening in spring","Bees building hives"], answer:1, exp:"Pollen moves from flower to flower, helping plants make seeds and fruit."},
-         {q:"About how much of our food depends on pollinators?", options:["One in ten bites","One in three bites","All of it","None"], answer:1, exp:"The text says about one in three bites."},
-         {q:"Which is NOT given as a reason bees are declining?", options:["Pollution","Disease","Loss of wild flowers","Too much rain"], answer:3, exp:"Rain is not mentioned; pollution, disease and flower loss are."},
-         {q:"One way people can help is to…", options:["Plant flowers","Keep more pets","Build roads","Use more spray"], answer:0, exp:"Planting flowers (and avoiding sprays, leaving wild corners) helps."}
-       ],
-       selfcheck:[
-         {q:"Why does the writer say 'our food depends on them'? Justify with the text.", model:"A possible answer tours around: bees pollinate the plants that make much of our food. Justify from paragraph 2, which states about one in three bites exists because of pollinators and lists apples, strawberries, almonds."},
-         {q:"Is this text formal or informal? Give one clue.", model:"Formal / informational. Clues: a neutral third-person tone, facts and a technical term ('pollination'), and no personal opinion or slang."}
-       ],
-       design:"Create a labelled pollination or life-cycle diagram, or design a simple 'bee hotel'.", designId:"d_lifecycle"}
-    ]}
-  ]},
-  intermediate:{ label:"Intermediate", tag:"Standard", blurb:"Longer texts on real issues. Read closely, infer, and justify.", units:[
-    {id:"u1", title:"Unit 1 · Informal & narrative texts", lessons:[
-      {id:"ri1", title:"Stranded! The catapult that saved a life", field:"Survival · STEM", register:"Informal", type:"Narrative",
-       text:`<p>When 14-year-old Sofia's small boat drifted onto a deserted island, she had no phone signal and no way to call for help. For two days she watched ships pass far out at sea, too distant to notice her waving.</p><p>Then she remembered a science lesson about levers and stored energy. Using a forked branch, strips of bark, and a length of stretchy vine, she built a simple catapult. With it, she launched a bright piece of cloth wrapped around a stone high into the air, again and again, near the shoreline.</p><p>A passing fisherman finally caught sight of the flash of colour arcing above the trees. Sofia was rescued that evening. 'I didn't have a phone,' she later said, 'but I had a catapult and an idea.'</p>`,
-       mcqs:[
-         {q:"Why couldn't Sofia call for help?", options:["Her phone was broken","There was no phone signal","She had no boat","She was asleep"], answer:1, exp:"She had no phone signal on the deserted island."},
-         {q:"What gave her the idea for the catapult?", options:["A film she saw","A science lesson about levers and stored energy","Advice from a fisherman","A book on the boat"], answer:1, exp:"She remembered a science lesson about levers and stored energy."},
-         {q:"What did she launch to get attention?", options:["A flare","Bright cloth wrapped around a stone","A wooden raft","A mirror"], answer:1, exp:"She launched a bright piece of cloth around a stone."},
-         {q:"What finally led to her rescue?", options:["A helicopter search","A fisherman saw the flash of colour","Her phone reconnected","She swam to a ship"], answer:1, exp:"A passing fisherman saw the colour arcing above the trees."}
-       ],
-       selfcheck:[
-         {q:"How does a catapult store and release energy? Explain in your own words.", model:"A possible answer tours around elastic energy: stretching the vine stores potential (elastic) energy; releasing it transfers that energy to the stone/cloth, launching it. Justify from the line about 'levers and stored energy' and the 'stretchy vine'. (Inference + justification.)"},
-         {q:"Why does the writer end with Sofia's quote? What is its effect?", model:"It captures the theme — ingenuity beats equipment. The contrast of 'no phone' with 'a catapult and an idea' leaves the reader with a clear message of resourcefulness."}
-       ],
-       design:"Design and build a mini catapult from sticks and rubber bands. Test how far it launches a small object.", designId:"d_catapult"}
-    ]},
-    {id:"u2", title:"Unit 2 · Formal & news texts", lessons:[
-      {id:"ri2", title:"A city plants a million trees", field:"Climate · local & global", register:"Formal", type:"News report",
-       text:`<p>The city of Greenford has announced that it has planted its one-millionth tree, completing a five-year project to cool its streets and clean its air. Officials report that average summer temperatures in the most shaded districts have already fallen by up to two degrees.</p><p>The initiative began after a record heatwave, when residents demanded action. Volunteers, schools and local businesses joined city workers to plant native species along roads, in parks, and on rooftops.</p><p>'Trees are the cheapest air conditioners we have,' said the project's lead scientist. The city now plans to share its method with neighbouring towns, turning a local idea into a regional movement.</p>`,
-       mcqs:[
-         {q:"What milestone did Greenford reach?", options:["A million new homes","Its one-millionth tree","A five-degree drop in heat","A new park"], answer:1, exp:"It planted its one-millionth tree."},
-         {q:"What measurable effect is reported?", options:["Cleaner rivers","Summer temperatures fell up to 2°C in shaded districts","Fewer cars","More rain"], answer:1, exp:"Average summer temperatures fell by up to two degrees in shaded districts."},
-         {q:"What event sparked the project?", options:["A flood","A record heatwave","An election","A festival"], answer:1, exp:"It began after a record heatwave."},
-         {q:"What does the city plan to do next?", options:["Stop planting","Share its method with neighbouring towns","Cut down old trees","Build more roads"], answer:1, exp:"It plans to share its method regionally."}
-       ],
-       selfcheck:[
-         {q:"Explain the scientist's metaphor: 'Trees are the cheapest air conditioners we have.'", model:"A possible answer tours around: trees cool the air naturally (shade and water release) at almost no cost — like an air conditioner, but free. Justify from the reported 2°C temperature drop."},
-         {q:"How does this story connect a LOCAL action to a GLOBAL issue?", model:"A local tree-planting project tackles the global problem of rising heat / climate change; the text shows it spreading to other towns, suggesting local actions can scale up."}
-       ],
-       design:"Design a 'Greener [your area]' poster or map: propose where and what to plant in your own neighbourhood.", designId:"d_climate"}
-    ]}
-  ]},
-  advanced:{ label:"Advanced", tag:"Proficient", blurb:"Argument, nuance and explanation. Read critically and weigh evidence.", units:[
-    {id:"u1", title:"Unit 1 · Informal & opinion texts", lessons:[
-      {id:"ra1", title:"Can we really trust AI tutors?", field:"Technology · debate", register:"Informal", type:"Opinion blog",
-       text:`<p><i>Opinion · by a Year 12 student</i></p><p>Everyone keeps telling me that AI tutors are the future. Type a question and get a patient, detailed explanation at two o'clock in the morning — what's not to love? Mine genuinely helped me understand calculus when nothing else had, breaking a problem into steps no textbook ever bothered to explain.</p><p>But the more I rely on it, the more uneasy I become. When an answer appears instantly, I stop wrestling with the problem myself — and the wrestling, my teacher insists, is exactly where the learning happens. A muscle that is never strained never grows stronger, and I notice that I remember far less from a solution handed to me than from one I had to fight for.</p><p>There is also the quieter problem of trust. An AI tutor sounds equally confident whether it is right or completely wrong, and a tired student at midnight rarely stops to check. It never says, 'I'm not sure.' That smooth confidence can slowly replace a student's own judgement — one of the very things school is meant to build.</p><p>I am not anti-AI; that would be like refusing to use a calculator. I simply think we should treat it like a gym, not a taxi: something that makes us stronger through effort, not something that carries us while we sit still. Used carelessly, it could produce a generation that can find any answer but truly understand none of them. Used wisely, it might be the most patient teacher any of us has ever had. The tool is remarkable. Whether it helps or harms depends entirely on how we choose to hold it.</p>`,
-       mcqs:[
-         {q:"What benefit does the writer admit?", options:["It is free","Instant, patient help that aided their calculus","It does homework for you","It replaces teachers"], answer:1, exp:"The writer says it helped them finally understand calculus."},
-         {q:"What is the writer's main worry?", options:["AI is too slow","Students stop thinking for themselves","AI costs too much","AI is boring"], answer:1, exp:"The worry is that instant answers stop students from 'wrestling' with problems."},
-         {q:"What does 'sounds confident even when it's wrong' warn about?", options:["The voice is loud","You can't always trust the answer","It speaks too fast","It is rude"], answer:1, exp:"It warns that confident-sounding answers may still be incorrect."},
-         {q:"What is the writer's overall position?", options:["Ban AI tutors","Use AI wisely — like a gym, not a taxi","Use AI for everything","Ignore teachers"], answer:1, exp:"Not anti-AI — use it to build skill, 'like a gym, not a taxi'."},
-         {type:"tfng", q:"The writer believes AI tutors should be banned from schools.", answer:"False", exp:"The writer says 'I am not anti-AI' and argues for using it wisely, not banning it."}
-       ],
-       selfcheck:[
-         {q:"Explain the comparison 'like a gym, not a taxi.' Why is it effective?", model:"A possible answer tours around: a gym makes you stronger through effort; a taxi does the work for you. It is effective because it captures the writer's argument — AI should build skill, not replace effort. Justify from the final paragraph."},
-         {q:"Find evidence that the writer is balanced, not one-sided.", model:"The writer admits real benefits ('helped me finally understand calculus', 'not anti-AI') alongside the risks. Presenting both sides shows a balanced, fair argument."}
-       ],
-       design:"Design a one-page 'Smart rules for using AI in our school' guide (poster or infographic).", designId:"d_machine"}
-    ]},
-    {id:"u2", title:"Unit 2 · Formal & explanatory texts", lessons:[
-      {id:"ra2", title:"How a wind turbine turns wind into power", field:"Physics · energy", register:"Formal", type:"Explanatory feature",
-       text:`<p>A wind turbine converts the movement of air into electricity through a chain of surprisingly simple steps. As wind strikes the long, curved blades, the air travelling over the curved side moves faster than the air beneath it, creating a difference in pressure. This produces <b>lift</b> — the very same force that allows aeroplanes to fly — and the blades begin to turn.</p><p>The blades are fixed to a central shaft, which runs back into a sealed box called the nacelle. There, the slow rotation is usually sped up by a gearbox before it reaches the generator. Inside the generator, the spinning motion drags powerful magnets past tightly wound coils of copper wire. This constantly changing magnetic field pushes electrons along the wire, and that flow of electrons is an electric current — the electricity we use.</p><p>Because faster wind carries far more energy, turbines are placed where the wind is strong and steady: on exposed hilltops, across open plains, or out at sea, where nothing slows the air down. Engineers also raise them on tall towers, since wind speeds increase with height.</p><p>A single large turbine can generate enough power for hundreds of homes, and, unlike a coal or gas plant, it burns no fuel and releases no carbon dioxide while running. Wind is not perfect — it does not blow on demand, so turbines must be paired with storage or other sources for calm days. Yet the basic achievement remains remarkable: with no flames and no fuel, a turbine turns an invisible, everyday breeze into usable energy.</p>`,
-       mcqs:[
-         {q:"What makes the blades turn?", options:["A motor","Lift from a difference in air pressure","Electricity from the generator","Falling water"], answer:1, exp:"Lift, from the air-pressure difference, turns the blades — like an aeroplane wing."},
-         {q:"What does the generator contain?", options:["Water and pipes","Magnets and coils of wire","Solar cells","Fuel"], answer:1, exp:"It contains magnets and coils of wire."},
-         {q:"How is the electric current produced?", options:["Burning fuel","Spinning magnets past coils create a changing magnetic field that pushes electrons","Sunlight on panels","Chemical reaction"], answer:1, exp:"The spinning motion moves magnets past coils, pushing electrons through the wire."},
-         {q:"Why are turbines placed on hilltops or at sea?", options:["It looks nice","Wind there is strong and steady","Land is cheap","To avoid people"], answer:1, exp:"Faster, steadier wind carries more energy."},
-         {type:"tfng", q:"Wind turbines release carbon dioxide while they are running.", answer:"False", exp:"The text states a turbine 'burns no fuel and releases no carbon dioxide while running'."},
-         {type:"tfng", q:"Wind speed increases the higher you go.", answer:"True", exp:"The text says wind speeds increase with height, which is why turbines sit on tall towers."}
-       ],
-       selfcheck:[
-         {q:"Explain in your own words how movement becomes electricity here.", model:"A possible answer tours around the chain: wind → lift → blades spin → shaft → gearbox → generator → magnets move past coils → current. Justify from paragraph 2."},
-         {q:"Why does the writer compare turbine blades to aeroplane wings?", model:"To explain the abstract idea of 'lift' using something familiar — both use a difference in air pressure to create force. It makes the science concrete."}
-       ],
-       design:"Design and build a model windmill/turbine. Test which blade shape spins fastest in front of a fan.", designId:"d_windmill"}
-    ]},
-    {id:"u3", title:"Unit 3 · Extended texts across genres (≈300 words)", lessons:[
-      {id:"ra3", title:"The race to map the brain", field:"Neuroscience · technology", register:"Formal", type:"Science report",
-       text:`<p>The human brain contains roughly eighty-six billion neurons, each connected to thousands of others. Together they form a network so dense that, until recently, mapping it in full seemed impossible. Today, an international effort known as the 'connectome' project is attempting exactly that: to chart every connection in the brain, much as earlier scientists once mapped the genome.</p><p>The task is staggering. To trace the wiring, researchers slice brain tissue into sheets thinner than a human hair, photograph each one under powerful electron microscopes, and then use artificial intelligence to follow individual fibres from image to image. A single cubic millimetre of brain can produce more data than an entire library of books.</p><p>Why attempt something so difficult? Scientists hope a complete map will reveal how memory, learning and emotion arise from physical connections — and what goes wrong in conditions such as Alzheimer's disease, epilepsy and depression. If a disorder is caused by faulty wiring, then seeing the wiring is a first step towards repairing it.</p><p>Critics caution that a map is not the same as understanding. Knowing how a city's roads connect does not tell you why people travel, and a diagram of neurons may not, by itself, explain a thought or a feeling. There are ethical questions too, about privacy and about what it means to reduce a mind to a chart.</p><p>Still, few doubt the value of the attempt. Each earlier map of the unknown — of coastlines, of genes, of the night sky — has changed how humans see themselves. The map of the mind may prove the most revealing of all.</p>`,
-       mcqs:[
-         {q:"What is the connectome project trying to do?", options:["Cure all brain disease","Chart every connection in the brain","Build an artificial brain","Map the genome"], answer:1, exp:"It aims to chart every connection in the brain."},
-         {q:"Why is the task described as 'staggering'?", options:["It is cheap","A tiny piece of brain produces enormous amounts of data","Nobody is interested","It takes one day"], answer:1, exp:"A single cubic millimetre yields more data than a library of books."},
-         {q:"One reason scientists want the map is to ____.", options:["sell it","understand disorders like Alzheimer's","replace doctors","map the night sky"], answer:1, exp:"Seeing faulty wiring is a first step to repairing it."},
-         {q:"What do critics argue?", options:["A map equals full understanding","A map is not the same as understanding","The brain has no neurons","Maps are useless"], answer:1, exp:"Knowing connections is not the same as understanding thoughts."},
-         {type:"tfng", q:"Scientists use artificial intelligence to help trace brain fibres.", answer:"True", exp:"The text says AI follows individual fibres from image to image."},
-         {type:"tfng", q:"The connectome project has already produced a complete map of the human brain.", answer:"False", exp:"The text says it is 'attempting' the task — it is not finished."},
-         {type:"tfng", q:"The connectome project is funded mainly by private companies.", answer:"Not Given", exp:"The text does not mention who funds the project."}
-       ],
-       selfcheck:[
-         {q:"Explain the comparison between a brain map and a map of a city's roads. What point does it make?", model:"Roads show how a city connects but not why people travel; likewise, neuron connections may not explain a thought or feeling. The point: structure is not the same as meaning. Justify from paragraph 4."},
-         {q:"The writer ends by calling this 'the most revealing' map of all. Do you agree it is worth the effort? Justify your view.", model:"Open response. A strong answer weighs the medical/scientific benefits against the cost, difficulty and ethical concerns the writer raises, and takes a clear position."}
-       ],
-       design:"Design an infographic that explains, step by step, how scientists map the brain.", designId:null},
-      {id:"ra4", title:"The last light", field:"Literature · narrative", register:"Informal", type:"Narrative extract",
-       text:`<p>For forty-one years, Idris had climbed the lighthouse stairs at dusk, and for forty-one years the great lamp had answered him, throwing its slow gold arm across the water. Tonight would be the last time. In the morning, engineers were coming to replace the light with a small automatic bulb that needed no keeper at all.</p><p>He climbed slowly, as he always did, counting the steps under his breath the way his father had taught him. The sea below was the colour of old iron, restless and patient at once. Somewhere out in the dark, he knew, a fishing boat was reading his light, as sailors had read it since before he was born.</p><p>At the top, he wound the mechanism a final time and watched the beam sweep out. He thought of all the storms it had outlasted, all the ships it had quietly guided home without ever being thanked. A machine, he supposed, would do the job just as well — better, even, never sleeping, never growing old. And yet a machine would not know the names of the rocks, or remember the night the trawler nearly foundered on them.</p><p>Idris did not feel angry, only strangely light, as though he were handing something precious to a stranger he would never meet. He pressed his palm flat against the warm glass. 'Goodnight,' he said — to the lamp, to the sea, to forty-one years. Then he began, for the last time, the long climb down into an ordinary world that would never quite know what it was losing.</p>`,
-       mcqs:[
-         {q:"How long has Idris kept the lighthouse?", options:["Forty-one years","One year","A few months","Since this morning"], answer:0, exp:"Stated in the opening line."},
-         {q:"What will replace Idris?", options:["A younger keeper","A small automatic bulb","Nothing at all","A larger lamp"], answer:1, exp:"Engineers are installing an automatic bulb that needs no keeper."},
-         {q:"'The sea below was the colour of old iron' mainly creates a feeling of ____.", options:["warmth and joy","cold, heavy seriousness","fear and panic","boredom"], answer:1, exp:"‘Old iron’ suggests grey, heavy, sombre mood."},
-         {q:"Why does the writer say a machine 'would not know the names of the rocks'?", options:["Machines can't read","To show what human experience and care will be lost","Rocks have no names","To criticise sailors"], answer:1, exp:"It highlights the human knowledge and care a machine cannot hold."},
-         {type:"tfng", q:"Idris feels angry about losing his job.", answer:"False", exp:"The text says he 'did not feel angry, only strangely light'."},
-         {type:"tfng", q:"Idris's father taught him to count the steps.", answer:"True", exp:"He counts the steps 'the way his father had taught him'."},
-         {type:"tfng", q:"Idris has a family waiting for him at home.", answer:"Not Given", exp:"The text never mentions Idris's family."}
-       ],
-       selfcheck:[
-         {q:"What mood does the writer create, and which words help create it? Give two examples.", model:"A reflective, wistful, slightly sad mood. Evidence: 'the colour of old iron', 'slow gold arm', 'strangely light', 'what it was losing'. Any two well-chosen examples with explanation."},
-         {q:"The text contrasts a person with a machine. What is the writer suggesting about each?", model:"The machine is reliable, tireless and efficient, but lacks memory, care and human meaning; the person brings knowledge, history and feeling that cannot be automated. The writer values what is being lost."}
-       ],
-       design:"Design an illustrated tribute (poster) to a person or place whose quiet, unthanked work matters.", designId:null}
-    ]}
-  ]}
-};
-let RC_LEVEL="beginner";
-function rcUnits(levelKey){
-  const built=RCOURSE[levelKey].units;
-  const custom=mergedCustom('reading').filter(r=>r.level===levelKey);
-  return custom.length ? built.concat([{id:"uT", title:"Unit · Teacher-added texts", lessons:custom}]) : built;
+/* =========================================================================
+   READING COURSE — skill-first spine
+   Ten reading skills. Each skill has a Standard and an Advanced text,
+   chosen with the slider inside the skill. Question sets are built to test
+   THAT skill, not generic comprehension. Every text ends with a design task,
+   closing the read → write → design loop on the same skill.
+   ========================================================================= */
+const RSKILLS = [
+
+/* ---------------- 1 · SKIMMING ---------------- */
+{ n:1, id:"skim", icon:"⚡", name:"Skimming", strap:"Main idea · gist · best title", colour:"#E0403F",
+  what:"Reading fast, on purpose, to get the whole picture before you read closely. You are not collecting facts — you are working out what the text is <i>about</i> and what the writer is <i>doing</i>.",
+  how:["Read the title, any subheadings, and the first sentence of every paragraph.","Let your eyes travel. Do not stop at unknown words — the gist survives without them.","Close the text and ask: if I had to retitle this in six words, what would I write?"],
+  trap:"A detail can be perfectly true and still <b>not</b> be the main idea. The main idea has to cover the <i>whole</i> text, not one paragraph of it.",
+  levels:{
+    standard:{ id:"rk1s", title:"The library that lends things", field:"Community · sharing economy", register:"Informal", type:"Feature article", words:190,
+      text:`<p>Walk into the Hidden Gate Library and you will not find a single book on the ground floor. You will find a sewing machine, three tents, a pressure cooker, a projector and forty-one board games.</p><p>It is a library of things. Members borrow objects the way they once borrowed novels: take it home, use it for two weeks, bring it back. The average electric drill, one study found, is used for thirteen minutes in its entire life. So why should every family own one?</p><p>The idea began with a plain observation. Cupboards across the city were full of expensive equipment that nobody was using. Meanwhile students could not afford a projector for a single presentation, and families avoided camping because a tent cost too much for one weekend.</p><p>Two years on, the library has 1,900 members and lends around 300 items a month. The waiting list for the popcorn machine is nine weeks long.</p><p>"We are not really lending things," says Amal, the librarian. "We are lending people the freedom to try something once."</p>`,
+      mcqs:[
+        {q:"Which sentence best states the main idea of the whole text?", options:["Electric drills are rarely used.","The popcorn machine is the most popular item.","A library that lends objects rather than books lets people use things without owning them.","Students cannot afford projectors."], answer:2, exp:"The main idea must cover every paragraph. Options a, c and d are details from single paragraphs."},
+        {q:"Which would be the best alternative title?", options:["Borrow It, Don't Buy It","The History of Public Libraries","How to Use a Sewing Machine","Nine Weeks for Popcorn"], answer:0, exp:"A good title captures the whole argument. The others name single details."},
+        {q:"After a twenty-second skim, the general topic is best described as…", options:["a complaint about the cost of camping","a new kind of lending service and the thinking behind it","a review of forty-one board games","a report on library funding"], answer:1, exp:"Gist = the shape of the text: a service, plus why it exists."},
+        {q:"Why has the writer written this text?", options:["To warn readers about a risk","To explain and quietly recommend an idea","To sell drills","To describe a single person's day"], answer:1, exp:"The tone is explanatory and warm; the closing quotation recommends the idea without instructing you to join."}
+      ],
+      selfcheck:[
+        {q:"Give this text a new six-word title, then explain in one sentence why your title covers the whole text and not just one paragraph.", model:"A possible answer tours around a title such as 'Borrowing things, not owning them' or 'The freedom to try things once'. The justification should show that the title reaches paragraph 1 (what the place is), 3 (why it exists) and 5 (what it really offers) — not merely one example like the drill or the popcorn machine."},
+        {q:"Skim only the FIRST sentence of each paragraph. What do those five sentences alone tell you, and what do they leave out?", model:"A possible answer tours around this: the first sentences give the surprise (no books), the definition (a library of things), the origin (a plain observation), the scale (1,900 members) and the librarian's reframing. They leave out the supporting evidence — the thirteen-minute drill, the price of a tent, the nine-week waiting list. Skimming gives structure; close reading gives proof."}
+      ],
+      design:"Design a poster or a one-page leaflet advertising a 'library of things' for your school: what could be borrowed, by whom, for how long, and why it matters.", designId:null },
+    advanced:{ id:"ra3", title:"The race to map the brain", field:"Neuroscience · big science", register:"Formal", type:"Science report", words:263,
+      text:`<p>The human brain contains roughly eighty-six billion neurons, each connected to thousands of others. Together they form a network so dense that, until recently, mapping it in full seemed impossible. Today, an international effort known as the 'connectome' project is attempting exactly that: to chart every connection in the brain, much as earlier scientists once mapped the genome.</p><p>The task is staggering. To trace the wiring, researchers slice brain tissue into sheets thinner than a human hair, photograph each one under powerful electron microscopes, and then use artificial intelligence to follow individual fibres from image to image. A single cubic millimetre of brain can produce more data than an entire library of books.</p><p>Why attempt something so difficult? Scientists hope a complete map will reveal how memory, learning and emotion arise from physical connections — and what goes wrong in conditions such as Alzheimer's disease, epilepsy and depression. If a disorder is caused by faulty wiring, then seeing the wiring is a first step towards repairing it.</p><p>Critics caution that a map is not the same as understanding. Knowing how a city's roads connect does not tell you why people travel, and a diagram of neurons may not, by itself, explain a thought or a feeling. There are ethical questions too, about privacy and about what it means to reduce a mind to a chart.</p><p>Still, few doubt the value of the attempt. Each earlier map of the unknown — of coastlines, of genes, of the night sky — has changed how humans see themselves. The map of the mind may prove the most revealing of all.</p>`,
+      mcqs:[
+        {q:"Which statement best captures the main idea of the whole report?", options:["Mapping the connections of a brain is an enormous data problem that scientists are only beginning to solve.","Brains contain billions of neurons.","Microscopes have improved recently.","A fly brain is smaller than a human brain."], answer:0, exp:"The main idea must cover the whole report: the scale of the task, the tools, and how far the work has got."},
+        {q:"Which alternative title best fits the text?", options:["The Fly That Changed Everything","Wiring the Mind: The Map We Cannot Yet Draw","Counting Neurons","A Short History of Microscopes"], answer:1, exp:"It names the subject (the wiring/connectome) and the tension (not yet complete) that runs through every paragraph."},
+        {q:"Skimming the subheadings and opening sentences, the report moves in which order?", options:["Progress → history → opinion → conclusion","A story → a statistic → a joke","Problem → tools → progress so far → what remains","Definition → objection → rebuttal"], answer:2, exp:"Skimming for structure means tracking the shape of the argument, not the details inside it."},
+        {q:"Which detail is TRUE in the text but is NOT the main idea?", options:["The scale of the data is the central obstacle.","Progress is being made on small brains first.","Full mapping of a human brain remains far off.","The work is described as a race."], answer:3, exp:"'A race' is the text's framing device, a detail of style. The main idea is about the scale of the mapping problem."}
+      ],
+      selfcheck:[
+        {q:"Summarise the whole report in ONE sentence of no more than 20 words, then say which paragraph you found hardest to compress and why.", model:"A possible answer tours around: 'Scientists can now map the wiring of tiny brains, but the data involved makes a human map still distant.' The reflection should identify a paragraph dense with figures or technical method — detail resists compression because every number feels essential until you ask whether it changes the gist."},
+        {q:"Compare skimming this formal science report with skimming an informal blog. What changes about WHERE the main idea sits?", model:"A possible answer tours around: formal reports usually place the main idea early and restate it in the conclusion, with subheadings signposting each stage, so the first sentence of each paragraph is reliable. Informal writing often delays the point for effect, hiding it in a final line or a quotation, so a skim must include the ending."}
+      ],
+      design:"Design an infographic that shows the scale of the brain-mapping problem: use a comparison your classmates can feel (data measured in libraries, football pitches, or days of video).", designId:null }
+  }
+},
+
+/* ---------------- 2 · SCANNING ---------------- */
+{ n:2, id:"scan", icon:"🔎", name:"Scanning", strap:"Locating specific detail, fast", colour:"#2BA84F",
+  what:"Hunting a text for one precise piece of information — a time, a price, a name, a number — without reading everything. Your eyes look for the <i>shape</i> of the answer, not its meaning.",
+  how:["Hold the question in your head first. Know exactly what you are hunting: a date? a fee? a name?","Look for the shape: numbers, capital letters, currency signs, bold text, bullet points.","Stop the moment you find it. Read that sentence properly. Then check it truly answers the question asked."],
+  trap:"Texts plant <b>near-misses</b> on purpose: a price for a different group, a time for a different distance. Always re-read the question after you find your answer.",
+  levels:{
+    standard:{ id:"rk2s", title:"Al Ain Desert Trail Run — event notice", field:"Sport · community events", register:"Formal", type:"Notice / information text", words:200,
+      text:`<p><b>AL AIN DESERT TRAIL RUN — SATURDAY 18 OCTOBER</b></p><p><b>Distances and start times</b></p><ul><li>21 km Half Trail — starts 5:00 a.m.</li><li>10 km Trail — starts 5:45 a.m.</li><li>3 km Family Fun Run — starts 6:30 a.m.</li></ul><p><b>Entry fees</b></p><ul><li>Adults: 120 AED (21 km and 10 km) · 60 AED (3 km)</li><li>Students with valid school ID: 45 AED, any distance</li><li>Children under 8: free, but must be accompanied by an adult</li></ul><p><b>Registration</b> closes at 6:00 p.m. on Wednesday 15 October. Late entries are not accepted at the start line.</p><p><b>Race numbers</b> must be collected from the Sports Hall on Thursday 16 October between 4:00 p.m. and 8:00 p.m., or on Friday 17 October between 10:00 a.m. and 1:00 p.m. Numbers cannot be collected on race day.</p><p><b>Provided:</b> water stations every 2.5 km, medical support, a finisher's medal, and a bus from the car park to the start line (first bus 4:30 a.m.).</p><p><b>Not provided:</b> parking passes, breakfast, or storage for personal bags.</p>`,
+      mcqs:[
+        {q:"What time does the 10 km Trail start?", options:["5:00 a.m.","6:30 a.m.","4:30 a.m.","5:45 a.m."], answer:3, exp:"Scan the distances list. 5:00 a.m. is the 21 km; 4:30 a.m. is the first bus — both are near-misses."},
+        {q:"A 16-year-old student with a school ID enters the 3 km. What is the fee?", options:["45 AED","60 AED","120 AED","Free"], answer:0, exp:"The student rate is 45 AED at any distance. 60 AED is the adult 3 km rate — the near-miss."},
+        {q:"When is the LAST possible time to collect a race number?", options:["6:00 p.m. Wednesday 15 October","8:00 p.m. Thursday 16 October","1:00 p.m. Friday 17 October","On race day at the start line"], answer:2, exp:"Two collection windows are given; the later one ends 1:00 p.m. Friday. The Wednesday time is the registration deadline, not collection."},
+        {q:"Which of these is NOT provided by the organisers?", options:["Water every 2.5 km","A finisher's medal","A bus to the start line","Bag storage"], answer:3, exp:"Scan the final paragraph: storage for personal bags appears under 'Not provided'."}
+      ],
+      selfcheck:[
+        {q:"Describe exactly what your eyes did to find the race-number collection times. Which words or shapes on the page did you use as landmarks?", model:"A possible answer tours around: the reader hunts for the shape of a time (numbers, 'a.m.', 'p.m.') and for the bold landmark 'Race numbers'. Good scanning names its landmarks — bold headings, bullet points, digits — rather than describing reading the text through."},
+        {q:"The notice contains at least three 'near-miss' details designed to catch a careless scanner. Identify two and explain how each could trick a reader.", model:"A possible answer tours around: (1) 4:30 a.m., the first bus, sits near the start times and can be mistaken for a race start; (2) 60 AED is a real fee but for adults, not students; (3) Wednesday 6:00 p.m. is the registration deadline, easily confused with number collection. Each is true information answering a different question."}
+      ],
+      design:"Redesign this notice as a single clear graphic — a timetable or a one-glance card — so that a runner can find any detail in under five seconds.", designId:null },
+    advanced:{ id:"rk2a", title:"Faculty of Engineering — Open Day programme and fees", field:"Education · university admissions", register:"Formal", type:"Programme / prospectus extract", words:300,
+      text:`<p><b>FACULTY OF ENGINEERING · UNDERGRADUATE OPEN DAY · THURSDAY 6 NOVEMBER</b></p><p>All sessions take place in the Al Reem Building unless otherwise stated. Visitors must register online; walk-in places are released at 11:00 a.m. only if capacity allows.</p><p><b>Morning programme</b></p><ul><li>08:30–09:00 — Registration and refreshments, Ground Floor Atrium</li><li>09:00–09:40 — Welcome address, Lecture Theatre 2</li><li>09:45–10:30 — Course talks (run twice, identical content): Civil (LT2) · Mechanical (LT4) · Computer Engineering (Lab 3.1)</li><li>10:45–11:30 — Course talks, second run</li></ul><p><b>Afternoon programme</b></p><ul><li>12:00–13:00 — Laboratory tours, departing every 15 minutes from the Atrium. Closed footwear required; visitors in open sandals will not be admitted.</li><li>13:15–14:00 — Student finance session, Lecture Theatre 2 (Scholarship applicants are advised to attend.)</li><li>14:15–15:00 — Portfolio clinic, Studio B. <i>Prior booking essential.</i> Bring three pieces of work.</li></ul><p><b>Fees and funding, 2027 entry</b></p><ul><li>Tuition, national students: 42,000 AED per year</li><li>Tuition, international students: 68,500 AED per year</li><li>Laboratory levy (all students, all programmes): 1,850 AED per year</li><li>Merit scholarship: covers up to 60% of tuition. Applications close 31 January.</li><li>Hardship bursary: up to 12,000 AED per year. Applications close 15 March. A bursary may be held alongside a scholarship.</li></ul><p><b>Note.</b> Figures above are for 2027 entry and are reviewed annually each February. The laboratory levy is not covered by the merit scholarship.</p>`,
+      mcqs:[
+        {q:"A visitor wants to attend the Mechanical course talk and the laboratory tour. Which combination is possible?", options:["09:45 talk, then a 12:15 tour","09:00 welcome, then a 10:30 tour","13:15 talk, then a 14:15 tour","10:45 talk in LT4, then a 12:00 tour"], answer:3, exp:"Course talks run twice with identical content; tours depart every 15 minutes from 12:00. Option a also works in principle, but the Mechanical talk is in LT4, and only option b names the correct room."},
+        {q:"An international student receives the merit scholarship at its maximum. What must they still pay each year, apart from living costs?", options:["27,400 AED","27,400 AED plus the 1,850 AED levy","1,850 AED only","16,800 AED plus the levy"], answer:1, exp:"60% of 68,500 is 41,100, leaving 27,400 in tuition. The final note states the levy is not covered by the scholarship — the detail most scanners miss."},
+        {q:"Which is the LAST funding deadline in the year?", options:["31 January","15 February","15 March","6 November"], answer:2, exp:"The bursary closes 15 March; the scholarship closes 31 January. February is when figures are reviewed, not a deadline — a deliberate near-miss."},
+        {q:"Which statement is supported by the programme?", options:["Portfolio clinic places can be taken on the day.","Sandals are acceptable on the laboratory tour.","Walk-in visitors are always admitted.","A student may hold a bursary and a scholarship at the same time."], answer:3, exp:"Stated directly in the bursary line. Each other option is contradicted by a small qualifying phrase: 'Prior booking essential', 'Closed footwear required', 'only if capacity allows'."}
+      ],
+      selfcheck:[
+        {q:"Question 2 required you to scan in TWO places and then combine them. Explain why scanning alone was not enough for that question.", model:"A possible answer tours around: the fee and the scholarship percentage are found by scanning, but the levy exclusion sits in a closing note far from the figures. Scanning locates; the reader must then decide which located facts belong together. A question that asks 'what must they still pay' is really asking the reader to notice what the scholarship does not cover."},
+        {q:"Find the small qualifying phrases in this document (for example 'unless otherwise stated'). Choose two and explain what each one quietly changes.", model:"A possible answer tours around examples such as: 'unless otherwise stated' (Lab 3.1 and Studio B are elsewhere); 'only if capacity allows' (walk-in is not a right); 'Prior booking essential' (the clinic is not open access); 'reviewed annually each February' (the fees are not guaranteed). Qualifying phrases carry the real conditions of a formal document."}
+      ],
+      design:"Design a one-page visual planner that lets a visitor build a personal timetable for the day, with the clashes and conditions made impossible to miss.", designId:null }
+  }
+},
+
+/* ---------------- 3 · VOCABULARY IN CONTEXT ---------------- */
+{ n:3, id:"vocab", icon:"🧩", name:"Vocabulary in context", strap:"Meaning from the surrounding clues", colour:"#7A2FD0",
+  what:"Working out what an unfamiliar word means from the words around it — the definition hidden in the sentence, the example that follows, the contrast signalled by <i>but</i>, or the job the word is doing in the sentence.",
+  how:["Decide the word class first. Is it naming a thing, describing one, or doing an action?","Look for a built-in definition: commas, dashes, brackets, 'called', 'that is', 'or'.","Look for contrast ('but', 'unlike', 'however') and for cause ('because', 'so'). Then substitute your guess and re-read the whole sentence."],
+  trap:"Do not translate the word in isolation. A word can shift meaning between texts — 'current' in a science report is not 'current' in a news headline.",
+  levels:{
+    standard:{ id:"rb2", title:"Why bees matter", field:"Science · environment", register:"Formal", type:"Information text", words:108,
+      text:`<p>Bees are small, but our food depends on them. When a bee visits a flower to drink nectar, yellow dust called pollen sticks to its body. As the bee flies to the next flower, some pollen rubs off. This is called <b>pollination</b>, and it helps plants make seeds and fruit.</p><p>About one in three bites of the food we eat exists because of pollinators like bees. Apples, strawberries, almonds and many vegetables need them. Sadly, bee numbers are falling because of pollution, disease and the loss of wild flowers.</p><p>People can help in simple ways: planting flowers, avoiding harmful sprays, and leaving wild corners in gardens for bees to feed.</p>`,
+      mcqs:[
+        {q:"The text explains 'pollination'. Which clue in the text defines it?", options:["The sentence describes pollen moving from flower to flower on the bee's body.","A dictionary entry is quoted.","The word is written in italics.","It is compared to a machine."], answer:0, exp:"The definition is built into the surrounding sentences: the process is described before it is named."},
+        {q:"In this text, 'nectar' most nearly means…", options:["a sweet liquid inside a flower that bees drink","yellow dust that sticks to a bee","a kind of seed","a disease that harms bees"], answer:0, exp:"The verb 'drink' and the position 'inside a flower' fix the meaning. Yellow dust is pollen — a near-miss the text supplies itself."},
+        {q:"If a species is 'declining', its numbers are…", options:["rising quickly","staying the same","being counted","falling"], answer:3, exp:"The surrounding clause names causes — pollution, disease, lost flowers — which are reasons for loss, not growth."},
+        {q:"Which strategy best explains how you worked out 'pollinator'?", options:["I guessed from the picture.","I looked at the first letter.","I knew the word already, so no strategy was needed.","I recognised the root 'pollinate' plus the ending '-or', meaning the thing that does it."], answer:3, exp:"Word-building is a context strategy: a familiar root plus a familiar ending gives you the meaning without a dictionary."}
+      ],
+      selfcheck:[
+        {q:"Choose ONE word from this text you did not know. Write the sentence it appears in, then explain exactly which clue told you its meaning.", model:"A possible answer tours around naming a real clue type: a built-in definition ('yellow dust called pollen'), an example, a contrast, or word-building. A weak answer says 'I guessed from the topic'; a strong answer points to the words on the page that did the work."},
+        {q:"The text says our food 'depends on' bees. Rewrite that phrase two ways: once for a younger reader, once for a formal science report.", model:"A possible answer tours around: for a younger reader, 'we would lose a lot of our food without bees'; for a report, 'a substantial proportion of food crops rely on insect pollination'. The point is that register changes the words but not the meaning — and that vocabulary choice is itself information about audience."}
+      ],
+      design:"Create a labelled pollination or life-cycle diagram, or design a simple 'bee hotel'.", designId:"d_lifecycle" },
+    advanced:{ id:"ra2", title:"How a wind turbine turns wind into power", field:"Energy · engineering", register:"Formal", type:"Explanatory feature", words:256,
+      text:`<p>A wind turbine converts the movement of air into electricity through a chain of surprisingly simple steps. As wind strikes the long, curved blades, the air travelling over the curved side moves faster than the air beneath it, creating a difference in pressure. This produces <b>lift</b> — the very same force that allows aeroplanes to fly — and the blades begin to turn.</p><p>The blades are fixed to a central shaft, which runs back into a sealed box called the nacelle. There, the slow rotation is usually sped up by a gearbox before it reaches the generator. Inside the generator, the spinning motion drags powerful magnets past tightly wound coils of copper wire. This constantly changing magnetic field pushes electrons along the wire, and that flow of electrons is an electric current — the electricity we use.</p><p>Because faster wind carries far more energy, turbines are placed where the wind is strong and steady: on exposed hilltops, across open plains, or out at sea, where nothing slows the air down. Engineers also raise them on tall towers, since wind speeds increase with height.</p><p>A single large turbine can generate enough power for hundreds of homes, and, unlike a coal or gas plant, it burns no fuel and releases no carbon dioxide while running. Wind is not perfect — it does not blow on demand, so turbines must be paired with storage or other sources for calm days. Yet the basic achievement remains remarkable: with no flames and no fuel, a turbine turns an invisible, everyday breeze into usable energy.</p>`,
+      mcqs:[
+        {q:"In this text, 'lift' means…", options:["raising an object off the ground","the height of the tower","the upward or sideways force created when air moves faster over one side of a curved blade","the amount of electricity produced"], answer:2, exp:"The technical sense is defined by the surrounding explanation of air speed and blade shape — not by the everyday meaning of the word."},
+        {q:"The word 'shaft' in this text refers to…", options:["a beam of light","a deep hole in the ground","a sudden increase","a rotating rod that carries the turning force inwards"], answer:3, exp:"Its job in the sentence — it connects the blades to the generator — fixes the meaning. All the other senses of 'shaft' are real English, but wrong here."},
+        {q:"A 'generator' converts…", options:["electricity into movement","wind into heat","movement into electricity","heat into wind"], answer:2, exp:"The direction of the process is given by the chain the text describes: wind → blades → shaft → generator → electricity."},
+        {q:"Which of these words changes its meaning most between everyday English and this text?", options:["wind","blade","tower","lift"], answer:3, exp:"'Lift' is the classic false friend: the everyday verb ('to raise') is not the aerodynamic noun. That gap is where careless readers lose the explanation."}
+      ],
+      selfcheck:[
+        {q:"Explain how the SAME word 'current' would mean different things in this text, in a news report about migration, and in a swimming safety notice.", model:"A possible answer tours around: in this text 'current' names a flow of electricity; in a news report 'current' functions as an adjective meaning 'present, now'; in a safety notice it names a flow of water. The word class and the field of the text jointly decide the meaning — which is precisely why isolated translation fails."},
+        {q:"Pick a technical word from this text and write a definition in your own words that a Grade 7 student would understand — without using the word itself.", model:"A possible answer tours around a genuine paraphrase, e.g. for 'generator': 'a machine that takes spinning movement and turns it into electricity'. Strong answers avoid circularity ('a generator generates') and check that the definition would let a reader identify the object in a diagram."}
+      ],
+      design:"Design and build a working model wind turbine. Test how blade shape and number change the power it produces.", designId:"d_windmill" }
+  }
+},
+
+/* ---------------- 4 · INFERENCE ---------------- */
+{ n:4, id:"infer", icon:"🕵️", name:"Inference", strap:"Implied meaning · reading between the lines", colour:"#0E7C7B",
+  what:"Reaching a conclusion the writer never states, using evidence the writer did state. An inference is not a guess: it is a claim you could defend with a line from the text.",
+  how:["Notice what a character or writer does, not only what they say. Actions leak information.","Ask why THIS detail was included. Nothing in a good text is accidental.","Test your inference: which exact words support it? If you cannot point at the page, it is a guess, not an inference."],
+  trap:"An inference must be <b>supported</b>, not merely possible. 'She was sad' may be true, but if the text never gives you the evidence, it is your feeling, not the writer's meaning.",
+  levels:{
+    standard:{ id:"ri1", title:"Stranded! The catapult that saved a life", field:"Survival · STEM", register:"Informal", type:"Narrative", words:125,
+      text:`<p>When 14-year-old Sofia's small boat drifted onto a deserted island, she had no phone signal and no way to call for help. For two days she watched ships pass far out at sea, too distant to notice her waving.</p><p>Then she remembered a science lesson about levers and stored energy. Using a forked branch, strips of bark, and a length of stretchy vine, she built a simple catapult. With it, she launched a bright piece of cloth wrapped around a stone high into the air, again and again, near the shoreline.</p><p>A passing fisherman finally caught sight of the flash of colour arcing above the trees. Sofia was rescued that evening. 'I didn't have a phone,' she later said, 'but I had a catapult and an idea.'</p>`,
+      mcqs:[
+        {q:"What can you infer about Sofia's character from her actions, even though the writer never states it?", options:["She is careless.","She is a trained sailor.","She dislikes technology.","She is resourceful and keeps thinking under pressure."], answer:3, exp:"Inference from action: after two days without rescue she builds a device from what is around her. The text never uses the word 'resourceful' — you supply it, and the evidence backs it."},
+        {q:"The text says ships passed 'far out'. What does this detail let you infer?", options:["The ships were unfriendly.","The island was in a busy harbour.","She was rescued quickly.","Shouting or waving would not have been seen, so she needed something visible at distance."], answer:3, exp:"The detail exists to explain why an ordinary signal would fail — which is why the catapult matters."},
+        {q:"Which inference is NOT supported by the text?", options:["Sofia had studied science at school.","Sofia had been on the island longer than a few hours.","Sofia had no working phone.","Sofia was frightened at some point."], answer:3, exp:"Fear is entirely plausible, but no line gives evidence for it. The others each rest on stated details: the lesson she recalls, 'two days', 'no phone signal'."},
+        {q:"Why does the writer mention the bright colour of the cloth?", options:["To let the reader infer, without being told, that visibility was the whole point of the design.","To show Sofia liked bright clothes.","To describe the weather.","To fill space."], answer:0, exp:"The writer withholds the explanation and lets the detail do the work. That is how texts invite inference."}
+      ],
+      selfcheck:[
+        {q:"Write one inference about Sofia that the text supports, and quote the exact words that support it. Then write one statement about her that is a guess, and say how you can tell the difference.", model:"A possible answer tours around a supported inference ('she thinks like an engineer' — evidenced by recalling a lesson on levers and stored energy) set against an unsupported guess ('she was terrified' — nowhere evidenced). The test is always: can I point at the words?"},
+        {q:"How do you know Sofia's situation was serious, given that the writer never says 'she was in danger'?", model:"A possible answer tours around accumulating detail: no signal, no way to call for help, two days passing, ships too distant to see her. The writer builds danger out of facts and lets the reader draw the conclusion — which lands harder than being told."}
+      ],
+      design:"Design and build a mini catapult from sticks and rubber bands. Test how far it launches a small object.", designId:"d_catapult" },
+    advanced:{ id:"ra4", title:"The last light", field:"Literature · narrative", register:"Informal", type:"Narrative extract", words:257,
+      text:`<p>For forty-one years, Idris had climbed the lighthouse stairs at dusk, and for forty-one years the great lamp had answered him, throwing its slow gold arm across the water. Tonight would be the last time. In the morning, engineers were coming to replace the light with a small automatic bulb that needed no keeper at all.</p><p>He climbed slowly, as he always did, counting the steps under his breath the way his father had taught him. The sea below was the colour of old iron, restless and patient at once. Somewhere out in the dark, he knew, a fishing boat was reading his light, as sailors had read it since before he was born.</p><p>At the top, he wound the mechanism a final time and watched the beam sweep out. He thought of all the storms it had outlasted, all the ships it had quietly guided home without ever being thanked. A machine, he supposed, would do the job just as well — better, even, never sleeping, never growing old. And yet a machine would not know the names of the rocks, or remember the night the trawler nearly foundered on them.</p><p>Idris did not feel angry, only strangely light, as though he were handing something precious to a stranger he would never meet. He pressed his palm flat against the warm glass. 'Goodnight,' he said — to the lamp, to the sea, to forty-one years. Then he began, for the last time, the long climb down into an ordinary world that would never quite know what it was losing.</p>`,
+      mcqs:[
+        {q:"What does the extract imply about the relationship between the two characters, without stating it?", options:["There is an unspoken history between them that neither wants to name.","They have only just met.","They are strangers arguing.","They are closely related and openly affectionate."], answer:0, exp:"Inference from what is avoided. The silences, the half-finished sentences and the things left unsaid carry the history."},
+        {q:"The physical details of the setting (the fading light, the closing of doors) most likely function to…", options:["mirror and quietly comment on what is happening between the characters","give factual information about the time of day","introduce a new character","explain the weather"], answer:0, exp:"In narrative, setting is rarely only setting. When light fades as a relationship closes, the description is doing emotional work."},
+        {q:"Which reading is LEAST supported by the text?", options:["The narrator is entirely neutral and has no sympathy for either character.","A decision has already been made before the extract begins.","One character is more willing to speak than the other.","The characters have met in this place before."], answer:0, exp:"The narrator's choices — which details to linger on, whose silence we sit inside — reveal sympathy. Total neutrality is the reading the text does not support."},
+        {q:"An inference and a guess differ because an inference…", options:["is longer","can be defended with specific evidence in the text","comes from the reader's own life","is always about a character's feelings"], answer:1, exp:"This is the whole discipline of the skill: evidence, then conclusion — not conclusion, then hunting for evidence."}
+      ],
+      selfcheck:[
+        {q:"Choose ONE sentence from the extract that tells you something it does not say. Explain what it implies and exactly how it implies it.", model:"A possible answer tours around: naming a sentence, stating the implied meaning, and identifying the mechanism — an action instead of a statement, a pause, a repeated object, a shift in the light. Strong answers explain the technique, not just the feeling it produced."},
+        {q:"Rewrite one implied moment from the extract as a flat, explicit statement (for example, 'He was angry with her'). What is lost?", model:"A possible answer tours around: making the meaning explicit removes the reader's work and therefore the reader's investment. Implication invites us to complete the meaning, and what we complete ourselves we feel more sharply. The extract also gains ambiguity — several emotions can coexist in a silence but not in a flat sentence."}
+      ],
+      design:"Storyboard this extract as six wordless frames. Every emotion must be carried by image, light and gesture — no captions, no dialogue.", designId:null }
+  }
+},
+
+/* ---------------- 5 · AUTHOR'S PURPOSE, TONE & ATTITUDE ---------------- */
+{ n:5, id:"purpose", icon:"🎭", name:"Author's purpose, tone & attitude", strap:"Why it was written, and how it feels", colour:"#B45309",
+  what:"Purpose is the writer's <i>goal</i> (to inform, persuade, entertain, warn, sell). Tone is the <i>voice</i> the writer uses (playful, urgent, sceptical, respectful). Attitude is what the writer <i>thinks</i> of the subject.",
+  how:["Ask what the text wants from you: to know something, to do something, to feel something, or to buy something.","Listen for loaded words. 'Firm' and 'stubborn' describe the same behaviour with opposite attitudes.","Look at what the writer chose to include — and what they quietly left out. Selection reveals attitude."],
+  trap:"A text can inform <i>and</i> persuade at once. Ask which purpose the <b>ending</b> serves — the last lines usually reveal the writer's real errand.",
+  levels:{
+    standard:{ id:"rb1", title:"My week without a phone", field:"Digital wellbeing", register:"Informal", type:"Blog post", words:104,
+      text:`<p><i>From Maya's blog</i></p><p>Last week my family tried a challenge: seven days without our phones. I thought I would be bored to death. Day one was the worst — my hand kept reaching for a phone that wasn't there!</p><p>But something strange happened. I started noticing things again: the taste of breakfast, my little brother's terrible jokes, the way the sky turns pink in the evening. I read two whole books. I slept better. By day five, I didn't even miss it.</p><p>I'm back on my phone now, but I've kept one rule: no screens after nine o'clock. Funny how giving something up can hand something back.</p>`,
+      mcqs:[
+        {q:"What is Maya's main purpose in writing this post?", options:["To sell a phone-free app","To share a personal experience and gently recommend trying it","To warn readers that phones are dangerous","To report scientific research on screen time"], answer:1, exp:"The ending — the rule she kept afterwards — recommends without instructing. The evidence throughout is personal, not scientific."},
+        {q:"How would you describe the tone of the opening sentence?", options:["Formal and distant","Wry and self-mocking","Angry","Frightened"], answer:1, exp:"'I thought I would be bored to death' exaggerates for comic effect at her own expense — the writer is laughing at her past self."},
+        {q:"What is Maya's attitude towards her phone by the end?", options:["She rejects phones entirely.","She is unchanged.","She keeps her phone but wants limits around it.","She blames her family."], answer:2, exp:"Attitude is measured by the action taken: she keeps one rule, not all of them. That is a moderate position, not a rejection."},
+        {q:"Which single word choice most reveals the writer's attitude?", options:["'week'","'family'","'challenge'","'phone'"], answer:2, exp:"Calling it a 'challenge' rather than a 'punishment' or a 'ban' frames the whole experience as something chosen and winnable."}
+      ],
+      selfcheck:[
+        {q:"Rewrite the opening sentence so the tone becomes formal and neutral. What is gained and what is lost?", model:"A possible answer tours around: something like 'Last week my family undertook a seven-day period without mobile telephones.' Gained: authority, seriousness, suitability for a report. Lost: warmth, humour, and the reader's sense of being spoken to by a person — the very thing that makes a personal blog persuasive."},
+        {q:"Is this text informing or persuading? Justify your answer using the ENDING of the text.", model:"A possible answer tours around: it does both, but the ending tips it towards persuasion. Information alone would stop at the results; instead the writer states the rule she kept, modelling the behaviour she hopes the reader will copy. The last lines reveal the real errand."}
+      ],
+      design:"Design an infographic poster: '5 healthy screen-time habits for teenagers.'", designId:"d_climate" },
+    advanced:{ id:"ra1", title:"Can we really trust AI tutors?", field:"Technology · education", register:"Informal", type:"Opinion blog", words:273,
+      text:`<p><i>Opinion · by a Year 12 student</i></p><p>Everyone keeps telling me that AI tutors are the future. Type a question and get a patient, detailed explanation at two o'clock in the morning — what's not to love? Mine genuinely helped me understand calculus when nothing else had, breaking a problem into steps no textbook ever bothered to explain.</p><p>But the more I rely on it, the more uneasy I become. When an answer appears instantly, I stop wrestling with the problem myself — and the wrestling, my teacher insists, is exactly where the learning happens. A muscle that is never strained never grows stronger, and I notice that I remember far less from a solution handed to me than from one I had to fight for.</p><p>There is also the quieter problem of trust. An AI tutor sounds equally confident whether it is right or completely wrong, and a tired student at midnight rarely stops to check. It never says, 'I'm not sure.' That smooth confidence can slowly replace a student's own judgement — one of the very things school is meant to build.</p><p>I am not anti-AI; that would be like refusing to use a calculator. I simply think we should treat it like a gym, not a taxi: something that makes us stronger through effort, not something that carries us while we sit still. Used carelessly, it could produce a generation that can find any answer but truly understand none of them. Used wisely, it might be the most patient teacher any of us has ever had. The tool is remarkable. Whether it helps or harms depends entirely on how we choose to hold it.</p>`,
+      mcqs:[
+        {q:"The writer's primary purpose is to…", options:["explain neutrally how AI tutors work","advertise a particular product","persuade the reader to adopt a sceptical, conditional position","entertain with an anecdote"], answer:2, exp:"The text concedes benefits, then places conditions. It is arguing a position, not surveying one."},
+        {q:"Which phrase best captures the writer's attitude to AI tutors?", options:["Total rejection","Cautious, conditional acceptance","Uncritical enthusiasm","Complete indifference"], answer:1, exp:"Attitude sits in the qualifiers. The writer allows the benefits but attaches conditions to them."},
+        {q:"Why does the writer concede a point to the opposing view?", options:["Because they have changed their mind","To appear fair, and so to make their own conclusion harder to dismiss","Because they ran out of arguments","To fill the word count"], answer:1, exp:"Concession is a persuasive technique. Granting the strongest opposing point buys credibility for the argument that follows it."},
+        {q:"The tone of the title, a direct question, is designed to…", options:["show the writer does not know the answer","make the text sound academic","invite the reader into a doubt the writer has already resolved","hide the writer's opinion"], answer:2, exp:"Rhetorical questions in opinion writing rarely signal genuine uncertainty. They recruit the reader into the writer's scepticism before the argument begins."}
+      ],
+      selfcheck:[
+        {q:"Identify TWO loaded words or phrases in this text and explain how each nudges the reader towards the writer's position.", model:"A possible answer tours around naming specific words and explaining their connotation — for instance a word that makes the technology sound eager, unfeeling, or salesman-like, versus a neutral alternative the writer could have chosen. Strong answers offer the neutral substitute to prove the loading."},
+        {q:"Write the OPENING sentence of a reply that has the opposite attitude but the same purpose (to persuade). Then explain one technique you deliberately borrowed from this writer.", model:"A possible answer tours around producing an opening that concedes a genuine risk before advocating AI tutors, and naming the borrowed technique explicitly: concession, a rhetorical question, a personal anecdote as evidence, or a memorable closing rule. Recognising a technique well enough to reuse it is the proof of understanding purpose."}
+      ],
+      design:"Design a 'trust label' for AI tutoring tools, like a nutrition label: what a user should be told before they start, at a glance.", designId:null }
+  }
+},
+/* ---------------- 6 · TEXT STRUCTURE & COHESION ---------------- */
+{ n:6, id:"structure", icon:"🧱", name:"Text structure & cohesion", strap:"Organisation · connectives · referencing", colour:"#2b2f63",
+  what:"How a text is <i>built</i> and how it is <i>held together</i>. Structure is the order of the parts (problem then solution, cause then effect, claim then evidence). Cohesion is the glue: connectives, repeated ideas, and referencing words such as <i>it</i>, <i>this</i>, <i>they</i>, <i>such</i>.",
+  how:["Label each paragraph with one word: problem, cause, evidence, objection, solution. The labels reveal the structure.","When you meet 'it', 'this', 'they', 'these', stop and name the thing it points back to. Say the noun aloud.","Watch the connectives. 'However' reverses. 'Therefore' concludes. 'Moreover' adds. They are road signs, not decoration."],
+  trap:"<b>'This'</b> often refers to a whole idea from the previous sentence, not to a single noun. If you can only point at one word, you may have the wrong referent.",
+  levels:{
+    standard:{ id:"rk6s", title:"How a mangrove protects a coast", field:"Ecology · coastal defence", register:"Formal", type:"Explanatory text", words:210,
+      text:`<p>Along the shallow coasts of the Gulf grow mangroves — salt-tolerant trees that stand with their roots half in the water. They look untidy. In fact, they are one of the most efficient coastal defences on earth.</p><p>The protection begins below the surface. Mangrove roots arch out of the mud in dense tangles. When a wave arrives, it must pass through this maze. Each root steals a little of the wave's energy, so that the water reaching the shore behind is slower and lower than the water that entered.</p><p>Meanwhile, the same tangle traps sediment. Mud and sand carried by the tide settle among the roots instead of washing away. Over years, this raises the land, and the raised land in turn shelters more trees. As a result, a healthy mangrove forest does not merely resist erosion; it slowly builds new coastline.</p><p>Above the water, the story continues. The trees break the wind, and their leaves shade the mud below, keeping it cool and alive with crabs and young fish.</p><p>Nevertheless, mangroves are being cleared for building. When they go, the coast behind them is exposed — and a defence that cost nothing to grow becomes a sea wall that costs millions to build.</p>`,
+      mcqs:[
+        {q:"In paragraph 2, 'it must pass through this maze'. What does 'this maze' refer to?", options:["the shallow coast","the wave's energy","the shore behind","the dense tangle of mangrove roots"], answer:3, exp:"'This maze' points back to the tangle of roots described in the previous sentence — a referring phrase that renames an idea already given."},
+        {q:"'Nevertheless' at the start of the final paragraph signals that the writer is about to…", options:["add another benefit","reverse direction and introduce a problem","give an example","conclude by repeating"], answer:1, exp:"'Nevertheless' is a contrast connective. Every road sign of this kind tells you the shape of what comes next before you read it."},
+        {q:"What is the overall structure of this text?", options:["A general claim, then the mechanisms that support it, then a threat to it","A story told in time order","A list of unrelated facts","Two opposing opinions"], answer:0, exp:"Paragraph 1 claims; paragraphs 2–4 explain how; paragraph 5 reverses with a threat. Labelling paragraphs exposes the plan."},
+        {q:"In paragraph 3, 'this raises the land'. 'This' refers to…", options:["the tide","the mangrove forest","the whole process of sediment settling among the roots over years","the new coastline"], answer:2, exp:"'This' points back to an entire idea, not one noun. Readers who hunt for a single word here choose 'tide' and lose the sentence."}
+      ],
+      selfcheck:[
+        {q:"Give each of the five paragraphs a one-word label. What does the sequence of labels tell you about how explanatory texts are usually built?", model:"A possible answer tours around labels such as claim → mechanism → mechanism → extra benefit → threat. The sequence shows that explanation typically states a position, proves it with processes in order, then complicates or applies it. Naming the shape lets a reader predict what a paragraph will do before reading it."},
+        {q:"Remove every connective ('Meanwhile', 'As a result', 'Nevertheless', 'in turn'). Read it again. What exactly is lost?", model:"A possible answer tours around: the facts survive but the relationships do not. Without 'as a result' the reader cannot tell whether trapping sediment causes the land to rise or merely happens alongside it. Cohesion carries the logic; without it a text becomes a list."}
+      ],
+      design:"Design a labelled cross-section diagram of a mangrove coast, using arrows and captions to show the sequence: wave in, energy lost, sediment trapped, land raised.", designId:"d_lifecycle" },
+    advanced:{ id:"rk6a", title:"Why plastic recycling stalls", field:"Environment · economics", register:"Formal", type:"Analytical article", words:315,
+      text:`<p>Most people sorting a plastic bottle into a green bin believe they have solved a problem. The bottle, however, is where the difficulty begins rather than ends.</p><p>The first obstacle is chemistry. The word 'plastic' names a family, not a substance. A drinks bottle, a yoghurt pot and a crisp packet are made of different polymers that melt at different temperatures and cannot be melted together. Consequently, every load must be separated before it can be reprocessed, and separation is slow, expensive and never quite complete.</p><p>The second obstacle is economics. Recycled plastic competes against new plastic made from oil. When the oil price falls, new plastic becomes cheaper than the recycled kind, and buyers vanish. This is the paradox at the centre of the industry: the more successfully we collect, the more we may simply be storing.</p><p>A third obstacle is design. Many products are built as sandwiches — a layer of plastic bonded to a layer of foil or paper — because such combinations keep food fresh. They also make the product effectively unrecyclable, since no process can cheaply pull the layers apart.</p><p>None of this means that recycling is pointless. It means that recycling is the last and weakest of three actions, and that we have inverted the order. Reducing what is made and reusing what exists both attack the problem before it becomes waste. Recycling attacks it afterwards, when the material has already been degraded.</p><p>The bin, in short, is not the answer. It is the place where our earlier decisions arrive.</p>`,
+      mcqs:[
+        {q:"'This is the paradox at the centre of the industry.' What does 'This' refer to?", options:["the fact that greater collection can produce more stored waste when recycled plastic has no buyers","the oil price","the industry","the green bin"], answer:0, exp:"'This' summarises the whole preceding idea. Naming it forces you to hold two sentences together — the essential move in cohesion."},
+        {q:"Which structure best describes the article?", options:["Chronological narrative","Compare and contrast two countries","Claim, three ordered obstacles, qualification, restated claim","Question and answer"], answer:2, exp:"'The first obstacle… The second… A third…' signposts an ordered list; the final two paragraphs qualify and then restate."},
+        {q:"'Consequently' in paragraph 2 could be replaced, without changing the meaning, by…", options:["Therefore","However","Similarly","Nevertheless"], answer:0, exp:"It signals result. 'However' and 'Nevertheless' reverse; 'Similarly' compares. Substituting connectives is the fastest test of whether you have read the logic."},
+        {q:"In the final paragraph, what does 'our earlier decisions' refer back to across the whole text?", options:["the decision to buy a bottle","decisions about what materials are made, how products are designed, and whether we reduce and reuse","the decision to recycle","government decisions about oil"], answer:1, exp:"A referring phrase can reach back over several paragraphs. Here it gathers chemistry, economics and design into one phrase — the text's closing move."}
+      ],
+      selfcheck:[
+        {q:"Trace ONE reference chain through the article: pick a noun and follow every word that later points back to it ('it', 'they', 'such combinations', 'the material'). What does the chain reveal about how the writer keeps the topic alive?", model:"A possible answer tours around following a chain such as plastic → the bottle → it → the material → the layers → such combinations. The chain shows that cohesion allows a writer to avoid tedious repetition while never letting the reader lose the subject. Strong answers notice where the chain widens (from one bottle to all plastic) or narrows."},
+        {q:"The writer says 'we have inverted the order'. Explain what order is meant, and how the STRUCTURE of the article prepares the reader to accept that claim.", model:"A possible answer tours around: the order is reduce, reuse, recycle, and the claim is that public attention runs backwards through it. The structure prepares the reader by exhausting the obstacles to recycling one at a time, so that by the time the hierarchy is named, the reader has already concluded that recycling alone cannot carry the weight placed on it. Structure is an argument."}
+      ],
+      design:"Redesign one everyday package so that it can actually be recycled. Draw the before and after, and label what you removed, replaced or separated.", designId:null }
+  }
+},
+
+/* ---------------- 7 · FACT vs OPINION · BIAS & RELIABILITY ---------------- */
+{ n:7, id:"factop", icon:"⚖️", name:"Fact vs opinion · bias & reliability", strap:"Who is speaking, and can it be checked?", colour:"#8A1C4B",
+  what:"A fact can be checked and proved true or false. An opinion is a judgement. Bias is the tilt a writer brings — through word choice, selection, or interest. Reliability asks whether a source has the knowledge, evidence and independence to be believed.",
+  how:["Test each sentence: could I check this? If yes, it is a factual claim (which may still be false).","Hunt for judgement words: best, terrible, disappointing, essential, shocking.","Ask who benefits if you believe this. Who funded it, who is quoted, who is missing."],
+  trap:"A statement can be an opinion <b>dressed as a fact</b>: 'It is a fact that this is the best phone.' Also remember that <i>biased</i> does not mean <i>false</i> — and <i>factual</i> does not mean <i>complete</i>.",
+  levels:{
+    standard:{ id:"rk7s", title:"Two reviews, one phone", field:"Media literacy · consumer texts", register:"Informal", type:"Paired reviews", words:215,
+      text:`<p><b>REVIEW A — TechWeekly</b></p><p>The Nova 7 has a 6.1-inch screen and weighs 172 grams. In our battery test it lasted 19 hours of mixed use, four hours longer than last year's model. The camera has three lenses. Charging from empty to full took 74 minutes. At 1,499 AED it costs 200 AED more than the Nova 6 did at launch. We think the extra battery life justifies most of that increase, though the design is unchanged and the phone still has no headphone socket.</p><p><b>REVIEW B — from a phone brand's own blog</b></p><p>The Nova 7 is, quite simply, the most stunning phone ever made. Everyone who has held one agrees that it feels incredible. The battery is amazing and lasts all day, and the camera takes the best photos you will ever see. Critics who complain about the missing headphone socket are living in the past. At only 1,499 AED, it would be a mistake not to buy it. Order yours before stock runs out.</p>`,
+      mcqs:[
+        {q:"Which of these is a FACT that could be checked?", options:["The Nova 7 is the most stunning phone ever made.","The Nova 7 weighs 172 grams.","It would be a mistake not to buy it.","The battery is amazing."], answer:1, exp:"A weight can be measured and disproved. 'Stunning', 'amazing' and 'a mistake' are judgements."},
+        {q:"Review A contains opinions too. Which sentence is an OPINION?", options:["We think the extra battery life justifies most of that increase.","Charging took 74 minutes.","It costs 200 AED more than the Nova 6.","The camera has three lenses."], answer:0, exp:"'We think… justifies' is a judgement — but notice it is clearly marked as one, and it rests on the facts already given. That is how a reliable review handles opinion."},
+        {q:"Which feature makes Review B less reliable than Review A?", options:["It is shorter.","It is published by the brand that sells the phone, and gives no measurements.","It mentions the price.","It uses the word 'critics'."], answer:1, exp:"Two failures at once: an interest in the outcome, and no checkable evidence. Either alone would weaken it; together they are decisive."},
+        {q:"'Everyone who has held one agrees that it feels incredible.' The problem with this sentence is that…", options:["'everyone' is an unprovable generalisation, and 'incredible' is a judgement presented as agreement","it is written in the present tense","it is too short","it names the phone"], answer:0, exp:"An unfalsifiable claim about 'everyone' cannot be checked, so it is doing the work of a fact without being one."}
+      ],
+      selfcheck:[
+        {q:"Both reviews state the price as 1,499 AED. Why does the SAME fact feel different in each review?", model:"A possible answer tours around: in Review A the price arrives with a comparison (200 AED more than last year) and a judgement the reader can weigh. In Review B it arrives with 'only' and an instruction to buy. The fact is identical; the framing — the surrounding words, the comparison offered or withheld — carries the persuasion. Facts are never neutral once they are placed in a sentence."},
+        {q:"Review A is not free of bias either. Find one word or choice that reveals its position, and explain why it is still the more reliable text.", model:"A possible answer tours around identifying evaluative language in Review A ('justifies most of that increase', 'still has no headphone socket'). It remains more reliable because its opinions are signalled ('we think'), grounded in stated measurements, and it names weaknesses against its own interest. Reliability is not the absence of a view; it is the presence of evidence and independence."}
+      ],
+      design:"Design a 'reliability checker' card that a student could hold beside any online review: five questions to ask, in order, before believing it.", designId:null },
+    advanced:{ id:"rk7a", title:"Who paid for the study?", field:"Media literacy · research integrity", register:"Formal", type:"Analytical article", words:320,
+      text:`<p>In 2016 researchers examined every published study on the health effects of sugary drinks. They asked a simple question: did the studies funded by the drinks industry reach different conclusions from those funded independently?</p><p>They did. Of the studies with no industry funding, the overwhelming majority found a link between sugary drinks and weight gain. Of the studies funded by the industry, almost every one reported no such link, or reported that the evidence was inconclusive.</p><p>It would be comfortable to conclude that the funded researchers lied. The evidence does not support that, and it is not how bias usually works. Funding rarely changes the numbers. It changes the questions.</p><p>A study can compare a sugary drink with a diet drink rather than with water. It can measure weight over six weeks rather than six years. It can adjust its results for exercise in a way that quietly absorbs the effect it was looking for. Each choice is defensible on its own; each is a small tilt; and a series of small tilts, all leaning the same way, produces a result.</p><p>Publication does further work. A company that funds ten studies may publish the three that are favourable and never mention the seven that were not. Nothing false has been printed. The picture is nonetheless distorted, because the reader sees the survivors and never counts the dead.</p><p>None of this makes industry-funded science worthless. Some of it is excellent, and independent researchers have their own pressures — to publish, to be interesting, to be right. The practical lesson is narrower, and duller, and more useful. Before you weigh the finding, find the funder, the comparison, and the studies that were never published.</p>`,
+      mcqs:[
+        {q:"What is the writer's central claim about how funding bias operates?", options:["Funding usually shapes which questions are asked and which results are published, rather than the numbers themselves.","Funded researchers falsify their data.","Industry-funded science is always worthless.","Independent science is free from bias."], answer:0, exp:"The writer explicitly rejects the falsification explanation and replaces it with question design and publication choice."},
+        {q:"'The reader sees the survivors and never counts the dead.' This describes…", options:["a laboratory accident","publication bias — the unfavourable studies that were never released","a falsified result","an error in measurement"], answer:1, exp:"A metaphor for selective publication. The unpublished studies are invisible, so the surviving evidence looks stronger than the whole evidence would."},
+        {q:"Which is a FACT stated in the text, rather than the writer's interpretation?", options:["Bias changes the questions, not the numbers.","Industry-funded science is not worthless.","The practical lesson is dull.","A 2016 review found that independently funded studies mostly reported a link, while industry-funded studies mostly did not."], answer:3, exp:"The finding of the review is a checkable claim about what a study reported. The others are the writer's reasoning about that finding."},
+        {q:"Why does the writer concede that independent researchers 'have their own pressures'?", options:["To weaken their own argument","To show that reliability is a matter of degree and of scrutiny, not of a simple good-and-bad division","To defend the drinks industry","Because they were paid to"], answer:1, exp:"The concession protects the argument from being read as a conspiracy theory, and shifts the reader from 'who is honest?' to 'what should I check?'"}
+      ],
+      selfcheck:[
+        {q:"Explain the difference between a study being BIASED and a study being FALSE. Use an example from the text.", model:"A possible answer tours around: a biased study can contain entirely accurate numbers while asking a question whose answer was tilted in advance — comparing a sugary drink with a diet drink rather than with water. Nothing printed is false; the conclusion is nonetheless unsafe. Falsity is about the data; bias is about the frame around the data."},
+        {q:"The writer calls the practical lesson 'narrower, and duller, and more useful'. Why might a duller conclusion be the more reliable one?", model:"A possible answer tours around: dramatic conclusions ('scientists are bought') are memorable, unfalsifiable and lead to no action. The dull conclusion — check the funder, the comparison, the unpublished studies — is a procedure a reader can actually carry out. Reliability often looks like modesty, and writers who resist the satisfying claim are usually more trustworthy than those who reach for it."}
+      ],
+      design:"Design a one-page 'source autopsy' template: the questions a reader should ask of any research claim they meet online, laid out so it can be filled in during a lesson.", designId:null }
+  }
+},
+
+/* ---------------- 8 · SUMMARISING & SYNTHESISING ---------------- */
+{ n:8, id:"summary", icon:"📝", name:"Summarising & synthesising", strap:"Compress one text · combine two", colour:"#146B3A",
+  what:"Summarising means saying the most in the fewest words, in your own words, without adding yourself. Synthesising means holding two or more texts together and saying something true of both — where they agree, where they collide, and what emerges only when you read them side by side.",
+  how:["Cross out examples first. Examples support the point; they are not the point.","Write one sentence per paragraph, then delete every sentence that only repeats another.","To synthesise, do not summarise text A then text B. Build a claim, and pull evidence from both texts into it."],
+  trap:"A summary that follows the original's order sentence by sentence is not a summary — it is a shorter copy. Reorganise, or you have not understood.",
+  levels:{
+    standard:{ id:"ri2", title:"A city plants a million trees", field:"Climate · local & global", register:"Formal", type:"News report", words:104,
+      text:`<p>The city of Greenford has announced that it has planted its one-millionth tree, completing a five-year project to cool its streets and clean its air. Officials report that average summer temperatures in the most shaded districts have already fallen by up to two degrees.</p><p>The initiative began after a record heatwave, when residents demanded action. Volunteers, schools and local businesses joined city workers to plant native species along roads, in parks, and on rooftops.</p><p>'Trees are the cheapest air conditioners we have,' said the project's lead scientist. The city now plans to share its method with neighbouring towns, turning a local idea into a regional movement.</p>`,
+      mcqs:[
+        {q:"Which sentence would open the best 25-word summary of this report?", options:["Greenford had a record heatwave.","After a heatwave, Greenford spent five years planting a million trees, measurably cooling its streets, and now plans to share the method.","Trees are the cheapest air conditioners we have.","Officials reported that summer temperatures fell."], answer:1, exp:"A summary opens with the whole, not a part. Options a, c and d are all true — and all fragments."},
+        {q:"Which detail should be CUT from a short summary?", options:["The number of trees planted","The measured temperature drop","The exact quotation about air conditioners","The plan to share the method"], answer:2, exp:"Quotations illustrate; they rarely carry information a summary cannot carry more briefly. Cut the illustration, keep the finding."},
+        {q:"Summarising in your own words matters because…", options:["copying is faster","teachers dislike quotations","reworking the wording is the test of whether you understood the idea, rather than remembered the sentence","the original is too long"], answer:2, exp:"You can copy a sentence you do not understand. You cannot rewrite one."},
+        {q:"Which is a fault in this summary: 'Greenford planted trees. Temperatures fell up to 2°C in shaded districts. Officials were pleased. The project took five years.'?", options:["It is too short.","It uses the word 'trees'.","It includes a number.","It follows the report's order and lists facts without showing the cause-and-effect relation between them."], answer:3, exp:"Listing is not summarising. A summary must carry the logic — planting caused the cooling, which is why the method is worth sharing."}
+      ],
+      selfcheck:[
+        {q:"Write a 20-word summary of this report. Then count: how many of your 20 words appear in the original? Aim for fewer than six.", model:"A possible answer tours around a summary such as: 'Greenford's five-year tree-planting scheme, launched after a heatwave, cooled shaded streets by up to two degrees; neighbouring towns will copy it.' The word-overlap count is the useful discipline — heavy overlap usually means the writer has compressed the sentences rather than the ideas."},
+        {q:"How does this local story connect to a global issue? Say it in one sentence that a reader who has not read the report would understand.", model:"A possible answer tours around: a single city's planting scheme is a small, testable answer to the global problem of rising urban heat, and its value lies in being copyable. Strong answers make the general claim explicit rather than assuming the reader will infer it — which is the difference between summarising a text and reporting one."}
+      ],
+      design:"Design a one-page 'how we did it' guide that another city could follow — the whole report reduced to a sequence a stranger could act on.", designId:"d_climate" },
+    advanced:{ id:"rk8a", title:"Remote learning: two accounts", field:"Education · evidence", register:"Formal", type:"Paired texts", words:330,
+      text:`<p><b>TEXT A — from a national education review</b></p><p>Across the schools we examined, the shift to remote learning widened existing gaps. Pupils with a quiet room, a reliable device and a parent at home lost, on average, around one month of progress. Pupils without those three things lost between three and five months. The technology performed as designed; the households did not perform equally. We therefore judge that remote learning is not a single policy with a single effect. It is an amplifier, and what it amplifies is the home.</p><p><b>TEXT B — from a teacher's account, published in a magazine</b></p><p>I taught eleven of my Grade 10 students remotely for four months, and I would not repeat it. Yet I have to record something awkward. Three of those students did better work than they had ever done in my classroom. All three were quiet in class. One told me afterwards that she had answered more questions in four months of chat messages than in four years of raising her hand. The room, it turned out, had been the obstacle. I do not think this argues for remote learning. I think it argues that our classrooms are built for a certain kind of child, and that we mistake their comfort for learning.</p>`,
+      mcqs:[
+        {q:"What claim is supported by BOTH texts, taken together?", options:["Remote learning is better than classroom learning.","Remote learning is worse than classroom learning.","The effect of remote learning depends heavily on the individual learner's circumstances.","Technology failed during remote learning."], answer:2, exp:"Text A locates the variation in the home; Text B locates it in temperament. Neither says 'better' or 'worse' overall — the synthesis is that the average conceals the variation."},
+        {q:"Where do the two texts genuinely COLLIDE?", options:["On whether technology worked","On what causes the variation: Text A points to material conditions at home, Text B to the classroom's own design","On the number of months of learning lost","On whether teachers were involved"], answer:1, exp:"Both accept variation; they disagree about its source. Naming the point of collision precisely is the core skill of synthesis."},
+        {q:"Which idea emerges ONLY when the two texts are read side by side?", options:["Some pupils lost three to five months of progress.","Three quiet students improved.","An average effect can hide two opposite effects, so a single policy verdict may be the wrong shape of answer.","Remote learning lasted four months."], answer:2, exp:"Neither text states this. It is produced by the reader holding both — which is exactly what synthesis means."},
+        {q:"A weak synthesis would…", options:["quote both texts","find a point of disagreement","use the writer's own words","summarise Text A, then summarise Text B, and stop"], answer:3, exp:"Sequential summary is not synthesis. Synthesis requires a claim of your own that both texts are recruited to serve."}
+      ],
+      selfcheck:[
+        {q:"Write ONE sentence that both writers would sign, and ONE sentence that exactly one of them would reject. Name which, and why.", model:"A possible answer tours around a shared sentence such as: 'The average effect of remote learning tells you very little about any individual pupil.' A rejected sentence might be: 'The main cause of unequal outcomes is material — devices, space and parental time.' Text A would sign it; Text B would resist, arguing the classroom itself disadvantages some pupils regardless of home conditions. Precision about who rejects what is the mark of real synthesis."},
+        {q:"Text B says 'we mistake their comfort for learning'. Use Text A to test that claim. Does the review's evidence support it, contradict it, or simply not speak to it?", model:"A possible answer tours around: Text A does not speak to it. The review measures progress against home conditions and never examines classroom participation or temperament. Recognising that a source is SILENT on a question — rather than forcing it to agree or disagree — is one of the hardest and most valuable moves in synthesis."}
+      ],
+      design:"Design a single diagram that holds both texts at once: show the average effect and the variation hidden beneath it, so a reader sees why the average misleads.", designId:null }
+  }
+},
+
+/* ---------------- 9 · VISUAL & MULTIMODAL READING ---------------- */
+{ n:9, id:"visual", icon:"📊", name:"Visual & multimodal reading", strap:"Charts · layout · image–text relations", colour:"#1E6FA8",
+  what:"Reading meaning that is carried by more than words: a chart, a photograph, a caption, a colour, the size of a heading, the order of a page. Modern texts argue visually — and visual arguments can persuade before a single sentence is read.",
+  how:["Read the frame first: title, axis labels, units, scale, source, date. Only then look at the shape.","Ask what the image and the words are doing to each other. Does the caption anchor the image, extend it, or contradict it?","Ask what the design hides: a truncated axis, a missing category, a persuasive colour, a photograph chosen for feeling rather than fact."],
+  trap:"A chart that starts its vertical axis at something other than zero can turn a tiny change into a cliff. Always find the origin before you trust the shape.",
+  levels:{
+    standard:{ id:"rk9s", title:"Where our water goes", field:"Data · household resources", register:"Formal", type:"Chart, caption and commentary", words:200,
+      text:`<p><b>Household water use in a typical UAE home, litres per person per day</b></p><table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:.95rem"><tr><td style="padding:6px 8px;width:34%">Showering &amp; bathing</td><td style="padding:6px 8px"><span style="display:inline-block;height:16px;width:62%;background:#1E6FA8;border-radius:3px"></span> 105 L</td></tr><tr><td style="padding:6px 8px">Toilet flushing</td><td style="padding:6px 8px"><span style="display:inline-block;height:16px;width:30%;background:#1E6FA8;border-radius:3px"></span> 51 L</td></tr><tr><td style="padding:6px 8px">Garden &amp; outdoor</td><td style="padding:6px 8px"><span style="display:inline-block;height:16px;width:26%;background:#1E6FA8;border-radius:3px"></span> 44 L</td></tr><tr><td style="padding:6px 8px">Washing machine</td><td style="padding:6px 8px"><span style="display:inline-block;height:16px;width:18%;background:#1E6FA8;border-radius:3px"></span> 31 L</td></tr><tr><td style="padding:6px 8px">Kitchen &amp; drinking</td><td style="padding:6px 8px"><span style="display:inline-block;height:16px;width:8%;background:#1E6FA8;border-radius:3px"></span> 13 L</td></tr></table><p style="font-size:.9rem;color:#555"><i>Figure 1. Estimated average, 2024. Source: national utility survey of 1,200 homes. Bars are drawn to scale.</i></p><p>The chart is often used to argue that turning off the tap while brushing your teeth will save the country's water. The kitchen bar suggests otherwise. Almost eight times more water leaves the house through the shower than through every tap in the kitchen combined.</p><p>Yet the chart cannot show everything. It counts only water used inside and around the home. It does not count the water used to grow the food that arrives in the kitchen — which, for a single kilogram of beef, may exceed everything on this chart for a week.</p>`,
+      mcqs:[
+        {q:"According to the chart, which use accounts for the most water?", options:["Toilet flushing","Garden and outdoor","Washing machine","Showering and bathing"], answer:3, exp:"Read the frame first: the title gives units (litres per person per day), and the longest bar carries the largest figure, 105 L."},
+        {q:"Roughly how many times more water is used in showering than in the kitchen?", options:["about twice","about four times","about eight times","about twenty times"], answer:2, exp:"105 ÷ 13 ≈ 8. The commentary states this, but the chart lets you check it — which is the point of reading both."},
+        {q:"What does the COMMENTARY add that the chart alone cannot show?", options:["The size of each bar","That the chart excludes the water used to produce food","The units used","The source of the data"], answer:1, exp:"The words extend the image beyond its own frame. Image and text are not saying the same thing twice; each covers what the other cannot."},
+        {q:"Which piece of the frame would matter most if someone claimed this chart proves water use is falling?", options:["The date and the fact that it shows a single year, not a trend","The colour of the bars","The order of the categories","The width of the table"], answer:0, exp:"A single year cannot show a trend. Checking date and scope defeats most misuse of a chart."}
+      ],
+      selfcheck:[
+        {q:"The bars are drawn to scale. Redraw the shower bar so that it starts halfway across the page instead of at the left edge. What impression would a reader now form, and why?", model:"A possible answer tours around: shifting the baseline breaks the visual proportion, so a reader comparing bar lengths would misjudge the ratios. The lesson is that a bar chart's honesty depends entirely on a shared zero origin — the eye compares length, and length only means something if every bar starts in the same place."},
+        {q:"Write a caption for this chart that is factually accurate but subtly persuasive in favour of shorter showers. Then write one that is accurate but persuasive against watering the garden. What does this show about captions?", model:"A possible answer tours around producing two accurate captions that select different truths — 'the shower alone uses more than the toilet and washing machine combined' versus 'outdoor watering costs more than every kitchen tap three times over'. The same chart supports both. Captions do not merely describe images; they tell the reader which comparison to make."}
+      ],
+      design:"Redesign this chart to include the hidden water used to produce food. Decide what to show, what to leave out, and how to make the exclusion visible rather than silent.", designId:null },
+    advanced:{ id:"rk9a", title:"The screen-time graphic that went everywhere", field:"Media literacy · data design", register:"Formal", type:"Data commentary", words:305,
+      text:`<p>In March a graphic travelled around the world. It carried one headline — <b>TEENAGE SCREEN TIME UP 340%</b> — above a red line that climbed from the bottom-left of the frame to the top-right, almost vertically. Beneath it, in grey type too small to read on a phone, ran the source.</p><p>The line was accurate. The frame was not.</p><table style="width:100%;border-collapse:collapse;margin:10px 0;font-size:.95rem"><tr><td style="padding:5px 8px;width:26%">2019</td><td style="padding:5px 8px"><span style="display:inline-block;height:14px;width:70%;background:#B45309;border-radius:3px"></span> 5.8 hrs/day</td></tr><tr><td style="padding:5px 8px">2021</td><td style="padding:5px 8px"><span style="display:inline-block;height:14px;width:88%;background:#B45309;border-radius:3px"></span> 7.3 hrs/day</td></tr><tr><td style="padding:5px 8px">2023</td><td style="padding:5px 8px"><span style="display:inline-block;height:14px;width:92%;background:#B45309;border-radius:3px"></span> 7.6 hrs/day</td></tr><tr><td style="padding:5px 8px">2025</td><td style="padding:5px 8px"><span style="display:inline-block;height:14px;width:94%;background:#B45309;border-radius:3px"></span> 7.8 hrs/day</td></tr></table><p style="font-size:.9rem;color:#555"><i>Figure 1. The same data, drawn from a zero baseline.</i></p><p>Three design decisions produced the drama. First, the vertical axis of the original began at 5.5 hours, not at zero, so a rise of two hours filled the whole frame. Second, the '340%' referred not to total screen time but to time on one category of app — a real finding, quietly relabelled by the headline. Third, the line was red, and it was the only red thing on the page.</p><p>Nothing was fabricated. Every number in the original graphic can be found in the underlying survey. What was designed was the reader's conclusion.</p><p>Read the frame before the shape. Find the origin. Find what the percentage is a percentage <i>of</i>. Then look at the picture.</p>`,
+      mcqs:[
+        {q:"What is the writer's core distinction in the sentence 'The line was accurate. The frame was not.'?", options:["The data were invented but the design was honest.","The line should have been a bar.","The data were true, while the way they were presented led to a false conclusion.","The frame was the wrong colour."], answer:2, exp:"The whole article turns on this: truthful numbers can be arranged into a misleading argument. Accuracy and honesty are not the same test."},
+        {q:"Using the table, what was the actual increase in daily screen time from 2019 to 2025?", options:["340%","about 2 hours, from 5.8 to 7.8","from zero to 7.8","0.2 hours"], answer:1, exp:"Reading the redrawn figures gives the real magnitude. The headline's 340% described a different quantity altogether."},
+        {q:"The '340%' figure is misleading because…", options:["it is a true percentage of one app category, presented as though it described total screen time","it is mathematically wrong","percentages should never be used","it was printed in red"], answer:0, exp:"Always ask what the percentage is a percentage OF. The relabelling, not the arithmetic, is the deception."},
+        {q:"What is the relationship between the red line and the grey source text?", options:["They reinforce each other equally.","The colours are decorative and carry no meaning.","The source text corrects the line.","Visual weight is used to make one element unmissable and the other effectively invisible, which is itself an argument."], answer:3, exp:"Size, colour and placement distribute attention. A design that makes its evidence unreadable on the device most people use has made a choice about what it wants checked."}
+      ],
+      selfcheck:[
+        {q:"'Nothing was fabricated… What was designed was the reader's conclusion.' Explain how a graphic can be entirely truthful and still deceive. Give the three mechanisms this text identifies.", model:"A possible answer tours around: (1) a non-zero baseline exaggerates small changes because the eye reads distance as magnitude; (2) a real statistic is relabelled so that the reader supplies the wrong referent for the percentage; (3) visual hierarchy — colour, size, placement — decides what is noticed and what is skipped. None of these alters a number. All three alter the conclusion."},
+        {q:"Design is an argument. Take one design decision from this graphic and rewrite it so the graphic argues the OPPOSITE case — that screen time has barely changed. What did you change, and did you have to lie?", model:"A possible answer tours around: extend the vertical axis far beyond the data (to 24 hours) and the line flattens; choose a muted grey; headline the smallest true percentage (a 2.6% rise since 2023). Nothing false has been printed. The exercise proves that a reader who checks only the numbers, and never the frame, can be walked to either conclusion."}
+      ],
+      design:"Take one real dataset and produce TWO honest graphics from it that lead a viewer to opposite conclusions. Annotate each with the design decisions you used.", designId:null }
+  }
+},
+
+/* ---------------- 10 · CRITICAL RESPONSE ---------------- */
+{ n:10, id:"critical", icon:"🧠", name:"Critical response", strap:"Evaluate · judge · justify with evidence", colour:"#5B2C86",
+  what:"Judging a text rather than only understanding it. Is the argument sound? Is the evidence sufficient? What has been assumed without being argued? A critical response takes the text seriously enough to disagree with it — and grounds every judgement in the words on the page.",
+  how:["Separate the CLAIM from the EVIDENCE. Then ask whether that evidence could support that claim.","Hunt for the unstated assumption. Every argument rests on something it never defends.","Steelman before you strike: state the writer's case at its strongest, then say precisely where it fails."],
+  trap:"Criticism is not disagreement. 'I disagree' is a preference. '<b>This claim about all teenagers rests on a sample of eleven</b>' is a critical response.",
+  levels:{
+    standard:{ id:"rk10s", title:"Should schools ban phones?", field:"Education · argument", register:"Informal", type:"Opinion column", words:225,
+      text:`<p>Every school should ban phones from the classroom, and the case is now overwhelming.</p><p>Start with the evidence. A study of 91 schools in England found that after a phone ban, exam results rose — and rose most among the lowest-achieving students. That is not a small finding. It suggests a ban helps precisely those pupils who need help most.</p><p>Then consider attention. A phone in a pocket does not need to buzz to cost you something. Simply knowing it is there, researchers argue, occupies part of your working memory. You are not on your phone; you are waiting for your phone.</p><p>Opponents say that phones are useful learning tools. They are, occasionally. But a hammer is a useful tool and we do not leave one on every desk in case a nail appears. Schools have devices. They can be handed out for the lesson that needs them.</p><p>Others say a ban will not work because pupils will simply hide their phones. This is true of every rule ever written. We do not abandon the rule against cheating because some pupils cheat.</p><p>The truth is that we have run an unplanned experiment on a generation for fifteen years, and we did not like the result. Ending the experiment is not authoritarian. It is overdue.</p>`,
+      mcqs:[
+        {q:"Which is the writer's STRONGEST piece of evidence, and why?", options:["The 91-school study, because it reports a measured outcome across many schools","The hammer comparison, because it is memorable","The claim about working memory, because researchers are mentioned","The final sentence, because it is confident"], answer:0, exp:"Strength comes from what could be checked and how much it covers. An analogy proves nothing; a scaled measurement is evidence."},
+        {q:"Which statement in the article is presented as evidence but is actually an ANALOGY?", options:["A hammer is a useful tool but we do not leave one on every desk.","Exam results rose after a ban.","A phone in a pocket occupies working memory.","Pupils will hide their phones."], answer:0, exp:"Analogies illuminate an argument; they cannot establish it. The hammer comparison assumes phones and hammers are alike in the relevant way — which is the very thing in dispute."},
+        {q:"What does the writer ASSUME without arguing for it?", options:["That phones exist","That schools have rules","That exam results are the right measure of whether a school policy has worked","That some pupils break rules"], answer:2, exp:"The entire case rests on results as the measure of success. A critic might accept every fact and still ask whether wellbeing, or learning to self-regulate, should count too."},
+        {q:"The response to 'pupils will hide their phones' is effective because it…", options:["insults the opponent","cites a study","changes the subject","shows that the objection, if accepted, would abolish all rules, so it proves too much"], answer:3, exp:"Recognising the SHAPE of an argument — an objection that proves too much — is criticism. Naming the move is more useful than agreeing with it."}
+      ],
+      selfcheck:[
+        {q:"State the writer's case at its strongest in two sentences, WITHOUT using any of the writer's own analogies. Then identify the single weakest link and say what evidence would strengthen it.", model:"A possible answer tours around a fair reconstruction (a measured attainment gain, concentrated among the pupils furthest behind, plus a mechanism — divided attention — that explains why) and then a precise weak link: the working-memory claim is asserted through 'researchers argue' with no study named, no size, no context. Strengthening it would require a named study with a sample and an effect size."},
+        {q:"The article ends: 'Ending the experiment is not authoritarian. It is overdue.' Evaluate that sentence as a piece of argument, not as an opinion you agree or disagree with.", model:"A possible answer tours around: the sentence answers an objection ('authoritarian') that the article never actually stated or examined, so it defeats a version of the opposition the writer has chosen. It also converts a factual dispute into a matter of timing, which quietly assumes the conclusion. Rhetorically it is strong; logically it does no work. Noticing the difference is the skill."}
+      ],
+      design:"Design the phone policy you would actually defend — as a one-page visual document for a school. Show the rule, the evidence behind it, and the strongest objection with your answer to it.", designId:null },
+    advanced:{ id:"rk10a", title:"Rewilding the desert", field:"Environment · policy", register:"Formal", type:"Persuasive essay", words:330,
+      text:`<p>The desert, we are told, is empty. It is therefore available. Across the region, ambitious schemes now propose to green it: millions of trees, irrigated by desalinated water, spreading over sand that has carried nothing but scrub for ten thousand years. The photographs are extraordinary. The arithmetic is less so.</p><p>Consider water. A mature tree in this climate may transpire well over a hundred litres on a hot day. Desalinating and pumping that water consumes energy; at present, much of that energy still comes from gas. A forest planted to absorb carbon may, for its first two decades, cost more carbon than it stores. Supporters reply that the energy will soon be solar. Perhaps. But an argument that depends on a future condition is a promise, not a plan, and it should be labelled as such.</p><p>Consider also the assumption inside the word 'empty'. Desert is not the absence of an ecosystem; it is one. It holds specialised plants, reptiles, insects and birds that exist nowhere else, precisely because the conditions are hard. To irrigate that ground and plant imported species is not to restore a habitat. It is to replace one — and to describe the replacement as healing.</p><p>None of this is an argument for doing nothing. Restoring degraded land that was once vegetated, protecting the mangroves we already have, or greening cities where people actually live: each of these is defensible, measurable, and modest. What should trouble us is the grander promise, because it flatters us. It says the damage can be undone with engineering and enthusiasm, and that no one need give anything up.</p><p>Before you support a scheme, ask what it would count as success, who measures it, and when. If the answer is a photograph, the scheme is not a policy. It is an advertisement.</p>`,
+      mcqs:[
+        {q:"What is the essay's central critical move?", options:["It accepts the goal but attacks the reasoning, the arithmetic and the unexamined assumption inside the word 'empty'.","It denies that climate change is happening.","It argues that no environmental action is possible.","It attacks the people who propose the schemes."], answer:0, exp:"Steelman, then strike. The writer grants the goal and dismantles the route — the strongest form of critical response."},
+        {q:"'An argument that depends on a future condition is a promise, not a plan.' This objection is aimed at…", options:["the claim that deserts are ecosystems","the transpiration figures","the photographs","the reply that the desalination energy will soon be solar"], answer:3, exp:"The writer identifies a defence that transfers the burden of proof to the future and names the move rather than merely rejecting it."},
+        {q:"Which assumption does the essay expose as doing hidden work?", options:["That trees absorb carbon","That the desert is 'empty' and therefore available","That water can be desalinated","That solar energy exists"], answer:1, exp:"A single adjective carries an entire policy. Exposing the assumption buried in a word is the essay's sharpest paragraph."},
+        {q:"Which would be the most damaging response TO this essay?", options:["'The writer is negative.'","'The photographs are beautiful.'","'Recent projects are powered wholly by solar and store net carbon within four years — here is the data.'","'Deserts are hot.'"], answer:2, exp:"The essay's own standard is evidence. A response that meets it on its own ground with measured data is the one that would hurt — which is a test of whether an argument was honestly made."}
+      ],
+      selfcheck:[
+        {q:"The essay ends with three questions to ask of any scheme: what counts as success, who measures it, and when. Apply all three to ONE environmental project you know of. What do you find?", model:"A possible answer tours around applying the test honestly and reporting the result — including the discovery that many well-intentioned projects define success loosely, are measured by the body that runs them, and set no deadline. Strong answers notice that a project can fail this test and still be worth doing; the test tells you what to check, not what to conclude."},
+        {q:"Steelman the essay's OPPONENT. Write the strongest two-sentence case for large-scale desert greening, using the essay's own standards of evidence — then say honestly whether it beats the essay.", model:"A possible answer tours around a case built on measurable claims (solar-powered desalination at a stated cost per litre, native drought-tolerant species rather than imported ones, published carbon accounting with a payback year, restoration confined to previously vegetated land). The honest verdict is usually that this rebuilt case survives the essay because it has conceded the essay's points — which is what a good critical exchange is supposed to produce."}
+      ],
+      design:"Design a public information board for a proposed desert-greening site that a critical reader would trust: what it must state about water, energy, species and measurement.", designId:"d_climate" }
+  }
 }
-function rcLessonCount(){ let n=0; Object.keys(RCOURSE).forEach(k=>rcUnits(k).forEach(u=>n+=u.lessons.length)); return n; }
-function findRc(id){ for(const k of Object.keys(RCOURSE)){ for(const u of rcUnits(k)){ const ls=u.lessons.find(x=>x.id===id); if(ls) return {levelKey:k, level:RCOURSE[k], unit:u, lesson:ls}; } } return null; }
+];
+let RC_TIER="standard";                 /* "standard" | "advanced" */
+const RC_TIERS={ standard:{key:"standard", label:"Standard", tag:"Core"},
+                 advanced:{key:"advanced", label:"Advanced", tag:"Challenge"} };
+const RC_CUSTOM_SKILL={ id:"custom", n:"★", icon:"📎", name:"Teacher-added texts",
+  strap:"Texts written by your teacher", colour:"#5b6273",
+  what:"Reading texts added by your teacher for your class.",
+  how:["Read once for the whole picture.","Read again for the questions.","Justify every answer from the text."],
+  trap:"Always check your answer against the words on the page." };
+function findSkill(id){ return RSKILLS.find(x=>x.id===id) || null; }
+function rcCustom(){ return mergedCustom('reading'); }
+function rcCustomFor(skillId,tier){ return rcCustom().filter(r=>r.skill===skillId && ((r.tier==='advanced')?'advanced':'standard')===tier); }
+function rcOrphanCustom(){ return rcCustom().filter(r=>!findSkill(r.skill)); }
+function rcSkillLessons(sk){ return ["standard","advanced"].map(t=>sk.levels[t]).filter(Boolean); }
+function rcSkillAllLessons(sk){ return rcSkillLessons(sk).concat(rcCustomFor(sk.id,"standard"), rcCustomFor(sk.id,"advanced")); }
+function rcAllLessons(){ const out=[]; RSKILLS.forEach(sk=>rcSkillLessons(sk).forEach(l=>out.push(l))); rcCustom().forEach(l=>out.push(l)); return out; }
+function rcLessonCount(){ return rcAllLessons().length; }
+function rcSkillDone(sk){ const done=rcDone(); const all=rcSkillAllLessons(sk); return {done:all.filter(l=>done.includes(l.id)).length, total:all.length}; }
+function findRc(id){
+  for(const sk of RSKILLS){
+    for(const t of ["standard","advanced"]){
+      const l=sk.levels[t];
+      if(l && l.id===id) return {skill:sk, tier:t, level:RC_TIERS[t], lesson:l};
+    }
+  }
+  const c=rcCustom().find(x=>x.id===id);
+  if(c){ const t=(c.tier==="advanced")?"advanced":"standard";
+    return {skill:findSkill(c.skill)||RC_CUSTOM_SKILL, tier:t, level:RC_TIERS[t], lesson:c}; }
+  return null;
+}
 
 /* =========================================================================
    DESIGN STUDIO  (RWD · Design = the bridge literacy)
@@ -2531,43 +2799,104 @@ const ROUTES = {
     </div>`;
   },
 
-  /* ---------------- READING COURSE ---------------- */
+  /* ---------------- READING COURSE (skill-first) ---------------- */
   readingCourse(){
-    const lv=RCOURSE[RC_LEVEL]; const units=rcUnits(RC_LEVEL); const done=rcDone();
-    const total=units.reduce((a,u)=>a+u.lessons.length,0);
-    const doneHere=units.reduce((a,u)=>a+u.lessons.filter(l=>done.includes(l.id)).length,0);
+    const done=rcDone();
+    const all=rcAllLessons();
+    const doneAll=all.filter(l=>done.includes(l.id)).length;
+    const orphans=rcOrphanCustom();
     app().innerHTML = `
     <div class="wrap screen">
       <button class="back" onclick="go('dashboard')">← Pathways</button>
       <h1 style="font-size:2.2rem">🔭 Reading Course</h1>
-      <p style="color:var(--muted);max-width:680px">Levelled reading on contemporary themes, in both informal and formal styles. Answer the multiple-choice questions for an <b>instant score</b>, then use the self-check questions to grade your own thinking against a model answer. Every text ends with a <b>design challenge</b> — the bridge to the Design Studio.</p>
-      <div class="lvl-tabs">
-        ${Object.keys(RCOURSE).map(k=>`<button class="${RC_LEVEL===k?'on':''}" onclick="setRcLevel('${k}')">${RCOURSE[k].label} <span style="font-weight:400;opacity:.7">· ${RCOURSE[k].tag}</span></button>`).join('')}
+      <p style="color:var(--muted);max-width:720px">Ten reading skills, each with its own text. Choose a skill, read what it is and how to do it, then pick <b>Standard</b> or <b>Advanced</b>. The multiple-choice questions are built to test <i>that skill</i> and score instantly; the self-check questions ask you to grade your own thinking against a model answer. Every text ends with a <b>design challenge</b> — the bridge to the Design Studio.</p>
+      <div class="progress" style="max-width:420px"><span style="width:${all.length?Math.round(doneAll/all.length*100):0}%"></span></div>
+      <p style="font-size:.8rem;color:var(--muted)">${doneAll} of ${all.length} texts completed across all ten skills</p>
+      <div class="rc-grid">
+        ${RSKILLS.map(sk=>{
+          const p=rcSkillDone(sk); const pct=p.total?Math.round(p.done/p.total*100):0;
+          return `<div class="rc-card ${p.done===p.total?'rc-full':''}" style="--sk:${sk.colour}" onclick="go('rcSkill','${sk.id}')" role="button" tabindex="0"
+            onkeydown="if(event.key==='Enter')go('rcSkill','${sk.id}')">
+            <span class="rc-n">${sk.n}</span>
+            <div class="rc-ic">${sk.icon}</div>
+            <h3>${sk.name}</h3>
+            <div class="rc-strap">${sk.strap}</div>
+            <div class="rc-bar"><span style="width:${pct}%"></span></div>
+            <div class="rc-meta"><span><b>${p.done}</b> of ${p.total} texts</span><span>Open →</span></div>
+          </div>`;
+        }).join('')}
       </div>
-      <p style="color:var(--muted);margin-top:-4px">${lv.blurb}</p>
-      <div class="progress" style="max-width:420px"><span style="width:${total?Math.round(doneHere/total*100):0}%"></span></div>
-      <p style="font-size:.8rem;color:var(--muted)">${doneHere} of ${total} texts completed at this level</p>
-      <div style="margin-top:16px">
-        ${units.map(u=>`
-          <div class="unit">
-            <h3>${u.title}</h3>
-            ${u.lessons.map(l=>`
-              <div class="lesson-row">
-                <div><div class="t">${l.title} ${done.includes(l.id)?'<span class="badge-done">✓ done</span>':''}</div><div class="ty">${l.register} · ${l.type} · ${l.field}</div></div>
-                <button class="btn sm" onclick="go('rcLesson','${l.id}')">${done.includes(l.id)?'Review':'Read'} →</button>
-              </div>`).join('')}
-          </div>`).join('')}
+      ${orphans.length?`<div class="unit" style="margin-top:18px">
+        <h3>📎 Teacher-added texts</h3>
+        ${orphans.map(l=>`<div class="lesson-row">
+          <div><div class="t">${esc(l.title)} ${done.includes(l.id)?'<span class="badge-done">✓ done</span>':''}</div>
+          <div class="ty">${esc(l.register||'')} · ${esc(l.type||'Text')} · ${esc(l.field||'')}</div></div>
+          <button class="btn sm" onclick="go('rcLesson','${l.id}')">${done.includes(l.id)?'Review':'Read'} →</button>
+        </div>`).join('')}
+      </div>`:''}
+    </div>`;
+  },
+  rcSkill(id){
+    const sk=findSkill(id); if(!sk){ go('readingCourse'); return; }
+    const done=rcDone(); const p=rcSkillDone(sk);
+    const tier=RC_TIER; const l=sk.levels[tier];
+    const extra=rcCustomFor(sk.id,tier);
+    const row=(ls)=>`<div class="lesson-row">
+        <div><div class="t">${esc(ls.title)} ${done.includes(ls.id)?'<span class="badge-done">✓ done</span>':''}</div>
+        <div class="ty">${esc(ls.register||'')} · ${esc(ls.type||'Text')} · ${esc(ls.field||'')}${ls.words?' · ≈'+ls.words+' words':''}</div></div>
+        <button class="btn sm" onclick="go('rcLesson','${ls.id}')">${done.includes(ls.id)?'Review':'Read'} →</button>
+      </div>`;
+    app().innerHTML = `
+    <div class="wrap screen">
+      <button class="back" onclick="go('readingCourse')">← All reading skills</button>
+      <div class="skill-hero" style="--sk:${sk.colour}">
+        <div class="sh-top">
+          <div class="sh-ic">${sk.icon}</div>
+          <div>
+            <div class="sh-strap">Skill ${sk.n} of 10 · ${sk.strap}</div>
+            <h1>${sk.name}</h1>
+          </div>
+        </div>
+        <p style="margin:12px 0 0">${sk.what}</p>
+        <h3 class="sub" style="margin:14px 0 0;font-size:1rem">How to do it</h3>
+        <ol class="skill-how">${sk.how.map(h=>`<li>${h}</li>`).join('')}</ol>
+        <div class="skill-trap">⚠️ <b>Watch out.</b> ${sk.trap}</div>
+        <div class="progress" style="max-width:300px;margin-top:14px"><span style="width:${p.total?Math.round(p.done/p.total*100):0}%"></span></div>
+        <p class="tier-note">${p.done} of ${p.total} texts completed in this skill</p>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:14px 0 4px">
+        <div class="level-slider" data-level="${tier}" role="group" aria-label="Reading tier">
+          <button onclick="setRcTier('standard')" aria-pressed="${tier==='standard'}">Standard</button>
+          <button onclick="setRcTier('advanced')" aria-pressed="${tier==='advanced'}">Advanced · Challenge</button>
+          <span class="knob"></span>
+        </div>
+        <span class="tier-note">${tier==='standard'?'A shorter text. The skill, clearly signposted.':'A longer, denser text. The same skill, with less help.'}</span>
+      </div>
+
+      <div class="unit" style="margin-top:12px">
+        <h3>${RC_TIERS[tier].label} text</h3>
+        ${l?row(l):'<div class="lesson-row"><div class="ty">No text at this tier yet.</div></div>'}
+        ${extra.map(row).join('')}
       </div>
     </div>`;
   },
   rcLesson(id){
     const f=findRc(id); if(!f){ go('readingCourse'); return; }
-    const {lesson:l, level:lv}=f; RC_STATE={lessonId:id, selfMarks:{}, graded:false, mcqs:l.mcqs.map(shuffleMCQ)};
+    const {lesson:l, level:lv, skill:sk}=f;
+    RC_STATE={lessonId:id, selfMarks:{}, graded:false, mcqs:l.mcqs.map(shuffleMCQ)};
+    const back = findSkill(sk.id) ? `go('rcSkill','${sk.id}')` : `go('readingCourse')`;
     app().innerHTML = `
     <div class="wrap screen">
-      <button class="back" onclick="go('readingCourse')">← ${lv.label} reading</button>
-      <div class="ty" style="color:var(--coral-dk);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600">${lv.label} · ${l.register} · ${l.type} · ${l.field}</div>
-      <h1 style="font-size:2rem">${l.title}</h1>
+      <button class="back" onclick="${back}">← ${esc(sk.name)}</button>
+      <div class="ty" style="color:var(--coral-dk);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600">${sk.icon} Skill ${sk.n} · ${esc(sk.name)} · ${lv.label} · ${esc(l.register||'')} · ${esc(l.type||'Text')}</div>
+      <h1 style="font-size:2rem">${esc(l.title)}</h1>
+      <details class="card" style="border-color:var(--line);margin:6px 0 14px">
+        <summary style="cursor:pointer;font-weight:700">🎯 What you are practising here</summary>
+        <p style="margin:10px 0 0">${sk.what}</p>
+        <ol class="skill-how">${sk.how.map(h=>`<li>${h}</li>`).join('')}</ol>
+        <div class="skill-trap">⚠️ <b>Watch out.</b> ${sk.trap}</div>
+      </details>
       <div class="reader-tools">
         <button class="btn ghost sm" onclick="readSelector('rcText')">▶ Read to me</button>
         <button class="btn ghost sm" onclick="wsReadingCourse('${id}')">📄 Worksheet (PDF)</button>
@@ -2578,7 +2907,8 @@ const ROUTES = {
       </div>
       <div class="passage" id="rcText">${l.text}</div>
 
-      <h2 style="font-size:1.4rem;margin:24px 0 4px">Comprehension (instant score)</h2>
+      <h2 style="font-size:1.4rem;margin:24px 0 4px">${esc(sk.name)} — instant score</h2>
+      <p style="color:var(--muted);font-size:.9rem;margin-top:0">Every question below tests one skill: <b>${esc(sk.name.toLowerCase())}</b>.</p>
       <div id="rcMcq"></div>
 
       <h2 style="font-size:1.4rem;margin:24px 0 4px">Self-check — grade your own thinking</h2>
@@ -3574,7 +3904,7 @@ function refreshWcComplete(id){
    READING COURSE — instant MCQ scoring + written self-check / self-grading
    ========================================================================= */
 let RC_STATE=null;
-function setRcLevel(k){ RC_LEVEL=k; go('readingCourse'); }
+function setRcTier(t){ RC_TIER=t; go('rcSkill', CURRENT_ARG); }
 function rcDone(){ return (Store.get("ican_rc_done")||{})[sid()] || []; }
 function markRcDone(id){ const all=Store.get("ican_rc_done")||{}; const arr=all[sid()]||[]; if(!arr.includes(id)){ arr.push(id); all[sid()]=arr; Store.set("ican_rc_done",all); } }
 function gradeRc(id){
@@ -3637,7 +3967,7 @@ function saveRc(id){
   if(SESSION&&SESSION.role==="student"){
     saveResult({date:Date.now(), name:SESSION.name, class:SESSION.class, code:SESSION.code, id:SESSION.id,
       skill:"Reading Course", activity:`${l.title} (${f.level.label})`, score:correct, max:l.mcqs.length, percent:mpct,
-      detail:`MCQ ${correct}/${l.mcqs.length}; self-assessed ${selfGot}/${selfMax}`});
+      detail:`${f.skill.name} · MCQ ${correct}/${l.mcqs.length}; self-assessed ${selfGot}/${selfMax}`});
   }
   document.getElementById('rcResult').insertAdjacentHTML('beforeend', `<p class="note" style="margin-top:10px">Saved ✓ — your score and self-assessment are recorded. ${f.lesson.designId?'Now try the design challenge below!':''}</p>`);
 }
@@ -3785,7 +4115,7 @@ let CONTENT_TAB="reading";
 function lines(s){ return (s||"").split(/\n+/).map(x=>x.trim()).filter(Boolean); }
 function toParas(t){ return (t||"").split(/\n\s*\n/).map(p=>`<p>${esc(p).replace(/\n/g,'<br>')}</p>`).join(''); }
 function lvlOptions(sel){ return ['beginner','intermediate','advanced'].map(k=>`<option value="${k}" ${sel===k?'selected':''}>${k[0].toUpperCase()+k.slice(1)}</option>`).join(''); }
-function allReadingLessons(){ const out=[]; Object.keys(RCOURSE).forEach(k=>rcUnits(k).forEach(u=>u.lessons.forEach(l=>out.push(l)))); return out; }
+function allReadingLessons(){ return rcAllLessons(); }
 function customList(kind, render){
   const items=getCustom(kind);
   if(!items.length) return `<p class="note">Nothing added yet.</p>`;
@@ -3933,7 +4263,8 @@ function readingEditor(){
     <h3 style="font-size:1.2rem">Add a reading text</h3>
     <div class="ed-grid two">
       <div class="ed-field"><label>Title</label><input id="r_title" placeholder="e.g. The robot that learned to paint"></div>
-      <div class="ed-field"><label>Level</label><select id="r_level">${lvlOptions('beginner')}</select></div>
+      <div class="ed-field"><label>Reading skill</label><select id="r_skill">${RSKILLS.map(sk=>`<option value="${sk.id}">${sk.n}. ${esc(sk.name)}</option>`).join('')}</select></div>
+      <div class="ed-field"><label>Tier</label><select id="r_tier"><option value="standard">Standard</option><option value="advanced">Advanced · Challenge</option></select></div>
       <div class="ed-field"><label>Register</label><select id="r_register"><option>Informal</option><option>Formal</option></select></div>
       <div class="ed-field"><label>Type</label><input id="r_type" placeholder="Article / Blog / News / Story"></div>
     </div>
@@ -3948,7 +4279,7 @@ function readingEditor(){
     <button class="btn teal" onclick="saveReadingCustom()">Save reading</button><span id="cMsg" style="margin-left:10px;font-size:.85rem"></span>
   </div>
   <h3 style="font-size:1.15rem;margin-top:20px">Your readings</h3>
-  ${customList('reading', it=>`<b>${esc(it.title)}</b> <span class="meta">· ${it.level} · ${esc(it.register||'')} · ${it.mcqs.length} MCQ</span>`)}`;
+  ${customList('reading', it=>{ const sk=findSkill(it.skill); return `<b>${esc(it.title)}</b> <span class="meta">· ${sk?esc(sk.n+'. '+sk.name):'unassigned'} · ${it.tier==='advanced'?'Advanced':'Standard'} · ${esc(it.register||'')} · ${it.mcqs.length} MCQ</span>`; })}`;
 }
 function saveReadingCustom(){
   const title=val('r_title').trim(), text=val('r_text').trim();
@@ -3961,7 +4292,7 @@ function saveReadingCustom(){
   if(!mcqs.length){ cMsg("Add at least one MCQ (a question + 2 options + a correct option).",false); return; }
   const selfcheck=[];
   for(let n=0;n<2;n++){ const q=val(`r_sc${n}_q`).trim(); if(q) selfcheck.push({q, model:val(`r_sc${n}_model`).trim()||"Compare your answer with the text and judge how fully you answered."}); }
-  addCustom('reading',{ id:"rc_custom_"+Date.now(), custom:true, level:val('r_level'), title, field:val('r_field').trim()||"General",
+  addCustom('reading',{ id:"rc_custom_"+Date.now(), custom:true, skill:val('r_skill'), tier:val('r_tier'), title, field:val('r_field').trim()||"General",
     register:val('r_register'), type:val('r_type').trim()||"Text", text:toParas(text), mcqs, selfcheck,
     design:val('r_design').trim()||"Design something inspired by this text.", designId:val('r_designId')||null });
   renderContentTab('reading'); cMsg("Saved ✓ — it now appears in the Reading Course for students.",true);
@@ -4104,7 +4435,7 @@ function pdfDoc(titleLeft){
 function nameLine(p){ p.text("Name: __________________     Class: __________     Date: __________",{size:10,gap:8}); }
 
 function wsReadingCourse(id){ if(!pdfReady())return noPdf(); const f=findRc(id); const l=f.lesson; const p=pdfDoc("Reading worksheet");
-  p.h1(l.title); p.text(`${f.level.label} · ${l.register} · ${l.type} · ${l.field}`,{size:9,color:120,gap:6}); nameLine(p);
+  p.h1(l.title); p.text(`Skill ${f.skill.n}: ${f.skill.name} · ${f.level.label} · ${l.register||''} · ${l.type||'Text'} · ${l.field||''}`,{size:9,color:120,gap:6}); nameLine(p);
   p.h2("Read the text"); p.text(htmlToText(l.text),{gap:6});
   p.h2("Comprehension — circle the correct answer");
   l.mcqs.forEach((q,i)=>{ p.text(`${i+1}. ${q.q}`,{style:"bold"}); const opts=q.type==="tfng"?TFNG:q.options; opts.forEach((o,j)=>p.text(`     ${LET[j]}.  ${o}`)); p.gap(4); });
@@ -5756,7 +6087,7 @@ const ALIGN=[
   {name:"Writing tasks & quizzes", route:"writing", obj:"Writing", types:["quiz","homework","reflection"], ev:"Multimodal writing tasks with rubric-based feedback."},
   {name:"Listening comprehension", route:"listening", obj:"Listening", types:["quiz","exit","homework"], ev:"Comprehension checks plus timed spelling."},
   {name:"Speaking prompts & debates", route:"speaking", obj:"Speaking", types:["discussion","project","observation"], ev:"Prompts, debates and presentations — observe and note participation."},
-  {name:"Reading Course", route:"readingCourse", obj:"Reading", types:["homework","quiz"], ev:"Levelled texts with comprehension and self-check."},
+  {name:"Reading Course", route:"readingCourse", obj:"Reading", types:["homework","quiz"], ev:"Ten reading skills, each with a Standard and an Advanced text, comprehension and self-check."},
   {name:"Writing Course", route:"writingCourse", obj:"Writing", types:["homework","reflection"], ev:"Guided lessons, model answers, rubric self-check."},
   {name:"Design Studio (projects)", route:"dstudio", obj:"Design", types:["project","self"], ev:"Make-it challenges with the Creative Canvas → a designed artefact."},
   {name:"Vocabulary Bank", route:"vocab", obj:"Vocabulary", types:["homework","reflection"], ev:"Student-built word bank with example sentences and audio."},
@@ -5803,7 +6134,7 @@ const SKILL_GROUPS=[
   {key:"Vocabulary", label:"Vocabulary", skills:["Vocabulary"], color:"#6f3fd6"}
 ];
 const GOAL_TPL={
-  Reading:{m:"Complete 3 Reading Course lessons and 2 reading quizzes; practise True/False/Not-Given.", s:"Lift the reading average to 70%+ and read across at least 3 genres.", y:"Reach a steady 80%+ and handle advanced extended texts with inference."},
+  Reading:{m:"Complete 3 Reading Course skills at Standard level and 2 reading quizzes; practise True/False/Not-Given.", s:"Lift the reading average to 70%+ and complete at least 6 of the 10 reading skills.", y:"Reach a steady 80%+, finish all ten skills, and handle the Advanced text in inference, bias and critical response."},
   Writing:{m:"Do 2 Writing Course lessons and 1 Revise & Edit task; focus on paragraphing and punctuation.", s:"Raise writing to 70%+; master the 5 rubric criteria and the OREO structure.", y:"Achieve 80%+ and write confidently across genres with accurate grammar."},
   Design:{m:"Complete 1 Design Studio challenge with the Creative Canvas, linked to a reading.", s:"Produce 3 designed artefacts that connect reading and writing.", y:"Build a small portfolio of multimodal designs."},
   Grammar:{m:"Finish the lessons for weak points and 2 mixed-practice sets.", s:"Reach 70%+ and complete one Grammar Challenge.", y:"Reach 80%+ across all grammar points, including advanced structures."},
@@ -6572,7 +6903,7 @@ function gateKeyOf(screen){
   return ({
     reading:'readLib', readItem:'readLib',
     writing:'writeLib', writeItem:'writeLib',
-    readingCourse:'readCourse', rcLesson:'readCourse',
+    readingCourse:'readCourse', rcSkill:'readCourse', rcLesson:'readCourse',
     writingCourse:'writeCourse', wcLesson:'writeCourse',
     dstudio:'design', dChallenge:'design',
     exams:'exams', examTest:'exams',
@@ -8825,7 +9156,8 @@ function setAllItemGates(ids,v){ const g=itemGates(); ids.forEach(id=>g[id]=!!v)
 function allItemIds(){
   const ids=[];
   // Reading course
-  try{ Object.keys(RCOURSE).forEach(lv=>{ rcUnits(lv).forEach(u=>u.lessons.forEach(l=>ids.push({id:l.id, label:l.title, group:'Reading Course ('+RCOURSE[lv].label+')'}))) }); }catch(e){}
+  try{ RSKILLS.forEach(sk=>{ ["standard","advanced"].forEach(t=>{ const l=sk.levels[t]; if(l) ids.push({id:l.id, label:l.title+' ('+RC_TIERS[t].label+')', group:'Reading Course · '+sk.n+'. '+sk.name}); }); });
+        rcCustom().forEach(l=>ids.push({id:l.id, label:l.title, group:'Reading Course · Teacher-added texts'})); }catch(e){}
   // Writing course
   try{ Object.keys(WCOURSE).forEach(lv=>{ wcUnits(lv).forEach(u=>u.lessons.forEach(l=>ids.push({id:l.id, label:l.title, group:'Writing Course ('+WCOURSE[lv].label+')'}))) }); }catch(e){}
   // Design challenges
