@@ -175,6 +175,12 @@ textarea{min-height:150px; resize:vertical; line-height:1.6}
 .passage p{margin:0 0 1em} .passage h3{font-size:1.7rem; margin:0 0 6px}
 .genre-tag{display:inline-block; font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--coral-dk); font-weight:600; margin-bottom:4px}
 .reader-tools{display:flex; gap:8px; flex-wrap:wrap; margin:14px 0 20px; padding:12px; background:#fff; border:1px solid var(--line); border-radius:12px}
+.rd-bar{margin:14px 0 6px}
+.rd-hint{font-size:.82rem; color:var(--teal-dk); margin:0 0 16px 2px}
+.btn.ghost.on{background:var(--teal); color:#fff; border-color:var(--teal)}
+body.dict-on [data-dict]{cursor:help}
+body.dict-on [data-dict] p:hover{background:rgba(15,169,139,.04)}
+mark.dict-hit{background:rgba(15,169,139,.18); border-bottom:2px dotted var(--teal-dk); border-radius:3px; padding:0 1px; color:inherit}
 mark.user-hl{background:var(--hl); padding:0 1px; border-radius:2px}
 .figure{border:1px solid var(--line); border-radius:12px; padding:16px; background:#fff; margin:16px 0}
 .figure table{width:100%; border-collapse:collapse; font-family:"Lexend"; font-size:.9rem}
@@ -2878,15 +2884,8 @@ const ROUTES = {
         <div><span class="genre-tag">${r.genre}</span><h1 style="font-size:2rem">${r.title}</h1></div>
         ${levelSliderHTML()}
       </div>
-      <div class="reader-tools">
-        <button class="btn ghost sm" onclick="readSelector('readBody')">▶ Read to me</button>
-        <button class="btn ghost sm" onclick="wsReadingPractice('${r.id}')">📄 Worksheet (PDF)</button>
-        <button class="btn ghost sm" onclick="stopSpeak()">■ Stop</button>
-        <button class="btn ghost sm" id="hlBtn2" onclick="toggleHighlighter()">✏️ Highlighter</button>
-        <button class="btn ghost sm" onclick="setFont(0.1)">A+</button>
-        <button class="btn ghost sm" onclick="setFont(-0.1)">A−</button>
-      </div>
-      <div id="readBody">${body}</div>
+      ${readerBar('readBody', `<button class="btn ghost sm" onclick="wsReadingPractice('${r.id}')">📄 Worksheet (PDF)</button>`)}
+      <div class="passage" id="readBody" data-dict>${body}</div>
       <div style="margin-top:26px">
         <h2 style="font-size:1.5rem;margin-bottom:6px">Comprehension</h2>
         <p style="color:var(--muted);font-size:.9rem;margin-top:0">${LEVEL==='scaffolded'?'Shorter, supported set: one choice question, one to write, and one to share your own thinking. Take your time — there are no trick questions.':'Some questions ask you to read between the lines.'}</p>
@@ -3046,7 +3045,8 @@ const ROUTES = {
         <span class="label">Listen first, then answer. You can replay as many times as you like.</span>
       </div>
       <details class="script"><summary>Show transcript (for support — try listening first)</summary>
-        <p style="font-size:.9rem;line-height:1.7;margin:8px 0 0">${c.script.replace(/Speaker A:/g,'<br><b>A:</b>').replace(/Speaker B:/g,'<br><b>B:</b>')}</p>
+        <div style="margin:8px 0 0">${dictChip()}</div>
+        <p style="font-size:.9rem;line-height:1.7;margin:8px 0 0" data-dict>${c.script.replace(/Speaker A:/g,'<br><b>A:</b>').replace(/Speaker B:/g,'<br><b>B:</b>')}</p>
       </details>
       <div style="margin-top:22px">
         <h2 style="font-size:1.4rem;margin-bottom:6px">Questions</h2>
@@ -3323,15 +3323,8 @@ const ROUTES = {
         <ol class="skill-how">${sk.how.map(h=>`<li>${h}</li>`).join('')}</ol>
         <div class="skill-trap">⚠️ <b>Watch out.</b> ${sk.trap}</div>
       </details>
-      <div class="reader-tools">
-        <button class="btn ghost sm" onclick="readSelector('rcText')">▶ Read to me</button>
-        <button class="btn ghost sm" onclick="wsReadingCourse('${id}')">📄 Worksheet (PDF)</button>
-        <button class="btn ghost sm" onclick="stopSpeak()">■ Stop</button>
-        <button class="btn ghost sm" id="hlBtn2" onclick="toggleHighlighter()">✏️ Highlighter</button>
-        <button class="btn ghost sm" onclick="setFont(0.1)">A+</button>
-        <button class="btn ghost sm" onclick="setFont(-0.1)">A−</button>
-      </div>
-      <div class="passage" id="rcText">${l.text}</div>
+      ${readerBar('rcText', `<button class="btn ghost sm" onclick="wsReadingCourse('${id}')">📄 Worksheet (PDF)</button>`)}
+      <div class="passage" id="rcText" data-dict>${l.text}</div>
 
       <h2 style="font-size:1.4rem;margin:24px 0 4px">${esc(sk.name)} — instant score</h2>
       <p style="color:var(--muted);font-size:.9rem;margin-top:0">Every question below tests one skill: <b>${esc(sk.name.toLowerCase())}</b>.</p>
@@ -4260,7 +4253,10 @@ function setLevel(l){ LEVEL=l; go(CURRENT_SCREEN, CURRENT_ARG); }
    ACCESSIBILITY
    ========================================================================= */
 let FONT=1;
-function setFont(d){ if(d===0) FONT=1; else FONT=Math.min(1.8,Math.max(.8,FONT+d)); document.documentElement.style.setProperty('--fs',FONT); }
+function setFont(d){ if(d===0) FONT=1; else FONT=Math.min(1.8,Math.max(.8,Math.round((FONT+d)*100)/100));
+  document.documentElement.style.setProperty('--fs',FONT);
+  READER.font=FONT; saveReaderPrefs();
+  const l=document.getElementById('rdFontVal'); if(l) l.textContent=Math.round(FONT*100)+'%'; }
 function toggleA11y(){ document.getElementById('a11yPanel').classList.toggle('hidden'); }
 function toggleClassBody(cls,btn){ document.body.classList.toggle(cls); const b=document.getElementById(btn); if(b)b.classList.toggle('on'); }
 let HL=false;
@@ -4275,8 +4271,235 @@ function clearHighlights(){ document.querySelectorAll('mark.user-hl').forEach(m=
 
 /* Text-to-speech */
 function speak(text){ if(!('speechSynthesis'in window))return; const u=new SpeechSynthesisUtterance(text); u.lang='en-GB'; u.rate=.95; speechSynthesis.speak(u); }
-function stopSpeak(){ if('speechSynthesis'in window) speechSynthesis.cancel(); }
+function stopSpeak(){ _rd.playing=false; if('speechSynthesis'in window) speechSynthesis.cancel(); rdBtn(false); }
 function readPage(){ readSelector('readBody')||readSelector('app'); }
+/* =========================================================================
+   READER TOOLBAR + DICTIONARY — shared by every reading surface.
+   Speed, volume and text size for struggling readers; tap any word for a
+   definition, hear it, bank it, or open the full entry on Vocabulary.com.
+   Any container marked data-dict becomes tappable.
+   ========================================================================= */
+let READER = Object.assign({rate:0.95, vol:1, font:1, dict:false}, Store.get('ican_reader')||{});
+function saveReaderPrefs(){ try{ Store.set('ican_reader', READER); }catch(e){} }
+
+let _rd = {target:null, chunks:[], idx:0, playing:false};
+function rdChunks(el){
+  const t=(el.innerText||el.textContent||'').replace(/\s+/g,' ').trim();
+  return t.match(/[^.!?]+[.!?]*/g) || (t?[t]:[]);
+}
+function rdBtn(on){ const b=document.getElementById('rdPlay'); if(b) b.textContent = on ? '⏸ Reading…' : '🔊 Read to me'; }
+function rdSpeakFrom(i){
+  if(!('speechSynthesis' in window)) return;
+  if(i>=_rd.chunks.length){ rdStop(); return; }
+  _rd.idx=i;
+  const u=new SpeechSynthesisUtterance(_rd.chunks[i]);
+  u.lang='en-GB'; u.rate=READER.rate; u.volume=READER.vol;
+  u.onend=()=>{ if(_rd.playing && _rd.idx===i) rdSpeakFrom(i+1); };
+  speechSynthesis.speak(u);
+}
+function rdToggle(id){
+  const el=document.getElementById(id); if(!el) return false;
+  if(_rd.playing && _rd.target===id){ rdStop(); return true; }
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  _rd.target=id; _rd.chunks=rdChunks(el); _rd.idx=0; _rd.playing=true;
+  rdBtn(true); rdSpeakFrom(0); return true;
+}
+function rdStop(){ _rd.playing=false; if('speechSynthesis' in window) speechSynthesis.cancel(); rdBtn(false); }
+function rdSet(kind,v){
+  v=parseFloat(v);
+  if(kind==='rate'){
+    READER.rate=Math.min(1.5,Math.max(0.5,Math.round(v*100)/100));
+    const l=document.getElementById('rdRateVal'); if(l) l.textContent=String(READER.rate.toFixed(2)).replace(/0$/,'')+'×';
+    const sl=document.getElementById('rdRate'); if(sl) sl.value=READER.rate;
+  }
+  if(kind==='vol'){
+    READER.vol=Math.min(1,Math.max(0,Math.round(v*10)/10));
+    const l=document.getElementById('rdVolVal'); if(l) l.textContent=Math.round(READER.vol*100)+'%';
+    const sl=document.getElementById('rdVol'); if(sl) sl.value=READER.vol;
+  }
+  saveReaderPrefs();
+  if(_rd.playing){ speechSynthesis.cancel(); rdSpeakFrom(_rd.idx); }
+}
+function rdStep(kind,dir){ rdSet(kind, (kind==='rate'?READER.rate:READER.vol) + dir*0.1); }
+
+function dictChip(){
+  return `<button class="btn ghost sm ${READER.dict?'on':''}" id="rdDict" onclick="toggleDict()" aria-pressed="${!!READER.dict}">📖 Dictionary${READER.dict?': on':''}</button>`;
+}
+/* opts.dict  — false in exams: a live dictionary would change what is being tested
+   opts.hl    — false where the text is already word-tappable (Young Learners) */
+function readerBar(targetId, extra, opts){
+  opts = Object.assign({dict:true, hl:true}, opts||{});
+  const rate=String(READER.rate.toFixed(2)).replace(/0$/,'');
+  return `<div class="aad-read-tools rd-bar" role="group" aria-label="Reading aids">
+    <button class="aad-play-btn" id="rdPlay" onclick="rdToggle('${targetId}')">🔊 Read to me</button>
+    <button class="btn ghost sm" onclick="rdStop()" title="Stop">⏹ Stop</button>
+    <div class="aad-slider">
+      <span class="aad-sl-lab">Speed</span>
+      <button class="aad-step" onclick="rdStep('rate',-1)" aria-label="Slower">−</button>
+      <input type="range" id="rdRate" min="0.5" max="1.5" step="0.05" value="${READER.rate}" oninput="rdSet('rate',this.value)" aria-label="Reading speed">
+      <button class="aad-step" onclick="rdStep('rate',1)" aria-label="Faster">+</button>
+      <span class="aad-sl-val" id="rdRateVal">${rate}×</span>
+    </div>
+    <div class="aad-slider">
+      <span class="aad-sl-lab">Volume</span>
+      <button class="aad-step" onclick="rdStep('vol',-1)" aria-label="Quieter">−</button>
+      <input type="range" id="rdVol" min="0" max="1" step="0.1" value="${READER.vol}" oninput="rdSet('vol',this.value)" aria-label="Volume">
+      <button class="aad-step" onclick="rdStep('vol',1)" aria-label="Louder">+</button>
+      <span class="aad-sl-val" id="rdVolVal">${Math.round(READER.vol*100)}%</span>
+    </div>
+    <div class="aad-slider aad-zoom">
+      <span class="aad-sl-lab">Text size</span>
+      <button class="aad-step" onclick="setFont(-0.1)" aria-label="Smaller text">A−</button>
+      <span class="aad-sl-val" id="rdFontVal">${Math.round(FONT*100)}%</span>
+      <button class="aad-step" onclick="setFont(0.1)" aria-label="Larger text">A+</button>
+    </div>
+    ${opts.dict?dictChip():''}
+    ${opts.hl?`<button class="btn ghost sm" id="hlBtn2" onclick="toggleHighlighter()">✏️ Highlighter</button>`:''}
+    ${extra||''}
+  </div>
+  ${opts.dict?`<p class="rd-hint" id="rdHint" style="${READER.dict?'':'display:none'}">📖 Tap any word in the text to see what it means.</p>`:''}`;
+}
+
+/* ---- dictionary ---- */
+const DICT_CACHE = Store.get('ican_dict_cache')||{};
+function toggleDict(){
+  READER.dict=!READER.dict; saveReaderPrefs();
+  document.body.classList.toggle('dict-on', READER.dict);
+  const b=document.getElementById('rdDict');
+  if(b){ b.classList.toggle('on',READER.dict); b.setAttribute('aria-pressed', String(READER.dict));
+         b.textContent = READER.dict ? '📖 Dictionary: on' : '📖 Dictionary'; }
+  const h=document.getElementById('rdHint'); if(h) h.style.display = READER.dict ? '' : 'none';
+  if(!READER.dict) hideDictPop();
+}
+function dictLocal(w){ try{ return AAD_VOCAB[w.toLowerCase()]||null; }catch(e){ return null; } }
+async function dictLookup(w){
+  const k=w.toLowerCase();
+  const loc=dictLocal(k);
+  if(loc) return Object.assign({word:w, src:'local'}, loc);
+  if(DICT_CACHE[k]) return Object.assign({word:w, src:'cache'}, DICT_CACHE[k]);
+  try{
+    const r=await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(k));
+    if(!r.ok) throw new Error('miss');
+    const j=await r.json();
+    const e=j[0]||{}, m=(e.meanings||[])[0]||{}, d0=(m.definitions||[])[0]||{};
+    const entry={ pos:m.partOfSpeech||'', def:d0.definition||'', ex:d0.example||'',
+                  syn:(d0.synonyms||m.synonyms||[]).slice(0,3).join(', '), ant:'' };
+    if(!entry.def) throw new Error('empty');
+    DICT_CACHE[k]=entry; try{ Store.set('ican_dict_cache', DICT_CACHE); }catch(e){}
+    return Object.assign({word:w, src:'web'}, entry);
+  }catch(e){ return {word:w, pos:'', def:'', ex:'', syn:'', ant:'', src:'none'}; }
+}
+function dictSpeakWord(w){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(w);
+  u.lang='en-GB'; u.rate=Math.max(0.6,READER.rate); u.volume=READER.vol;
+  speechSynthesis.speak(u);
+}
+function dictBank(word, def, btn){
+  try{
+    const all=getAllVocab();
+    if(all.some(v=>(v.word||'').toLowerCase()===word.toLowerCase())){
+      if(btn){ btn.textContent='✓ Banked'; btn.disabled=true; btn.classList.remove('teal'); btn.classList.add('ghost'); }
+      return;
+    }
+    all.push({ id:'v'+Date.now()+Math.floor(Math.random()*999), sid:(typeof sid==='function'?sid():''),
+      name:SESSION?SESSION.name:'', word, sentence:def||'', source:'dict',
+      lessonId:(typeof CURRENT_ARG!=='undefined'&&typeof CURRENT_ARG==='string')?CURRENT_ARG:null, date:Date.now() });
+    Store.set('ican_vocab', all);
+    if(btn){ btn.textContent='✓ Banked 🐝'; btn.disabled=true; btn.classList.remove('teal'); btn.classList.add('ghost'); }
+  }catch(e){}
+}
+function dictPopEl(){
+  let p=document.getElementById('dictPop');
+  if(!p){ p=document.createElement('div'); p.id='dictPop'; p.className='aad-vocab-pop'; document.body.appendChild(p); }
+  return p;
+}
+function hideDictPop(){
+  const p=document.getElementById('dictPop'); if(p) p.style.display='none';
+  document.querySelectorAll('mark.dict-hit').forEach(m=>{ const t=document.createTextNode(m.textContent); m.replaceWith(t); t.parentNode&&t.parentNode.normalize(); });
+}
+function dictPosition(p, anchorEl){
+  p.style.display='block';
+  try{
+    const r=anchorEl.getBoundingClientRect();
+    const pw=Math.min(330, window.innerWidth-24);
+    const left=Math.min(Math.max(12, r.left+window.scrollX), window.scrollX+window.innerWidth-pw-12);
+    p.style.width=pw+'px'; p.style.left=left+'px'; p.style.top=(r.bottom+window.scrollY+8)+'px';
+  }catch(e){}
+}
+async function showDictPop(word, anchorEl){
+  const p=dictPopEl();
+  p.innerHTML=`<div class="avp-head"><span class="avp-word">${esc(word)}</span>
+    <button class="avp-x" onclick="hideDictPop()" aria-label="Close">✕</button></div>
+    <div class="avp-def">Looking it up…</div>`;
+  dictPosition(p, anchorEl);
+  const d=await dictLookup(word);
+  const known=!!d.def;
+  p.innerHTML=`
+    <div class="avp-head">
+      <span class="avp-word">${esc(d.word)}</span>
+      ${d.pos?`<span class="avp-pos">${esc(d.pos)}</span>`:''}
+      <button class="avp-x" onclick="hideDictPop()" aria-label="Close">✕</button>
+    </div>
+    <div class="avp-def">${known?esc(d.def):'No definition available offline. Open the full entry to look it up.'}</div>
+    ${d.ex?`<div class="avp-ex">“${esc(d.ex)}”</div>`:''}
+    <div class="avp-rel">
+      ${d.syn?`<span><b>Synonyms:</b> ${esc(d.syn)}</span>`:''}
+      ${d.ant?`<span><b>Antonyms:</b> ${esc(d.ant)}</span>`:''}
+    </div>
+    <div class="avp-actions">
+      <button class="btn ghost sm" onclick="dictSpeakWord('${escq(d.word)}')">🔊 Hear it</button>
+      <a class="btn sm teal" href="https://www.vocabulary.com/dictionary/${encodeURIComponent(d.word.toLowerCase())}" target="_blank" rel="noopener">Full entry ↗</a>
+      <button class="btn sm" onclick="dictBank('${escq(d.word)}','${escq(d.def||'')}',this)">+ Bank</button>
+    </div>`;
+  dictPosition(p, anchorEl);
+  return d;
+}
+/* find the word under a click, and wrap it so the reader can see what they tapped */
+function wordAtPoint(x,y){
+  let range=null;
+  if(document.caretRangeFromPoint) range=document.caretRangeFromPoint(x,y);
+  else if(document.caretPositionFromPoint){ const pos=document.caretPositionFromPoint(x,y);
+    if(pos){ range=document.createRange(); range.setStart(pos.offsetNode,pos.offset); range.collapse(true); } }
+  if(!range) return null;
+  const node=range.startContainer;
+  if(!node || node.nodeType!==3) return null;
+  const t=node.textContent, isW=c=>/[A-Za-z\u2019'-]/.test(c||'');
+  let i=Math.min(range.startOffset, t.length-1);
+  if(!isW(t[i]) && isW(t[i-1])) i--;
+  if(!isW(t[i])) return null;
+  let a=i,b=i;
+  while(a>0 && isW(t[a-1])) a--;
+  while(b<t.length-1 && isW(t[b+1])) b++;
+  const raw=t.slice(a,b+1);
+  const word=raw.replace(/^[\u2019'-]+|[\u2019'-]+$/g,'');
+  if(word.length<2) return null;
+  const r=document.createRange(); r.setStart(node,a); r.setEnd(node,b+1);
+  return {word, range:r};
+}
+function markDictWord(range){
+  try{ const m=document.createElement('mark'); m.className='dict-hit'; range.surroundContents(m); return m; }
+  catch(e){ return null; }
+}
+if(typeof window!=='undefined' && !window.__dictBound){
+  window.__dictBound=true;
+  document.addEventListener('click', function(ev){
+    const p=document.getElementById('dictPop');
+    if(p && p.style.display==='block' && p.contains(ev.target)) return;
+    if(!READER.dict) return;
+    if(HL) return;                                       /* highlighter has the text */
+    const host=ev.target.closest && ev.target.closest('[data-dict]');
+    if(!host){ hideDictPop(); return; }
+    if(ev.target.closest('.aad-key') || ev.target.closest('.ylw')) return;   /* these have their own pop-ups */
+    hideDictPop();
+    const hit=wordAtPoint(ev.clientX, ev.clientY);
+    if(!hit) return;
+    const mark=markDictWord(hit.range);
+    showDictPop(hit.word, mark||host);
+  }, false);
+}
+
 function readSelector(id){ const el=document.getElementById(id); if(!el)return false; stopSpeak(); speak(el.innerText.slice(0,4000)); return true; }
 
 /* =========================================================================
@@ -5424,10 +5647,14 @@ function runExam(ex, ctx){
      ${sec('1 · Vocabulary','Choose the option that best completes each sentence.')}${qh(ex.vocab,'d_v_')}
      ${sec('2 · Grammar','Choose the grammatically correct option.')}${qh(ex.grammar,'d_g_')}
      ${sec('3 · Reading','Read each text, then answer the questions.')}
-     <div class="card"><div class="meta" style="margin-bottom:4px">Part A · ${ex.readingA.topic}</div><h3 style="font-size:1.15rem;margin:0 0 8px">${ex.readingA.title}</h3>${ex.readingA.text}</div>
+     ${readerBar('examReading', '', {dict:false})}
+     <p class="rd-hint" style="color:var(--muted)">The dictionary is switched off during a test.</p>
+     <div id="examReading">
+       <div class="card"><div class="meta" style="margin-bottom:4px">Part A · ${ex.readingA.topic}</div><h3 style="font-size:1.15rem;margin:0 0 8px">${ex.readingA.title}</h3>${ex.readingA.text}</div>
      ${qh(ex.readingA.questions,'d_ra_')}
-     <div class="card"><div class="meta" style="margin-bottom:4px">Part B · ${ex.readingB.topic} · ${ex.readingB.genre}</div><h3 style="font-size:1.15rem;margin:0 0 8px">${ex.readingB.title}</h3>${ex.readingB.text}</div>
+       <div class="card"><div class="meta" style="margin-bottom:4px">Part B · ${ex.readingB.topic} · ${ex.readingB.genre}</div><h3 style="font-size:1.15rem;margin:0 0 8px">${ex.readingB.title}</h3>${ex.readingB.text}</div>
      ${qh(ex.readingB.questions,'d_rb_')}
+     </div>
      ${sec('4 · Writing','Plan briefly, then write your essay in the box.')}
      <div class="card"><p style="font-weight:600;margin:0 0 12px">${ex.writing.prompt}</p>
        <div class="wex-grid">
@@ -6205,7 +6432,8 @@ function openReviseScreen(id){
      <h1 style="font-size:1.7rem">✏️ ${t.title}</h1>
      <div class="card"><b style="color:var(--ink)">The task</b><p style="color:var(--slate);margin:6px 0 0">${t.prompt}</p></div>
      <div class="card" style="background:#fdf2f2;border-color:#e6a3a8"><b style="color:var(--ink)">A student's response (${t.level}) — spot the errors</b>
-       <div class="excerpt">${esc(t.excerpt)}</div></div>
+       <div class="excerpt" data-dict>${esc(t.excerpt)}</div>
+       <div style="margin-top:8px">${dictChip()}</div></div>
      <details class="card" style="cursor:pointer"><summary style="font-weight:700;color:var(--ink)">📋 Show the marking rubric</summary>
        <p style="color:var(--muted);font-size:.85rem;margin:8px 0">${WRITING_RUBRIC.title}</p>${writingRubricHTML()}</details>
      <h3 style="font-size:1.2rem;margin:18px 0 6px">Your improved version</h3>
@@ -6763,6 +6991,7 @@ const COACH_HELP={
   grammar: {t:"🧩 Grammar", route:"grammar", m:"Do the topic quizzes, then the mixed set, then the challenges. <b>Tip:</b> read the explanation after every answer — that's where the real learning happens."},
   vocab:   {t:"📚 Vocabulary", route:"vocab", m:"Save new words with an example sentence and even a recording. <b>Tip:</b> your spelling practice adds words here for you — review the list once a week to make them stick."},
   diagnostic:{t:"🧭 Diagnostic", route:"diagnostic", m:"Take the <b>pre</b>-test to find your level, the <b>mid</b>-test to check progress, and the <b>post</b>-test at the end. <b>Tip:</b> don't revise first — it's meant to show your true starting point."},
+  reading_aids: {t:"🔊 Reading aids & dictionary", route:"readingCourse", m:"Every text has a reader bar. <b>Read to me</b> plays the text aloud; <b>Speed</b> and <b>Volume</b> adjust it; <b>A− / A+</b> change the text size. Turn on <b>📖 Dictionary</b> and tap any word to see what it means, hear it said, add it to your word bank, or open the full entry on Vocabulary.com. Your settings are remembered. You will find these aids on Reading Course texts, Reading Practice, Article-A-Day, the Young Learners reader, the Revise excerpt and the listening transcript. <b>In a test the dictionary is switched off</b> — reading aloud and text size stay on."},
   design:  {t:"🎨 Design", route:"dstudio", m:"Pick a text you have read and build a <b>four-slide deck</b>: the text, the idea you took from it, your own claim, and the artefact you made. <b>Tip:</b> the design must come out of the reading — if it could sit beside any text, start again."},
   typing:  {t:"⌨️ Typing", route:"typing", m:"Build speed and accuracy. <b>Tip:</b> keep your eyes on the text, not the keys — accuracy first, and speed follows."},
   stemstream:{t:"🚀 STEM·STREAM", route:"stemlab", m:"Real-world engineering missions run on the RWD cycle. <b>Read</b> a short science text (with 🔊 read-to-me + zoom), <b>Write</b> a claim-evidence-reasoning paragraph, then <b>Design</b> your artefact and upload it in the PowerPoint template. Every mission is scored 25/35/40 (R/W/D) and mints a certificate. <b>Tip:</b> plan your test in writing <i>before</i> you build — engineers let the data decide."},
@@ -8990,7 +9219,7 @@ function openAadArticle(id){
         </div>
 
         <div class="aad-read-grid">
-          <div class="aad-article-text" id="aadArticleText">${a.text}</div>
+          <div class="aad-article-text" id="aadArticleText" data-dict>${a.text}</div>
           ${aadDetailsHTML(a, found.week, found.theme)}
         </div>
 
@@ -11341,14 +11570,11 @@ ROUTES.ylReader=function(compound){
     <span class="yl-lv yl-lv${r.lv}">Level ${r.lv}</span>
     <h1 style="font-size:1.9rem">${r.icon} ${r.title}</h1>
     <p class="note" style="margin:2px 0 8px">🎯 <b>Objective:</b> ${r.obj}</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 10px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px">
       <button class="btn sm ${ext?'ghost':''}" onclick="go('ylReader','${r.id}')">📄 Standard text</button>
       <button class="btn sm ${ext?'':'ghost'}" onclick="go('ylReader','${r.id}:ext')">📚 Extended text</button>
-      <button class="btn sm ghost" id="ylTts" onclick="ylSpeak(document.getElementById('ylTxt').textContent,this)">🔊 Read to me</button>
-      <button class="btn sm ghost" onclick="ylZoomBox('ylTxt',-1)">A−</button>
-      <button class="btn sm ghost" onclick="ylZoomBox('ylTxt',1)">A+</button>
-      <button class="btn sm ghost" onclick="ylPrintReader('${r.id}','${ext?'ext':'std'}')">🖨️ Print / PDF</button>
     </div>
+    ${readerBar('ylTxt', `<button class="btn ghost sm" onclick="ylPrintReader('${r.id}','${ext?'ext':'std'}')">🖨️ Print / PDF</button>`, {dict:false, hl:false})}
     <div class="card stem-visual">${r.scene}<div class="stem-vis-cap">👆 Tap any word below to hear it — words with a dotted line also show their meaning.</div></div>
     <div class="card yl-text" id="ylTxt" style="line-height:2">${ylWrap(v.text)}</div>
     <h3 class="sub">✅ Quick check ${ext?'(extended)':''}</h3>
