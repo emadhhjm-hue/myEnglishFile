@@ -2826,10 +2826,10 @@ const ROUTES = {
       <button class="back" onclick="go('writingCourse')">← Writing Course</button>
       <div class="meta">Writing Course · Unit 4</div>
       <h1 style="font-size:2.1rem">🧪 Writing Studio — analyse, mark &amp; improve</h1>
-      <p style="color:var(--muted);max-width:740px">Real exam responses across the full range of scores — from top marks to zero — plus inference and opinion practice. Mark them like an examiner, justify your decisions, rewrite weak ones, and only then compare with the model. <b>${total} practices</b> in total.</p>
+      <p style="color:var(--muted);max-width:740px">Real exam responses across the full range of scores — from <b>25/25 down to zero</b>, several on the same prompt so you can compare them — plus inference and opinion practice. Mark them like an examiner, justify your decisions, rewrite weak ones, and only then compare with the model. <b>${total} practices</b> in total.</p>
 
       <h2 style="font-family:'Fraunces';font-size:1.4rem;margin:22px 0 4px;color:var(--ink)">⚖️ Mark &amp; Justify <span style="font-weight:400;font-size:.9rem;color:var(--muted)">— you be the examiner</span></h2>
-      <p style="color:var(--muted);font-size:.86rem;margin:0 0 10px">Give the response a mark against the rubric and justify it. The examiner's real marks and reasoning appear only after you submit.</p>
+      <p style="color:var(--muted);font-size:.86rem;margin:0 0 10px">Give the response a mark against the rubric and justify it. The examiner's real marks and reasoning appear only after you submit. Scripts tagged <b>Exemplary</b> scored 24 or 25 out of 25 — mark them yourself before you look.</p>
       <div class="grid c2">${MARKING.map(m=>card(`go('markTask','${m.id}')`, (m.zero?'🚫 ':'')+m.title, (m.real?'Real exam response · ':'')+(m.zero?'Why zero?':markBand(markTotal(m.scores))+' · /25'))).join('')}</div>
 
       <h2 style="font-family:'Fraunces';font-size:1.4rem;margin:24px 0 4px;color:var(--ink)">✏️ Revise &amp; Edit</h2>
@@ -6515,9 +6515,159 @@ function reviseReveal(){
    Source: EoT writing standardisation set (real responses + examiner notes).
    ========================================================================= */
 function markTotal(s){ return s.task+s.structure+s.grammar+s.vocab+s.spelling; }
-function markBand(total){ return total===0?"Zero":total>=20?"Strong":total>=14?"Competent":total>=8?"Developing":"Limited"; }
+function markBand(total){ return total===0?"Zero":total>=24?"Exemplary":total>=20?"Strong":total>=14?"Competent":total>=8?"Developing":"Limited"; }
 const MARK_CRIT=[["task","Task completion"],["structure","Structure"],["grammar","Grammar"],["vocab","Vocabulary"],["spelling","Spelling & punctuation"]];
 const MARKING=[
+  /* ---------- Grade 12 General · EoT Part 3 essay · one prompt, the whole range ----------
+     Three scripts at 25/25, one at 24/25, then 9, 5 and two zeros. Real responses,
+     real examiner marks; names removed. Read the full-mark scripts against the 644-word
+     24/25 and the 9/25: length earns nothing, and the zeros are not weak English. */
+{ id:"mk_full_278", real:true, title:"What shapes us — nature or the people around us? (full marks)",
+  prompt:`Now write an essay where you compare the factors that shape who people are. Write about: the influence of family and friends; the impact of social media on young people; other factors you think are important. Write at least 200 words in paragraphs. (Grade 12 General · 25 marks)`,
+  response:`Have you ever wondered whether the decisions and actions you make are due to the influence of the people surrounding you, or were you just born this way? Whilst some people think that the real reason behind their mindsets and mental health is their environment, others think that their personality was already shaped since childhood.
+
+Firstly, the people you were born with have a massive affect on you. The kids that were born in loving families and with friends that cared about their health and safety, are the ones who are happier and healthier because they had the chance to express themselves more growing up. In contrast, kids who grew up in decieving families that treated them badly or grew up without any real close bonds, are most likely to suffer from mental health issues, such as depression and detachment.
+
+Secondly, another example is social media. Kids started using different social media apps that changed their personalities almost completely. They would change their values and follow trends even if they were dangerous just to fit in. Consequently, many kids started suffering from strict high standards and insecurity because if they didn't keep up with the other kids in their surroundings, they would get bullied.
+
+To conclude, all factors matter even the ones that you don't consider may be significant in shaping our personalities. In addition, I think there are some factors that I consider more vital than the rest, such as psychology. The more you read about psychology, the more you learn how to balance between nature and nurture in several ways. Also, I would consider staying away from people who affect your mental health or habits in a bad way.`,
+  scores:{task:5,structure:5,grammar:5,vocab:5,spelling:5},
+  notes:`278 words. Full marks — and worth studying closely, because it is not error-free. There are two slips ("affect" for "effect", "decieving"), and yet the examiner awarded 5 for spelling and punctuation. The descriptor asks whether spelling is "consistently accurate, even within complex words and sentences", not whether it is perfect; two isolated errors inside otherwise complex, correctly punctuated sentences do not pull it down a band.
+
+What earns the 5s is control. The opening is a rhetorical question that frames the whole essay as a comparison — nature against environment — and every paragraph then answers it. "Firstly", "In contrast", "Secondly", "Consequently", "To conclude" carry the reader through without effort. The vocabulary is precise rather than showy: "mindsets", "detachment", "insecurity", "vital". The conclusion does what weak conclusions never do — it adds something (psychology, and a personal decision) instead of repeating the introduction.
+
+Compare this with the 24/25 response. That one is nearly three times longer. Length is not what earned this mark.` },
+
+{ id:"mk_full_340", real:true, title:"Why do you act the way you do? (full marks)",
+  prompt:`Now write an essay where you compare the factors that shape who people are. Write about: the influence of family and friends; the impact of social media on young people; other factors you think are important. Write at least 200 words in paragraphs. (Grade 12 General · 25 marks)`,
+  response:`Have you ever wondered why you act the way you do? While we are born with some natural traits, the people around us and our daily experiences are what really shape our personalities. There are many factors that make us who we are today, especially our families, friends, and the internet.
+
+To begin with, our family is the very first influence in our lives. Growing up, we copy our parents. They teach us basic manners, our beliefs, and what is right or wrong. If you grow up in a supportive house, you will probably be a confident person. But as we get older, our friends start to have just as much impact. When we are teenagers, we want to fit in. We start liking the same music, wearing similar clothes, and talking like our friends. They help us discover new sides of ourselves and build our social skills outside the home.
+
+Another massive factor for young people today is social media. Honestly, most of us spend hours every day scrolling through different apps. This completely changes how we see the world. It is great because we can connect with people who share our hobbies and learn new things. However, it can also be very negative. Young people constantly compare their normal lives to the perfect, edited pictures of influencers online. This creates a lot of pressure to look a certain way, which can lower our self-esteem and change our behavior in real life.
+
+Besides people and the internet, I think our schools and personal challenges shape us a lot. We spend most of our day at school, where good teachers can inspire us to figure out our future goals. Also, going through hard times, like failing an exam, teaches us how to be strong and try again.
+
+To sum up, nobody is shaped by just one thing. The values we get from our family, the fun times with our friends, the things we see online, and our education all come together to build our unique identity. We are simply a reflection of everything we experience.`,
+  scores:{task:5,structure:5,grammar:5,vocab:5,spelling:5},
+  notes:`340 words. All three bullets of the prompt are covered, and the third ("other factors you think are important") is genuinely answered rather than waved at — school and personal hardship, each with an example.
+
+Notice the sentence variety. Short sentences ("Growing up, we copy our parents." / "When we are teenagers, we want to fit in.") sit beside long ones with subordinate clauses. That mixture is what the grammar descriptor means by "both simple and complex language structures". The register slips once towards the conversational ("Honestly, most of us…"), and the examiner did not penalise it: it is a deliberate choice, controlled, and it suits an essay written in the first person.
+
+The final line — "We are simply a reflection of everything we experience" — earns its place because it states the essay's argument in eight words. A conclusion should be able to survive on its own.` },
+
+{ id:"mk_full_235", real:true, title:"The identity of an individual (full marks, and the shortest)",
+  prompt:`Now write an essay where you compare the factors that shape who people are. Write about: the influence of family and friends; the impact of social media on young people; other factors you think are important. Write at least 200 words in paragraphs. (Grade 12 General · 25 marks)`,
+  response:`The identity of an individual is shaped by a complex mix of external forces and internal experiences. While every person is unique, certain common factors heavily influence who we become. Among these, family and friends, social media, and broader cultural environments play the most significant roles.
+
+First, family and friends form the foundation of a person's character. Parents and relatives are the primary source of values, manners, and beliefs during early childhood. As individuals grow older, friends become equally important. Peers influence clothing choices, music tastes, and social behaviors, helping people learn how to navigate relationships and find their place in a group.
+
+Second, social media has become a powerful force, especially for young people. Platforms like Instagram and TikTok expose youth to global trends and diverse viewpoints. However, they also create immense pressure to conform to unrealistic standards of beauty and success. This constant comparison can deeply impact self-esteem and alter how young people view themselves and their futures.
+
+Finally, other factors like culture and personal life challenges shape identity The traditions, language, and religion of a community provide a sense of belonging. Additionally, overcoming personal hardships, such as moving to a new country or facing financial difficulties, builds resilience and redefines a person's worldview.
+
+In conclusion, identity is not fixed it is constantly molded by the people around us, the digital world we consume, and the cultural landscapes we inhabit. Together, these factors transform children into unique adults.`,
+  scores:{task:5,structure:5,grammar:5,vocab:5,spelling:5},
+  notes:`235 words — the shortest of the three full-mark scripts, and only 35 words over the minimum. It shows that "extended and sophisticated" in the top descriptor is about density, not length.
+
+There are two missing full stops ("shape identity The traditions"; "not fixed it is constantly molded"). Both are run-ons. The examiner still awarded 5 for spelling and punctuation, on the same reasoning as the 278-word script: two isolated lapses inside consistently accurate, complex punctuation.
+
+The vocabulary is the strongest of the three: "conform", "unrealistic standards", "resilience", "worldview", "cultural landscapes". Each is used correctly and none is decorative. This is what "a range of technical and sophisticated vocabulary for the specific topic" looks like — words chosen because the idea required them.
+
+An honest note for a student reading this: two of these three full-mark essays contain errors that a careful proofreader would catch. Marks are awarded against descriptors, not against perfection.` },
+
+{ id:"mk_near_644", real:true, title:"Experiences shaped me (24/25 — the long one)",
+  prompt:`Now write an essay where you compare the factors that shape who people are. Write about: the influence of family and friends; the impact of social media on young people; other factors you think are important. Write at least 200 words in paragraphs. (Grade 12 General · 25 marks)`,
+  response:`Over the past few years, we notice that the factors that shape who we are as a person depend on genetics and environment and experiences we have growing up, I totally understand that they play a huge role on who we become, but I believe that there are other factors that some people don't notice. For example, the influence of family and friends can totally change a person's personality. Another example is that social media also influence people to act in a certain way that might change how other people see them as a person. In this essay, I will talk about the influence that family and friends have on a persons personality, and how social media impacts our characteristics.
+
+To begin with, the infuence that family and friends can totally change the way we act and behave, for example, some children might be born with an open personality and a positive vibe, but some might grow up in an abusive relationships with there families that can make them more agrassive and less communicating with others. Another example is that some kids might grow up being shy and non-communicating, but at some point they would have some friends that would always be around them and talk alot with them which would encourge them to become less shy and open with others.
+
+To add more to what I have written so far, I also believe that social media has a huge impact on young people's personalities. Most teenagers that use social media nowdays use Tiktok and instagram to create content. Most would do the dumbest things just to gains views or likes, others would do prankes and tricks to friends of family members without realising the effects it would have on them. Eventually, they would start losing friends and would be annoying to hang out with. Another example is that some young people might get bullied online which effects there personality and would make them insecure about themselves. Bullying victoms usually tend to be quiet and unsocial and less communicating with others, the comments they get in any ways from the bullies might effect them for a really long time even if they heal from it they would still make them think about it for a while.
+
+More over, I believe that the experiences we face growing up is the most important factor that shapes who we are. I do have an experience that I believe had the most influence on my personality growing up. When I first started online schoole in 2020, I wasn't paying attention on what effects it had on me. I became quiet and less communicating when I was known for being the most open and and social communicating person in my family. I would spend hours on my devices using social media or watching movies. After a while, my siblings and cousins started going back to school, but for some strange reason my school was online for two more years!, which made feel so lonely and isolated. After I finaly moved schools, I realised that iv'e became non-communicating and I wasn't able to express my slef as I used to. Until this day I believe that I sitll have trouble expressing my self or how I feel but not as much as before. So I strongly believe that experiences we face is the most important factor that shapes our personality and who we become.
+
+In conclusion, I believe that the influence that family and friends have on people's lives can change there personalites and characteristics. I also believe that social media can change the way young people act and behaive in both negative and positive ways. In my point of view, I believe that the most important factor is the experiences we face, because it can change our personality into a whole different one, which can be in a positive and a negative way.`,
+  scores:{task:5,structure:5,grammar:5,vocab:5,spelling:4},
+  notes:`644 words — more than three times the minimum — and it scored one mark below the 235-word script. Read those two side by side; the lesson is the whole point of this exercise.
+
+The examiner's grid: 5 for task completion, 5 for structure, 5 for grammar, 5 for vocabulary, and 4 for spelling and punctuation. The single dropped mark is explained exactly by the band-4 descriptor: "There are examples of accuracy in more complex spelling and punctuation. There may be multiple errors, but they mostly don't affect readability." The errors are numerous — "infuence", "agrassive", "encourge", "nowdays", "prankes", "victoms", "schoole", "finaly", "iv'e", "sitll", "my slef", "behaive", "there" for "their" repeatedly — but the essay never stops being readable.
+
+Why did structure and grammar still earn 5? Because the plan is visible: introduction with a thesis, one body paragraph per factor, a personal example developed at length, then a conclusion that ranks the factors. The paragraph on online schooling in 2020 is the strongest writing in this whole set — it is specific, it is honest, and it belongs to nobody but this student.
+
+The lesson for a Grade 12 reader: length neither earns marks nor loses them. Proofreading earns marks. This student would have had 25 with fifteen minutes of checking.` },
+
+{ id:"mk_dev_198", real:true, title:"Family, friends and technology (9/25)",
+  prompt:`Now write an essay where you compare the factors that shape who people are. Write about: the influence of family and friends; the impact of social media on young people; other factors you think are important. Write at least 200 words in paragraphs. (Grade 12 General · 25 marks)`,
+  response:`in or the life the people and socil media is support in or the life and it hav mor actvute.
+
+the influence of family and friends ar the most infrmesun in life, we sould do time for family and friends,
+
+in my opinen i lov my family moore i feel whte hem an sefte, i love my frinds olso we mak alot of momery and alot of thenk
+
+in my opinein the young people the dont ned a social media, in social media sam tems hav a short vedie dengrs or nat good for as sam people wen see smthng he wont to do, sam a young people yus a social medi but dont mak ane think and alot of yong people hav acont and ceire she coging and wht do wah he sealder, in emirats socilety is natural.
+
+i think the other factor is important is a tacinloge at a development and emotiona wellbeing, in emirets the tacinloge a impove an social media , so we have moe detil abot the tagnloge, whe he is importent? in the fuoser we wil nat wos ane thnk als bat we wil wis a tgnloge we hav mor job an fuojer need a tgnloge`,
+  scores:{task:2,structure:2,grammar:2,vocab:1,spelling:2},
+  notes:`198 words, and the examiner's grid reads 2 · 2 · 2 · 1 · 2.
+
+This is the most useful script in the set for a student who thinks marks are lost only for spelling. Look at what the writer actually did: all three bullets of the prompt are attempted — family and friends, social media, and a third factor (technology). The ideas are there. Task completion earns 2, not 0, because "the student expresses several ideas but more than one area of the prompt is missed or not dealt with in sufficient detail".
+
+Structure scores 2: there are paragraph breaks and each paragraph starts a new idea, but sentences run into one another with commas ("we sould do time for family and friends,"). Grammar scores 2 — basic structures only, errors frequent. Spelling scores 2, not 1, because the errors are phonetic: "socil", "infrmesun", "tacinloge". A reader who sounds them out can recover the word, so the writing is not "barely decipherable".
+
+Vocabulary is the lowest, at 1: "response contains very little that can be identified as appropriate vocabulary for the task". The topic words that would signal a Grade 12 essay — influence, identity, pressure, wellbeing — are almost entirely absent, or so distorted that they cannot be credited.
+
+The path from 9 to 14 for this student is not more effort. It is one thing: learning the fifteen words this topic requires, and spelling them.` },
+
+{ id:"mk_lim_7", real:true, title:"One sentence (5/25)",
+  prompt:`Now write an essay where you compare the factors that shape who people are. Write about: the influence of family and friends; the impact of social media on young people; other factors you think are important. Write at least 200 words in paragraphs. (Grade 12 General · 25 marks)`,
+  response:`Some scientists now emphasize the importance of nurture.`,
+  scores:{task:1,structure:1,grammar:1,vocab:1,spelling:1},
+  notes:`The whole script. One sentence, against a minimum of 200 words.
+
+The sentence itself is perfectly formed — correctly spelt, correctly punctuated, and it even uses the term the essay needed ("nurture"). And it scored 5 out of 25. Every criterion is capped by how little there is to judge: a single sentence cannot show "a range" of grammar, cannot be "structured with awareness of style and audience", and cannot cover "all aspects of the prompt".
+
+Only the total of 5 was recorded on this script; the breakdown shown here is the closest reading of the descriptors, at one band each. Treat those five numbers as an interpretation, not as the examiner's own marks.
+
+There is a second possibility worth naming. The sentence is noticeably more fluent than a student who writes nothing else would normally produce, and it reads like a line lifted from an article. If an examiner concluded it was copied, the zero band ("entirety of response plagiarised") would apply and the mark would be 0, not 5.
+
+The lesson is blunt: an examiner can only award marks for writing that exists. Write something for every bullet, however imperfectly. Three flawed paragraphs would have doubled this mark.` },
+
+{ id:"mk_zero_salad", real:true, zero:true, title:"704 words, and a mark of zero",
+  prompt:`Now write an essay where you compare the factors that shape who people are. Write about: the influence of family and friends; the impact of social media on young people; other factors you think are important. Write at least 200 words in paragraphs. (Grade 12 General · 25 marks)`,
+  response:`lesson title family the my name is [name] ilove da kazan only family love people/ on the influen of family and friends pople. my blay fotpol and hoys and room today people show is english good famili good other factors you thin ,are im po rtant people young on media socicl of impact on and frinds pople of the of and t wrds niu byiiu care as wen for our clmaim ary ruiw bed nuoisx bdyu vty gyu xrex tyug gvuy crt ky crt giu gukl r77 ag my 19 ero of will have or will of rem ain the we bey care testle the yvvuj ctry me blay d family and people in vty crt hlo ,der joilu n crty giuoli, der zew docti xtjctr hiy, tr crty ilyexd dxtr in paragraphs imbrcrvy groo import, on are yon other grade 12.1 ganral good english famili, stagg wrtltng end eui uydfa j ioud vuyx v9udis b uyd vutz gvty hiusvgsd gvuyd gyud v tyd ihks crt shiu ,gyusef gsety uhjky gcsty lisu …
+
+[The script continues in the same way for 704 words. The name has been removed.]`,
+  scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
+  zeroReason:`Seven hundred and four words, and zero marks. This script is here because it destroys the most persistent myth in any exam hall: that filling the page earns something.
+
+The opening thirty words are real. "the influen of family and friends pople" is an attempt at the first bullet. Then it dissolves — real words, in English, in an order that carries no meaning, mixed with strings of letters that are not words at all. The writer has copied fragments of the question paper ("other factors you thin", "in paragraphs", "grade 12.1 ganral"), padded around them, and kept going until the page was full.
+
+Why zero and not one? The band-1 descriptors all require something identifiable: grammar at 1 says "no attempt at grammatical structures is identifiable" — but even that band assumes a response. The zero band says "No response; or entirety of response plagiarised." An examiner reading this cannot identify a response to the prompt anywhere in it. There is nothing to which a descriptor can be applied.
+
+The comparison to make is with the 5/25 script — one sentence, thirty-nine characters, five marks. Eight words that answer the question outscore seven hundred that do not.` },
+
+{ id:"mk_zero_letters", real:true, zero:true, title:"Real words, invented spelling, no meaning (zero)",
+  prompt:`Now write an essay where you compare the factors that shape who people are. Write about: the influence of family and friends; the impact of social media on young people; other factors you think are important. Write at least 200 words in paragraphs. (Grade 12 General · 25 marks)`,
+  response:`the influence of family and frinds' tfrqed ysdrk the dteghi iebnuft mjdre rashfr ybueie eawsq tmileh smhur at tyeh aeqoi hdhnf jnjkbio
+
+deajnb taskuj rfbdcnd yuio at eqnjb am sijt ujhf me rdasq hnft oxds tsdeh ikngfb rasdfqe the tdvsuxn ysdjk poaipoh rdaews tdfdh vbgdtr
+
+deradw not' fvdret rashed took for ahyf em tdedu urjdgs foor taim noree cnofh pousgve rdacs on guenic the guhjidhb
+
+yrawqv porti rsgaude inguc kmkhtd hyigf khddvd esxw rfd poi gftgyr hbvcdsd pooliu no good is uhrytf …
+
+[The script continues in the same way for 206 words.]`,
+  scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
+  zeroReason:`Compare this with the 9/25 script. Both look, at a glance, like poor spelling. They are not the same thing at all, and the difference is worth five marks a criterion.
+
+In the 9/25 script the spelling is phonetic. "socil" is society. "tacinloge" is technology. "infrmesun" is information. Sound them out and the meaning arrives. A reader can recover the sentence, so the examiner can apply the descriptors, and the student is credited for the ideas underneath.
+
+Here, nothing can be recovered. "tfrqed ysdrk the dteghi iebnuft" is not a misspelling of anything. Only the first six words — "the influence of family and frinds" — are copied straight from the question paper. After that the keyboard is being hit, in lines that are shaped like paragraphs.
+
+This is what the zero band exists for. It is not a punishment for weak English; the 9/25 script is far weaker in English and scored nine. Zero means an examiner has read every line and found no response to mark.
+
+If a student in your class produces this, the mark is the least important thing about it. Something else is going on, and it is worth finding out what.` },
+
   // ---------- REAL responses from the exam set ----------
   { id:"mk_space", real:true, title:"Space travel in the future", prompt:`Write about space travel in the future. Include: why people will go to space; why space travel is dangerous; why people might want to live on different planets. (≥100 words)`,
     response:`Space is a planet beautful place there is a galxy and most people is discuvar new worlds so why one day we will living there, and planets and they will carry scietific experimnts, they will living on another planet, they will new life and exprienc, they will living there different from earth, all which of we will know in the future.`,
