@@ -1161,7 +1161,10 @@ function spellTime(type, attempt, text){
     const a1=Math.max(14, Math.round(words*3));
     return attempt===1 ? a1 : Math.round(a1*0.6);
   }
-  return SPELL_TIME.word[attempt===1?"a1":"a2"];
+  /* single words: long words need longer. Never below the old 20s / 12s. */
+  const len=(text||"").trim().length;
+  const a1=Math.min(34, Math.max(SPELL_TIME.word.a1, Math.round(len*1.5)));
+  return attempt===1 ? a1 : Math.max(SPELL_TIME.word.a2, Math.round(a1*0.6));
 }
 const SPELL_REVEAL = 5;            // seconds the correct spelling is shown after a final miss
 let   SPELL_ROUND_SIZE = 10;       // items per round (student can pick 10 / 20 / 30)
@@ -1203,6 +1206,23 @@ const SPELL_BANK = {
     {t:"subtle"},{t:"receipt"},{t:"gauge"},{t:"hierarchy"},{t:"paradigm"},{t:"camouflage"},{t:"exaggerate"},
     {t:"millennium"},{t:"occurrence"},{t:"embarrass"},{t:"privilege"},{t:"conscience"},{t:"rhythm"},{t:"vacuum"},
     {t:"fluorescent"},{t:"surveillance"},{t:"maintenance"},{t:"restaurant"},{t:"manoeuvre"},{t:"hors d'oeuvre"} ]},
+  heavy:{ label:"Heavy-weight words", sub:"the longest and least familiar spellings \u2014 one bite at a time", type:"word", items:[
+    {t:"internationalisation",hint:"20 letters, British -isation"},{t:"characteristically",hint:"18 letters: character + istic + ally"},
+    {t:"indistinguishable",hint:"17 letters: in + distinguish + able"},{t:"interdisciplinary",hint:"inter + discipline drops the 'e' + ary"},
+    {t:"misinterpretation",hint:"mis + interpret + ation"},{t:"counterintuitive",hint:"counter + intuitive, no hyphen"},
+    {t:"disproportionate",hint:"dis + proportionate — one 'p', double 'p' nowhere"},{t:"incomprehensible",hint:"-ible, not -able"},
+    {t:"unconstitutional",hint:"un + constitution + al"},{t:"acknowledgement",hint:"British keeps the 'e': acknowledge + ment"},
+    {t:"conscientiously",hint:"conscience loses its final 'e', then -tiously"},{t:"entrepreneurial",hint:"entrepreneur + ial — the 'eur' is French"},
+    {t:"extraordinarily",hint:"extra + ordinary, then -ily"},{t:"palaeontologist",hint:"British 'ae' — the study of fossils"},
+    {t:"parliamentarian",hint:"parliament keeps its silent 'ia'"},{t:"physiotherapist",hint:"physio + therapist"},
+    {t:"archaeological",hint:"'ae' after the arch-, then -ological"},{t:"claustrophobia",hint:"claustro- (enclosed) + phobia"},
+    {t:"irreconcilable",hint:"double 'r', then -cilable"},{t:"pharmaceutical",hint:"'ph' then -ceutical"},
+    {t:"quintessential",hint:"quint- (fifth) + essential"},{t:"reconnaissance",hint:"double 'n', double 's', French ending"},
+    {t:"chrysanthemum",hint:"Greek: chrys- (gold) + anthemum (flower)"},{t:"idiosyncratic",hint:"idio- (personal) + syncratic — 'y' after the 's'"},
+    {t:"juxtaposition",hint:"juxta- (beside) + position"},{t:"Mediterranean",hint:"one 'd', one 't', double 'r'"},
+    {t:"kaleidoscope",hint:"kaleido- keeps 'ei', not 'ie'"},{t:"manoeuvrable",hint:"British 'oe' — manoeuvre drops the 'e'"},
+    {t:"onomatopoeia",hint:"the word for word-sounds: ends -poeia"},{t:"anaesthetic",hint:"British 'ae' — the American spelling drops the 'a'"}
+  ]},
   vowel:{ label:"Vowel teams", sub:"-ea-, -ough-, -ie-/-ei- that sound different", type:"word", items:[
     {t:"heal"},{t:"break"},{t:"head"},{t:"great"},{t:"bread"},{t:"weather"},{t:"thorough"},{t:"though"},
     {t:"through"},{t:"thought"},{t:"weird"},{t:"believe"},{t:"receive"},{t:"ceiling"},{t:"science"},{t:"piece"},
@@ -3011,7 +3031,7 @@ const ROUTES = {
       </div>
 
       <h2 class="sub" style="margin-top:22px">✨ Extra spelling</h2>
-      <p style="color:var(--muted);margin-top:0">Targeted sets: tricky words, vowel teams, homophones, idioms &amp; phrases, and full sentences.</p>
+      <p style="color:var(--muted);margin-top:0">Targeted sets: tricky words, heavy-weight words, vowel teams, homophones, idioms &amp; phrases, and full sentences.</p>
       <div class="grid c2">
         ${Object.keys(SPELL_BANK).map(k=>{ const c=SPELL_BANK[k]; return `<div class="item-row" style="flex-direction:column;align-items:flex-start">
           <h3 style="font-size:1.1rem;margin:2px 0">${c.label}</h3>
@@ -7227,6 +7247,7 @@ const CREATION_TOOLS=[
   ]},
   { cat:"🎨 Design & presentations", items:[
     ["Canva","https://www.canva.com","Posters, infographics, slides — free education designs."],
+    ["Napkin AI","https://www.napkin.ai","Paste text; get a clean diagram, flowchart or infographic in seconds. Free plan."],
     ["Prezi","https://prezi.com","Zooming, story-style presentations."],
     ["Google Slides","https://slides.google.com","Simple, shareable slide decks."],
     ["Adobe Express","https://www.adobe.com/express/","Quick graphics, flyers and web pages."],
@@ -7244,6 +7265,11 @@ const CREATION_TOOLS=[
     ["Ideogram","https://ideogram.ai","AI images that can include clear text."],
     ["Unsplash","https://unsplash.com","Free high-quality photos to use in designs."],
     ["Pixabay","https://pixabay.com","Free photos, vectors and illustrations."]
+  ]},
+  { cat:"🧠 AI evaluation & comparison", items:[
+    ["Arena (LMArena)","https://arena.ai","Ask any question and compare two AI models side by side, blind, then vote. Free, no signup — the best way to see whose answer is actually better."],
+    ["Poe","https://poe.com","Try ChatGPT, Claude, Gemini and others from one page. Free tier available."],
+    ["Perplexity","https://www.perplexity.ai","AI search that shows its sources beside every answer — useful for teaching citation."]
   ]},
   { cat:"📚 Books & publishing", items:[
     ["Book Creator","https://bookcreator.com","Make and publish your own e-books."],
