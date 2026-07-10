@@ -143,6 +143,46 @@ textarea{min-height:150px; resize:vertical; line-height:1.6}
 .g-tag.fiction{background:#f3e8ff; color:#6b21a8}
 .g-tag.nonfiction{background:#e0f2fe; color:#075985}
 .rc-empty{color:var(--muted); font-size:.9rem; padding:14px 18px}
+/* ── Spelling clue panel (shown DURING the attempt, vocab.com-style) ── */
+.spell-clue-inner{background:#FFFCF0; border:1px solid #EAD98A; border-radius:10px; padding:10px 14px; margin:6px auto 12px; max-width:520px}
+.spell-clue-inner .clue-head{font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; color:#8a6d1a; font-weight:800; margin-bottom:8px}
+.spell-clue-inner .clue-row{display:flex; gap:10px; align-items:flex-start; margin:6px 0}
+.spell-clue-inner .clue-chip{display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; background:#E67E22; color:#fff; font-weight:800; font-size:.72rem; font-family:Georgia,serif; font-style:italic; flex-shrink:0; margin-top:1px}
+.spell-clue-inner .clue-def{font-size:.92rem; color:var(--ink); line-height:1.42}
+.spell-clue-inner .clue-loading{color:var(--muted); font-size:.86rem; font-style:italic}
+.sp-info .sp-tip{background:#fff7d6; border-left:3px solid #E67E22; padding:8px 10px; margin-top:10px; border-radius:6px; font-size:.86rem; color:#5a4700}
+/* ── Spelling popup card (shown after each item is revealed) ── */
+.sp-info{background:var(--mist); border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin-top:12px}
+.sp-info .sp-word{font-family:"Fraunces",Georgia,serif; font-size:1.35rem; font-weight:700; color:var(--ink); margin-bottom:4px}
+.sp-info .sp-chunks{background:#fff; border:1px dashed var(--teal); border-radius:8px; padding:8px 10px; margin:8px 0; font-size:.86rem}
+.sp-info .sp-chunks span{display:inline-block; padding:2px 8px; margin:2px 2px; background:var(--mist); border-radius:6px; font-family:ui-monospace,monospace}
+.sp-info .sp-sense{margin-top:8px}
+.sp-info .sp-pos{font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--coral-dk); font-weight:700}
+.sp-info .sp-def{font-size:.95rem; color:var(--ink); line-height:1.45; margin-top:2px}
+.sp-info .sp-ex{color:var(--muted); font-style:italic; font-size:.88rem; margin-top:4px}
+/* ── Card-cascade at round-end ── */
+.cardstage{position:relative; height:280px; margin:16px auto 6px; max-width:640px}
+.card-face{position:absolute; top:20px; left:50%; width:280px; height:220px; background:#fff; border:2px solid var(--teal); border-radius:14px; box-shadow:0 10px 30px rgba(15,24,58,.10); cursor:pointer; transition:transform .35s, opacity .35s; perspective:1000px}
+.card-face .cf-inner{position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .5s}
+.card-face.flipped .cf-inner{transform:rotateY(180deg)}
+.card-face .cf{position:absolute; inset:0; padding:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; backface-visibility:hidden; border-radius:12px; background:#fff}
+.card-face .cf-back{transform:rotateY(180deg); overflow:auto}
+.card-face .cf-t{font-family:"Fraunces",Georgia,serif; font-size:1.4rem; font-weight:700; color:var(--ink); word-break:break-word}
+.card-face .cf-pos{margin-top:6px; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; color:var(--coral-dk); font-weight:700}
+.card-face .cf-hint{position:absolute; bottom:10px; font-size:.72rem; color:var(--muted)}
+.card-face .cf-def{font-size:.95rem; line-height:1.45; color:var(--ink)}
+.card-face .cf-ex{margin-top:6px; color:var(--muted); font-style:italic; font-size:.85rem}
+.card-face .cf-sense{font-size:.82rem; color:var(--ink); margin-top:6px; text-align:left}
+.card-face.card-cur{transform:translateX(-50%) translateY(0) scale(1); z-index:5; opacity:1}
+.card-face.card-off-1,.card-face.card-off1{z-index:3; opacity:.7}
+.card-face.card-off-2,.card-face.card-off2{z-index:2; opacity:.4}
+.card-face.card-off-1{transform:translateX(-90%) translateY(4px) scale(.94) rotate(-4deg)}
+.card-face.card-off1{transform:translateX(-10%) translateY(4px) scale(.94) rotate(4deg)}
+.card-face.card-off-2{transform:translateX(-125%) translateY(8px) scale(.88) rotate(-8deg)}
+.card-face.card-off2{transform:translateX(25%) translateY(8px) scale(.88) rotate(8deg)}
+.cardnav{display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; margin-top:8px}
+.cardnav .cardpos{color:var(--muted); font-size:.85rem}
+@media (max-width:600px){ .card-face{width:220px; height:200px} .cardstage{height:240px} }
 /* ---------- design: the four-slide ribbon ---------- */
 .ribbon{display:flex; gap:0; align-items:stretch; margin:14px 0 6px; border:1px solid var(--line); border-radius:14px; overflow:hidden; background:#fff}
 .ribbon .rib{flex:1; padding:12px 14px; border-right:1px solid var(--line); cursor:pointer; position:relative; transition:background .15s}
@@ -1169,6 +1209,379 @@ function spellTime(type, attempt, text){
 const SPELL_REVEAL = 5;            // seconds the correct spelling is shown after a final miss
 let   SPELL_ROUND_SIZE = 10;       // items per round (student can pick 10 / 20 / 30)
 
+/* Enrichment for SPELL_BANK — each item may carry:
+     pos       : part of speech (or 'idiom' / 'phrase' / 'sentence')
+     def       : primary definition
+     ex        : one example sentence in context
+     senses    : optional array of {pos, def, ex} for words with multiple meanings
+     hint      : (kept from existing schema) a short spelling clue, shown before typing
+   The reader shows Say-Spell-Say first; the popup adds POS + definition + example
+   AFTER a correct answer, so it never gives the spelling away. */
+
+const SPELL_ENRICH = {
+
+// ─── Silent letters — a curated core to seed the popup ─────────────────
+silent: [
+  { t:"subtle",     pos:"adjective", def:"so delicate or precise as to be difficult to notice or describe.", ex:"There was a subtle change in her tone." },
+  { t:"doubt",      hint:"the 'b' is silent",
+    senses:[
+      { pos:"noun", def:"a feeling of uncertainty.", ex:"I have no doubt about her honesty." },
+      { pos:"verb", def:"to feel uncertain about something.", ex:"I doubt she will arrive on time." } ] },
+  { t:"debt",       pos:"noun", def:"money that is owed.", ex:"He worked hard to pay off his debt." },
+  { t:"climb",      pos:"verb", def:"to go up something, usually by using your hands and feet.", ex:"They climbed the mountain in one day." },
+  { t:"knight",     pos:"noun", def:"a man given a special honour by a monarch, or a soldier of the Middle Ages.", ex:"The knight rode into the tournament." },
+  { t:"knowledge",  pos:"noun", def:"information and understanding gained through experience or study.", ex:"Her knowledge of history is remarkable." },
+  { t:"wrestle",    pos:"verb", def:"to fight by holding and pushing, or to struggle with a difficult problem.", ex:"He wrestled with the decision for weeks." },
+  { t:"aisle",      pos:"noun", def:"a passage between rows of seats or shelves.", ex:"Please walk to the aisle to your left." },
+  { t:"castle",     pos:"noun", def:"a large fortified building from earlier centuries.", ex:"The castle stood on a rocky hill." },
+  { t:"whistle",
+    senses:[
+      { pos:"verb", def:"to make a high sound by forcing air through your lips.", ex:"He whistled a tune as he walked." },
+      { pos:"noun", def:"a small device that makes a high sound when blown.", ex:"The referee blew the whistle." } ] },
+  { t:"guitar",     pos:"noun", def:"a musical instrument with six strings.", ex:"She learned to play the guitar last year." },
+  { t:"foreign",    pos:"adjective", def:"of, from or in a country other than one's own.", ex:"He has always wanted to study a foreign language." },
+  { t:"design",
+    senses:[
+      { pos:"noun", def:"a plan or drawing for how something will look or work.", ex:"The design of the bridge won an award." },
+      { pos:"verb", def:"to plan and create something.", ex:"She designs clothes for a living." } ] },
+  { t:"pneumonia",  pos:"noun", def:"a serious illness that affects the lungs.", ex:"He was in hospital with pneumonia for a week." },
+  { t:"psychology", pos:"noun", def:"the scientific study of the mind and behaviour.", ex:"She is studying psychology at university." },
+  { t:"honour",     hint:"British spelling",
+    senses:[
+      { pos:"noun", def:"great respect, or the right to be respected.", ex:"He accepted the award with honour." },
+      { pos:"verb", def:"to show great respect to someone.", ex:"We honour those who serve our country." } ] },
+  { t:"rhyme",
+    senses:[
+      { pos:"noun", def:"a word ending with the same sound as another.", ex:"'Cat' is a rhyme for 'hat'." },
+      { pos:"verb", def:"to end with the same sound as another word.", ex:"'Love' rhymes with 'dove'." } ] },
+  { t:"rhythm",     pos:"noun", def:"a regular repeated pattern of sounds or movement.", ex:"She could feel the rhythm of the music." },
+  { t:"muscle",     pos:"noun", def:"a piece of body tissue that produces movement.", ex:"Lifting weights builds muscle." },
+  { t:"column",
+    senses:[
+      { pos:"noun", def:"a tall, upright pillar in a building.", ex:"The temple had marble columns." },
+      { pos:"noun", def:"a regular article in a newspaper or magazine.", ex:"She writes a weekly column about food." } ] },
+  { t:"autumn",     pos:"noun", def:"the season between summer and winter.", ex:"The leaves turn red in autumn." },
+  { t:"calm",
+    senses:[
+      { pos:"adjective", def:"peaceful; not upset or excited.", ex:"Stay calm and take a deep breath." },
+      { pos:"verb", def:"to make someone relaxed or peaceful.", ex:"The teacher calmed the class." } ] },
+  { t:"salmon",     pos:"noun", def:"a large edible fish with pink flesh.", ex:"Grilled salmon is a healthy meal." },
+  { t:"Wednesday",  pos:"noun", def:"the day of the week between Tuesday and Thursday.", ex:"Our meeting is on Wednesday afternoon." },
+  { t:"straight",   hint:"'gh' is silent",
+    senses:[
+      { pos:"adjective", def:"without a bend or curve.", ex:"Draw a straight line here." },
+      { pos:"adverb", def:"directly, without stopping.", ex:"Go straight home after school." } ] }
+],
+
+// ─── Advanced & tricky (curated) ───────────────────────────────────────
+advanced: [
+  { t:"bureaucracy",    pos:"noun", def:"a system of government with many complicated rules and departments.", ex:"Getting a permit is slowed down by bureaucracy." },
+  { t:"entrepreneur",   pos:"noun", def:"a person who starts a business, often taking financial risks.", ex:"She became a successful entrepreneur at twenty-five." },
+  { t:"rendezvous",     pos:"noun", def:"a place chosen for people to meet, or the meeting itself.", ex:"The café was our regular rendezvous." },
+  { t:"liaison",        pos:"noun", def:"communication between people or organisations that work together.", ex:"She acts as a liaison between the two teams." },
+  { t:"silhouette",     pos:"noun", def:"the dark shape and outline of someone or something against light.", ex:"His silhouette appeared in the doorway." },
+  { t:"connoisseur",    pos:"noun", def:"an expert judge in matters of taste, especially art or food.", ex:"He is a connoisseur of fine coffee." },
+  { t:"conscientious",  pos:"adjective", def:"wishing to do what is right, especially your work.", ex:"She is a conscientious student who never misses class." },
+  { t:"mischievous",    pos:"adjective", def:"causing playful trouble; naughty in a small way.", ex:"The mischievous puppy hid his shoes." },
+  { t:"pronunciation",  pos:"noun", def:"the way in which a word is spoken.", ex:"His pronunciation has improved a lot this term." },
+  { t:"accommodate",
+    senses:[
+      { pos:"verb", def:"to provide space or a place to stay.", ex:"The hotel can accommodate 200 guests." },
+      { pos:"verb", def:"to change plans to fit someone's needs.", ex:"We will try to accommodate your schedule." } ] },
+  { t:"questionnaire",  pos:"noun", def:"a written set of questions used to collect information.", ex:"Please complete the questionnaire before you leave." },
+  { t:"hierarchy",      pos:"noun", def:"a system in which people are ranked one above another.", ex:"The company has a strict management hierarchy." },
+  { t:"paradigm",       pos:"noun", def:"a typical example or pattern of something; a model.", ex:"Her research offered a new paradigm for the field." },
+  { t:"camouflage",
+    senses:[
+      { pos:"noun", def:"colours or patterns that hide something in its surroundings.", ex:"The soldier wore camouflage in the forest." },
+      { pos:"verb", def:"to hide by blending in.", ex:"The animal camouflages itself among the leaves." } ] },
+  { t:"exaggerate",     pos:"verb", def:"to make something seem larger, more important or worse than it really is.", ex:"He tends to exaggerate his achievements." },
+  { t:"millennium",     pos:"noun", def:"a period of one thousand years.", ex:"We enter a new millennium every thousand years." },
+  { t:"conscience",     pos:"noun", def:"the inner sense of right and wrong that guides behaviour.", ex:"Her conscience told her to return the wallet." },
+  { t:"privilege",      pos:"noun", def:"a special right or advantage available only to some.", ex:"It is a privilege to be here today." },
+  { t:"surveillance",   pos:"noun", def:"close watching of a person, place, or thing.", ex:"The shop has cameras for surveillance." },
+  { t:"manoeuvre",      hint:"British 'oe'",
+    senses:[
+      { pos:"noun", def:"a skilful or careful movement.", ex:"Parking here needs a careful manoeuvre." },
+      { pos:"verb", def:"to move something skilfully.", ex:"She manoeuvred the boat into the harbour." } ] }
+],
+
+// ─── Heavy-weight & longest words — including the big ones from your list ─
+heavy: [
+  { t:"internationalisation", pos:"noun", def:"the act of adapting something for use around the world.", ex:"The company invested in the internationalisation of its brand." },
+  { t:"characteristically",   pos:"adverb", def:"in a way that is typical of someone or something.", ex:"He characteristically arrived on time." },
+  { t:"indistinguishable",    pos:"adjective", def:"impossible to tell apart from something else.", ex:"The twin brothers are indistinguishable at first glance." },
+  { t:"interdisciplinary",    pos:"adjective", def:"involving two or more academic subjects.", ex:"The programme takes an interdisciplinary approach." },
+  { t:"unconstitutional",     pos:"adjective", def:"not in line with the constitution of a country.", ex:"The court declared the law unconstitutional." },
+  { t:"acknowledgement",      hint:"British keeps the 'e'", pos:"noun", def:"the act of recognising something as true, or thanking someone.", ex:"She gave a small acknowledgement of the audience." },
+  { t:"extraordinarily",      pos:"adverb", def:"in a way that is far beyond ordinary.", ex:"The team performed extraordinarily well." },
+  { t:"reconnaissance",       pos:"noun", def:"exploration to gain information, especially by military or scientific teams.", ex:"The drone was sent on a reconnaissance mission." },
+  { t:"kaleidoscope",
+    senses:[
+      { pos:"noun", def:"a tube toy with mirrors and coloured pieces that make shifting patterns.", ex:"She looked through the kaleidoscope in wonder." },
+      { pos:"noun", def:"a constantly changing pattern of many things.", ex:"The market was a kaleidoscope of colour." } ] },
+  { t:"onomatopoeia",         pos:"noun", def:"the use of a word that sounds like the thing it describes, such as 'buzz' or 'crash'.", ex:"Comic books are full of onomatopoeia." },
+  { t:"anaesthetic",          hint:"British 'ae'", pos:"noun", def:"a substance that stops you feeling pain during surgery.", ex:"The dentist gave him a local anaesthetic." },
+  { t:"Mediterranean",        pos:"adjective", def:"relating to the sea between Europe and Africa or the countries around it.", ex:"The Mediterranean diet is rich in olive oil." },
+
+  /* The Longest Long Words — with an on-screen syllabic breakdown */
+  { t:"pneumonoultramicroscopicsilicovolcanoconiosis",
+    hint:"read it in seven bites: pneumono · ultra · micro · scopic · silico · volcano · coniosis",
+    pos:"noun", chunks:["pneumono","ultra","micro","scopic","silico","volcano","coniosis"],
+    def:"a lung disease caused by inhaling very fine silica dust (45 letters — a famous dictionary curiosity).",
+    ex:"'Pneumonoultramicroscopicsilicovolcanoconiosis' is the longest word in most English dictionaries." },
+  { t:"antidisestablishmentarianism",
+    hint:"break it up: anti · dis · establish · ment · arian · ism", pos:"noun",
+    chunks:["anti","dis","establish","ment","arian","ism"],
+    def:"opposition to the removal of the official status of an established Church.",
+    ex:"He wrote his thesis on antidisestablishmentarianism in 19th-century Britain." },
+  { t:"floccinaucinihilipilification",
+    hint:"a joking Latin-based term: flocci · nauci · nihili · pili · fication", pos:"noun",
+    chunks:["flocci","nauci","nihili","pili","fication"],
+    def:"the act of treating something as worthless or of no value.",
+    ex:"His floccinaucinihilipilification of the whole project offended the team." },
+  { t:"pseudopseudohypoparathyroidism",
+    hint:"a real medical term: pseudo · pseudo · hypo · para · thyroid · ism", pos:"noun",
+    chunks:["pseudo","pseudo","hypo","para","thyroid","ism"],
+    def:"a rare inherited disorder related to bone metabolism (30 letters).",
+    ex:"Pseudopseudohypoparathyroidism is used as an example of a very long medical term." },
+  { t:"supercalifragilisticexpialidocious",
+    hint:"the Mary Poppins word: super · cali · fragilistic · expiali · docious", pos:"adjective",
+    chunks:["super","cali","fragilistic","expiali","docious"],
+    def:"a nonsense word meaning excellent or wonderful, made famous by the film Mary Poppins.",
+    ex:"His performance was supercalifragilisticexpialidocious." },
+  { t:"otorhinolaryngologist",
+    hint:"the ear, nose and throat doctor: oto · rhino · laryngo · logist", pos:"noun",
+    chunks:["oto","rhino","laryngo","logist"],
+    def:"a doctor who specialises in disorders of the ear, nose and throat.",
+    ex:"The otorhinolaryngologist examined her sinuses." },
+  { t:"electroencephalographically",
+    hint:"electro · encephalo · graphically", pos:"adverb",
+    chunks:["electro","encephalo","graphic","ally"],
+    def:"in a manner relating to the recording of brain electrical activity.",
+    ex:"The seizure was measured electroencephalographically." },
+  { t:"incomprehensibilities",
+    hint:"in · comprehensi · bilities", pos:"noun",
+    chunks:["in","comprehen","si","bilities"],
+    def:"things that cannot be understood (plural of incomprehensibility).",
+    ex:"The report was full of incomprehensibilities." },
+  { t:"uncharacteristically",  pos:"adverb", def:"not in a way that is typical of someone.", ex:"She uncharacteristically arrived late for class." },
+  { t:"counterrevolutionaries", pos:"noun", def:"people who oppose a revolution or try to reverse it.", ex:"The counterrevolutionaries plotted against the new government." }
+],
+
+// ─── Homophones — meaning is the whole point ────────────────────────
+homophone: [
+  { t:"heir",       pos:"noun", def:"a person who inherits money, property or a title.", ex:"She is the heir to a large estate." },
+  { t:"air",        pos:"noun", def:"the mixture of gases that we breathe.", ex:"Let's go outside for some fresh air." },
+  { t:"principal",
+    senses:[
+      { pos:"noun", def:"the head of a school.", ex:"The principal spoke at assembly." },
+      { pos:"adjective", def:"most important; main.", ex:"Safety is our principal concern." } ] },
+  { t:"principle",  pos:"noun", def:"a basic rule or belief that guides behaviour.", ex:"Honesty is a principle she lives by." },
+  { t:"stationary", pos:"adjective", def:"not moving; still.", ex:"The car remained stationary at the red light." },
+  { t:"stationery", pos:"noun", def:"writing materials such as paper, pens and envelopes.", ex:"She bought stationery for the new term." },
+  { t:"complement",
+    senses:[
+      { pos:"noun", def:"something that completes or goes well with something else.", ex:"Rice is a good complement to curry." },
+      { pos:"verb", def:"to add to something in a way that improves it.", ex:"Her tie complements her jacket." } ] },
+  { t:"compliment",
+    senses:[
+      { pos:"noun", def:"a polite expression of praise.", ex:"He paid her a compliment on her writing." },
+      { pos:"verb", def:"to praise someone politely.", ex:"She complimented him on his cooking." } ] },
+  { t:"weather",    pos:"noun", def:"the temperature, rain, wind and sun in a place at a time.", ex:"The weather was perfect for a picnic." },
+  { t:"whether",    pos:"conjunction", def:"used to introduce a choice between two possibilities.", ex:"I can't decide whether to stay or go." },
+  { t:"aloud",      pos:"adverb", def:"out loud, so others can hear.", ex:"Please read your poem aloud." },
+  { t:"allowed",    pos:"verb (past)", def:"given permission.", ex:"Students are not allowed to use phones in class." },
+  { t:"council",    pos:"noun", def:"a group of people elected to run a town or organisation.", ex:"The city council will vote tomorrow." },
+  { t:"counsel",
+    senses:[
+      { pos:"noun", def:"advice, especially formal or professional advice.", ex:"He sought counsel from his teacher." },
+      { pos:"verb", def:"to give advice.", ex:"She counsels students on their careers." } ] },
+  { t:"bare",       pos:"adjective", def:"not covered by clothing or other material.", ex:"She walked on the bare wooden floor." },
+  { t:"bear",
+    senses:[
+      { pos:"noun", def:"a large, heavy mammal with thick fur.", ex:"A brown bear appeared at the edge of the forest." },
+      { pos:"verb", def:"to carry, tolerate, or produce.", ex:"The tree bears fruit every summer." } ] }
+],
+
+// ─── Idioms — includes the specific ones you asked for + a curated set ─
+phrase: [
+  { t:"beat around the bush", pos:"idiom",
+    def:"to avoid saying what you mean, usually because it is uncomfortable.",
+    ex:"Stop beating around the bush and tell me what happened." },
+  { t:"spill the beans", pos:"idiom",
+    def:"to give away a secret.",
+    ex:"Don't spill the beans about the surprise party." },
+  { t:"cut corners", pos:"idiom",
+    def:"to do something poorly or incompletely in order to save time or money.",
+    ex:"They cut corners on the building, and now the roof leaks." },
+  { t:"the ball is in your court", pos:"idiom",
+    def:"it is up to you to make the next decision or step.",
+    ex:"I've made my offer — the ball is in your court now." },
+  { t:"take it with a grain of salt", pos:"idiom",
+    def:"to be sceptical about what someone says; not to take it too seriously.",
+    ex:"He exaggerates a lot, so take his stories with a grain of salt." },
+  { t:"social butterfly", pos:"idiom",
+    def:"an outgoing person who loves to socialise.",
+    ex:"My cousin is a social butterfly who knows everyone at the party." },
+  { t:"couch potato", pos:"idiom",
+    def:"a lazy person who spends a lot of time sitting and watching television.",
+    ex:"He's been a couch potato all weekend." },
+  { t:"smart cookie", pos:"idiom",
+    def:"an intelligent or clever person.",
+    ex:"She's a smart cookie — she figured out the puzzle in seconds." },
+  { t:"wet blanket", pos:"idiom",
+    def:"someone who ruins the fun or dampens the mood.",
+    ex:"Don't be a wet blanket — come and join the dance." },
+
+  { t:"a piece of cake", pos:"idiom",
+    def:"something very easy to do.",
+    ex:"The exam was a piece of cake for her." },
+  { t:"once in a blue moon", pos:"idiom",
+    def:"very rarely.",
+    ex:"He visits his grandparents once in a blue moon." },
+  { t:"under the weather", pos:"idiom",
+    def:"feeling slightly unwell.",
+    ex:"I'm a bit under the weather today, so I'll rest." },
+  { t:"the last straw", pos:"idiom",
+    def:"the final small problem that makes a situation unbearable.",
+    ex:"Being late again was the last straw for the manager." },
+  { t:"food for thought", pos:"idiom",
+    def:"something worth thinking about carefully.",
+    ex:"Her question gave me plenty of food for thought." },
+  { t:"bite the bullet", pos:"idiom",
+    def:"to accept something unpleasant that cannot be avoided.",
+    ex:"He bit the bullet and told her the truth." },
+  { t:"break the ice", pos:"idiom",
+    def:"to say or do something to make people feel more relaxed at the start.",
+    ex:"He told a joke to break the ice at the meeting." },
+  { t:"the bigger picture", pos:"idiom",
+    def:"the whole situation, not just small details.",
+    ex:"Try to see the bigger picture before you decide." },
+  { t:"hit the nail on the head", pos:"idiom",
+    def:"to describe or identify something exactly right.",
+    ex:"You hit the nail on the head with that answer." },
+  { t:"cost an arm and a leg", pos:"idiom",
+    def:"to be very expensive.",
+    ex:"That watch must have cost an arm and a leg." },
+  { t:"a blessing in disguise", pos:"idiom",
+    def:"something that seems bad at first but turns out to be good.",
+    ex:"Missing the bus was a blessing in disguise — I met an old friend." },
+  { t:"the tip of the iceberg", pos:"idiom",
+    def:"a small, visible part of a much bigger problem.",
+    ex:"These complaints are just the tip of the iceberg." },
+  { t:"jump on the bandwagon", pos:"idiom",
+    def:"to join a popular activity or opinion because others are doing it.",
+    ex:"Everyone jumped on the bandwagon after the team won." },
+
+  /* extra idioms selected from the 377-list, weighted toward Grade 9-12 usefulness */
+  { t:"actions speak louder than words", pos:"idiom",
+    def:"what people do matters more than what they say.",
+    ex:"He kept promising to help — but actions speak louder than words." },
+  { t:"back to the drawing board", pos:"idiom",
+    def:"to start planning again after a failure.",
+    ex:"Our first design didn't work, so it's back to the drawing board." },
+  { t:"better late than never", pos:"idiom",
+    def:"it is better to do something late than not at all.",
+    ex:"He apologised a week later — better late than never." },
+  { t:"burn the midnight oil", pos:"idiom",
+    def:"to work late into the night.",
+    ex:"She burned the midnight oil to finish her essay." },
+  { t:"by the skin of your teeth", pos:"idiom",
+    def:"to succeed only just barely.",
+    ex:"He caught the train by the skin of his teeth." },
+  { t:"call it a day", pos:"idiom",
+    def:"to stop doing something for a while or until the next day.",
+    ex:"Let's call it a day and continue tomorrow." },
+  { t:"cross that bridge when we come to it", pos:"idiom",
+    def:"to deal with a problem only when it happens.",
+    ex:"We don't need a plan yet — we'll cross that bridge when we come to it." },
+  { t:"cutting edge", pos:"idiom",
+    def:"the newest and most advanced stage of something.",
+    ex:"The lab uses cutting-edge technology." },
+  { t:"go the extra mile", pos:"idiom",
+    def:"to do more than what is expected.",
+    ex:"Good teachers go the extra mile for their students." },
+  { t:"in the same boat", pos:"idiom",
+    def:"in the same difficult situation as others.",
+    ex:"We're all in the same boat with these exams." },
+  { t:"let the cat out of the bag", pos:"idiom",
+    def:"to accidentally reveal a secret.",
+    ex:"He let the cat out of the bag about the party." },
+  { t:"on the same page", pos:"idiom",
+    def:"having the same understanding as another person.",
+    ex:"Before we start, let's make sure we're on the same page." },
+  { t:"pull yourself together", pos:"idiom",
+    def:"to become calm and control your emotions.",
+    ex:"Pull yourself together — the exam isn't that hard." },
+  { t:"read between the lines", pos:"idiom",
+    def:"to understand a meaning that is not directly stated.",
+    ex:"You have to read between the lines to see what she really wants." },
+  { t:"see eye to eye", pos:"idiom",
+    def:"to agree completely with someone.",
+    ex:"They don't always see eye to eye, but they respect each other." },
+  { t:"speak of the devil", pos:"idiom",
+    def:"said when a person you were just talking about appears.",
+    ex:"Speak of the devil — here she comes now." },
+  { t:"steal someone's thunder", pos:"idiom",
+    def:"to take attention or credit away from someone else.",
+    ex:"He announced his news first, stealing her thunder." },
+  { t:"the elephant in the room", pos:"idiom",
+    def:"an obvious problem no one wants to discuss.",
+    ex:"Nobody mentioned the elephant in the room — the missing money." },
+  { t:"through thick and thin", pos:"idiom",
+    def:"through both good times and bad.",
+    ex:"They have supported each other through thick and thin." },
+  { t:"you can't judge a book by its cover", pos:"idiom",
+    def:"appearance doesn't always show what someone or something is really like.",
+    ex:"He looks stern, but you can't judge a book by its cover." }
+],
+
+// ─── Sentences — hint replaced with 'context' ─────────────────────────
+simple: [
+  { t:"The museum opens at nine o'clock.", pos:"sentence · declarative" },
+  { t:"She couldn't believe her eyes.", pos:"sentence · declarative" },
+  { t:"Where did you put my keys?", pos:"sentence · interrogative" },
+  { t:"What an incredible performance!", pos:"sentence · exclamative" },
+  { t:"Our flight leaves on Tuesday.", pos:"sentence · declarative" },
+  { t:"He rarely eats breakfast.", pos:"sentence · declarative" },
+  { t:"The children played in the rain.", pos:"sentence · declarative" },
+  { t:"I haven't finished my essay yet.", pos:"sentence · declarative" },
+  /* extras */
+  { t:"Please close the door behind you.", pos:"sentence · imperative" },
+  { t:"How did you solve that problem?", pos:"sentence · interrogative" },
+  { t:"The bakery smells wonderful today.", pos:"sentence · declarative" },
+  { t:"Turn off the lights before you leave.", pos:"sentence · imperative" }
+],
+
+compound: [
+  { t:"I wanted to help, but I arrived too late.", pos:"sentence · compound" },
+  { t:"The storm passed, and the sun finally appeared.", pos:"sentence · compound" },
+  { t:"You can take the bus, or you can walk with us.", pos:"sentence · compound" },
+  { t:"She studied all night, so she felt ready.", pos:"sentence · compound" },
+  { t:"He didn't call, nor did he reply to my message.", pos:"sentence · compound" },
+  { t:"The plan was risky, yet it worked.", pos:"sentence · compound" },
+  /* extras */
+  { t:"I finished my homework, and then I went out to play.", pos:"sentence · compound" },
+  { t:"The road was closed, so we took a longer route.", pos:"sentence · compound" },
+  { t:"She spoke quietly, but everyone heard her clearly.", pos:"sentence · compound" }
+],
+
+complex: [
+  { t:"Although she was tired, she finished the marathon.", pos:"sentence · complex" },
+  { t:"Because the bridge was closed, we took the long way home.", pos:"sentence · complex" },
+  { t:"The book that you lent me was fascinating.", pos:"sentence · complex" },
+  { t:"When the lights went out, everyone gasped.", pos:"sentence · complex" },
+  { t:"If you practise daily, your accent will improve.", pos:"sentence · complex" },
+  { t:"Whoever finishes first should help the others.", pos:"sentence · complex" },
+  /* extras */
+  { t:"Since we arrived early, we had time to explore.", pos:"sentence · complex" },
+  { t:"The teacher who inspired me is retiring this year.", pos:"sentence · complex" },
+  { t:"Unless the weather changes, we will hold the picnic.", pos:"sentence · complex" }
+]
+
+};
+
 const SPELL_BANK = {
   silent:{ label:"Silent letters", sub:"words with letters you don't say", type:"word", items:[
     {t:"subtle",hint:"the 'b' is silent"},{t:"doubt",hint:"the 'b' is silent"},{t:"debt",hint:"the 'b' is silent"},
@@ -1255,6 +1668,26 @@ const SPELL_BANK = {
     {t:"The book that you lent me was fascinating."},{t:"When the lights went out, everyone gasped."},
     {t:"If you practise daily, your accent will improve."},{t:"Whoever finishes first should help the others."} ]}
 };
+/* Merge enriched items into SPELL_BANK.
+   For every category listed in SPELL_ENRICH we UNION the arrays, matching by
+   normalised text. Enriched entries win (they carry POS + def + example), and
+   any existing item without an enriched twin is kept as-is so nothing is lost. */
+(function mergeSpellEnrich(){
+  const norm = s => (s||"").toString().trim().toLowerCase();
+  Object.keys(SPELL_ENRICH).forEach(key=>{
+    const cat = SPELL_BANK[key]; if(!cat) return;
+    const extra = SPELL_ENRICH[key];
+    const byText = new Map();
+    cat.items.forEach(it => byText.set(norm(it.t), it));
+    extra.forEach(nx => {
+      const k = norm(nx.t);
+      const cur = byText.get(k);
+      if(cur){ Object.assign(cur, nx); }         // enrich in place
+      else { cat.items.push(nx); byText.set(k, nx); }  // add new
+    });
+  });
+})();
+;
 
 /* ---- Speaking: icebreakers, layered 'what if' sets, imagine, debate, presentation ---- */
 const SPEAKING = [
@@ -3861,6 +4294,113 @@ function startSpellTimer(total){
     if(left<=0){ clearSpellTimer(); submitSpell(true); }
   },1000);
 }
+function spellPopupCard(item){
+  /* Called AFTER the answer is revealed. POS + definition + example.
+     If the item has multiple senses, list each with its own example. */
+  if(!item) return '';
+  const senses = Array.isArray(item.senses) ? item.senses : null;
+  const rows = senses ? senses.map((s,i)=>`
+    <div class="sp-sense">
+      <div class="sp-pos">${(i+1)+" · "+(s.pos||'')}</div>
+      <div class="sp-def">${esc(s.def||'')}</div>
+      ${s.ex?`<div class="sp-ex">"${esc(s.ex)}"</div>`:''}
+    </div>`).join('')
+    : (item.pos||item.def||item.ex) ? `<div class="sp-sense">
+        ${item.pos?`<div class="sp-pos">${esc(item.pos)}</div>`:''}
+        ${item.def?`<div class="sp-def">${esc(item.def)}</div>`:''}
+        ${item.ex?`<div class="sp-ex">"${esc(item.ex)}"</div>`:''}
+       </div>` : `<div class="sp-sense"><div class="sp-def" style="color:var(--muted)">Tap <b>Full entry ↗</b> for a definition and examples.</div></div>`;
+  const chunks = Array.isArray(item.chunks) && item.chunks.length
+    ? `<div class="sp-chunks"><b>Read it in bites:</b> ${item.chunks.map(c=>`<span>${esc(c)}</span>`).join(' · ')}</div>`
+    : '';
+  return `<div class="sp-info">
+    <div class="sp-word">${esc(item.t)}</div>
+    ${chunks}
+    ${rows}
+    ${item.hint ? `<div class="sp-tip">💡 <b>Spelling tip:</b> ${esc(item.hint)}</div>` : ''}
+    <button class="btn ghost sm" onclick="dictFallback('${escq(item.t)}')">📖 Full entry ↗</button>
+  </div>`;
+}
+/* If an item has no def, offer an on-demand lookup that reuses the reader dictionary. */
+function dictFallback(w){
+  window.open('https://www.vocabulary.com/dictionary/'+encodeURIComponent((w||"").toLowerCase().replace(/[^a-z '\-]/gi,'').trim().split(/\s+/).join('-')), '_blank', 'noopener');
+}
+
+/* ── Vocab.com-style clue panel: shown DURING the attempt.
+   Shows POS + definition(s), one row per sense — never the hint (which may
+   name the target word) and never the example (which may spell it out). */
+function spellClueHTML(item){
+  if(!item) return '';
+  const senses = Array.isArray(item.senses) ? item.senses.filter(x=>x&&x.def) : null;
+  const chip = p => `<span class="clue-chip" title="${esc(p||'')}">${esc(((p||'?')+'').trim().charAt(0).toLowerCase())}</span>`;
+  const row  = (p,d) => `<div class="clue-row">${chip(p)}<div class="clue-def">${esc(d||'')}</div></div>`;
+  if(senses && senses.length){
+    return `<div class="spell-clue-inner">
+      <div class="clue-head">Definitions</div>
+      ${senses.map(s=>row(s.pos,s.def)).join('')}</div>`;
+  }
+  if(item.def){
+    return `<div class="spell-clue-inner">
+      <div class="clue-head">Definition</div>
+      ${row(item.pos,item.def)}</div>`;
+  }
+  /* No local definition — placeholder; spellClueFetch will fill it in. */
+  return `<div class="spell-clue-inner" id="clueFetch">
+    <div class="clue-head">Definition</div>
+    <div class="clue-loading">Looking up the meaning…</div></div>`;
+}
+
+/* Async dictionary lookup for un-enriched items (Standard words, etc.).
+   Uses dictionaryapi.dev with a localStorage cache. Silently degrades if
+   offline. Also patches the current item so the reveal popup gets the same
+   definition without a second lookup. */
+async function spellClueFetch(word){
+  const target = document.getElementById('clueFetch');
+  if(!target || !word) return;
+  const key = ('' + word).trim().toLowerCase();
+  if(!key) return;
+  let cache = {};
+  try { cache = Store.get('ican_dict_cache') || {}; } catch(e){ cache = {}; }
+  let data = cache[key];
+  if(!data){
+    try {
+      const res = await fetch('https://api.dictionaryapi.dev/api/v2/entries/en/' + encodeURIComponent(key), {cache:'force-cache'});
+      if(res.ok){
+        const arr = await res.json();
+        const entry = arr && arr[0];
+        if(entry && Array.isArray(entry.meanings)){
+          data = { meanings: entry.meanings.slice(0,3).map(m=>{
+            const first = (m.definitions && m.definitions[0]) || {};
+            return { pos: m.partOfSpeech || '', def: first.definition || '', ex: first.example || '' };
+          }).filter(m=>m.def) };
+          try { cache[key] = data; Store.set('ican_dict_cache', cache); } catch(e){}
+        }
+      }
+    } catch(e){}
+  }
+  /* Patch current item so the reveal popup uses the same definition. */
+  const s = SPELLSTATE, it = s && s.items && s.items[s.i];
+  if(data && data.meanings && data.meanings.length && it && it.t===word){
+    if(!it.def && !it.senses){
+      it.pos = data.meanings[0].pos;
+      it.def = data.meanings[0].def;
+      if(data.meanings[0].ex) it.ex = data.meanings[0].ex;
+      if(data.meanings.length > 1){
+        it.senses = data.meanings.map(m=>({pos:m.pos, def:m.def, ex:m.ex}));
+      }
+    }
+  }
+  /* Update the clue panel. */
+  if(data && data.meanings && data.meanings.length){
+    const chip = p => `<span class="clue-chip" title="${esc(p||'')}">${esc(((p||'?')+'').trim().charAt(0).toLowerCase())}</span>`;
+    target.innerHTML = `<div class="clue-head">Definitions</div>` +
+      data.meanings.map(m=>`<div class="clue-row">${chip(m.pos)}<div class="clue-def">${esc(m.def)}</div></div>`).join('');
+  } else {
+    target.innerHTML = `<div class="clue-head">Definition</div>
+      <div class="clue-loading">No meaning found — spell what you hear.</div>`;
+  }
+}
+
 function renderSpell(){
   clearSpellTimer();
   const s=SPELLSTATE;
@@ -3878,7 +4418,7 @@ function renderSpell(){
       <p style="text-align:center;font-weight:600;color:${s.attempt===2?'var(--coral-dk)':'var(--muted)'}">${s.attempt===1?'Attempt 1 of 2':'Attempt 2 — be quick!'}</p>
       <p style="text-align:center;font-size:.85rem;color:var(--ink);font-weight:600;margin:4px 0">🗣️ Say it → ✍️ Spell it → 🗣️ Say it again — then type.</p>
       <div style="text-align:center;margin:10px 0"><button class="btn dark" onclick="speakItem()">🔊 Hear it</button></div>
-      ${item.hint?`<p class="note" style="text-align:center">Meaning: ${item.hint}</p>`:''}
+      ${isSentence?'':`<div id="spellClue">${spellClueHTML(item)}</div>`}
       ${isSentence?`<p style="text-align:center;font-size:.82rem;color:var(--muted)">Capital letters and punctuation count.</p>`:''}
       <div class="field"><label>Type exactly what you hear</label>
         <input id="spellIn" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Type here…" onkeydown="if(event.key==='Enter')submitSpell(false)"></div>
@@ -3886,7 +4426,7 @@ function renderSpell(){
       <button class="btn teal" onclick="submitSpell(false)">Submit</button>
     </div>
   </div>`;
-  setTimeout(()=>{ const inp=document.getElementById('spellIn'); if(inp)inp.focus(); speakItem(); startSpellTimer(t); },250);
+  setTimeout(()=>{ const inp=document.getElementById('spellIn'); if(inp)inp.focus(); speakItem(); startSpellTimer(t); if(s.type==='word' && !item.def && !item.senses) spellClueFetch(item.t); },250);
 }
 function speakItem(){ if(!SPELLSTATE)return; stopSpeak(); speak(SPELLSTATE.items[SPELLSTATE.i].t); }
 function checkSpelling(answer, got, type){
@@ -3898,62 +4438,68 @@ function submitSpell(timedOut){
   clearSpellTimer();
   const s=SPELLSTATE; const item=s.items[s.i];
   const got=(val('spellIn')||"").trim();
+  const correct = !timedOut && checkSpelling(item.t, got, s.type);
   const fb=document.getElementById('spellFb');
-  if(checkSpelling(item.t, got, s.type)){
+  const info = spellPopupCard(item);
+  if(correct){
     if(s.attempt===1) s.first++; else s.second++;
-    s.log.push({t:item.t, got, ok:true, attempt:s.attempt});
-    logSpellVocab(item.t);
-    if(fb){ fb.style.color="var(--teal-dk)"; fb.textContent="✓ Correct!"; }
-    setTimeout(nextSpell, 800);
+    s.log.push({t:item.t, ok:true, tries:s.attempt});
+    logSpellVocab(item.t, item);
+    if(fb) fb.innerHTML = `<div class="feedback ok">✓ Correct! <b>${esc(item.t)}</b></div>${info}<div style="margin-top:10px"><button class="btn teal" onclick="nextSpell()">Next →</button></div>`;
     return;
   }
-  if(s.attempt===1){
+  if(!timedOut && s.attempt===1){
     s.attempt=2;
-    if(fb){ fb.style.color="var(--coral-dk)"; fb.textContent=timedOut?"⏱ Time's up — one more try…":"Not quite — one more try…"; }
-    setTimeout(renderSpell, 900);
-  } else {
-    s.missed++;
-    s.log.push({t:item.t, got, ok:false, attempt:2});
-    logSpellVocab(item.t);
-    revealSpell(item.t);
+    if(fb) fb.innerHTML = `<div class="feedback err">Not quite — one more try. Listen carefully.</div>`;
+    setTimeout(()=>{ const inp=document.getElementById('spellIn'); if(inp){ inp.value=''; inp.focus(); } speakItem(); startSpellTimer(spellTime(s.type,2,item.t)); },200);
+    return;
   }
+  s.missed++;
+  s.log.push({t:item.t, ok:false, tries:s.attempt});
+  logSpellVocab(item.t, item);
+  if(fb) fb.innerHTML = `<div class="feedback err">${timedOut?'Time up.':'Missed.'} The answer was <b>${esc(item.t)}</b>.</div>${info}<div style="margin-top:10px"><button class="btn teal" onclick="nextSpell()">Next →</button></div>`;
 }
-function revealSpell(correct){
-  clearSpellTimer();
-  app().innerHTML=`<div class="wrap screen"><button class="back" onclick="go(spellBack())">← ${spellBackLabel()}</button>
-    <div class="card" style="max-width:620px;text-align:center;margin-top:10px">
-      <p style="color:var(--coral-dk);font-weight:600;margin:0">The correct spelling was:</p>
-      <div class="dictate-display">${esc(correct)}</div>
-      <p style="color:var(--muted);margin:0">Next item in <span id="revCount">${SPELL_REVEAL}</span>s…</p>
-      <button class="btn ghost sm" style="margin-top:12px" onclick="nextSpell()">Skip ahead</button>
-    </div></div>`;
-  let left=SPELL_REVEAL;
-  _spellTimer=setInterval(()=>{ left--; const c=document.getElementById('revCount'); if(c)c.textContent=Math.max(left,0); if(left<=0){ clearSpellTimer(); nextSpell(); } },1000);
-}
+
 function nextSpell(){ clearSpellTimer(); const s=SPELLSTATE; if(!s)return; s.i++; s.attempt=1; renderSpell(); }
 /* Auto-add a practised word to the student's vocabulary bank (words only,
    de-duplicated), so spelling practice builds a running vocabulary log. */
-function logSpellVocab(word){
+function logSpellVocab(word, item){
   try{
     if(!word) return;
-    const st=SPELLSTATE; if(st && st.type && st.type!=='word') return;   // words only, not sentences
+    const st=SPELLSTATE; if(st && st.type && st.type==='sentence') return; // no sentences
     if(!(SESSION && SESSION.role==='student')) return;
     const w=(''+word).trim(); if(!w) return;
     const id=sid(); const all=getAllVocab();
-    if(all.some(v=>v.sid===id && (v.word||'').toLowerCase()===w.toLowerCase())) return;  // no duplicates
-    all.push({ id:"v"+Date.now()+Math.random().toString(36).slice(2,6), sid:id, name:SESSION?SESSION.name:"", word:w, sentence:"", source:"spelling", date:Date.now() });
+    if(all.some(v=>v.sid===id && (v.word||'').toLowerCase()===w.toLowerCase())) return;
+    /* Carry over any enriched definition + example so the vocabulary page can display it */
+    const meaning = item && item.def ? item.def : "";
+    const example = item && item.ex ? item.ex : "";
+    const pos     = item && item.pos ? item.pos : "";
+    all.push({ id:"v"+Date.now()+Math.random().toString(36).slice(2,6), sid:id, name:SESSION?SESSION.name:"",
+      word:w, meaning, sentence:example, pos, source:"spelling", date:Date.now() });
     Store.set("ican_vocab", all);
   }catch(e){}
 }
 function finishSpell(){
-  clearSpellTimer();
   const s=SPELLSTATE; const N=s.items.length;
   const pct=Math.round((s.first + 0.5*s.second)/N*100);
+  /* Cards mirror the Vocabulary.com deck: flip through, shuffle, or open fullscreen. */
+  window.CARDS = { items:s.items.map((it,i)=>({ ...it, ok:(s.log[i]&&s.log[i].ok)!==false })), i:0 };
   app().innerHTML=`<div class="wrap screen"><button class="back" onclick="go(spellBack())">← ${spellBackLabel()}</button>
     <div class="scorebox" style="max-width:520px;margin:24px auto"><div class="big">${pct}%</div>
       <div>${s.first} right first try · ${s.second} on the second · ${s.missed} missed</div>
       <div style="opacity:.85;font-size:.9rem;margin-top:6px">${pct>=80?'Excellent — that set is getting easy. Try a longer round!':pct>=50?'Good progress. Run it again for fresh items.':'Keep going — every round pulls new words.'}</div></div>
-    <div style="text-align:center;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+    <h3 class="sub" style="text-align:center;margin-top:24px">📇 Learn the words with flashcards</h3>
+    <p style="text-align:center;color:var(--muted);font-size:.85rem;margin-top:0">Tap a card to flip. Use arrows to move. Shuffle to test yourself.</p>
+    <div class="cardstage" id="cardstage">${renderCardStage()}</div>
+    <div class="cardnav">
+      <button class="btn ghost sm" onclick="cardsPrev()">‹ Previous</button>
+      <span class="cardpos" id="cardpos">${window.CARDS.i+1}/${window.CARDS.items.length}</span>
+      <button class="btn ghost sm" onclick="cardsNext()">Next ›</button>
+      <button class="btn ghost sm" onclick="cardsShuffle()" title="Shuffle">🔀 Shuffle</button>
+      <button class="btn ghost sm" onclick="cardsFullscreen()">⛶ Fullscreen</button>
+    </div>
+    <div style="text-align:center;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:22px">
       <button class="btn" onclick="spellNewRound()">New round (fresh items)</button>
       <button class="btn ghost" onclick="go(spellBack())">Back to ${spellBackLabel()}</button>
     </div></div>`;
@@ -3964,6 +4510,69 @@ function finishSpell(){
   }
 }
 
+function renderCardStage(){
+  const C=window.CARDS; if(!C || !C.items || !C.items.length) return '';
+  const n=C.items.length, i=C.i;
+  /* fanned stack: two behind, current in front, two ahead */
+  const slots=[-2,-1,0,1,2].map(off=>{
+    const j=i+off; if(j<0||j>=n) return '';
+    const it=C.items[j];
+    const cls = off===0 ? 'card-face card-cur' : ('card-face card-side card-off'+off);
+    const front = `<div class="cf cf-front"><div class="cf-t">${esc(it.t)}</div>${it.pos?`<div class="cf-pos">${esc(it.pos)}</div>`:''}${off===0?`<div class="cf-hint">tap to flip</div>`:''}</div>`;
+    const back  = `<div class="cf cf-back"><div class="cf-def">${esc(it.def||'—')}</div>${it.ex?`<div class="cf-ex">"${esc(it.ex)}"</div>`:''}${it.senses?it.senses.map((se,k)=>`<div class="cf-sense"><b>${k+1}. ${esc(se.pos||'')}</b> — ${esc(se.def||'')}${se.ex?` <i>"${esc(se.ex)}"</i>`:''}</div>`).join(''):''}</div>`;
+    return `<div class="${cls}" onclick="${off===0?'cardsFlip(this)':`cardsGo(${j})`}"><div class="cf-inner">${front}${back}</div></div>`;
+  }).join('');
+  return slots;
+}
+function cardsRefresh(){ const stage=document.getElementById('cardstage'); if(stage) stage.innerHTML=renderCardStage(); const p=document.getElementById('cardpos'); if(p) p.textContent=(window.CARDS.i+1)+'/'+window.CARDS.items.length; }
+function cardsGo(j){ const C=window.CARDS; if(!C) return; C.i=Math.max(0,Math.min(C.items.length-1,j)); cardsRefresh(); }
+function cardsNext(){ cardsGo((window.CARDS.i+1) % window.CARDS.items.length); }
+function cardsPrev(){ const C=window.CARDS; cardsGo((C.i-1+C.items.length) % C.items.length); }
+function cardsFlip(el){ if(el) el.classList.toggle('flipped'); }
+function cardsShuffle(){ const C=window.CARDS; for(let k=C.items.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); [C.items[k],C.items[r]]=[C.items[r],C.items[k]]; } C.i=0; cardsRefresh(); }
+function cardsFullscreen(){
+  const C=window.CARDS; if(!C) return;
+  const w=window.open('','_blank','width=900,height=600');
+  if(!w) return;
+  w.document.write(`<!doctype html><meta charset="utf-8"><title>Flashcards</title>
+    <style>body{margin:0;font-family:system-ui,sans-serif;background:#F2F3F7;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+      .card{width:min(560px,90vw);height:min(360px,60vh);background:#fff;border:2px solid #0f7ea3;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;box-shadow:0 20px 40px rgba(0,0,0,.12);cursor:pointer;text-align:center;perspective:1000px;position:relative}
+      .card .side{position:absolute;inset:0;padding:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;transition:transform .5s;border-radius:12px;background:#fff}
+      .card .back{transform:rotateY(180deg)}
+      .card.flipped .front{transform:rotateY(180deg)}
+      .card.flipped .back{transform:rotateY(0)}
+      .word{font-family:Georgia,serif;font-size:2.2rem;font-weight:700;color:#15183a}
+      .pos{color:#0f7ea3;margin-top:6px;font-size:1rem}
+      .def{font-size:1.1rem;color:#15183a;line-height:1.5}
+      .ex{color:#5a5e80;font-style:italic;margin-top:10px}
+      nav{margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+      button{padding:8px 14px;border:1px solid #c9cbd8;background:#fff;border-radius:8px;cursor:pointer;font:inherit}
+      button:hover{background:#e8ebf3}
+      .pos-count{color:#6b7084;margin:0 8px;font-size:.85rem}
+    </style>
+    <div style="display:flex;flex-direction:column;align-items:center">
+      <div id="c" class="card" onclick="this.classList.toggle('flipped')"></div>
+      <nav>
+        <button onclick="mv(-1)">‹ Previous</button>
+        <span class="pos-count" id="p"></span>
+        <button onclick="mv(1)">Next ›</button>
+        <button onclick="sh()">🔀 Shuffle</button>
+      </nav>
+    </div>
+    `+`<`+`script>
+      const items=${JSON.stringify(C.items)}; let i=0;
+      function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+      function draw(){ const it=items[i]; document.getElementById('c').classList.remove('flipped');
+        document.getElementById('c').innerHTML='<div class="side front"><div class="word">'+esc(it.t)+'</div>'+(it.pos?'<div class="pos">'+esc(it.pos)+'</div>':'')+'</div>'
+         +'<div class="side back">'+(it.def?'<div class="def">'+esc(it.def)+'</div>':'<div class="def">—</div>')+(it.ex?'<div class="ex">"'+esc(it.ex)+'"</div>':'')+'</div>';
+        document.getElementById('p').textContent=(i+1)+' / '+items.length; }
+      function mv(d){ i=(i+d+items.length)%items.length; draw(); }
+      function sh(){ for(let k=items.length-1;k>0;k--){ const r=Math.floor(Math.random()*(k+1)); [items[k],items[r]]=[items[r],items[k]]; } i=0; draw(); }
+      document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight')mv(1); if(e.key==='ArrowLeft')mv(-1); if(e.key===' '){e.preventDefault();document.getElementById('c').classList.toggle('flipped');} });
+      draw();
+    `+`</`+`script>`);
+  w.document.close();
+}
 function spellBack(){ return (SPELLSTATE&&SPELLSTATE.back)||'listening'; }
 function spellBackLabel(){ return spellBack()==='spelldrill'?'Spell &amp; Drill':'Listening'; }
 function spellLaunch(key, back){ const cat=SPELL_BANK[key]; if(!cat)return; const items=spellPick(cat.items, SPELL_ROUND_SIZE, 'bank_'+key); SPELLSTATE={ key, back:back||'listening', type:cat.type, label:cat.label, items, i:0, attempt:1, first:0, second:0, missed:0, log:[] }; renderSpell(); }
@@ -7156,7 +7765,7 @@ const COACH_HELP={
   start:   {t:"How to use iCAN", m:"Sign in with your name, then tap any circle on your hub. <b>Read · Write · Design</b> sit in the middle; Spelling & Typing, Grammar, Article-A-Day, STEM·STREAM, Diagnostic and Exams orbit around them. Everything you finish is saved for your teacher."},
   reading: {t:"📖 Reading", route:"readingCourse", m:"Open a text, use <b>▶ Read to me</b> if you like, then answer the comprehension for an instant score. <b>Tip:</b> slide to the <b>Supported</b> version if a text feels hard, and always do the self-check to think a little deeper."},
   writing: {t:"✍️ Writing", route:"writingCourse", m:"Each lesson runs Study → Drill → Practice → Challenge. <b>Tip:</b> write your own attempt <i>before</i> revealing the model, then use the checklist to improve a second draft."},
-  spelling:{t:"🐝 Spell & Drill", route:"spelldrill", m:"Hear the word, then <b>Say · Spell · Say</b> before you type. <b>Tip:</b> start with <b>Standard</b> (10 fresh words each round) and use <b>Extra</b> for silent letters and homophones. Words you practise are saved to your vocabulary bank automatically."},
+  spelling:{t:"🐝 Spell & Drill", route:"spelldrill", m:"Hear the word, then <b>Say · Spell · Say</b> before you type. After each answer a card shows the <b>part of speech, meaning and an example</b>; multi-meaning words show one per sense. Very long words appear <b>broken into readable bites</b> (e.g. <i>pneumono · ultra · micro · scopic · silico · volcano · coniosis</i>). At the end of a round the words play back as a <b>flashcard cascade</b> you can flip, shuffle and open fullscreen. Standard, Idioms & phrases, Longest words, and Textbook rounds are all available. Words you practise are saved to your vocabulary bank with their meaning."},
   exams:   {t:"📝 Exams", route:"exams", m:"Full 40-minute tests in three-option (a/b/c) format. <b>Tip:</b> watch the timer, answer every question (guessing costs nothing), and read the <b>“Why”</b> hint on each answer in your results."},
   grammar: {t:"🧩 Grammar", route:"grammar", m:"Do the topic quizzes, then the mixed set, then the challenges. <b>Tip:</b> read the explanation after every answer — that's where the real learning happens."},
   vocab:   {t:"📚 Vocabulary", route:"vocab", m:"Save new words with an example sentence and even a recording. <b>Tip:</b> your spelling practice adds words here for you — review the list once a week to make them stick."},
