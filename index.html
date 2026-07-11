@@ -4036,8 +4036,10 @@ const ROUTES = {
         </div>`:''}
         <p style="margin:8px 0 0;font-size:.82rem;color:var(--muted)">Suggested length: about ${l.minWords}+ words.${l.exam?' <b>MoE exam format</b> — mark yourself against the rubric out of 25.':''}</p>
         ${rub?`<div class="rubric-preview" style="margin-top:12px">
-          <b style="color:var(--ink);font-size:.85rem">📋 How you'll be scored — ${rub.label}</b>
-          <ul style="margin:6px 0 0;padding-left:18px;font-size:.85rem;color:var(--slate)">${rub.criteria.map(c=>`<li>${c[0]}</li>`).join('')}</ul>
+          <b style="color:var(--ink);font-size:.85rem">📋 How you'll be scored — ${g.skillName||rub.label}</b>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0">
+            ${rub.criteria.map(c=>`<span style="display:inline-block;padding:3px 10px;border-radius:999px;background:#eef1f7;color:var(--slate);font-size:.75rem;font-weight:600;border:1px solid var(--line)">${c[0]}</span>`).join('')}
+          </div>
         </div>`:''}
         <button class="btn ghost sm" style="margin-top:10px" onclick="wsWritingLesson('${id}')">📄 Worksheet (PDF)</button>
         <div class="field" style="margin-top:14px"><label>Write your response (it saves automatically)</label>
@@ -8211,13 +8213,334 @@ const GRM={
     drill:{task:"Write one or two sentences as a quick warm-up before the full task.", frame:["Start with a clear first sentence…","Add one supporting detail…"], sample:"(Compare your warm-up with the model above.)"},
     checklist:["I addressed the task","My writing is organised","I used accurate grammar and punctuation","The ideas are my own"] }
 };
+
+/* -----------------------------------------------------------------------
+   SKILL_GRM — per-skill Study/Drill/Checklist alignment.
+   Keyed by skill id (see WSKILLS). Merged in by grmFor(); overrides
+   whatever the rubric default would have supplied.
+   ----------------------------------------------------------------------- */
+const SPX = {  /* structural highlight palette — Intro / Body / Conclusion */
+  intro: 'background:#e8f7f2;border-left:4px solid #0c8a72;padding:8px 12px;margin:6px 0;border-radius:4px',
+  body:  'background:#f2edfe;border-left:4px solid #8B5CF6;padding:8px 12px;margin:6px 0;border-radius:4px',
+  conc:  'background:#fdecec;border-left:4px solid #E6464B;padding:8px 12px;margin:6px 0;border-radius:4px',
+  tag:   'display:inline-block;font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:999px;color:#fff;margin-right:8px;vertical-align:middle;',
+  tagI:  'background:#0c8a72', tagB: 'background:#8B5CF6', tagC: 'background:#E6464B'
+};
+const SKILL_GRM = {
+
+/* ============================= UNIT 1 · The Writing Process ============ */
+
+ws11:{ skillName:"Generating ideas",
+  objective:"Generate a bank of ideas fluently before shaping any of them.",
+  study:{ model:"<p><i>Prompt: a food I love.</i></p><p><b>Brainstorm (60 sec):</b> mango · summer · grandma · yellow · sticky · sweet · Ramadan · aunt's kitchen · hot afternoon.</p><p><b>Free-write (2 min):</b> Mangoes taste like summer to me. The moment I peel one, the sweet smell takes me straight back to my grandmother's garden, where the tree by the wall gave the ripest fruit every July…</p>",
+    notice:"Nine words in the brainstorm, none of them polished. The free-write then borrowed just three (mango, grandma, summer) and grew a whole memory. Ideas first, sentences second." },
+  drill:{ task:"BRAINSTORM (60 sec, no editing): jot 8 quick words about 'a sound I love'. Then FREE-WRITE (2 min): use any 2–3 of your words to write without stopping.",
+    frame:["8 words, in any order — nouns, verbs, feelings.","No corrections, no complete sentences yet.","Then pick 2–3 and write for 2 minutes non-stop."],
+    sample:"<b>Brainstorm:</b> rain · window · night · lazy · Sunday · calm · roof · tea · glass. <b>Free-write:</b> The sound I love is rain on the window. It reminds me of lazy Sunday mornings when nobody hurries anyone. Whenever I hear it I feel calm, as if the world has agreed to slow down with me…" },
+  checklist:["I brainstormed at least 6 words before writing sentences","I wrote non-stop for the free-write (no editing)","My ideas are specific, not vague ('mango' not 'fruit')","The ideas are my own, not borrowed"] },
+
+ws12:{ skillName:"Planning & outlining",
+  objective:"Turn a brainstorm into a clear plan: one main message, 2–3 points, an example each.",
+  study:{ model:"<p><b>Prompt:</b> Should phones be allowed in schools?</p><p><b>Main message (one sentence):</b> Phones should be allowed in schools, but only under clear rules.</p><ul><li><b>Point 1 · Learning:</b> instant access to dictionaries and research → <i>example:</i> looking up a word in 3 seconds.</li><li><b>Point 2 · Distraction:</b> notifications pull focus → <i>example:</i> a buzz mid-lesson breaks concentration.</li><li><b>Point 3 · Compromise:</b> phone zones or lesson-time lockers balance both.</li></ul>",
+    notice:"The plan fits on a Post-it note. One controlling idea. Three points. One concrete example each. No sentences yet — that comes later." },
+  drill:{ task:"Plan an essay on 'Should students wear uniforms?' Write ONLY: (1) your main message in one sentence, (2) two or three points, (3) one example beside each point.",
+    frame:["Main message: ______ should ______ because ______.","Point 1 (with example): ______","Point 2 (with example): ______"],
+    sample:"<b>Main message:</b> Uniforms should stay, because they lower the pressure of getting dressed for school. <b>Point 1 · Cost:</b> parents avoid a wardrobe race (a friend's family saved AED 400 last term). <b>Point 2 · Belonging:</b> no visible income gap between students (nobody teased in the cafeteria)." },
+  checklist:["Main message in one clear sentence","2 or 3 points — no more","One concrete example next to each point","I could give this plan to a friend and they'd know what to write"] },
+
+ws13:{ skillName:"Drafting",
+  objective:"Draft a full piece in one sitting without stopping to edit.",
+  study:{ model:"<p style='background:#fff9e6;border-left:4px solid var(--amber);padding:8px 12px'>Almost every student in this school carries a phone, and almost every teacher wishes they didn't. <span style='background:#fde68a;padding:1px 4px'>[fix this]</span> The argument is usually presented as a simple choice: ban them or allow them. I think that choice is false. There is a middle path, and it is the only one that has ever worked. <span style='background:#fde68a;padding:1px 4px'>[fix this]</span></p>",
+    notice:"The writer left two weak sentences flagged and kept moving. Momentum matters more than polish — you can't polish an idea you haven't had yet." },
+  drill:{ task:"Take your plan (from Skill 2) and draft it in ONE SITTING. Do not delete a single word. If a sentence stalls you, write <code>[fix this]</code> and move on.",
+    frame:["Start with your best opening line.","Follow the plan, but let it change if a better idea arrives.","Never edit and draft at the same time."],
+    sample:"When my school first banned phones last September, the corridors went quiet in a way I didn't like. [fix this] I had thought I would enjoy it. In fact the quiet felt like something had gone missing…" },
+  checklist:["I reached the last sentence without stopping","I did not delete any words while drafting","I flagged weak sentences [fix this] and moved on","The draft covers the whole plan, even the weak parts"] },
+
+ws14:{ skillName:"Revising",
+  objective:"Re-see the draft — cut, reorder, or strengthen ideas, structure and paragraphs.",
+  study:{ model:"<p><b>Before:</b> Reading books is really really important and everyone should read more. There are many good books. Books teach us many things and give us knowledge. Also, they are fun. I think books are good.</p><p><b>After (25% shorter, one strong idea):</b> A long book teaches attention in a way no article can — the muscle of following one argument for three hundred pages is exactly the muscle school is trying to build.</p>",
+    notice:"The 'before' is filler ('really really', 'many things'). The 'after' cuts 60% and gains a real argument. Revision means seeing the piece again, not fixing punctuation." },
+  drill:{ task:"Take your draft (from Skill 3). CUT one quarter of the words without losing an idea. Then find your strongest sentence — move it to the START or END of its paragraph.",
+    frame:["Cut every 'very', 'really', 'I think', 'in my opinion'.","Cut sentences that repeat an earlier idea.","Move the strongest line to a load-bearing position."],
+    sample:"<b>Cut:</b> 'I really really think that phones are very distracting and they are also bad.' → <b>Kept:</b> 'A silent phone on the desk still steals the corner of your eye.'" },
+  checklist:["Draft is ~25% shorter, no ideas lost","No 'really', 'very', 'I think' left","Strongest sentence sits at the top or bottom of its paragraph","I re-read aloud to catch what my eye missed"] },
+
+ws15:{ skillName:"Editing & proofreading",
+  objective:"Fix mechanics: capitals, full stops, agreement, spelling — one error type per pass.",
+  study:{ model:"<p><b>Draft:</b> <s>the students is really excited about the trip we are going tommorow, i cant wait</s></p><p><b>Pass 1 (capitals & stops):</b> The students is really excited about the trip. We are going tommorow. I cant wait.</p><p><b>Pass 2 (agreement):</b> The students are really excited about the trip. We are going tommorow. I cant wait.</p><p><b>Pass 3 (spelling & apostrophes):</b> The students are really excited about the trip. We are going <b>tomorrow</b>. <b>I can't</b> wait.</p>",
+    notice:"Three separate passes, each looking for one thing only. Your brain misses errors when it's asked to hunt for four kinds at once." },
+  drill:{ task:"Edit this sentence in THREE PASSES, writing what you fixed at each pass: <i>my brother dont know how to bake but him and his friend is trying they made cookies yesteday but it wasnt good</i>",
+    frame:["Pass 1 — capitals and full stops only.","Pass 2 — subject-verb agreement only.","Pass 3 — spelling and apostrophes only."],
+    sample:"<b>Pass 1:</b> capitals + stops → <i>My brother dont know how to bake, but him and his friend is trying. They made cookies yesteday, but it wasnt good.</i><br><b>Pass 2:</b> agreement → <i>his friend <b>are</b> trying</i> → actually <i>he and his friend <b>are</b> trying</i>.<br><b>Pass 3:</b> spelling + apostrophes → <i><b>doesn't</b>, <b>yesterday</b>, <b>wasn't</b>.</i>" },
+  checklist:["I did three separate passes, not one","I fixed only ONE error type per pass","I re-read backwards for the spelling pass","I know the six errors I most often make"] },
+
+ws16:{ skillName:"Publishing & feedback (RWD bridge)",
+  objective:"Give and receive constructive feedback — then hand the writing to Design.",
+  study:{ model:"<p><b>Feedback in three moves:</b></p><p><b>Works:</b> \"a rule that cannot be enforced is not a rule but a wish\" — the metaphor does the arguing for you, you don't have to explain it.</p><p><b>Confuses:</b> paragraph 3 opens with <i>However</i>, but nothing before it was contradicted — I had to look back to check what I'd missed.</p><p><b>One change:</b> either delete <i>However</i>, or add the opposing view it's answering.</p>",
+    notice:"Specific ('the metaphor'), kind (starts with a strength), and offers exactly one change — not a list of demands. Feedback that names the sentence is feedback the writer can act on." },
+  drill:{ task:"Swap drafts with a partner. Give feedback in exactly three moves: Works · Confuses · One change. Each must NAME a specific sentence.",
+    frame:["<b>Works:</b> the sentence '____' works because ____.","<b>Confuses:</b> the sentence '____' confuses me because ____.","<b>One change:</b> ____ — nothing else this round."],
+    sample:"<b>Works:</b> \"nobody teased in the cafeteria\" — one concrete detail is worth a hundred general claims. <b>Confuses:</b> \"This is also very important\" — I don't know which claim <i>this</i> refers to. <b>One change:</b> replace <i>this</i> with the actual noun." },
+  checklist:["My feedback quoted specific sentences","I gave one strength before any critique","I proposed exactly one change, not a list","I received feedback without defending — just wrote it down"] },
+
+/* ============ UNIT 2 · Sentence & Paragraph Writing =================== */
+
+ws21:{ skillName:"Mechanics: capitals & punctuation",
+  objective:"Apply the rules for capitals, full stops, commas, and apostrophes.",
+  study:{ model:"<p><b>Broken:</b> <s>my sister lives in dubai she works for etihad she doesnt like traffic</s></p><p><b>Fixed:</b> My sister lives in Dubai. She works for Etihad. She doesn't like traffic.</p>",
+    notice:"Three fixes: capital for a proper name, full stops between complete thoughts, an apostrophe where the missing letter was ('does not' → 'doesn't')." },
+  drill:{ task:"Rewrite with correct capitals, full stops, commas and apostrophes: <i>my friend ahmed lives in london he studies at kings college he doesnt come home often but he calls every sunday</i>",
+    frame:["Capitals: names of people, cities, universities, and the pronoun I.","Full stops between separate complete thoughts.","Apostrophe where a letter was cut (doesnt → doesn't)."],
+    sample:"My friend Ahmed lives in London. He studies at King's College. He doesn't come home often, but he calls every Sunday." },
+  checklist:["Every sentence starts with a capital","Proper nouns are capitalised (names, places)","Every sentence ends with . ? or !","Apostrophes sit exactly where a letter was removed"] },
+
+ws22:{ skillName:"Articles & determiners",
+  objective:"Choose a / an / the / some to fit the sound and the specificity.",
+  study:{ model:"<p><b>Rule test:</b> the sound, not the letter, decides <i>a</i> vs <i>an</i>.</p><ul><li>a <u>u</u>niversity (sounds like <i>you-</i>)</li><li>an <u>h</u>onest person (silent h → vowel sound)</li><li>an <u>x</u>-ray (sounds like <i>eks-</i>)</li></ul><p>General → specific: <i>I saw <u>a</u> boy in the corridor. <u>The</u> boy was crying.</i></p>",
+    notice:"First mention is general (a boy). Second mention is specific (the boy — the one we just introduced)." },
+  drill:{ task:"Fill in a / an / the / some, then say why: (1) ___ hour ago I saw ___ dog. (2) ___ dog was chasing ___ cat. (3) I need ___ information about ___ trip.",
+    frame:["Sound test for a/an: does it BEGIN with a vowel sound?","First mention → a/an. Repeat mention → the.","Non-count nouns take some (information, furniture, advice)."],
+    sample:"(1) <b>An</b> hour ago I saw <b>a</b> dog. (silent h; new dog) (2) <b>The</b> dog was chasing <b>a</b> cat. (same dog; new cat) (3) I need <b>some</b> information about <b>the</b> trip. (non-count; the trip we already discussed)" },
+  checklist:["I used a/an by SOUND, not by letter","First-mention nouns take a/an","Repeat-mention or shared-context nouns take the","Non-count nouns (information, advice) take some, not a"] },
+
+ws23:{ skillName:"Sentence construction",
+  objective:"Build complete sentences (subject + verb + complete thought) and fix fragments.",
+  study:{ model:"<p><b>Fragment:</b> <s>A beautiful log cabin.</s> (no verb → no complete thought)</p><p><b>Fixed:</b> A beautiful log cabin sits at the top of the mountain.</p><p><b>Fragment:</b> <s>Because I was tired.</s> (subordinator with no main clause)</p><p><b>Fixed:</b> Because I was tired, I went to bed early.</p>",
+    notice:"Every fragment fails the same test: it does not stand alone as a complete thought. Give it a verb, or attach it to a main clause." },
+  drill:{ task:"Mark each F (fragment) or S (sentence), then FIX every F: (1) <i>He walks home.</i> (2) <i>The large apartment on the corner.</i> (3) <i>Is smart.</i> (4) <i>While the rain fell heavily.</i>",
+    frame:["Does it have a subject?","Does it have a verb?","Does it express a complete thought on its own?"],
+    sample:"(1) S. (2) F → <i>The large apartment on the corner is empty.</i> (added verb) (3) F → <i>My sister is smart.</i> (added subject) (4) F → <i>While the rain fell heavily, we waited under the awning.</i> (added main clause)" },
+  checklist:["Every sentence has a subject","Every sentence has a verb","Every sentence expresses a complete thought","No subordinate clauses left standing alone"] },
+
+ws24:{ skillName:"Sentence structures & agreement",
+  objective:"Make the verb agree with the true subject, whatever comes between them.",
+  study:{ model:"<p><b>The trap:</b> the noun nearest the verb is often NOT the subject.</p><ul><li>The <u>box</u> of chocolates <b>is</b> on the table. <span style='color:var(--muted)'>(subject: box, singular)</span></li><li><u>One</u> of the students <b>has</b> arrived. <span style='color:var(--muted)'>(subject: one)</span></li><li><u>Neither</u> of my parents <b>has</b> studied at university. <span style='color:var(--muted)'>(neither → singular)</span></li><li>Three <u>tablespoons</u> of sugar <b>is</b> all I need. <span style='color:var(--muted)'>(quantity as one unit)</span></li></ul>",
+    notice:"Cover the phrase between subject and verb with your finger — the agreement becomes obvious." },
+  drill:{ task:"Choose the correct verb: (1) The number of students at the university (has / have) increased. (2) A lot of the problems (is / are) impossible. (3) None of the coffee (is / are) left. (4) Each of the girls (has / have) her own idea.",
+    frame:["Find the true SUBJECT (cover the of-phrase).","Is the subject singular or plural?","Match the verb to it, not to the noun beside the verb."],
+    sample:"(1) <b>has</b> — subject: 'the number' (singular). (2) <b>are</b> — 'a lot of the problems' takes a plural verb because 'problems' is plural. (3) <b>is</b> — 'coffee' is non-count → singular. (4) <b>has</b> — 'each' is singular." },
+  checklist:["I identified the TRUE subject before choosing the verb","Prepositional phrases didn't fool me","Everyone / each / neither → singular verb","Quantities as one unit ('three tablespoons of sugar IS') → singular"] },
+
+ws25:{ skillName:"Description & adjective order",
+  objective:"Order adjectives correctly and use both A-has-B and B-of-A description structures.",
+  study:{ model:"<p><b>Adjective order:</b> Opinion → Size → Age → Shape → Colour → Origin → Material → Purpose.</p><p><b>Test:</b> a <u>lovely</u> (opinion) <u>small</u> (size) <u>old</u> (age) <u>round</u> (shape) <u>silver</u> (colour) <u>Iranian</u> (origin) tea tray.</p><p><b>Two structures for the same idea:</b></p><ul><li><b>A-has-B:</b> A sports car has a powerful, noisy motor.</li><li><b>B-of-A:</b> The motor of a sports car is powerful and noisy.</li></ul>",
+    notice:"Native speakers obey adjective order without knowing they do. Two or three adjectives is the ceiling — more sounds like a shop catalogue." },
+  drill:{ task:"Order the adjectives correctly, then rewrite in the OTHER structure. Set: (jacket / leather / brown / vintage / small).",
+    frame:["Order: opinion → size → age → shape → colour → origin → material.","A-has-B: 'A ___ has a small vintage brown leather jacket.'","B-of-A: 'The jacket of ___ is small, vintage, and brown leather.'"],
+    sample:"<b>A-has-B:</b> My uncle has a small vintage brown leather jacket.<br><b>B-of-A:</b> The jacket that my uncle wears is a small, vintage brown leather one." },
+  checklist:["Adjectives are in the natural English order","I used at most 3 adjectives (not 5)","I varied between A-has-B and B-of-A structures","No adjective is redundant (each adds real information)"] },
+
+ws26:{ skillName:"Paragraph architecture",
+  objective:"Build a paragraph: topic sentence → supporting sentences → concluding sentence.",
+  study:{ model:"<p style='background:#e8f7f2;padding:8px 12px;border-left:4px solid #0c8a72;margin:6px 0'><span style='background:#0c8a72;color:#fff;font-size:.62rem;font-weight:800;padding:2px 8px;border-radius:999px;letter-spacing:.08em'>TOPIC</span> Living in a big city offers young people opportunities they cannot find anywhere else.</p><p style='background:#f2edfe;padding:8px 12px;border-left:4px solid #8B5CF6;margin:6px 0'><span style='background:#8B5CF6;color:#fff;font-size:.62rem;font-weight:800;padding:2px 8px;border-radius:999px;letter-spacing:.08em'>SUPPORT</span> First, universities and cultural centres are concentrated in cities. For example, Abu Dhabi alone hosts five major museums within a fifteen-minute drive. Second, the sheer variety of people teaches a young person how to speak with strangers — a skill no textbook delivers.</p><p style='background:#fdecec;padding:8px 12px;border-left:4px solid #E6464B;margin:6px 0'><span style='background:#E6464B;color:#fff;font-size:.62rem;font-weight:800;padding:2px 8px;border-radius:999px;letter-spacing:.08em'>CONCLUDING</span> For anyone starting adult life, a city is not just a place to live — it is an education in itself.</p>",
+    notice:"The <b style='color:#0c8a72'>topic sentence</b> names the controlling idea and LIMITS what the paragraph can discuss. Every <b style='color:#8B5CF6'>supporting sentence</b> serves it. The <b style='color:#E6464B'>concluding sentence</b> restates the idea in different words." },
+  drill:{ task:"Write a paragraph on 'The best thing about my school' — LABEL your topic, support and concluding sentences as you go, using [T], [S], [C].",
+    frame:["[T] Start with your controlling idea: 'The best thing about my school is ____.'","[S] Give 2 supporting details, each with a for-example.","[C] End with a sentence that echoes [T] in different words."],
+    sample:"[T] The best thing about my school is the library. [S] It is open until 8 pm every weeknight, which means students who work in the evening still have somewhere quiet to study. [S] For example, when I was preparing for last term's exams, I finished every essay there rather than at home, where my little brothers make focus impossible. [C] A late-closing library sounds like a small thing, but it may be the single reason I finished the term without falling behind." },
+  checklist:["Topic sentence names ONE controlling idea","Every supporting sentence serves the topic sentence","At least one 'for example' with a concrete detail","Concluding sentence restates in DIFFERENT words"] },
+
+ws27:{ skillName:"Combining & sentence variety",
+  objective:"Join short sentences using and / but / so / because to make prose that flows.",
+  study:{ model:"<p><b>Choppy:</b> The cat was hungry. The cat looked for food. The bowl was empty. The cat cried.</p><p><b>Combined:</b> The cat was hungry, so it looked for food, but the bowl was empty and it cried.</p><p><b>Better still:</b> The cat cried because it was hungry and the bowl was empty.</p>",
+    notice:"and / but / so / because each carries meaning: and = add; but = contrast; so = result; because = reason. Choose the one whose meaning fits, not just to avoid repetition." },
+  drill:{ task:"Combine each pair with the RIGHT joiner (and / but / so / because), and explain your choice: (1) It was raining. We stayed inside. (2) I studied hard. I failed the test. (3) She is tall. She plays basketball. (4) He was late. The bus broke down.",
+    frame:["and → adding a second idea.","but → contrast or surprise.","so → result / consequence.","because → reason / cause."],
+    sample:"(1) It was raining, <b>so</b> we stayed inside. (result) (2) I studied hard, <b>but</b> I failed the test. (contrast) (3) She is tall <b>and</b> she plays basketball. (adding) (4) He was late <b>because</b> the bus broke down. (reason)" },
+  checklist:["Joiner meaning matches the relationship between ideas","I used at least three different joiners","Comma sits BEFORE 'but' and 'so' when joining full sentences","No sentence stacks more than two joined clauses"] },
+
+/* ==================== UNIT 3 · Essay Writing ============================ */
+
+ws31:{ skillName:"Labelling essay parts",
+  objective:"Identify and label the three essential parts of an essay: introduction, body, conclusion.",
+  study:{ model:
+    `<p><span style="${SPX.tag} ${SPX.tagI}">INTRO</span> <b>Hook · Context · Thesis</b></p>
+     <p style="${SPX.intro}">Every year, thousands of school leavers face the same decision: to go straight to university or to spend a year working or travelling first. Both paths have loud defenders, and the choice is rarely as obvious as it looks. <b>Taking a gap year, when it is used with purpose, prepares a student for university better than another twelve months of school ever could.</b></p>
+     <p><span style="${SPX.tag} ${SPX.tagB}">BODY</span> <b>Points · Evidence · Reasoning</b></p>
+     <p style="${SPX.body}">The first reason is maturity. A student who has held a job for six months has learned to arrive on time, take instructions, and manage a wage — habits no classroom teaches. For example, a friend of mine worked in a hotel kitchen for a year before starting medicine; her lecturers noticed within a week how calmly she handled long hours.</p>
+     <p style="${SPX.body}">The second reason is direction. Eighteen-year-olds who spend a year outside school often discover what they don't want to study, which is more valuable than another set of exam results. A cousin who took a year in construction realised architecture, not law, was his real interest — and he saved his family the cost of switching degrees.</p>
+     <p><span style="${SPX.tag} ${SPX.tagC}">CONCLUSION</span> <b>Restate thesis · Broader point</b></p>
+     <p style="${SPX.conc}">A gap year is not time lost, then, but time reinvested. The students who return to their studies afterwards do so with a clearer sense of purpose — and, more often than not, better results to show for it.</p>`,
+    notice:"Every essay has these three parts, always in this order. The <b style='color:#0c8a72'>intro</b> ends with the thesis. The <b style='color:#8B5CF6'>body</b> is where the argument actually happens. The <b style='color:#E6464B'>conclusion</b> restates the thesis and looks outward." },
+  drill:{ task:"Below is a short essay, run together as one block. LABEL each sentence [I] Intro, [B] Body, or [C] Conclusion — then check with the sample.<br><br><i>Many people believe that eating breakfast is the most important habit for students. Skipping it, however, has become common. Students who eat a proper breakfast do better in morning lessons than those who don't. Research from a UK study of 5,000 pupils showed a 20% attention gap between breakfast-eaters and skippers. In addition, teachers report fewer discipline problems in first period when a school offers a breakfast club. Breakfast is a small habit with a large effect, and any student aiming for better grades should start their day with one.</i>",
+    frame:["[I] The intro sets up the topic and states the position.","[B] Body sentences give reasons, evidence, examples.","[C] The conclusion restates the position and closes."],
+    sample:"[I] Many people believe that eating breakfast is the most important habit for students. [I] Skipping it, however, has become common. [B] Students who eat a proper breakfast do better in morning lessons than those who don't. [B] Research from a UK study of 5,000 pupils showed a 20% attention gap between breakfast-eaters and skippers. [B] In addition, teachers report fewer discipline problems in first period when a school offers a breakfast club. [C] Breakfast is a small habit with a large effect, and any student aiming for better grades should start their day with one." },
+  checklist:["I labelled every sentence [I], [B] or [C]","The intro sentences set up the topic and take a position","The body sentences give reasons and evidence","The conclusion restates the position — it doesn't add new evidence"] },
+
+ws32:{ skillName:"Introductions & thesis",
+  objective:"Write an introduction that hooks the reader and ends in a clear, arguable thesis.",
+  study:{ model:
+    `<p style="${SPX.intro}"><b>Hook →</b> Almost every student in this school owns a phone before they own a wallet. <b>Context →</b> The debate over what to do with those phones during the school day has run for a decade and shows no sign of ending. <b>Thesis →</b> <b>A total ban is understandable but wrong: phones belong in classrooms, provided teachers control when they come out.</b></p>`,
+    notice:"Hook grabs attention with a concrete image (before they own a wallet). Context locates the debate. The thesis takes a clear, arguable position — not 'phones are important' but 'a ban is wrong.' A reasonable reader could disagree with it. That is the test." },
+  drill:{ task:"Write ONE introduction (3–4 sentences) on 'Should social media be banned for under-14s?' — with a labelled Hook, Context, and Thesis.",
+    frame:["Hook: an image, a statistic, or a small surprising fact.","Context: what people already argue about this topic.","Thesis: your position in one sentence — arguable, not obvious."],
+    sample:"<b>Hook →</b> The average 12-year-old checks a screen 100 times a day. <b>Context →</b> Parents want it stopped, tech companies want it protected, and lawmakers are somewhere in the middle. <b>Thesis →</b> <b>An outright ban would push under-14s to their parents' accounts and make the problem harder to see — regulation, not prohibition, is the honest answer.</b>" },
+  checklist:["The hook uses a concrete image, stat, or question","The context names what people are actually arguing about","The thesis is ONE sentence and takes a clear position","A reasonable reader could disagree with the thesis"] },
+
+ws33:{ skillName:"Body paragraphs & evidence",
+  objective:"Build a PEEL body paragraph: Point, Evidence, Explanation, Link.",
+  study:{ model:
+    `<p style="${SPX.body}"><b>Point →</b> The strongest reason to keep school libraries open in the evening is that home is not a study space for everyone. <b>Evidence →</b> A 2023 survey of Grade 11 students at three UAE schools found that 42% shared a bedroom and 61% said their home was 'too noisy to focus after 6 pm.' <b>Explanation →</b> An evening library is not a luxury for those students; it is the only quiet room they can access. Closing it at 4 pm effectively tells them their revision is optional. <b>Link →</b> If schools are serious about the attainment gap, they should be serious about the buildings that close it.</p>`,
+    notice:"PEEL keeps a paragraph honest. Point states a claim. Evidence backs it up with a real fact. Explanation says why the evidence matters. Link returns the paragraph to the thesis." },
+  drill:{ task:"Write ONE PEEL paragraph arguing 'Homework should be capped at one hour a night on weekdays.' Label your P, E, E, L.",
+    frame:["Point: one clear claim.","Evidence: a stat, a study, or a concrete example.","Explanation: what does the evidence actually mean?","Link: how does this support the thesis?"],
+    sample:"<b>Point →</b> Homework beyond an hour a night stops adding value and starts eating sleep. <b>Evidence →</b> A 2022 OECD study of 15-year-olds found that students who did more than 90 minutes a night scored no better than those who did 60 — and slept 40 minutes less. <b>Explanation →</b> The extra half hour of homework buys nothing in exam terms and costs measurable rest, which we know affects memory consolidation. <b>Link →</b> A cap is not a soft policy, then — it is a smarter one." },
+  checklist:["Point is a single, clear claim","Evidence is specific (stat, study, or named example)","Explanation says what the evidence means — not just what it says","Link returns the paragraph to the overall thesis"] },
+
+ws34:{ skillName:"Counterargument & rebuttal",
+  objective:"Concede a fair opposing point, then answer it without weakening your position.",
+  study:{ model:
+    `<p style="${SPX.body}"><b>Concession →</b> It is true that a total phone ban is the simplest policy for teachers to enforce. A locker in the corridor is easier to police than a rule about when a phone may or may not appear. <b>Rebuttal →</b> But simplicity is not the same as effectiveness. A rule so blunt that it treats a translation app and a TikTok video as the same problem loses its authority the moment a student uses their phone for a legitimate classroom task and is punished for it. A subtler policy is harder — but the goal of a school is to teach judgement, not to save teachers a decision.</p>`,
+    notice:"The concession names the strongest version of the other side ('the simplest policy to enforce'). The rebuttal doesn't attack it — it accepts it, then shows why simplicity isn't enough. Concede fairly, then move forward." },
+  drill:{ task:"Write a concession + rebuttal on 'Students should be allowed to skip PE if they attend a sports club outside school.' — steel-man the opposing view first.",
+    frame:["Concession: 'It is true that ____' — the strongest version of the other side.","Rebuttal: 'But / However / Even so, ____' — why your position survives it."],
+    sample:"<b>Concession →</b> It is true that a student who trains ten hours a week outside school gets more physical activity than one PE lesson could provide. Requiring them to attend the lesson can feel like an insult to work they are already doing. <b>Rebuttal →</b> However, PE is not only about hours of exercise. A weekly class also teaches teamwork with classmates a specialist athlete would never otherwise train alongside — and that mixed team experience, not the running, is often the point of the lesson." },
+  checklist:["Concession is the STRONGEST version of the opposing view, not a caricature","I actually agreed with something in the concession","Rebuttal answers the concession directly","My original position survives — I didn't accidentally switch sides"] },
+
+ws35:{ skillName:"Conclusions",
+  objective:"Land the essay: restate the thesis in new words and add a broader point — no new evidence.",
+  study:{ model:
+    `<p style="${SPX.conc}"><b>Thesis restated →</b> A gap year, then, is not a delay but a preparation — for the student who uses it with intent, at least. <b>Broader point →</b> The universities that welcome such students back are the same ones producing graduates who know why they chose their subject. Whether a school system officially blesses the gap year or grumbles about it, it is quietly making better students of the young people who take one.</p>`,
+    notice:"No new evidence. The thesis is echoed, not repeated word-for-word. The broader point widens the argument — 'the universities that welcome such students back…' — leaving the reader with something to think about." },
+  drill:{ task:"Write a conclusion (3–4 sentences) for an essay arguing 'City life offers young people opportunities villages cannot.' Restate the thesis in new words, then broaden.",
+    frame:["Do NOT introduce new evidence.","Restate the thesis in DIFFERENT words.","Widen: what does this mean beyond the essay?"],
+    sample:"A city, then, is not simply a bigger version of a village — it is a different kind of teacher altogether. The young person who spends a decade in one gains more than a degree and a job; they gain the habit of noticing that the world contains people utterly unlike themselves. Whether they eventually stay in the city or return to a quieter place, that habit stays with them — and it is the beginning of everything else." },
+  checklist:["No new evidence anywhere in the conclusion","Thesis is restated in DIFFERENT words","A broader point widens the argument at the end","The final sentence is one the reader could quote back"] },
+
+ws36:{ skillName:"Essay types",
+  objective:"Match essay STRUCTURE to essay TYPE (opinion / discussion / problem-solution / etc.).",
+  study:{ model:
+    `<p><b>Opinion essay:</b> Intro (thesis = my opinion) → Body (2–3 reasons + evidence) → Conclusion (restate).</p>
+     <p><b>Discussion essay:</b> Intro (both views exist) → Body 1 (View A + support) → Body 2 (View B + support) → Body 3 (MY view) → Conclusion.</p>
+     <p><b>Problem-solution:</b> Intro (problem exists) → Body 1 (causes) → Body 2 (effects) → Body 3 (solution) → Conclusion.</p>
+     <p><b>Advantages-disadvantages:</b> Intro (topic) → Body 1 (advantages) → Body 2 (disadvantages) → Conclusion (which side outweighs).</p>`,
+    notice:"The essay TYPE decides the structure. A 'discuss both views' question asked to opinion-essay structure loses marks even if beautifully written. Read the question and pick the shape." },
+  drill:{ task:"For each prompt, name the essay type AND sketch its body-paragraph plan in 3 lines: (1) 'Some think uniforms should be scrapped; others think they should be kept. Discuss both views and give your opinion.' (2) 'Traffic in our cities is worsening. What is causing it, and what can be done?'",
+    frame:["Type: opinion / discussion / problem-solution / advantages-disadvantages.","Body paragraphs: what does each one do?"],
+    sample:"(1) <b>Discussion essay.</b> Body 1: view that uniforms should be scrapped (freedom of expression, cost of specific brands). Body 2: view that uniforms should stay (equality, focus on learning). Body 3: my own view.<br>(2) <b>Problem-solution.</b> Body 1: causes (car dependency, growing population). Body 2: effects (time lost, pollution). Body 3: solutions (public transport, congestion charging)." },
+  checklist:["I identified the essay TYPE first","My body plan matches that type","I did NOT force an opinion essay onto a discussion question","Every body paragraph has a clear job in the overall shape"] },
+
+/* ==================== UNIT 4 · IELTS Task Writing ======================= */
+
+ws41:{ skillName:"IELTS Task 1 · Academic (report)",
+  objective:"Describe data neutrally in ~150 words: overview first, then key trends.",
+  study:{ model:"<p><b>Overview:</b> Overall, sales of e-bikes rose sharply between 2018 and 2023, more than tripling by the end of the period, while sales of traditional bicycles fell steadily.</p><p><b>Key trend 1:</b> E-bike sales grew from 5,000 units in 2018 to just under 18,000 by 2023, with the sharpest jump between 2020 and 2021.</p><p><b>Key trend 2:</b> Over the same period, traditional bicycle sales declined from 22,000 to around 14,000 units.</p>",
+    notice:"Overview names the biggest picture in one sentence — 'more than tripled' rather than every yearly figure. Then the paragraphs group data, they don't list every point." },
+  drill:{ task:"Given this chart summary — 'Line graph: three countries' school-leaver unemployment rates, 2010–2020. UK: 15% → 8%. Germany: 8% → 5%. Spain: 45% → 30%.' — write the OVERVIEW sentence + one key trend.",
+    frame:["Overview: name the biggest picture, not every figure.","Compare: which country changed most / least?","No opinions."],
+    sample:"<b>Overview:</b> Overall, school-leaver unemployment fell in all three countries between 2010 and 2020, though the size of the fall varied dramatically. <b>Key trend:</b> Spain saw the largest absolute drop, from 45% to 30%, but its rate remained by far the highest of the three at the end of the period." },
+  checklist:["I wrote an overview sentence BEFORE any detail","I grouped data (trends), not listed every number","I compared where useful (higher / lower / most / least)","I gave zero opinions"] },
+
+ws42:{ skillName:"IELTS Task 1 · General (letter)",
+  objective:"Write a 150-word letter in the right register (formal / semi-formal / informal), covering all bullets.",
+  study:{ model:"<p><b>Formal opening/close:</b> Dear Sir or Madam, / Yours faithfully,</p><p><b>Semi-formal:</b> Dear Mr Khan, / Yours sincerely,</p><p><b>Informal:</b> Dear Sarah, / Best wishes,</p><p><b>Bullets to cover:</b> Given three bullet points, EACH must appear in the letter, ideally one per paragraph.</p>",
+    notice:"Register is set by relationship, not mood. Contractions (I'll, don't) are fine in informal, weaken semi-formal, and are wrong in formal. Cover every bullet — an uncovered bullet caps your band." },
+  drill:{ task:"You wrote to the landlord about a broken heating system two weeks ago and got no reply. Write the OPENING SENTENCE, the CLOSING SENTENCE, and one sentence for EACH of these three bullets: (1) what was wrong, (2) what you've done so far, (3) what you want them to do now.",
+    frame:["Opening: Dear ____, — set register in the first line.","One sentence per bullet.","Closing: match the opening register."],
+    sample:"<b>Opening:</b> Dear Sir or Madam, / I am writing to follow up on a maintenance request I submitted two weeks ago. <b>Bullet 1:</b> The heating system in Flat 4B has not worked since 3 January, leaving indoor temperatures below 15°C. <b>Bullet 2:</b> I have called your office three times and sent two written requests, none of which have been answered. <b>Bullet 3:</b> I would appreciate a written response and a repair date within the next five working days. <b>Closing:</b> Yours faithfully, / Mariam Al-Sabah" },
+  checklist:["Opening and closing match the same register","ALL three bullets are covered","Register is right for the relationship, not the mood","Word count is close to 150 (not over 200)"] },
+
+ws43:{ skillName:"IELTS Task 2 · Question types",
+  objective:"Identify the question type FIRST, then structure the essay to match.",
+  study:{ model:"<p><b>Opinion:</b> 'Do you agree or disagree that ___?' → Take one side, defend it.</p><p><b>Discussion:</b> 'Discuss both views AND give your opinion.' → Cover BOTH views + your own.</p><p><b>Two-part:</b> 'Why is this happening? What can be done?' → Answer BOTH questions.</p><p><b>Advantages/disadvantages:</b> 'Do the advantages outweigh the disadvantages?' → Weigh them, then answer.</p>",
+    notice:"A brilliant essay on the wrong question scores in the low bands. Read the task twice. Underline what it actually asks for." },
+  drill:{ task:"For each of these Task 2 prompts, identify the TYPE and say what the essay must include: (1) 'Some believe that governments should fund the arts. Others say the money should go to healthcare. Discuss both views and give your own opinion.' (2) 'Many young people leave rural areas to work in cities. Why is this happening, and what problems does it cause?'",
+    frame:["Type: opinion / discussion / two-part / advantages-disadvantages.","What must be included?","What common mistake would lose marks?"],
+    sample:"(1) <b>Discussion.</b> Must include: (a) the arts-funding view + support, (b) the healthcare-funding view + support, (c) my own opinion. Common trap: giving only my opinion.<br>(2) <b>Two-part.</b> Must include: (a) causes of urban migration, (b) problems it causes. Common trap: answering only the 'why' or only the 'what problems.'" },
+  checklist:["I identified the question type before planning","My structure matches the type","I addressed EVERY part of a multi-part question","I did not give an opinion when only 'discuss both views' was asked"] },
+
+ws44:{ skillName:"IELTS band descriptors",
+  objective:"Score writing against the four IELTS criteria: TR, C&C, LR, GRA.",
+  study:{ model:"<p><b>TR (Task Response):</b> Did you answer FULLY, with a clear position throughout?</p><p><b>C&C (Coherence & Cohesion):</b> Logical paragraphs; linking that does not draw attention to itself.</p><p><b>LR (Lexical Resource):</b> Range and precision — not long words for their own sake.</p><p><b>GRA (Grammatical Range & Accuracy):</b> A mix of structures, mostly error-free.</p>",
+    notice:"Each criterion is scored 0–9, then averaged. Memorised linking phrases stuffed into every sentence LOWER the C&C score — natural linking scores higher than showy linking." },
+  drill:{ task:"Score this Band 5 response 0–9 on each of TR, C&C, LR, GRA — and say what would raise each to a Band 7:<br><i>'Firstly, technology is good. Also, it help us in many ways. For example, we can use phone to search things. In addition, we can watch video and learn from it. On the other hand, some people say technology is bad because kids play too much game. But I think technology is more good than bad.'</i>",
+    frame:["TR: is the position clear? Is the argument developed?","C&C: are the linkers doing real work?","LR: is vocabulary precise or generic?","GRA: mix of structures? Error rate?"],
+    sample:"<b>TR ~5:</b> answers, but position is weak — raise by taking a clear stance and developing 2 reasons with examples. <b>C&C ~5:</b> linkers are stuffed in ('Firstly, Also, In addition') — raise by using fewer, better-chosen linkers. <b>LR ~5:</b> 'good, bad, many ways' — raise with precise vocabulary ('accelerates learning', 'displaces attention'). <b>GRA ~5:</b> 'it help us', 'more good than bad' — raise with subject-verb agreement and comparative form ('better than harmful')." },
+  checklist:["I scored each of TR, C&C, LR, GRA separately","I said WHY each score, referring to specific words in the text","I gave one concrete upgrade for each criterion","I didn't overweight one criterion"] },
+
+ws45:{ skillName:"Timing & word count",
+  objective:"Manage the 60-minute Writing paper: 20 min Task 1 + 40 min Task 2, at target length.",
+  study:{ model:"<p><b>Task 1 (20 min, 150 words):</b> 3 min plan · 15 min write · 2 min check.</p><p><b>Task 2 (40 min, 250 words):</b> 5 min plan · 30 min write · 5 min check.</p><p><b>Word-count reality:</b> know what 150 words and 250 words of YOUR handwriting look like — count once, then estimate by lines.</p>",
+    notice:"Under-length is penalised automatically. Over-length is not rewarded, and eats the checking time you needed to catch errors. Task 2 carries twice the marks — never skimp on it." },
+  drill:{ task:"Sketch a full 60-minute Writing-paper plan for yourself. For EACH of Task 1 and Task 2, write: (a) minutes for planning, (b) minutes for writing, (c) minutes for checking, (d) what you'll check for.",
+    frame:["Task 1: 20 minutes total.","Task 2: 40 minutes total.","'Check' is a real stage, not an afterthought."],
+    sample:"<b>Task 1 (20 min):</b> 3 min plan (overview + 2 groups of data). 15 min write (~150 words = about 12 lines of my writing). 2 min check for verb tenses (past for a chart of past data). <b>Task 2 (40 min):</b> 5 min plan (thesis + 2 body-paragraph points + concession). 30 min write (~250 words = about 22 lines). 5 min check for: (i) subject-verb agreement, (ii) articles, (iii) any paragraph without a clear point." },
+  checklist:["Time budget adds up to 60 minutes total","Task 2 gets DOUBLE the time of Task 1","Checking is a named stage, not skipped","I know how many lines of MY handwriting equals 150 / 250 words"] },
+
+/* ==================== UNIT 5 · Writing for Purpose ====================== */
+
+ws51:{ skillName:"Writing to inform",
+  objective:"Explain a topic clearly and neutrally — inform, don't argue.",
+  study:{ model:"<p><b>Informative:</b> A solar eclipse occurs when the Moon passes between the Sun and Earth, blocking the Sun's light. A total eclipse, when the Moon completely covers the Sun's disc, lasts only a few minutes and can be seen from a narrow band on Earth's surface.</p><p><b>Same topic, sneakily arguing:</b> Solar eclipses are one of the most incredible things you can witness — everyone should try to see one at least once.</p>",
+    notice:"The first paragraph informs. The second, dressed up as information, is actually persuading. In informative writing, verbs stay neutral (occurs, lasts, can be seen) — no 'incredible', no 'everyone should.'" },
+  drill:{ task:"Write TWO SENTENCES informing a reader about tides — how they work. Keep it neutral. Then find one word in your sentence that could sneak in an opinion, and replace it.",
+    frame:["Sentence 1: define / describe.","Sentence 2: how / why.","Neutral verbs: is, occurs, happens, results from — not amazing, incredible, terrible."],
+    sample:"<b>Informative:</b> Tides are the periodic rise and fall of sea levels caused mostly by the Moon's gravitational pull on the oceans. Each coastal location typically experiences two high tides and two low tides in just over 24 hours. <b>Word to watch:</b> 'incredible' or 'amazing' would sneak in opinion — kept it out." },
+  checklist:["No 'I think', 'amazing', 'terrible' — no opinion words","Verbs are neutral (occurs, results, is)","I gave a definition or a mechanism, not a personal view","A reader with no prior knowledge could learn from it"] },
+
+ws52:{ skillName:"Writing to persuade",
+  objective:"Move a specific audience toward one clear ask, using rhetorical technique.",
+  study:{ model:"<p><b>Opening (rule of three + direct address):</b> You have thirty seconds. Thirty seconds to decide whether the person beside you on the bus tomorrow will be safer, healthier, and more informed — or whether they will not. <b>Ask:</b> Sign the pledge today. Just once. That is all.</p>",
+    notice:"One clear ask, delivered late. Rule of three (safer, healthier, more informed). Direct address ('you'). Contrast (safer or not)." },
+  drill:{ task:"Write ONE persuasive paragraph asking classmates to donate to a book drive — using the RULE OF THREE and a RHETORICAL QUESTION. Ask must appear in the LAST sentence.",
+    frame:["Address the audience directly ('you', 'we').","Rule of three (three items or three verbs).","Rhetorical question (don't answer it).","One clear ask at the end."],
+    sample:"You have books at home. You have books you loved, books you outgrew, and books you never quite finished. What if just three of them — three you would never miss — could sit tomorrow on the shelf of a child who has never owned one? Bring three books to the library this Thursday." },
+  checklist:["One clear ASK — not four","Rule of three appears (three verbs, adjectives, or items)","At least one direct address to the audience","A rhetorical question OR a striking contrast"] },
+
+ws53:{ skillName:"Writing to entertain",
+  objective:"Bring a person, place or moment to life with specific, sensory detail.",
+  study:{ model:"<p><b>General:</b> My grandmother's kitchen was very nice.</p><p><b>Specific and sensory:</b> The kitchen smelled of cardamom and hot bread. A cooker no company had made in thirty years sat by the window, its handles worn silver where hands had gripped them. On Friday mornings, my grandmother sat at the round table under the window, her tea steaming in a glass, and waited. Nobody had told anyone to come. Everyone came anyway.</p>",
+    notice:"'Very nice' tells you nothing. 'Handles worn silver where hands had gripped them' lets you see the kitchen. One exact detail beats five general adjectives." },
+  drill:{ task:"Describe a place from your childhood in 3 sentences. Use ONE smell, ONE sound, and ONE detail that could only belong to that place — no 'beautiful', 'amazing', 'nice'.",
+    frame:["Smell: 'It smelled of ____.'","Sound: 'You could hear ____.'","One specific detail: 'The ____ was ____.'"],
+    sample:"The corridor outside my grandfather's flat always smelled of frying garlic, no matter what time you visited. You could hear his radio through the door before you'd even knocked — the same news station, all day, forever. Above the doormat hung a plastic parrot he had won at a fair in 1978 and never taken down." },
+  checklist:["At least one smell OR sound OR touch — not just sight","One detail that could only belong to THIS place","No 'beautiful', 'nice', 'amazing', 'terrible'","A reader can picture the place after reading"] },
+
+ws54:{ skillName:"Writing to transact",
+  objective:"Write a message that does something: an email, a message, an application — in the right register.",
+  study:{ model:"<p><b>Formal complaint email:</b></p><p>Dear Sir or Madam,</p><p>I am writing to complain about a pair of running shoes I purchased on 12 October, order number 48291. The shoes arrived with a torn seam on the inside of the left shoe.</p><p>I have contacted your returns team twice with photographs and have received no reply in ten working days. I would like a replacement pair in the same size, or a full refund of £74.99, within the next seven working days.</p><p>Yours faithfully,<br>A. Al-Ali</p>",
+    notice:"Register is set by the relationship. Formal opens with 'Dear Sir or Madam' and closes with 'Yours faithfully.' Semi-formal uses the name: 'Dear Ms Khan' → 'Yours sincerely.' The purpose is stated in the FIRST sentence — busy readers stop there." },
+  drill:{ task:"Write the OPENING SENTENCE and the ASK SENTENCE of a formal email complaining about a delayed delivery. Include an order number and a specific deadline for the response.",
+    frame:["Opening: 'I am writing to ____' — state purpose immediately.","Ask: 'I would like ____ within ____ days.'","No 'Hi', no 'Thanks so much!!'"],
+    sample:"<b>Opening:</b> I am writing to enquire about order number 90142, which was due for delivery on 3 October and has not arrived. <b>Ask:</b> I would appreciate either a confirmed delivery date within five working days or a full refund, whichever is faster." },
+  checklist:["Register matches the relationship (formal → 'Dear Sir or Madam')","Purpose is stated in the FIRST sentence","There is ONE clear ask, with a deadline","Opening and closing register match ('Dear Sir/Madam' → 'Yours faithfully')"] },
+
+ws55:{ skillName:"Writing to instruct",
+  objective:"Write clear, ordered instructions a stranger could follow with no prior knowledge.",
+  study:{ model:"<p><b>To boil an egg (soft):</b></p><ol><li>Bring a small pan of water to a rolling boil.</li><li>Gently lower a room-temperature egg into the water using a spoon.</li><li>Set a timer for exactly 6 minutes.</li><li>When the timer rings, lift the egg out and place it under cold running water for 30 seconds.</li><li>Tap the shell all over, then peel from the wide end.</li></ol>",
+    notice:"Every step starts with a verb (Bring, Gently lower, Set, Lift, Tap). Numbers force the order. 'Room-temperature' and '6 minutes' remove guesswork. Nothing is assumed about the reader's prior knowledge." },
+  drill:{ task:"Write the FIRST THREE STEPS of instructions for 'How to send a WhatsApp voice message' — assume the reader has never opened WhatsApp before. Each step must start with a verb.",
+    frame:["Step 1: Open ____.","Step 2: Tap / Select ____.","Step 3: Hold / Press ____."],
+    sample:"<b>1.</b> Open the WhatsApp app on your phone by tapping its green icon. <b>2.</b> Tap the name of the person you want to message — this opens a chat screen. <b>3.</b> Press and HOLD the microphone icon in the bottom-right corner while you speak; release it to send the message." },
+  checklist:["Every step starts with a verb (Open, Tap, Press)","Steps are numbered — order is enforced","No prior knowledge is assumed","A stranger could follow the steps and succeed"] }
+
+};
+
+
 function grmFor(l){
-  const base=(l&&GRM[l.rubricKey])||GRM._default;
-  /* a task can carry its own scale-matched study mentor text (e.g. an essay
-     needs an essay-scale example, not the generic short one) — it overrides
-     the study stage only; drill and checklist stay shared with the rubric. */
-  if(l && l.study && l.study.model) return Object.assign({}, base, {study:l.study});
-  return base;
+  const base = (l && GRM[l.rubricKey]) || GRM._default;
+  /* Resolve the skill this task belongs to, so we can pick up per-skill
+     overrides (SKILL_GRM). Falls back to no-override if the task predates
+     the skill-first restructure or is a teacher-added lesson. */
+  let skillId = null;
+  if (l && typeof l.id === 'string') {
+    for (const sk of (typeof WSKILLS !== 'undefined' ? WSKILLS : [])) {
+      if (sk.tasks && sk.tasks.some(t => t.id === l.id)) { skillId = sk.id; break; }
+    }
+  }
+  const skillOverride = (skillId && typeof SKILL_GRM !== 'undefined' && SKILL_GRM[skillId]) || null;
+  /* Merge order: rubric default → skill override → task-level study override.
+     Every field is independently overridable. */
+  const merged = Object.assign({}, base);
+  if (skillOverride){
+    if (skillOverride.objective) merged.objective = skillOverride.objective;
+    if (skillOverride.study)     merged.study     = skillOverride.study;
+    if (skillOverride.drill)     merged.drill     = skillOverride.drill;
+    if (skillOverride.checklist) merged.checklist = skillOverride.checklist;
+    if (skillOverride.skillName) merged.skillName = skillOverride.skillName;
+  }
+  if (l && l.study && l.study.model) merged.study = l.study;
+  return merged;
 }
 function objectiveFor(l){ return (l&&l.objective)||grmFor(l).objective; }
 function drillReveal(){ const t=(val('drillText')||'').trim(); const el=document.getElementById('drillSample'); if(!el)return;
