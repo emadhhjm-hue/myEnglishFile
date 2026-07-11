@@ -4035,14 +4035,6 @@ const ROUTES = {
           ${l.tips?`<div class="wex-col"><p class="wex-h">Tips for a strong answer</p><ul class="wex-tips">${l.tips.map(t=>`<li>${t}</li>`).join('')}</ul></div>`:''}
         </div>`:''}
         <p style="margin:8px 0 0;font-size:.82rem;color:var(--muted)">Suggested length: about ${l.minWords}+ words.${l.exam?' <b>MoE exam format</b> — mark yourself against the rubric out of 25.':''}</p>
-        ${l.model?`<div class="card" style="margin-top:14px;border-color:var(--teal);background:#f2fbf9">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
-            <span style="font-size:1.05rem">⭐</span>
-            <b style="color:var(--teal-dk)">Sample answer — how strong writing looks</b>
-          </div>
-          <p style="font-size:.82rem;color:var(--muted);margin:0 0 10px">Read this before you write. Study its structure, its argument moves, and how it uses evidence — then write your own. <b>Compare, don't copy.</b></p>
-          <div class="model-show" style="background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px">${l.model}</div>
-        </div>`:''}
         ${rub?`<div class="rubric-preview" style="margin-top:12px">
           <b style="color:var(--ink);font-size:.85rem">📋 How you'll be scored — ${rub.label}</b>
           <ul style="margin:6px 0 0;padding-left:18px;font-size:.85rem;color:var(--slate)">${rub.criteria.map(c=>`<li>${c[0]}</li>`).join('')}</ul>
