@@ -3428,7 +3428,7 @@ const ROUTES = {
             <text x="${cx}" y="${cy+((bee||stem)?18:22)}" text-anchor="middle" fill="#ffffff" font-size="${labSize}" font-weight="700">${lab}</text>
             ${sub?`<text x="${cx}" y="${cy+((bee||stem)?34:38)}" text-anchor="middle" fill="#ffe39a" font-size="10.5" font-weight="700" letter-spacing="0.02em">${sub}</text>`:''}</g>`; }).join('')}
         </svg>
-        <button class="yl-banner" onclick="go('ylhub')"><span style="font-size:2rem">🧒</span><span><b>Young Learners World</b> — Grades 1–8 · picture readers with read-to-me & tap-a-word, games after every practice, flipbooks, printable quizzes.<br><span style="font-size:.8rem;opacity:.9">Read it · Write it · Design it — fun-sized ⭐</span></span><span class="sb-go" style="background:#fff;color:#15183A;border-radius:999px;padding:8px 16px;font-weight:700;white-space:nowrap">Play & learn →</span></button>
+        <button class="yl-banner" onclick="go('ylhub')"><span style="font-size:2rem">🧒</span><span><b>Young Learners World</b> — Grades 1–8 · picture readers with read-to-me & tap-a-word, games after every read, printable quizzes.<br><span style="font-size:.8rem;opacity:.9">Read it · Write it · Design it — fun-sized ⭐</span></span><span class="sb-go" style="background:#fff;color:#15183A;border-radius:999px;padding:8px 16px;font-weight:700;white-space:nowrap">Play & learn →</span></button>
         <div class="hub-foot">Tap any circle to begin.</div>
         <div class="hub-copyright">© 2026 Emad Ali Mohamed · <i>Developer of iCAN my English File — a multiliteracy hub for EFL learners</i></div>
       </div>
@@ -8607,7 +8607,7 @@ const COACH_HELP={
   design:  {t:"🎨 Design", route:"dstudio", m:"Pick a text you have read and build a <b>four-slide deck</b>: the text, the idea you took from it, your own claim, and the artefact you made. <b>Tip:</b> the design must come out of the reading — if it could sit beside any text, start again."},
   typing:  {t:"⌨️ Typing", route:"typing", m:"Build speed and accuracy. <b>Tip:</b> keep your eyes on the text, not the keys — accuracy first, and speed follows."},
   stemstream:{t:"🚀 STEM·STREAM", route:"stemlab", m:"Real-world engineering missions run on the RWD cycle. <b>Read</b> a short science text (with 🔊 read-to-me + zoom), <b>Write</b> a claim-evidence-reasoning paragraph, then <b>Design</b> your artefact and upload it in the PowerPoint template. Every mission is scored 25/35/40 (R/W/D) and mints a certificate. <b>Tip:</b> plan your test in writing <i>before</i> you build — engineers let the data decide."},
-  yl:      {t:"🧒 Young Learners", route:"ylhub", m:"A fun-sized RWD world for Grades 1–8. Picture readers with 🔊 <b>Read-to-me</b>, tap-any-word pronunciation + meaning, standard <b>and</b> extended texts, and a game after every practice. Also: 50 mini-quizzes, exam practice for six skills, Multimodal Studio (charts, maps, comics), a Flipbook Maker and Drawing Pad. <b>Tip:</b> struggling readers should turn on read-to-me for a first listen, then read again while tapping any tricky word."},
+  yl:      {t:"🧒 Young Learners", route:"ylhub", m:"A fun-sized RWD world for Grades 1–8. Picture readers with 🔊 <b>Read-to-me</b>, tap-any-word pronunciation + meaning, standard <b>and</b> extended texts, and a game after every practice. Also: grade-labelled mini-quizzes, exam practice organised by grade (5–6 · 7 · 8), and a Drawing Pad for the Design it · STEM tasks. <b>Tip:</b> struggling readers should turn on read-to-me for a first listen, then read again while tapping any tricky word."},
   teacher: {t:"👩‍🏫 For teachers", route:"teacher", m:"From your dashboard: open <b>Manage content</b> to add readings, writing lessons, speaking prompts and textbook spelling lists; use <b>Analytics</b> to see each student's skills and an intervention plan; share access codes so students can log in."}
 };
 function coachLoggedIn(){ return (typeof SESSION!=='undefined') && SESSION && !!SESSION.role; }
@@ -12509,7 +12509,7 @@ function stemPptTemplate(){
    Affordances everywhere: read-to-me, zoom, clickable words, print mode.
    ========================================================================= */
 const YL_READERS=[
-{id:'r1',lv:'A',icon:'🐱',title:'My Cat Ziko',obj:'Read a short narrative; recognise family & pet vocabulary; use present simple.',game:'match',
+{id:'r1',meta:{genre:'Narrative',theme:'Pets & everyday life',lexile:'~600L',grades:'Grades 5–6',skill:'Sequencing & key details',source:'Original text written for iCAN (AI-assisted)'},lv:'A',icon:'🐱',title:'My Cat Ziko',obj:'Read a short narrative; recognise family & pet vocabulary; use present simple.',game:'match',
  vocab:[['cat','🐱'],['milk','🥛'],['sun','☀️'],['ball','⚽'],['sleep','😴'],['jump','🤸']],
  gloss:{ziko:'the name of the cat',soft:'nice to touch, not hard',chases:'runs after something',lazy:'does not want to move or work'},
  scene:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#eaf6ff" rx="10"/><circle cx="290" cy="35" r="18" fill="#FFD23F"/><rect x="20" y="120" width="300" height="34" fill="#bfe6bf"/><ellipse cx="120" cy="122" rx="46" ry="20" fill="#f2a154"/><circle cx="158" cy="106" r="16" fill="#f2a154"/><path d="M148 94 l6-10 6 10 M162 94 l6-10 6 10" fill="#f2a154"/><circle cx="153" cy="104" r="2" fill="#333"/><circle cx="163" cy="104" r="2" fill="#333"/><path d="M170 122 q22 8 30-6" stroke="#d9822b" stroke-width="6" fill="none"/><circle cx="220" cy="132" r="10" fill="#e6464b"/><text x="30" y="30" font-size="12" fill="#456">Ziko in the garden</text></svg>',
@@ -12521,7 +12521,7 @@ const YL_READERS=[
   gap:[{s:'Ziko hides behind the ___.',a:['flowers']},{s:'At night Ziko purrs like a small ___.',a:['engine']}],
   tfng:[{s:'Ziko drinks milk in the morning.',a:'T'},{s:'The writer has two cats.',a:'NG'}],
   short:{q:'Describe a pet you have or want. What does it look like, and what does it do every day? (30–50 words)'}}},
-{id:'r2',lv:'A',icon:'⚽',title:'We Love Football',obj:'Read about team sports; sequence events; use action verbs.',game:'order',
+{id:'r2',meta:{genre:'Narrative',theme:'Sport & teamwork',lexile:'~620L',grades:'Grades 5–6',skill:'Main idea & detail',source:'Original text written for iCAN (AI-assisted)'},lv:'A',icon:'⚽',title:'We Love Football',obj:'Read about team sports; sequence events; use action verbs.',game:'order',
  vocab:[['team','👕'],['goal','🥅'],['coach','🧑\u200d🏫'],['run','🏃'],['win','🏆'],['friend','🤝']],
  gloss:{team:'a group that plays together',coach:'the person who teaches the players',score:'to get a goal or a point',cheer:'to shout happily for your team'},
  scene:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#d9f0d9" rx="10"/><rect x="0" y="130" width="340" height="40" fill="#8fce8f"/><circle cx="60" cy="100" r="14" fill="#f6c78a"/><rect x="48" y="112" width="24" height="26" rx="6" fill="#2f6fb5"/><circle cx="120" cy="104" r="14" fill="#c98a5b"/><rect x="108" y="116" width="24" height="26" rx="6" fill="#e6464b"/><circle cx="170" cy="140" r="9" fill="#fff" stroke="#333"/><rect x="270" y="80" width="6" height="60" fill="#666"/><rect x="276" y="80" width="44" height="40" fill="none" stroke="#666" stroke-width="3"/><circle cx="300" cy="34" r="16" fill="#FFD23F"/><text x="20" y="26" font-size="12" fill="#356">match day!</text></svg>',
@@ -12533,7 +12533,7 @@ const YL_READERS=[
   gap:[{s:'Our coach is called Mr ___.',a:['salem']},{s:'At the end the players shake ___.',a:['hands']}],
   tfng:[{s:'The match happens in the park.',a:'T'},{s:'Omar is the best player in the city.',a:'NG'}],
   short:{q:'Write about a game or sport you play with friends. When do you play, and why do you like it? (30–50 words)'}}},
-{id:'r3',lv:'A',icon:'🥞',title:'Breakfast Time',obj:'Read about daily routines and food; tell time-order; use we/she forms.',game:'pop',
+{id:'r3',meta:{genre:'Procedure & narrative',theme:'Food & routines',lexile:'~610L',grades:'Grades 5–6',skill:'Following a sequence',source:'Original text written for iCAN (AI-assisted)'},lv:'A',icon:'🥞',title:'Breakfast Time',obj:'Read about daily routines and food; tell time-order; use we/she forms.',game:'pop',
  vocab:[['bread','🍞'],['eggs','🥚'],['honey','🍯'],['dates','🌴'],['tea','🍵'],['table','🪑']],
  gloss:{honey:'sweet food that bees make',dates:'sweet brown fruit from palm trees',smells:'what your nose feels',together:'with other people'},
  scene:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#fff4e0" rx="10"/><rect x="40" y="100" width="260" height="14" fill="#c98a5b"/><rect x="60" y="114" width="12" height="46" fill="#a06a3f"/><rect x="268" y="114" width="12" height="46" fill="#a06a3f"/><circle cx="120" cy="86" r="20" fill="#fff" stroke="#ddd"/><circle cx="120" cy="86" r="9" fill="#FFD23F"/><rect x="180" y="72" width="40" height="26" rx="6" fill="#f2d1a0"/><path d="M240 78 q14 6 0 16" stroke="#7a4" stroke-width="4" fill="none"/><rect x="236" y="76" width="26" height="20" rx="4" fill="#cde8f5"/><text x="24" y="30" font-size="12" fill="#764">breakfast together</text></svg>',
@@ -12545,7 +12545,7 @@ const YL_READERS=[
   gap:[{s:'My sister drinks cold ___.',a:['milk']},{s:'They eat at the big ___.',a:['table']}],
   tfng:[{s:'The writer likes honey.',a:'T'},{s:'The family eats pancakes every day.',a:'F'}],
   short:{q:'What is your favourite breakfast? Who makes it, and why do you like it? (30–50 words)'}}},
-{id:'r4',lv:'B',icon:'🏜️',title:'A Trip to the Desert',obj:'Read a recount; identify setting and feelings; use past simple.',game:'catch',
+{id:'r4',meta:{genre:'Recount',theme:'Travel & nature',lexile:'~760L',grades:'Grade 7',skill:'Main idea & inference',source:'Original text written for iCAN (AI-assisted)'},lv:'B',icon:'🏜️',title:'A Trip to the Desert',obj:'Read a recount; identify setting and feelings; use past simple.',game:'catch',
  vocab:[['desert','🏜️'],['camel','🐪'],['tent','⛺'],['stars','✨'],['sand','🟨'],['quiet','🤫']],
  gloss:{dunes:'hills made of sand',bumpy:'not smooth; moving up and down',campfire:'a small fire outside',millions:'a very, very big number'},
  scene:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#1c2452" rx="10"/><circle cx="60" cy="40" r="12" fill="#fff8d8"/><g fill="#fff"><circle cx="140" cy="26" r="1.6"/><circle cx="200" cy="40" r="1.6"/><circle cx="260" cy="22" r="1.6"/><circle cx="300" cy="50" r="1.6"/><circle cx="170" cy="56" r="1.6"/></g><path d="M0 120 q80-30 170-10 q90 20 170 0 v60 h-340 z" fill="#d9a05b"/><path d="M120 128 l22-30 22 30 z" fill="#f2e8d5" stroke="#b58a4f"/><path d="M228 122 q6-18 20-18 q6-12 18-8 q10-2 12 8 q10 2 8 12 l-6 6 h-44 z" fill="#8a5a33"/><circle cx="180" cy="132" r="6" fill="#e6764b"/><path d="M174 128 l-6-8 M186 128 l6-8" stroke="#e6a24b" stroke-width="2"/><text x="20" y="24" font-size="12" fill="#cfd6ff">night in Liwa</text></svg>',
@@ -12557,7 +12557,7 @@ const YL_READERS=[
   gap:[{s:'They ate grilled ___ by the fire.',a:['corn']},{s:'The writer nearly dropped his ___.',a:['hat']}],
   tfng:[{s:'The writer sees more stars in the city.',a:'F'},{s:'The family stayed in the desert for a week.',a:'NG'}],
   short:{q:'Write about a trip you remember. Where did you go, what did you do, and how did you feel? (30–50 words)'}}},
-{id:'r5',lv:'B',icon:'♻️',title:'The Recycling Heroes',obj:'Read an informative narrative; find problem & solution; use should for advice.',game:'match',
+{id:'r5',meta:{genre:'Explanation',theme:'Environment & community',lexile:'~790L',grades:'Grade 7',skill:'Cause & effect',source:'Original text written for iCAN (AI-assisted)'},lv:'B',icon:'♻️',title:'The Recycling Heroes',obj:'Read an informative narrative; find problem & solution; use should for advice.',game:'match',
  vocab:[['recycle','♻️'],['plastic','🧴'],['paper','📄'],['bin','🗑️'],['clean','🧹'],['planet','🌍']],
  gloss:{recycle:'use old things to make new things',litter:'rubbish left in the wrong place',proud:'feeling happy about something you did',poster:'a big paper with pictures and words'},
  scene:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#e8f7ee" rx="10"/><rect x="40" y="90" width="40" height="56" rx="6" fill="#2f9e5f"/><rect x="100" y="90" width="40" height="56" rx="6" fill="#3f7fd6"/><rect x="160" y="90" width="40" height="56" rx="6" fill="#e6b23f"/><text x="60" y="160" font-size="10" text-anchor="middle" fill="#2f6f47">plastic</text><text x="120" y="160" font-size="10" text-anchor="middle" fill="#28527a">paper</text><text x="180" y="160" font-size="10" text-anchor="middle" fill="#8a6a1f">cans</text><path d="M258 70 a26 26 0 1 1-18 44" fill="none" stroke="#2f9e5f" stroke-width="7"/><path d="M236 106 l4 14 14-4 z" fill="#2f9e5f"/><circle cx="286" cy="40" r="14" fill="#FFD23F"/><text x="20" y="28" font-size="12" fill="#2f6f47">sort it out!</text></svg>',
@@ -12569,7 +12569,7 @@ const YL_READERS=[
   gap:[{s:'They showed younger classes how to ___ waste.',a:['sort']},{s:'The teacher said she was ___ of them.',a:['proud']}],
   tfng:[{s:'Some students laughed at the heroes at first.',a:'T'},{s:'The school won a national prize.',a:'NG'}],
   short:{q:'What is one problem in your school or street, and what could YOU do about it? Use should. (30–50 words)'}}},
-{id:'r6',lv:'B',icon:'🦅',title:'Falcons of the UAE',obj:'Read an information text; extract facts and numbers; use superlatives.',game:'catch',
+{id:'r6',meta:{genre:'Information report',theme:'Heritage & wildlife',lexile:'~810L',grades:'Grade 7',skill:'Key details & inference',source:'Original text written for iCAN (AI-assisted)'},lv:'B',icon:'🦅',title:'Falcons of the UAE',obj:'Read an information text; extract facts and numbers; use superlatives.',game:'catch',
  vocab:[['falcon','🦅'],['wings','🪽'],['hunter','🎯'],['speed','💨'],['proud','🦁'],['sky','☁️']],
  gloss:{symbol:'a picture or thing that stands for an idea',dive:'to fly down very fast',prey:'an animal that is hunted',falconer:'a person who trains falcons'},
  scene:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#eef4fb" rx="10"/><circle cx="52" cy="40" r="16" fill="#FFD23F"/><path d="M110 70 q60-46 130-8 q-30 4-52 2 q-16 22-44 26 q6-12 4-20 q-22 6-38 0 z" fill="#7a5а33"/><path d="M110 70 q60-46 130-8 q-30 4-52 2 q-16 22-44 26 q6-12 4-20 q-22 6-38 0 z" fill="#7a5a33"/><circle cx="228" cy="60" r="3" fill="#222"/><path d="M238 62 l10 4-10 3 z" fill="#e6a24b"/><path d="M40 140 q60-24 120-10 q80 18 140 2" stroke="#b9c6d8" stroke-width="3" fill="none"/><text x="20" y="26" font-size="12" fill="#456">the national bird</text></svg>',
@@ -12581,7 +12581,7 @@ const YL_READERS=[
   gap:[{s:'In the past, falcons helped families ___ for food.',a:['hunt']},{s:'Doctors check their wings, beaks and ___.',a:['feathers']}],
   tfng:[{s:'The peregrine falcon is the fastest animal on Earth.',a:'T'},{s:'Falcons are afraid of aeroplanes.',a:'NG'}],
   short:{q:'Choose an animal you admire. Give two facts about it and say why it is special. (30–50 words)'}}},
-{id:'r7',lv:'C',icon:'🚰',title:'The Water Journey',obj:'Read an explanation text; trace a process; use sequence connectors.',game:'order',
+{id:'r7',meta:{genre:'Process explanation',theme:'Science & sustainability',lexile:'~920L',grades:'Grade 8',skill:'Sequencing a process',source:'Original text written for iCAN (AI-assisted)'},lv:'C',icon:'🚰',title:'The Water Journey',obj:'Read an explanation text; trace a process; use sequence connectors.',game:'order',
  vocab:[['seawater','🌊'],['salt','🧂'],['energy','⚡'],['pipes','🟦'],['tap','🚿'],['drop','💧']],
  gloss:{desalination:'removing salt from seawater',evaporates:'turns from liquid into gas',precious:'very valuable',treatment:'the process of cleaning something'},
  scene:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#eaf4fb" rx="10"/><path d="M0 130 q40-14 80 0 q40 14 80 0 q40-14 80 0 q40 14 100 0 v40 h-340 z" fill="#7fb3d9"/><rect x="120" y="60" width="80" height="56" rx="6" fill="#cfd8e6" stroke="#8899aa"/><rect x="132" y="42" width="12" height="20" fill="#8899aa"/><path d="M60 128 q30-40 60-36" stroke="#2f7bb5" stroke-width="5" fill="none"/><path d="M200 88 h70" stroke="#2f7bb5" stroke-width="5"/><path d="M270 88 v40" stroke="#2f7bb5" stroke-width="5"/><path d="M262 132 h16 l-8 14 z" fill="#2f7bb5"/><text x="160" y="150" font-size="11" text-anchor="middle" fill="#1e4d75">sea → plant → your tap</text><text x="20" y="26" font-size="12" fill="#28527a">where water comes from</text></svg>',
@@ -12593,7 +12593,7 @@ const YL_READERS=[
   gap:[{s:'The water is tested in ___.',a:['laboratories','labs']},{s:'Do not let the journey end in ___.',a:['waste']}],
   tfng:[{s:'Some desalination uses very fine filters.',a:'T'},{s:'The UAE has the largest desalination plant in the world.',a:'NG'}],
   short:{q:'Explain, in your own words, how seawater becomes drinking water. Use first, next, then, finally. (30–50 words)'}}},
-{id:'r8',lv:'C',icon:'📱',title:'Screens and Sleep',obj:'Read an argument text; identify claim and evidence; give advice with should.',game:'pop',
+{id:'r8',meta:{genre:'Persuasive & explanatory',theme:'Health & technology',lexile:'~950L',grades:'Grade 8',skill:'Main idea & author’s purpose',source:'Original text written for iCAN (AI-assisted)'},lv:'C',icon:'📱',title:'Screens and Sleep',obj:'Read an argument text; identify claim and evidence; give advice with should.',game:'pop',
  vocab:[['screen','📱'],['brain','🧠'],['sleep','🛌'],['bright','🔆'],['morning','🌅'],['habit','🔁']],
  gloss:{argue:'to give reasons for an idea',melatonin:'a body chemical that helps you sleep',groggy:'tired and slow after waking',device:'a machine like a phone or tablet'},
  scene:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#f4f0fb" rx="10"/><rect x="40" y="60" width="90" height="80" rx="10" fill="#2b2b3f"/><rect x="48" y="70" width="74" height="54" rx="4" fill="#7fd0f0"/><circle cx="85" cy="132" r="4" fill="#888"/><path d="M150 84 q20-24 44-10" stroke="#c9b1ff" stroke-width="4" fill="none"/><rect x="210" y="86" width="100" height="46" rx="10" fill="#e7defc"/><circle cx="238" cy="106" r="10" fill="#f6c78a"/><path d="M252 108 q18-10 40 0" stroke="#8B5CF6" stroke-width="3" fill="none"/><text x="258" y="80" font-size="18">😴</text><text x="20" y="28" font-size="12" fill="#5b4a9e">bright screen, tired brain</text></svg>',
@@ -12605,7 +12605,7 @@ const YL_READERS=[
   gap:[{s:'Experts say charge the phone ___ the bedroom.',a:['outside']},{s:'Screens are wonderful ___ in the day.',a:['tools']}],
   tfng:[{s:'The text says screens are evil.',a:'F'},{s:'The study happened in the UAE.',a:'NG'}],
   short:{q:'Do you agree that phones should stay out of the bedroom at night? Give your opinion with one reason and one example. (30–50 words)'}}},
-{id:'r9',lv:'A',icon:'🌱',title:'The Little Garden',obj:'Read a simple process story; order steps; use and/then.',game:'order',
+{id:'r9',meta:{genre:'Narrative',theme:'Nature & growth',lexile:'~600L',grades:'Grades 5–6',skill:'Sequencing & detail',source:'Original text written for iCAN (AI-assisted)'},lv:'A',icon:'🌱',title:'The Little Garden',obj:'Read a simple process story; order steps; use and/then.',game:'order',
  vocab:[['seed','🌰'],['water','💧'],['grow','🌿'],['flower','🌸'],['soil','🟫'],['wait','⏳']],
  gloss:{soil:'the earth where plants grow',patient:'able to wait calmly',sprout:'a small new plant',proudly:'with a happy, proud feeling'},
  scene:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#f0fbe8" rx="10"/><rect x="0" y="130" width="340" height="40" fill="#c9a06a"/><path d="M80 130 q-2-26 0-34 M80 104 q12-8 16-2 M80 112 q-12-8-16-2" stroke="#2e8b57" stroke-width="4" fill="none"/><circle cx="170" cy="92" r="12" fill="#f28ab5"/><circle cx="170" cy="92" r="5" fill="#FFD23F"/><path d="M170 130 v-28" stroke="#2e8b57" stroke-width="4"/><path d="M250 118 q6-10 14-6" stroke="#2e8b57" stroke-width="4" fill="none"/><circle cx="300" cy="36" r="15" fill="#FFD23F"/><path d="M40 60 q6 10 0 18 M52 54 q6 10 0 18" stroke="#7fb3d9" stroke-width="3" fill="none"/><text x="20" y="28" font-size="12" fill="#2f6f47">grow, little seed!</text></svg>',
@@ -12617,7 +12617,7 @@ const YL_READERS=[
   gap:[{s:'She covers the seeds gently, like a ___.',a:['blanket']},{s:'She turns the pot to the ___.',a:['sun']}],
   tfng:[{s:'Sara gives the seeds a lot of water.',a:'F'},{s:'The pot is on a balcony.',a:'NG'}],
   short:{q:'Write the steps to grow a plant. Use first, then, after that, finally. (30–50 words)'}}},
-{id:'r10',lv:'C',icon:'💜',title:'The Kindness Project',obj:'Read a narrative with a message; infer feelings; connect ideas to life.',game:'match',
+{id:'r10',meta:{genre:'Narrative & persuasive',theme:'Community & values',lexile:'~930L',grades:'Grade 8',skill:'Theme & inference',source:'Original text written for iCAN (AI-assisted)'},lv:'C',icon:'💜',title:'The Kindness Project',obj:'Read a narrative with a message; infer feelings; connect ideas to life.',game:'match',
  vocab:[['kindness','💜'],['smile','😊'],['helper','🤝'],['secret','🤫'],['note','📝'],['ripple','🌊']],
  gloss:{anonymous:'without saying your name',ripple:'a small wave that spreads',courage:'being brave',gratitude:'the feeling of being thankful'},
  scene:'<svg viewBox="0 0 340 170" style="width:100%"><rect width="340" height="170" fill="#fdf0f6" rx="10"/><rect x="60" y="60" width="70" height="50" rx="8" fill="#fff" stroke="#e59ac0"/><path d="M60 60 l35 26 35-26" fill="none" stroke="#e59ac0" stroke-width="2"/><path d="M200 96 c-12-16 12-30 22-14 c10-16 34-2 22 14 c-8 12-22 20-22 20 s-14-8-22-20 z" fill="#e6608a"/><circle cx="120" cy="140" r="3" fill="#c9b1ff"/><circle cx="150" cy="146" r="4" fill="#c9b1ff"/><circle cx="185" cy="150" r="5" fill="#c9b1ff"/><text x="20" y="28" font-size="12" fill="#a04a72">one small note…</text></svg>',
@@ -12959,30 +12959,201 @@ const YL_EXAM=[
  prompt:'READ this brief: birds at school have no water in summer. WRITE a plan (30+ words) for a bird water station made from recycled things. DESIGN it in the Drawing Pad with labels — then describe how it helps.'}
 ];
 
-/* ================= YL ENGINE ================= */
-function ylActivityCount(){ return YL_READERS.length*3 + YL_MM.length + YL_EXAM.length + 2; }
+const YL_MAZE = [{"id": "gm1", "grade": "5–6", "theme": "Daily routines", "focus": "Present simple", "title": "A School Morning", "intro": "Choose the correct present-simple verb for each gap.", "parts": ["Every morning, Layla ", {"o": ["wake", "wakes", "waking"], "a": 1}, " up at six o’clock. She ", {"o": ["brush", "brushes", "brushing"], "a": 1}, " her teeth and ", {"o": ["eat", "eats", "eaten"], "a": 1}, " a healthy breakfast. Her little brother ", {"o": ["do not", "does not", "not"], "a": 1}, " like eggs, so he ", {"o": ["have", "has", "having"], "a": 1}, " toast instead. They ", {"o": ["walks", "walk", "walking"], "a": 1}, " to school together because it ", {"o": ["is", "are", "be"], "a": 0}, " very near. Their first lesson ", {"o": ["start", "starts", "started"], "a": 1}, " at eight."]}, {"id": "gm2", "grade": "5–6", "theme": "Sport", "focus": "Present continuous", "title": "On the Football Pitch", "intro": "Pick the correct present-continuous form.", "parts": ["Look at the pitch! The team ", {"o": ["is playing", "are playing", "play"], "a": 1}, " the final match. Salem ", {"o": ["run", "is running", "runs"], "a": 1}, " towards the goal, and the crowd ", {"o": ["is cheering", "cheer", "cheering"], "a": 0}, " loudly. “We ", {"o": ["winning", "are winning", "wins"], "a": 1}, "!” shouts the captain. The goalkeeper ", {"o": ["is jumping", "jump", "jumps"], "a": 0}, " high to catch the ball, while two players ", {"o": ["waits", "are waiting", "wait"], "a": 1}, " near the net. Right now, everyone ", {"o": ["enjoy", "is enjoying", "enjoys"], "a": 1}, " the game."]}, {"id": "gm3", "grade": "5–6", "theme": "Story", "focus": "Past simple", "title": "The Lost Kitten", "intro": "Choose the correct past-simple verb.", "parts": ["Yesterday, Noor ", {"o": ["find", "found", "finds"], "a": 1}, " a tiny kitten near her gate. It ", {"o": ["was", "were", "is"], "a": 0}, " cold and hungry, so she ", {"o": ["carry", "carried", "carries"], "a": 1}, " it inside. She ", {"o": ["give", "gave", "gives"], "a": 1}, " it warm milk, and the kitten ", {"o": ["drink", "drank", "drunk"], "a": 1}, " every drop. Then it ", {"o": ["sleep", "slept", "sleeps"], "a": 1}, " on a soft blanket. In the evening, the family ", {"o": ["decide", "decided", "decides"], "a": 1}, " to keep it and ", {"o": ["name", "named", "names"], "a": 1}, " it Simba."]}, {"id": "gm4", "grade": "5–6", "theme": "Education", "focus": "Articles (a / an / the)", "title": "My New Classroom", "intro": "Choose a, an or the.", "parts": ["This year I have ", {"o": ["a", "an", "the"], "a": 0}, " new classroom. It has ", {"o": ["a", "an", "the"], "a": 1}, " interactive board on ", {"o": ["a", "an", "the"], "a": 2}, " front wall. ", {"o": ["A", "An", "The"], "a": 2}, " teacher, Mr Adel, gave each of us ", {"o": ["a", "an", "the"], "a": 0}, " notebook and ", {"o": ["a", "an", "the"], "a": 1}, " eraser. My favourite place is ", {"o": ["a", "an", "the"], "a": 2}, " reading corner, where there is ", {"o": ["a", "an", "the"], "a": 0}, " shelf full of stories."]}, {"id": "gm5", "grade": "5–6", "theme": "Environment", "focus": "Quantifiers (some / any / much / many)", "title": "Saving Water", "intro": "Choose the correct quantifier.", "parts": ["We should not waste ", {"o": ["many", "much", "a"], "a": 1}, " water at home. There isn’t ", {"o": ["some", "any", "much"], "a": 1}, " reason to leave the tap running. ", {"o": ["How much", "How many", "A lot of"], "a": 0}, " water do you use when you brush your teeth? If everyone saves ", {"o": ["a little", "many", "few"], "a": 0}, " every day, we can protect ", {"o": ["much", "many", "some"], "a": 2}, " rivers and lakes. There are ", {"o": ["much", "many", "any"], "a": 1}, " simple ways to help, and they don’t cost ", {"o": ["many", "much", "some"], "a": 1}, " money."]}, {"id": "gm6", "grade": "5–6", "theme": "Art", "focus": "Prepositions of place", "title": "At the Art Gallery", "intro": "Choose the correct preposition.", "parts": ["The paintings hang ", {"o": ["on", "in", "at"], "a": 0}, " the white walls. A large statue stands ", {"o": ["on", "in", "at"], "a": 1}, " the middle of the room. Sara sits ", {"o": ["on", "under", "between"], "a": 2}, " two of her classmates and draws. Her pencil case is ", {"o": ["on", "in", "under"], "a": 2}, " her chair, on the floor. “Look ", {"o": ["at", "on", "in"], "a": 0}, " that blue sky!” she says, pointing ", {"o": ["at", "on", "to"], "a": 2}, " a famous picture ", {"o": ["above", "under", "between"], "a": 0}, " the door."]}, {"id": "gm7", "grade": "5–6", "theme": "Communication", "focus": "Comparatives", "title": "Phones and Letters", "intro": "Choose the correct comparative form.", "parts": ["Sending a message today is ", {"o": ["fast", "faster", "fastest"], "a": 1}, " than sending a letter. A phone is ", {"o": ["small", "smaller", "smallest"], "a": 1}, " than a computer, so it is ", {"o": ["easy", "easier", "easiest"], "a": 1}, " to carry. However, a long letter can feel ", {"o": ["more special", "specialer", "most special"], "a": 0}, " than a quick text. My grandmother writes ", {"o": ["more slow", "slower", "slowest"], "a": 1}, " than I do, but her words are ", {"o": ["more kind", "kinder", "kindest"], "a": 1}, " than any emoji. Talking face to face is ", {"o": ["good", "better", "best"], "a": 1}, " than both."]}, {"id": "gm8", "grade": "7", "theme": "Science", "focus": "Present perfect", "title": "A Trip to the Space Centre", "intro": "Choose the correct present-perfect (or matching) form.", "parts": ["Our class ", {"o": ["has visited", "have visited", "visited"], "a": 0}, " the space centre today. Scientists ", {"o": ["has discovered", "have discovered", "discovers"], "a": 1}, " many new facts about Mars in recent years. “We ", {"o": ["has never seen", "have never seen", "never saw"], "a": 1}, " such clear photos before,” our guide said. Humans ", {"o": ["has not landed", "have not landed", "did not land"], "a": 1}, " on Mars yet, but robots ", {"o": ["has already explored", "have already explored", "explored already"], "a": 1}, " its surface. Since 2000, technology ", {"o": ["has improved", "have improved", "improves"], "a": 0}, " enormously, and space travel ", {"o": ["has become", "have become", "became"], "a": 0}, " safer than ever."]}, {"id": "gm9", "grade": "7", "theme": "History", "focus": "Past continuous & past simple", "title": "The Day the Dam Was Built", "intro": "Choose the correct past form.", "parts": ["While the engineers ", {"o": ["were planning", "was planning", "planned"], "a": 0}, " the dam, the villagers ", {"o": ["waited", "were waiting", "waits"], "a": 1}, " anxiously. One morning, as the workers ", {"o": ["were digging", "dug", "digging"], "a": 0}, ", they ", {"o": ["find", "found", "were finding"], "a": 1}, " ancient pottery in the ground. Everyone ", {"o": ["stopped", "was stopping", "stops"], "a": 0}, " to look. While experts ", {"o": ["examined", "were examining", "examine"], "a": 1}, " the objects, a journalist ", {"o": ["took", "was taking", "takes"], "a": 0}, " photographs. That discovery ", {"o": ["was changing", "changed", "change"], "a": 1}, " the whole project."]}, {"id": "gm10", "grade": "7", "theme": "AI", "focus": "Future forms (will / going to)", "title": "Robots in the Classroom", "intro": "Choose the correct future form.", "parts": ["Many experts believe that AI ", {"o": ["will change", "is changing", "changed"], "a": 0}, " education in the coming years. “Look at those plans — the school ", {"o": ["will", "is going to", "was going to"], "a": 1}, " install smart tutors next term,” said the principal. Some people worry that machines ", {"o": ["will replace", "replaced", "replacing"], "a": 0}, " teachers, but that ", {"o": ["will not", "is not going", "won’t be"], "a": 0}, " happen soon. A good teacher ", {"o": ["will always", "always will be", "is always going"], "a": 0}, " understand feelings better than a robot. “I think you ", {"o": ["will enjoy", "are enjoying", "enjoyed"], "a": 0}, " learning with AI,” she added, “but we ", {"o": ["will still need", "are still needing", "still needed"], "a": 0}, " each other.”"]}, {"id": "gm11", "grade": "7", "theme": "Media and art", "focus": "Superlatives", "title": "The School Film Festival", "intro": "Choose the correct superlative form.", "parts": ["This was ", {"o": ["the good", "the better", "the best"], "a": 2}, " film festival our school has ever held. Amira’s short film was ", {"o": ["the more creative", "the most creative", "the creativest"], "a": 1}, " of them all. It also had ", {"o": ["the funnier", "the funniest", "the most funny"], "a": 1}, " ending. The judges said it was ", {"o": ["the more original", "the originalest", "the most original"], "a": 2}, " entry. Yusuf won the prize for ", {"o": ["the better", "the best", "the goodest"], "a": 1}, " soundtrack, and Lina’s poster was ", {"o": ["the most colourful", "the colourfullest", "the more colourful"], "a": 0}, " in the hall. It was, honestly, ", {"o": ["the more exciting", "the excitingest", "the most exciting"], "a": 2}, " evening of the year."]}, {"id": "gm12", "grade": "7", "theme": "Education", "focus": "Modal verbs", "title": "Library Rules", "intro": "Choose the correct modal verb.", "parts": ["You ", {"o": ["must", "can", "might"], "a": 0}, " return your books on time; it is a rule. Students ", {"o": ["should not", "cannot", "need not"], "a": 0}, " eat near the shelves, because food ", {"o": ["can", "must", "should"], "a": 0}, " damage the pages. If you finish early, you ", {"o": ["must", "may", "should must"], "a": 1}, " read quietly in the corner. You ", {"o": ["don’t have to", "mustn’t", "can’t"], "a": 0}, " whisper the whole time, but you ", {"o": ["should", "must not", "need"], "a": 0}, " respect others. “Excuse me, ", {"o": ["could", "must", "should"], "a": 0}, " you help me find this title?” is a polite way to ask."]}, {"id": "gm13", "grade": "7", "theme": "Social media", "focus": "Conjunctions (although / because / so / however)", "title": "Screens and Balance", "intro": "Choose the correct linking word.", "parts": ["Social media can be useful ", {"o": ["although", "because", "so"], "a": 1}, " it helps friends stay in touch. ", {"o": ["Because", "However", "So"], "a": 1}, ", spending too long online can harm sleep. Maryam turns off her phone at nine, ", {"o": ["so", "although", "because"], "a": 0}, " she feels rested in the morning. ", {"o": ["However", "Although", "So"], "a": 1}, " she loves posting photos, she also enjoys the real world. She reads before bed ", {"o": ["so", "because", "however"], "a": 1}, " it relaxes her. “I still check my apps,” she says, “", {"o": ["so", "however", "but"], "a": 2}, " I set a timer.” Balance matters ", {"o": ["although", "because", "so"], "a": 1}, " our health comes first."]}, {"id": "gm14", "grade": "7", "theme": "Story", "focus": "Adverbs of manner & frequency", "title": "The Careful Detective", "intro": "Choose the correct adverb.", "parts": ["Detective Rashid works ", {"o": ["careful", "carefully", "more careful"], "a": 1}, " on every case. He ", {"o": ["always", "never", "usually not"], "a": 0}, " checks the smallest clues. He walked ", {"o": ["quiet", "quietly", "quiet ly"], "a": 1}, " into the room and looked around ", {"o": ["slow", "slowly", "more slow"], "a": 1}, ". “Something is wrong here,” he said ", {"o": ["calm", "calmly", "more calm"], "a": 1}, ". He ", {"o": ["rarely", "rare", "rarely ever more"], "a": 0}, " makes mistakes, because he thinks ", {"o": ["logical", "logically", "logic"], "a": 1}, ". In the end, he solved the mystery ", {"o": ["easy", "easily", "more easy"], "a": 1}, "."]}, {"id": "gm15", "grade": "8", "theme": "Science", "focus": "First conditional", "title": "The Experiment", "intro": "Choose the correct first-conditional form.", "parts": ["If we ", {"o": ["heat", "will heat", "heated"], "a": 0}, " the water, it ", {"o": ["boils", "will boil", "would boil"], "a": 1}, " at one hundred degrees. The reaction ", {"o": ["changes", "will change", "would change"], "a": 1}, " colour if we ", {"o": ["add", "will add", "added"], "a": 0}, " the powder slowly. “Unless you ", {"o": ["wear", "will wear", "wore"], "a": 0}, " goggles, you ", {"o": ["cannot", "will not can", "won’t able"], "a": 0}, " join the experiment,” the teacher warned. If the mixture ", {"o": ["gets", "will get", "got"], "a": 0}, " too hot, it ", {"o": ["overflows", "will overflow", "would overflow"], "a": 1}, ". We will record the results as soon as it ", {"o": ["cools", "will cool", "would cool"], "a": 0}, "."]}, {"id": "gm16", "grade": "8", "theme": "Environment", "focus": "Second conditional", "title": "If I Ran the City", "intro": "Choose the correct second-conditional form.", "parts": ["If I ", {"o": ["am", "was", "were"], "a": 2}, " the mayor, I ", {"o": ["will plant", "would plant", "planted"], "a": 1}, " a thousand trees. The air ", {"o": ["would be", "will be", "is"], "a": 0}, " cleaner if fewer cars ", {"o": ["enter", "entered", "would enter"], "a": 1}, " the centre. If people ", {"o": ["recycled", "would recycle", "recycle"], "a": 0}, " more, we ", {"o": ["will produce", "would produce", "produced"], "a": 1}, " far less waste. “If I ", {"o": ["could", "can", "will"], "a": 0}, " change one thing,” she said, “I ", {"o": ["will build", "would build", "built"], "a": 1}, " safe cycle lanes.” Sadly, nothing changes unless we ", {"o": ["act", "acted", "would act"], "a": 0}, "."]}, {"id": "gm17", "grade": "8", "theme": "History", "focus": "Passive voice", "title": "The Ancient Fort", "intro": "Choose the correct passive form.", "parts": ["The old fort ", {"o": ["built", "was built", "has building"], "a": 1}, " more than two hundred years ago. Its walls ", {"o": ["were made", "made", "was made"], "a": 0}, " of coral stone and mud. Every year, the site ", {"o": ["is visited", "visits", "is visiting"], "a": 0}, " by thousands of tourists. Recently, several rooms ", {"o": ["have been restored", "has restored", "restored"], "a": 0}, " by local experts. The project ", {"o": ["is funding", "is being funded", "funds"], "a": 1}, " by the government. “Nothing ", {"o": ["must be touched", "must touch", "touches"], "a": 0}, " without permission,” the guide explained. Soon a new museum ", {"o": ["will be opened", "will open it", "opens by"], "a": 0}, " beside the fort."]}, {"id": "gm18", "grade": "8", "theme": "Communication", "focus": "Reported speech", "title": "The Interview", "intro": "Choose the correct reported-speech form.", "parts": ["The journalist asked the scientist how long she ", {"o": ["has worked", "had worked", "works"], "a": 1}, " on the project. The scientist replied that she ", {"o": ["has spent", "had spent", "spends"], "a": 1}, " ten years on it. She said that the results ", {"o": ["are", "were", "will be"], "a": 1}, " promising. When asked whether she ", {"o": ["will", "would", "is going"], "a": 1}, " continue, she answered that she ", {"o": ["will", "would", "can"], "a": 1}, " never give up. She added that science ", {"o": ["needs", "needed", "had needed"], "a": 0}, " patience. Finally, she told the reporter that he ", {"o": ["could", "can", "will"], "a": 0}, " publish the story. The reporter said thank you and ", {"o": ["leaves", "left", "had left"], "a": 1}, "."]}, {"id": "gm19", "grade": "8", "theme": "Literature", "focus": "Relative clauses (who / which / whose / that)", "title": "The Author’s Study", "intro": "Choose the correct relative pronoun.", "parts": ["The novelist ", {"o": ["who", "which", "whose"], "a": 0}, " won the prize lives in a quiet town. The book ", {"o": ["who", "which", "whose"], "a": 1}, " made her famous took seven years to write. She works in a study ", {"o": ["who", "whose", "which"], "a": 2}, " has thousands of books. Readers ", {"o": ["which", "who", "whose"], "a": 1}, " love her stories send hundreds of letters. One reader, ", {"o": ["who", "whose", "which"], "a": 1}, " letter she keeps on her desk, is only twelve. The theme ", {"o": ["which", "who", "whose"], "a": 0}, " she explores most is courage. “A story ", {"o": ["who", "that", "whose"], "a": 1}, " teaches nothing,” she says, “is soon forgotten.”"]}, {"id": "gm20", "grade": "8", "theme": "Drama", "focus": "Mixed perfect tenses", "title": "Backstage Before the Play", "intro": "Choose the correct perfect tense.", "parts": ["By the time the curtain rose, the actors ", {"o": ["have rehearsed", "had rehearsed", "rehearse"], "a": 1}, " for months. “I ", {"o": ["have never felt", "had never feeling", "never have felt"], "a": 0}, " this nervous,” whispered Dana, who ", {"o": ["has performed", "had performed", "performing"], "a": 1}, " many times before. The director ", {"o": ["has just checked", "had just checked", "just checks"], "a": 1}, " the lights when a bulb broke. “We ", {"o": ["have solved", "had solved", "solving"], "a": 1}, " worse problems,” he said calmly. Since morning, the crew ", {"o": ["has been working", "have working", "had work"], "a": 0}, " without a break, and by tonight they ", {"o": ["will have earned", "have earned", "had earned"], "a": 0}, " their applause."]}, {"id": "gm21", "grade": "8", "theme": "AI", "focus": "Present perfect continuous & contrast", "title": "Learning with Machines", "intro": "Choose the correct form.", "parts": ["Researchers ", {"o": ["have been developing", "have developing", "has been developing"], "a": 0}, " language models for several years. Students ", {"o": ["have been using", "are used to use", "has been using"], "a": 0}, " AI tutors more and more, ", {"o": ["although", "because", "so"], "a": 0}, " teachers remain essential. “I ", {"o": ["have been practising", "have practised being", "am practising been"], "a": 0}, " my writing with feedback tools,” Omar said, “", {"o": ["so", "although", "however"], "a": 0}, " my essays have improved.” ", {"o": ["However", "Because", "So"], "a": 0}, ", experts warn that machines ", {"o": ["have been making", "have make", "has been making"], "a": 0}, " mistakes too. The debate ", {"o": ["has been growing", "have grown", "is grow"], "a": 0}, " ever since these tools ", {"o": ["appeared", "have appeared", "had appeared"], "a": 0}, "."]}];
+
+/* ================= GRAMMAR MAZE ================= */
+function mzGradeColor(g){ return g==='5\u20136'?'#0c8a72':(g==='7'?'#2b5fa6':'#8B5CF6'); }
+function mzPick(btn){
+  const gap=btn.closest('.mz-gap'); if(!gap || gap.dataset.locked==='1' || btn.disabled) return;
+  gap.querySelectorAll('.mz-opt').forEach(o=>o.classList.remove('sel'));
+  btn.classList.add('sel'); gap.dataset.sel=btn.dataset.i;
+}
+const MZ_STYLE='<style>'
+ +'.mz-text{font-size:1.12rem;line-height:2.5;color:#1f2340}'
+ +'.mz-gap{display:inline-flex;gap:4px;margin:0 4px;padding:2px 3px;background:#f4f2fb;border:1px solid #e7e2fb;border-radius:9px;vertical-align:middle}'
+ +'.mz-opt{font:inherit;font-size:.9rem;line-height:1.3;border:1px solid var(--line);background:#fff;border-radius:6px;padding:2px 8px;cursor:pointer;color:#1f2340}'
+ +'.mz-opt .mz-tag{font-weight:800;color:#8B5CF6;margin-right:4px}'
+ +'.mz-opt.sel{background:#8B5CF6;color:#fff;border-color:#8B5CF6}.mz-opt.sel .mz-tag{color:#fff}'
+ +'.mz-opt.correct{background:#e8f7f2;border-color:#0c8a72;color:#0c8a72;font-weight:600}.mz-opt.correct .mz-tag{color:#0c8a72}'
+ +'.mz-opt.wrong{background:#fdecec;border-color:#E6464B;color:#E6464B;text-decoration:line-through}.mz-opt.wrong .mz-tag{color:#E6464B}'
+ +'.mz-gpill{display:inline-block;font-size:.7rem;font-weight:800;padding:2px 9px;border-radius:999px;color:#fff}'
+ +'</style>';
+ROUTES.ylQuiz=function(){
+  try{speechSynthesis.cancel();}catch(e){}
+  const bands=['5–6','7','8'];
+  const labelOf={'5–6':'Grade 5–6','7':'Grade 7','8':'Grade 8'};
+  const mazeSecs=bands.map(b=>{
+    const rows=YL_MAZE.filter(m=>m.grade===b).map(m=>
+      '<div class="item-row" style="align-items:center"><div style="font-size:1.5rem">🧩</div>'
+      +'<div style="flex:1"><span class="mz-gpill" style="background:'+mzGradeColor(m.grade)+'">'+labelOf[m.grade]+'</span> '
+      +'<span class="genre-tag">'+esc(m.theme)+'</span> <b>'+esc(m.title)+'</b>'
+      +'<div class="meta">🎯 '+esc(m.focus)+' '+(typeof doneTag==='function'?doneTag('Young Learners','Grammar Maze — '+m.title):'')+'</div></div>'
+      +'<button class="btn sm" onclick="go(\'ylMazeRun\',\''+m.id+'\')">Start →</button></div>').join('');
+    return '<h3 style="margin:16px 0 6px"><span class="mz-gpill" style="background:'+mzGradeColor(b)+'">'+labelOf[b]+'</span></h3><div class="grid c2">'+rows+'</div>';
+  }).join('');
+  const quizTasks=YL_EXAM.filter(t=>['Vocabulary','Reading','Listening','Speaking'].indexOf(t.sk)>=0);
+  const quizRows=quizTasks.map(t=>'<div class="item-row" style="align-items:center"><div style="font-size:1.6rem">'+t.icon+'</div><div style="flex:1"><span class="genre-tag">'+t.sk+'</span> <b>'+esc(t.title)+'</b><div class="meta">🎯 '+esc(t.obj)+' '+(typeof doneTag==='function'?doneTag('Young Learners',t.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylExamTask\',\''+t.id+'\')">Start →</button></div>').join('');
+  app().innerHTML=MZ_STYLE+`
+  <div class="wrap screen">
+    <button class="back" onclick="go('ylhub')">← Young Learners</button>
+    <div class="stem-kicker" style="color:#e6464b">Exams &amp; Quizzes · check &amp; apply</div>
+    <h1 style="font-size:1.9rem">⚡ Exams &amp; Quizzes</h1>
+    <p style="color:var(--muted);max-width:680px">Practise grammar the way you meet it in real reading, then check other skills. Everything is multiple-choice and marked for a grade band. Submit to reveal the key.</p>
+    <h2 class="stem-h2" style="margin-top:14px">🧩 Grammar Mazes</h2>
+    <p style="color:var(--muted);margin:2px 0 6px;font-size:.9rem">Read a themed story and choose a / b / c at every gap — grammar-in-context that also builds reading.</p>
+    ${mazeSecs}
+    ${quizRows?`<h2 class="stem-h2" style="margin-top:22px">🎯 Skill Quizzes</h2><p style="color:var(--muted);margin:2px 0 6px;font-size:.9rem">Short practice for vocabulary, reading, listening and speaking.</p><div class="grid c2">${quizRows}</div>`:''}
+  </div>`;
+};
+ROUTES.ylMaze=ROUTES.ylQuiz;
+
+ROUTES.ylReading=function(){
+  try{speechSynthesis.cancel();}catch(e){}
+  const groups=[['A','Level A \u00b7 A1\u2013A2','emerging readers'],['B','Level B \u00b7 B1\u2013B2','developing readers'],['C','Level C \u00b7 C1\u2013C2','confident readers']];
+  const rowOf=r=>{ const m=r.meta||{}; const sub=m.genre?('\ud83d\udcd6 '+esc(m.genre)+' \u00b7 '+esc(m.lexile||'')+' \u00b7 '+esc(m.skill||'')):('\ud83c\udfaf '+esc(r.obj));
+    return '<div class="item-row" style="align-items:center"><div style="font-size:1.9rem">'+r.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+r.lv+'">'+r.lv+'</span> <b>'+esc(r.title)+'</b><div class="meta">'+sub+' '+(typeof doneTag==='function'?doneTag('Young Learners',r.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylReader\',\''+r.id+'\')">Open \u2192</button></div>'; };
+  const secs=groups.map(gr=>{ const lv=gr[0]; const rows=YL_READERS.filter(r=>r.lv===lv).map(rowOf).join('');
+    return rows?('<h2 class="stem-h2" style="margin-top:18px">'+gr[1]+' <span style="font-weight:400;color:var(--muted);font-size:.95rem">\u2014 '+gr[2]+'</span></h2><div class="grid c2">'+rows+'</div>'):''; }).join('');
+  app().innerHTML=`
+  <div class="wrap screen">
+    <button class="back" onclick="go('ylhub')">\u2190 Young Learners</button>
+    <div class="stem-kicker" style="color:#0FA98B">Reading \u00b7 read to discover</div>
+    <h1 style="font-size:1.9rem">\ud83d\udcd6 Reading</h1>
+    <p style="color:var(--muted);max-width:700px">Multimodal texts grouped by CEFR level, roughly in the <b>600\u20131000L</b> Lexile range. Every reader has a <b>Standard</b> and an <b>Extended</b> version, a visual to interpret, and a details panel like a real reading library. Full affordances: \ud83d\udd0a read-to-me \u00b7 A\u00b1 zoom \u00b7 tap any word for a live definition (opens vocabulary.com).</p>
+    ${secs}
+  </div>`;
+};
+ROUTES.ylWriting=function(){
+  try{speechSynthesis.cancel();}catch(e){}
+  const tasks=YL_EXAM.filter(t=>t.sk==='Writing' && t.id!=='e9');
+  const rows=tasks.map(t=>`<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">${t.icon}</div><div style="flex:1"><span class="genre-tag">${t.sk}</span> <b>${t.title}</b><div class="meta">🎯 ${t.obj} ${typeof doneTag==='function'?doneTag('Young Learners',t.title):''}</div></div><button class="btn sm" onclick="go('ylExamTask','${t.id}')">Start →</button></div>`).join('');
+  app().innerHTML=`
+  <div class="wrap screen">
+    <button class="back" onclick="go('ylhub')">← Young Learners</button>
+    <div class="stem-kicker" style="color:#e6608a">Writing · write to explain</div>
+    <h1 style="font-size:1.9rem">✍️ Writing</h1>
+    <p style="color:var(--muted);max-width:680px">Prompt-based tasks that grow from your reading, in two levels — <b>Standard</b> for emerging writers and <b>Extended</b> for stronger ones. Plan, write and <b>submit</b> to see two model answers: a weaker piece to learn from and a full-mark model to aim for.</p>
+    <div class="grid c2" style="margin-top:10px">${rows}</div>
+  </div>`;
+};
+
+ROUTES.ylDesign=function(){
+  try{speechSynthesis.cancel();}catch(e){}
+  const tasks=YL_EXAM.filter(t=>t.sk==='Design' || t.id==='e9');
+  const rows=tasks.map(t=>`<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">${t.icon}</div><div style="flex:1"><span class="genre-tag">${t.sk}</span> <b>${t.title}</b><div class="meta">🎯 ${t.obj} ${typeof doneTag==='function'?doneTag('Young Learners',t.title):''}</div></div><button class="btn sm" onclick="go('ylExamTask','${t.id}')">Start →</button></div>`).join('');
+  app().innerHTML=`
+  <div class="wrap screen">
+    <button class="back" onclick="go('ylhub')">← Young Learners</button>
+    <div class="stem-kicker" style="color:#8B5CF6">Designing · design to build</div>
+    <h1 style="font-size:1.9rem">🔧 Designing</h1>
+    <p style="color:var(--muted);max-width:680px">Read a brief, then design and build something from it. Plan it in writing, draw it in the Drawing Pad, and upload your artefact — a real Read → Write → Design loop.</p>
+    <div class="grid c2" style="margin-top:10px">${rows}</div>
+    <div style="margin-top:10px"><button class="btn ghost" onclick="ylDrawPad()">🎨 Open Drawing Pad</button></div>
+  </div>`;
+};
+
+ROUTES.ylMazeRun=function(id){
+  const mz=YL_MAZE.find(x=>x.id===id); if(!mz){go('ylMaze');return;}
+  try{speechSynthesis.cancel();}catch(e){}
+  let gi=0, body='';
+  mz.parts.forEach(p=>{
+    if(typeof p==='string'){ body+=esc(p); }
+    else {
+      body+='<span class="mz-gap" data-a="'+p.a+'" data-gi="'+gi+'">'
+        +p.o.map((o,j)=>'<button type="button" class="mz-opt" data-i="'+j+'" onclick="mzPick(this)"><span class="mz-tag">'+'abc'[j]+'</span>'+esc(o)+'</button>').join('')
+        +'</span>';
+      gi++;
+    }
+  });
+  const labelOf={'5\u20136':'Grade 5\u20136','7':'Grade 7','8':'Grade 8'};
+  app().innerHTML=MZ_STYLE+`
+  <div class="wrap screen">
+    <button class="back" onclick="go('ylMaze')">\u2190 All mazes</button>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:2px">
+      <span class="mz-gpill" style="background:${mzGradeColor(mz.grade)}">${labelOf[mz.grade]}</span>
+      <span class="genre-tag">${esc(mz.theme)}</span>
+      <span class="meta">\ud83c\udfaf ${esc(mz.focus)}</span>
+    </div>
+    <h1 style="font-size:1.7rem;margin:2px 0">\ud83e\udde9 ${esc(mz.title)}</h1>
+    <p style="color:var(--muted);margin:0 0 12px">${esc(mz.intro)}</p>
+    <div class="card"><div id="mzText" class="mz-text">${body}</div></div>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button id="mzSubmitBtn" class="btn" onclick="mzSubmit('${mz.id}')">Submit \u2713</button>
+      <button class="btn ghost" onclick="go('ylMaze')">\u2190 Back to mazes</button>
+    </div>
+    <div id="mzRes" style="margin-top:12px"></div>
+  </div>`;
+};
+function mzSubmit(id){
+  const mz=YL_MAZE.find(x=>x.id===id); if(!mz) return;
+  const gaps=document.querySelectorAll('#mzText .mz-gap'); let s=0; const m=gaps.length;
+  gaps.forEach(gap=>{
+    const a=+gap.dataset.a; const sel=(gap.dataset.sel!==undefined&&gap.dataset.sel!=='')?+gap.dataset.sel:-1;
+    gap.querySelectorAll('.mz-opt').forEach((o,j)=>{ o.classList.remove('sel'); if(j===a)o.classList.add('correct'); if(j===sel&&sel!==a)o.classList.add('wrong'); o.disabled=true; });
+    gap.dataset.locked='1'; if(sel===a) s++;
+  });
+  const pct=m?Math.round(s/m*100):0;
+  const face=pct>=80?'\ud83c\udf1f':(pct>=50?'\ud83d\udc4d':'\ud83d\udcaa');
+  const res=document.getElementById('mzRes');
+  if(res) res.innerHTML='<div class="scorebox"><div class="big">'+face+'</div><div><b>'+s+' / '+m+'</b> correct ('+pct+'%). Grammar focus: <b>'+esc(mz.focus)+'</b>. Green shows the key answer at each gap.</div></div>';
+  const btn=document.getElementById('mzSubmitBtn'); if(btn){ btn.disabled=true; btn.textContent='\u2713 Submitted'; }
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Young Learners',activity:'Grammar Maze \u2014 '+mz.title,score:s,max:m,percent:pct,detail:mz.focus+' \u00b7 Grade '+mz.grade}); }catch(e){} }
+}
+
+/* ================= YL ENGINE =================  */
+function ylActivityCount(){ return YL_READERS.length*3 + YL_EXAM.length + YL_MAZE.length; }
 function ylWrap(t){ return t.split(' ').map(w=>'<span class="ylw" onclick="ylWord(this)">'+w+'</span>').join(' '); }
 let YL_GLOSS={};
 function ylWord(el){
-  const raw=el.textContent.replace(/[^A-Za-z\u2019']/g,'').toLowerCase(); if(!raw) return;
+  const disp=el.textContent.replace(/[^A-Za-z\u2019'\-]/g,'');
+  const raw=disp.toLowerCase(); if(!raw) return;
   try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(raw); u.lang='en-GB'; u.rate=0.85; speechSynthesis.speak(u);}catch(e){}
-  document.querySelectorAll('.ylw-pop').forEach(p=>p.remove());
-  const pop=document.createElement('div'); pop.className='ylw-pop';
-  let entry = (YL_GLOSS && YL_GLOSS[raw]) || (window.YL_DICT && (YL_DICT[raw] || YL_DICT[raw.replace(/s$/,'')] || YL_DICT[raw.replace(/ed$/,'')] || YL_DICT[raw.replace(/ing$/,'')] || YL_DICT[raw.replace(/ies$/,'y')]));
-  // if the reader supplied only a plain string, wrap it
-  if(typeof entry==='string') entry={pos:'',def:entry,ex:''};
-  if(entry){
-    pop.innerHTML='<div class="ylw-word">🔊 '+raw+(entry.pos?' <em class="ylw-pos">('+entry.pos+')</em>':'')+'</div>'
-      +'<div class="ylw-def">'+esc(entry.def)+'</div>'
-      +(entry.ex?'<div class="ylw-ex">e.g. '+esc(entry.ex)+'</div>':'')
-      +(entry.syn?'<div class="ylw-syn">similar: '+esc(entry.syn)+'</div>':'');
-  } else {
-    pop.innerHTML='<div class="ylw-word">🔊 '+raw+'</div><div class="ylw-def">No entry in the class dictionary — try the 📖 dictionary tool at the top for a full definition.</div>';
+  ylCloseCard();
+  const pop=document.createElement('div'); pop.id='ylDictCard'; pop.className='aad-vocab-pop'; document.body.appendChild(pop);
+  pop.innerHTML='<div class="avp-head"><span class="avp-word">'+esc(disp)+'</span>'
+    +'<button class="avp-x" onclick="ylCloseCard()" aria-label="Close">\u2715</button></div>'
+    +'<div class="avp-def" style="color:var(--muted)">Looking it up\u2026</div>';
+  ylPositionCard(pop, el);
+  ylResolveWord(raw).then(function(d){
+    if(!document.body.contains(pop)) return;
+    const known=!!(d&&d.def);
+    pop.innerHTML='<div class="avp-head"><span class="avp-word">'+esc(disp)+'</span>'
+      +(d.pos?'<span class="avp-pos">'+esc(d.pos)+'</span>':'')
+      +'<button class="avp-x" onclick="ylCloseCard()" aria-label="Close">\u2715</button></div>'
+      +'<div class="avp-def">'+(known?esc(d.def):'Tap <b>Full entry \u2197</b> for a full definition, or ask your teacher.')+'</div>'
+      +(d.ex?'<div class="avp-ex">\u201c'+esc(d.ex)+'\u201d</div>':'')
+      +(d.syn?'<div class="avp-rel"><span><b>Similar:</b> '+esc(d.syn)+'</span></div>':'')
+      +'<div class="avp-actions">'
+      +'<button class="btn ghost sm" onclick="dictSpeakWord(\''+escq(raw)+'\')">\ud83d\udd0a Hear it</button>'
+      +'<a class="btn sm teal" href="https://www.vocabulary.com/dictionary/'+encodeURIComponent(raw)+'" target="_blank" rel="noopener">Full entry \u2197</a>'
+      +'<button class="btn sm" onclick="dictBank(\''+escq(raw)+'\',\''+escq((d&&d.def)||'')+'\',this)">+ Bank</button>'
+      +'</div>';
+    ylPositionCard(pop, el);
+  });
+  const close=function(ev){ if(!pop.contains(ev.target)&&ev.target!==el&&!(ev.target.closest&&ev.target.closest('.ylw'))){ ylCloseCard(); document.removeEventListener('click',close,true);} };
+  setTimeout(function(){ document.addEventListener('click',close,true); },50);
+}
+function ylCloseCard(){ const c=document.getElementById('ylDictCard'); if(c) c.remove(); document.querySelectorAll('.ylw-pop').forEach(p=>p.remove()); }
+function ylPositionCard(p, anchorEl){
+  try{
+    const r=anchorEl.getBoundingClientRect();
+    const pw=Math.min(330, window.innerWidth-24);
+    const left=Math.min(Math.max(12, r.left+window.scrollX), window.scrollX+window.innerWidth-pw-12);
+    p.style.position='absolute'; p.style.width=pw+'px';
+    p.style.left=left+'px'; p.style.top=(r.bottom+window.scrollY+8)+'px'; p.style.display='block';
+  }catch(e){}
+}
+async function ylResolveWord(raw){
+  /* live/online first, then reader glossary / bundled dict as offline fallback */
+  try{ if(typeof dictLookup==='function'){ const d0=await dictLookup(raw); if(d0 && d0.def) return d0; } }catch(_){}
+  let e = (typeof YL_GLOSS!=='undefined' && YL_GLOSS && YL_GLOSS[raw]) || null;
+  if(!e && typeof YL_DICT!=='undefined' && YL_DICT){
+    e = YL_DICT[raw]||YL_DICT[raw.replace(/s$/,'')]||YL_DICT[raw.replace(/ed$/,'')]||YL_DICT[raw.replace(/ing$/,'')]||YL_DICT[raw.replace(/ies$/,'y')]||null;
   }
-  el.appendChild(pop);
-  const close=(ev)=>{ if(!pop.contains(ev.target)&&ev.target!==el){ pop.remove(); document.removeEventListener('click',close,true);} };
-  setTimeout(()=>document.addEventListener('click',close,true),50);
-  setTimeout(()=>{ if(pop.parentNode) pop.remove(); },7000);
+  if(typeof e==='string') e={pos:'',def:e,ex:''};
+  if(e && e.def) return {word:raw, pos:e.pos||'', def:e.def, ex:e.ex||'', syn:e.syn||''};
+  try{ if(typeof dictLookup==='function'){ const d=await dictLookup(raw); if(d && d.def) return d; } }catch(_){}
+  return {word:raw, pos:(e&&e.pos)||'', def:(e&&e.def)||'', ex:(e&&e.ex)||'', syn:(e&&e.syn)||''};
 }
 /* ---------- Offline mini-dictionary: pos + definition + example + synonyms ---------- */
 const YL_DICT = {
@@ -13140,14 +13311,15 @@ function ylCheckTF(rootId){
 
 ROUTES.ylhub=function(){
   try{speechSynthesis.cancel();}catch(e){}
+  const box=(route,bg1,bg2,icon,title,sub,rwd)=>`<button class="yl-big" style="--bg1:${bg1};--bg2:${bg2};min-height:150px;align-items:flex-start;text-align:left" onclick="go('${route}')"><b style="font-size:1.15rem">${icon} ${title}</b><span>${sub}</span><span style="display:block;margin-top:auto;padding-top:8px;font-size:.72rem;opacity:.9;font-weight:700">${rwd}</span></button>`;
   app().innerHTML=`
   <div class="wrap screen">
     <button class="back" onclick="go('dashboard')">← Home</button>
     <div class="yl-hero"><div>
       <div class="stem-kicker" style="color:#ffe39a">iCAN Academy · Grades 1–8</div>
       <h1 style="color:#fff;margin:4px 0">🧒 Young Learners World</h1>
-      <p style="margin:0;opacity:.95;max-width:620px">Picture readers you can <b>listen to</b>, words you can <b>tap to hear</b>, quizzes you can <b>print</b>, and a game after every practice. Read it, write it, design it — the fun-sized edition!</p></div>
-      <div class="stem-hero-stats"><div><b>${ylActivityCount()}+</b><span>activities</span></div><div><b>${YL_MINI.length}</b><span>mini-quizzes</span></div><div><b>${YL_READERS.length*2}</b><span>texts<br>std + extended</span></div><div><b>🎮</b><span>game after<br>every practice</span></div></div>
+      <p style="margin:0;opacity:.95;max-width:660px">Choose where to go. Every component runs on one powerful idea — the <b>RWD loop</b>: read to discover, write to explain, design to build, then loop back and have fun.</p></div>
+      <div class="stem-hero-stats"><div><b>${YL_READERS.length}</b><span>picture<br>readers</span></div><div><b>${YL_MAZE.length}</b><span>grammar<br>mazes</span></div><div><b>4</b><span>learning<br>zones</span></div><div><b>🎮</b><span>game after<br>every read</span></div></div>
     </div>
     <div class="yl-tools"><b>🧰 Support tools:</b>
       <input id="ylDict" class="yl-in" style="min-width:150px" placeholder="look up a word…" onkeydown="if(event.key==='Enter')ylDictGo()">
@@ -13155,56 +13327,87 @@ ROUTES.ylhub=function(){
       <button class="btn sm ghost" onclick="ylDrawPad()">🎨 Drawing Pad</button>
       <button class="btn sm ghost" onclick="go('typing')">⌨️ Typing lessons</button>
       <button class="btn sm teal" onclick="ylLessonPlanDoc()">📥 Teacher lesson plan (Word)</button>
-      <span style="font-size:.78rem;color:var(--muted)">Affordances everywhere: 🔊 read-to-me · A± zoom · tap any word to hear it</span>
+      <span style="font-size:.78rem;color:var(--muted)">Affordances everywhere: 🔊 read-to-me · A± zoom · tap any word to hear it &amp; see its meaning</span>
     </div>
 
-    <h2 class="stem-h2">📚 Picture Library — readers with superpowers</h2>
-    <p style="color:var(--muted);margin:2px 0 10px;font-size:.9rem">Every reader: <b>Standard</b> text (quick quiz: 2 MCQ + 1 gap-fill) and an <b>Extended</b> text (double length: more MCQs, gap-fills, True/False/Not Given + a short written answer) — and a game at the end. Levels: 🟢 A (Gr 1–3) · 🔵 B (Gr 4–6) · 🟣 C (Gr 7–8).</p>
-    <div class="grid c2">${YL_READERS.map(r=>`<div class="item-row" style="align-items:center"><div style="font-size:1.9rem">${r.icon}</div><div style="flex:1"><span class="yl-lv yl-lv${r.lv}">${r.lv}</span> <b>${r.title}</b><div class="meta">🎯 ${r.obj} ${typeof doneTag==='function'?doneTag('Young Learners',r.title):''}</div></div><button class="btn sm" onclick="go('ylReader','${r.id}')">Open →</button></div>`).join('')}</div>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 10px;padding:10px 14px;background:linear-gradient(90deg,#eef7f2,#f3edfe);border:1px solid var(--line);border-radius:12px">
+      <b style="color:#15183A">The RWD approach:</b>
+      <span style="cursor:pointer;font-weight:700;color:#0FA98B" onclick="go('ylReading')">📖 Read to discover &amp; research</span>
+      <span style="color:var(--muted)">→</span>
+      <span style="cursor:pointer;font-weight:700;color:#e6608a" onclick="go('ylWriting')">✍️ Write to explain &amp; create</span>
+      <span style="color:var(--muted)">→</span>
+      <span style="cursor:pointer;font-weight:700;color:#8B5CF6" onclick="go('ylDesign')">🔧 Design to build &amp; apply</span>
+      <span style="color:var(--muted)">↻</span>
+      <span style="font-size:.82rem;color:var(--muted)">…and have fun</span>
+    </div>
 
-    <h2 class="stem-h2">🖼️ Interpreting Multimodal Texts</h2>
-    <p style="color:var(--muted);margin:2px 0 10px;font-size:.9rem">Read visuals AND a short companion text side by side. Answer questions that need thinking — not just looking — and connect verbal to non-verbal meaning.</p>
-    <div class="grid c2">${YL_MM.map(m=>`<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">${m.icon}</div><div style="flex:1"><span class="genre-tag">${m.mode}</span> <b>${m.title}</b><div class="meta">🎯 ${m.obj}</div></div><button class="btn sm" onclick="go('ylMM','${m.id}')">Read it →</button></div>`).join('')}</div>
-
-    <div class="grid c2" style="margin-top:20px">
-      <button class="yl-big" style="--bg1:#e6464b;--bg2:#F5A301" onclick="go('ylMini')"><b>⚡ 50 Mini-Quizzes</b><span>One question at a time — grammar, vocabulary, comprehension and design. Type, check, streak!</span></button>
-      <button class="yl-big" style="--bg1:#0FA98B;--bg2:#5B8DEF" onclick="go('ylExam')"><b>🎯 Exam Practice</b><span>Vocabulary · grammar · reading · listening · writing · speaking · design — online or printable PDF.</span></button>
-      <button class="yl-big" style="--bg1:#8B5CF6;--bg2:#e6608a" onclick="ylFlip()"><b>📖 Flipbook Maker</b><span>Write and draw your own comic or storybook, flip the pages, export a PDF and submit!</span></button>
-      <button class="yl-big" style="--bg1:#2f9e5f;--bg2:#5B8DEF" onclick="go('ylArcade')"><b>🎮 Game Arcade</b><span>Built-in learning games in full-screen pop-ups + trusted safe platforms to explore.</span></button>
+    <div class="grid c2" style="margin-top:4px">
+      ${box('ylReading','#0FA98B','#5B8DEF','📖','Reading','Picture readers in two levels — Standard for emerging readers and Extended for stronger ones — with full read-to-me and tap-a-word support.','RWD · Read to discover')}
+      ${box('ylWriting','#e6608a','#F5A301','✍️','Writing','Prompt-based writing with model answers shown on submit — differentiated so every writer can succeed.','RWD · Write to explain')}
+      ${box('ylDesign','#8B5CF6','#5B8DEF','🔧','Designing','Design and build an artefact from what you read — plan it, draw it, and upload your work.','RWD · Design to build')}
+      ${box('ylQuiz','#e6464b','#F5A301','⚡','Exams &amp; Quizzes','Grammar mazes and practice quizzes, each marked for a grade band: 5–6 · 7 · 8.','RWD · Check &amp; apply')}
     </div>
   </div>`;
 };
 function ylDictGo(){ const w=(val('ylDict')||'').trim(); if(!w) return; window.open('https://www.vocabulary.com/dictionary/'+encodeURIComponent(w),'_blank','noopener'); }
 
+function ylDetailsAside(r,v){
+  const m=r.meta||{};
+  const words=(typeof stemWordCount==='function'?stemWordCount(v.text||''):((v.text||'').split(/\s+/).filter(Boolean).length));
+  const mins=Math.max(2,Math.round(words/70));
+  const g=r.gloss||{}; let vocab=Object.keys(g);
+  if(r.vocab) r.vocab.forEach(x=>{ const w=Array.isArray(x)?x[0]:x; if(vocab.indexOf(w)<0) vocab.push(w); });
+  vocab=vocab.slice(0,6);
+  const vlinks=vocab.map(w=>'<li><a href="https://www.vocabulary.com/dictionary/'+encodeURIComponent(w)+'" target="_blank" rel="noopener" style="color:#0FA98B;font-weight:600;text-decoration:none">'+esc(w)+'</a></li>').join('');
+  const K=k=>'<div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;color:#8a6d3b;text-transform:uppercase;margin:12px 0 4px">'+k+'</div>';
+  const row=(k,val)=> val?('<div style="display:flex;gap:8px;margin:6px 0"><div style="flex:0 0 78px;font-size:.7rem;font-weight:800;letter-spacing:.03em;color:#8a6d3b;text-transform:uppercase;line-height:1.4">'+k+'</div><div style="flex:1;font-size:.86rem;color:#1f2340">'+val+'</div></div>'):'';
+  return '<div class="card" style="background:#faf7f0;border:1px solid #ece3cf">'
+    +'<div style="font-size:.7rem;font-weight:800;letter-spacing:.08em;color:#8a6d3b;text-transform:uppercase;margin-bottom:6px">Details</div>'
+    +row('Genre',esc(m.genre||''))
+    +row('Theme',esc(m.theme||''))
+    +row('Lexile',esc(m.lexile||''))
+    +row('Best for',esc(m.grades||''))
+    +row('Length',words+' words \u00b7 ~'+mins+' min')
+    +row('Reading skill',esc(m.skill||''))
+    +K('Key vocabulary')+'<ul style="margin:0;padding-left:18px;line-height:1.9">'+vlinks+'</ul>'
+    +K('Source')+'<div style="font-size:.8rem;color:var(--muted);font-style:italic">'+esc(m.source||'Original text written for iCAN (AI-assisted)')+'</div>'
+    +'</div>';
+}
 ROUTES.ylReader=function(compound){
   const [id, mode] = String(compound||'').split(':');
-  const r=YL_READERS.find(x=>x.id===id); if(!r){go('ylhub');return;}
+  const r=YL_READERS.find(x=>x.id===id); if(!r){go('ylReading');return;}
   try{speechSynthesis.cancel();}catch(e){}
   YL_GLOSS=r.gloss||{};
   const ext=(mode==='ext'); const v=ext?r.ext:r.std;
+  const cefr={A:'A1\u2013A2',B:'B1\u2013B2',C:'C1\u2013C2'}[r.lv]||'';
   app().innerHTML=`
   <div class="wrap screen">
-    <button class="back" onclick="go('ylhub')">← Young Learners</button>
-    <span class="yl-lv yl-lv${r.lv}">Level ${r.lv}</span>
+    <button class="back" onclick="go('ylReading')">\u2190 Reading</button>
+    <span class="yl-lv yl-lv${r.lv}">Level ${r.lv} \u00b7 ${cefr}</span>
     <h1 style="font-size:1.9rem">${r.icon} ${r.title}</h1>
-    <p class="note" style="margin:2px 0 8px">🎯 <b>Objective:</b> ${r.obj}</p>
+    <p class="note" style="margin:2px 0 8px">\ud83c\udfaf <b>Objective:</b> ${r.obj}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px">
-      <button class="btn sm ${ext?'ghost':''}" onclick="go('ylReader','${r.id}')">📄 Standard text</button>
-      <button class="btn sm ${ext?'':'ghost'}" onclick="go('ylReader','${r.id}:ext')">📚 Extended text</button>
+      <button class="btn sm ${ext?'ghost':''}" onclick="go('ylReader','${r.id}')">\ud83d\udcc4 Standard text</button>
+      <button class="btn sm ${ext?'':'ghost'}" onclick="go('ylReader','${r.id}:ext')">\ud83d\udcda Extended text</button>
     </div>
-    ${readerBar('ylTxt', `<button class="btn ghost sm" onclick="ylPrintReader('${r.id}','${ext?'ext':'std'}')">🖨️ Print / PDF</button>`, {dict:false, hl:false})}
-    <div class="card stem-visual">${r.scene}<div class="stem-vis-cap">👆 Tap any word below to hear it — words with a dotted line also show their meaning.</div></div>
-    <div class="card yl-text" id="ylTxt" style="line-height:2">${ylWrap(v.text)}</div>
-    <h3 class="sub">✅ Quick check ${ext?'(extended)':''}</h3>
-    <div id="ylQuiz">
-      ${ylMcqHTML('yq',v.mcq)}
-      ${ylGapHTML('yg',v.gap)}
-      ${ext?ylTFNG('yt',v.tfng):''}
-      ${ext?`<div class="field"><label>✍️ Short answer — ${v.short.q}</label><textarea id="ylShort" style="min-height:90px" oninput="document.getElementById('ylSw').textContent=stemWordCount(this.value)+' words (target 30–50)'"></textarea><div id="ylSw" style="font-size:.82rem;color:var(--muted)"></div></div>`:''}
+    ${readerBar('ylTxt', `<button class="btn ghost sm" onclick="ylPrintReader('${r.id}','${ext?'ext':'std'}')">\ud83d\udda8\ufe0f Print / PDF</button>`, {dict:false, hl:false})}
+    <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;margin-top:8px">
+      <div style="flex:1;min-width:300px">
+        <div class="card stem-visual">${r.scene}<div class="stem-vis-cap">\ud83d\udc46 Tap any word below to hear it \u2014 words with a dotted line also show their meaning.</div></div>
+        <div class="card yl-text" id="ylTxt" style="line-height:2">${ylWrap(v.text)}</div>
+        <h3 class="sub">\u2705 Quick check ${ext?'(extended)':''}</h3>
+        <div id="ylQuiz">
+          ${ylMcqHTML('yq',v.mcq)}
+          ${ylGapHTML('yg',v.gap)}
+          ${ext?ylTFNG('yt',v.tfng):''}
+          ${ext?`<div class="field"><label>\u270d\ufe0f Short answer \u2014 ${v.short.q}</label><textarea id="ylShort" style="min-height:90px" oninput="document.getElementById('ylSw').textContent=stemWordCount(this.value)+' words (target 30\u201350)'"></textarea><div id="ylSw" style="font-size:.82rem;color:var(--muted)"></div></div>`:''}
+        </div>
+        <button class="btn" onclick="ylReaderSubmit('${r.id}','${ext?'ext':'std'}')">Check my answers \u2192</button>
+        <div id="ylRes" style="margin-top:12px"></div>
+        <div class="yl-gamecard"><b>\ud83c\udfae You made it \u2014 game time!</b><p style="margin:4px 0 8px;font-size:.88rem">Every practice ends with play. Your game opens in its own big window.</p><button class="btn sm" style="background:#fff;color:var(--ink)" onclick="ylGame('${r.game}','${r.id}')">Play ${({catch:'Word Catch \ud83e\udee7',match:'Memory Match \ud83c\udccf',order:'Sentence Builder \ud83e\udde9',pop:'Spelling Balloons \ud83c\udf88'})[r.game]} \u2192</button></div>
+      </div>
+      <aside style="width:250px;flex:0 0 250px;max-width:100%">${ylDetailsAside(r,v)}</aside>
     </div>
-    <button class="btn" onclick="ylReaderSubmit('${r.id}','${ext?'ext':'std'}')">Check my answers →</button>
-    <div id="ylRes" style="margin-top:12px"></div>
-    <div class="yl-gamecard"><b>🎮 You made it — game time!</b><p style="margin:4px 0 8px;font-size:.88rem">Every practice ends with play. Your game opens in its own big window.</p><button class="btn sm" style="background:#fff;color:var(--ink)" onclick="ylGame('${r.game}','${r.id}')">Play ${({catch:'Word Catch 🫧',match:'Memory Match 🃏',order:'Sentence Builder 🧱',pop:'Spelling Balloons 🎈'})[r.game]} →</button></div>
   </div>`;
 };
 function ylReaderSubmit(id,mode){
