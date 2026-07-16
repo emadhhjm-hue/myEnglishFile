@@ -7340,11 +7340,225 @@ function drawSeal(x,cx,cy,t){
   x.fillStyle="#fff"; x.textAlign="center"; x.font="bold 22px Georgia"; x.fillText("★",cx,cy-2);
   x.font="bold 13px 'Lexend',sans-serif"; x.fillText("iCAN",cx,cy+18);
 }
+/* ===================== CERTIFICATE ARTWORK (shared) ===================== */
+
+/* The iCAN Academy RWD triad — canvas port of the hub's homepage logo.
+   Red R · green W · purple D, white hub, gold iteration arrow. */
+function drawRwdLogo(x, cx, cy, size){
+  const s = size/120;
+  x.save();
+  x.translate(cx, cy); x.scale(s, s); x.translate(-60, -59);
+  x.globalAlpha = 0.92;
+  x.fillStyle = '#E0403F'; x.beginPath(); x.arc(44, 46, 30, 0, 7); x.fill();
+  x.fillStyle = '#2BA84F'; x.beginPath(); x.arc(76, 46, 30, 0, 7); x.fill();
+  x.fillStyle = '#7A2FD0'; x.beginPath(); x.arc(60, 74, 30, 0, 7); x.fill();
+  x.globalAlpha = 1;
+  x.textAlign = 'center'; x.fillStyle = '#fff'; x.font = '700 16px Georgia, serif';
+  x.fillText('R', 33, 43); x.fillText('W', 87, 43); x.fillText('D', 60, 95);
+  x.globalAlpha = 0.92; x.fillStyle = '#fff';
+  x.beginPath(); x.arc(60, 57, 15, 0, 7); x.fill();
+  x.globalAlpha = 1;
+  x.strokeStyle = '#F5B301'; x.lineWidth = 4; x.lineCap = 'round';
+  x.beginPath(); x.arc(60, 58, 11, -Math.PI/2, Math.PI*0.92, false); x.stroke();
+  x.fillStyle = '#F5B301';
+  x.beginPath(); x.moveTo(49, 61); x.lineTo(46.5, 52); x.lineTo(55.5, 53.5); x.closePath(); x.fill();
+  x.restore();
+}
+
+/* Logo + name, top-left inside the frame.
+   No credit line here — it already sits under the teacher's signature, and the long
+   version overflowed the left border on narrower certificates. */
+function drawCertBrand(x, left, top, size){
+  drawRwdLogo(x, left + size/2, top + size/2, size);
+  x.textAlign = 'center';
+  x.fillStyle = '#15183A'; x.font = '800 15px Georgia, serif';
+  x.fillText('iCAN Academy', left + size/2, top + size + 18);
+}
+
+/* Which motif belongs to this certificate? */
+function certMotifKind(s){
+  s = (s||'').toLowerCase();
+  /* order matters: "Writing Studio" must not fall to the design rule,
+     and "Article-A-Day" must not match a bare /art/ — hence the word boundary. */
+  if (/spell|bee/.test(s))                          return 'bee';
+  if (/stem|stream|science|invent|mission/.test(s)) return 'rocket';
+  if (/writ|essay|oreo|revis|infer|grammar|mark &|justify/.test(s)) return 'quill';
+  if (/design|poster|\bart\b|drawing|paint/.test(s)) return 'palette';
+  return 'book';   /* reading, Article-A-Day, vocabulary, anything else */
+}
+
+function motifBee(x, r){
+  x.fillStyle = '#7FD4F5'; x.globalAlpha *= 0.62;
+  x.save(); x.rotate(-0.55); x.beginPath(); x.ellipse(-r*0.06, -r*0.78, r*0.30, r*0.56, 0, 0, 7); x.fill(); x.restore();
+  x.save(); x.rotate( 0.55); x.beginPath(); x.ellipse( r*0.06, -r*0.78, r*0.30, r*0.56, 0, 0, 7); x.fill(); x.restore();
+  x.globalAlpha /= 0.62;
+  x.fillStyle = '#F5B301'; x.beginPath(); x.ellipse(0, 0, r*0.62, r*0.82, 0, 0, 7); x.fill();
+  x.save(); x.beginPath(); x.ellipse(0, 0, r*0.62, r*0.82, 0, 0, 7); x.clip();
+  x.fillStyle = '#23201a';
+  [-0.42, -0.06, 0.30].forEach(o => x.fillRect(-r*0.7, r*o, r*1.4, r*0.17));
+  x.restore();
+  x.fillStyle = '#23201a'; x.beginPath(); x.arc(0, -r*0.94, r*0.30, 0, 7); x.fill();
+  x.fillStyle = '#fff';
+  x.beginPath(); x.arc(-r*0.12, -r*0.99, r*0.075, 0, 7); x.fill();
+  x.beginPath(); x.arc( r*0.12, -r*0.99, r*0.075, 0, 7); x.fill();
+  x.strokeStyle = '#23201a'; x.lineWidth = r*0.05; x.lineCap = 'round';
+  x.beginPath(); x.moveTo(-r*0.15, -r*1.16); x.quadraticCurveTo(-r*0.34, -r*1.44, -r*0.10, -r*1.52); x.stroke();
+  x.beginPath(); x.moveTo( r*0.15, -r*1.16); x.quadraticCurveTo( r*0.34, -r*1.44,  r*0.10, -r*1.52); x.stroke();
+  x.fillStyle = '#23201a';
+  x.beginPath(); x.moveTo(-r*0.11, r*0.80); x.lineTo(r*0.11, r*0.80); x.lineTo(0, r*1.06); x.closePath(); x.fill();
+}
+
+function motifBook(x, r){
+  x.fillStyle = '#ffffff'; x.strokeStyle = '#2b6cb0'; x.lineWidth = r*0.05; x.lineJoin = 'round';
+  [-1, 1].forEach(sd => {
+    x.beginPath();
+    x.moveTo(0, -r*0.60);
+    x.quadraticCurveTo(sd*r*0.55, -r*0.86, sd*r*1.06, -r*0.56);
+    x.lineTo(sd*r*1.06, r*0.64);
+    x.quadraticCurveTo(sd*r*0.55, r*0.36, 0, r*0.62);
+    x.closePath(); x.fill(); x.stroke();
+  });
+  x.strokeStyle = '#E0403F'; x.lineWidth = r*0.075;
+  x.beginPath(); x.moveTo(0, -r*0.60); x.lineTo(0, r*0.62); x.stroke();
+  x.strokeStyle = '#9fb6d4'; x.lineWidth = r*0.030;
+  for (let i = 0; i < 5; i++){
+    const yy = -r*0.36 + i*r*0.20;
+    x.beginPath(); x.moveTo(-r*0.92, yy); x.lineTo(-r*0.15, yy - r*0.05); x.stroke();
+    x.beginPath(); x.moveTo( r*0.15, yy - r*0.05); x.lineTo( r*0.92, yy); x.stroke();
+  }
+  x.fillStyle = '#F5B301';
+  x.beginPath(); x.moveTo(r*0.60, -r*0.72); x.lineTo(r*0.78, -r*0.76); x.lineTo(r*0.78, -r*0.18);
+  x.lineTo(r*0.69, -r*0.30); x.lineTo(r*0.60, -r*0.14); x.closePath(); x.fill();
+}
+
+function motifQuill(x, r){
+  x.save(); x.rotate(-0.30);
+  x.fillStyle = '#2b6cb0';
+  x.beginPath(); x.moveTo(-r*0.98, r*0.56); x.lineTo(-r*0.20, r*0.56);
+  x.lineTo(-r*0.34, r*1.08); x.lineTo(-r*0.84, r*1.08); x.closePath(); x.fill();
+  x.fillStyle = '#15183A'; x.beginPath(); x.ellipse(-r*0.59, r*0.56, r*0.39, r*0.10, 0, 0, 7); x.fill();
+  x.fillStyle = '#E0403F';
+  x.beginPath(); x.moveTo(r*0.58, -r*1.08);
+  x.quadraticCurveTo(r*0.02, -r*0.30, -r*0.46, r*0.66);
+  x.quadraticCurveTo(r*0.28, r*0.06, r*0.90, -r*0.62);
+  x.closePath(); x.fill();
+  x.strokeStyle = '#7A2FD0'; x.lineWidth = r*0.055; x.lineCap = 'round';
+  x.beginPath(); x.moveTo(r*0.64, -r*1.02); x.lineTo(-r*0.54, r*0.74); x.stroke();
+  x.fillStyle = '#F5B301';
+  x.beginPath(); x.moveTo(-r*0.46, r*0.62); x.lineTo(-r*0.30, r*0.72); x.lineTo(-r*0.60, r*0.90); x.closePath(); x.fill();
+  x.restore();
+}
+
+function motifPalette(x, r){
+  x.save(); x.rotate(-0.18);
+  x.fillStyle = '#f7ecd6'; x.strokeStyle = '#8a5a10'; x.lineWidth = r*0.05;
+  x.beginPath(); x.ellipse(0, 0, r*1.02, r*0.80, 0, 0, 7); x.fill(); x.stroke();
+  x.fillStyle = '#efe0c4';
+  x.beginPath(); x.ellipse(r*0.44, r*0.22, r*0.20, r*0.14, 0.3, 0, 7); x.fill();
+  ['#E0403F', '#F5B301', '#2BA84F', '#2b6cb0', '#7A2FD0'].forEach((c, i) => {
+    const a = -2.45 + i*0.52;
+    x.fillStyle = c; x.beginPath();
+    x.arc(Math.cos(a)*r*0.56, Math.sin(a)*r*0.44, r*0.135, 0, 7); x.fill();
+  });
+  x.restore();
+}
+
+function motifRocket(x, r){
+  x.save(); x.rotate(0.20);
+  x.fillStyle = '#F5B301';
+  x.beginPath(); x.moveTo(0, r*0.70); x.quadraticCurveTo(-r*0.26, r*1.10, 0, r*1.52);
+  x.quadraticCurveTo(r*0.26, r*1.10, 0, r*0.70); x.fill();
+  x.fillStyle = '#E0403F';
+  x.beginPath(); x.moveTo(-r*0.30, r*0.30); x.lineTo(-r*0.72, r*0.86); x.lineTo(-r*0.30, r*0.80); x.closePath(); x.fill();
+  x.beginPath(); x.moveTo( r*0.30, r*0.30); x.lineTo( r*0.72, r*0.86); x.lineTo( r*0.30, r*0.80); x.closePath(); x.fill();
+  x.fillStyle = '#ffffff'; x.strokeStyle = '#15183A'; x.lineWidth = r*0.045;
+  x.beginPath(); x.moveTo(0, -r*1.30);
+  x.quadraticCurveTo(r*0.40, -r*0.40, r*0.34, r*0.82);
+  x.lineTo(-r*0.34, r*0.82);
+  x.quadraticCurveTo(-r*0.40, -r*0.40, 0, -r*1.30);
+  x.closePath(); x.fill(); x.stroke();
+  x.fillStyle = '#2b6cb0'; x.beginPath(); x.arc(0, -r*0.30, r*0.20, 0, 7); x.fill();
+  x.fillStyle = '#7A2FD0';
+  x.beginPath(); x.moveTo(0, -r*1.30); x.quadraticCurveTo(r*0.22, -r*0.90, r*0.19, -r*0.70);
+  x.lineTo(-r*0.19, -r*0.70); x.quadraticCurveTo(-r*0.22, -r*0.90, 0, -r*1.30); x.closePath(); x.fill();
+  x.restore();
+}
+
+
+/* ---- Typographic background: a scatter of the words the activity is made of ----
+   Deterministic (fixed seed), so the same certificate always renders the same cloud.
+   Used by drawCert, where a pictorial motif read as a frame around the name. */
+function certCloudWords(label){
+  const s = (label||'').toLowerCase();
+  if (/typ|keyboard|wpm/.test(s))
+    return {letters:true,  words:['typing','WPM','accuracy','home row','speed','keys','rhythm','practice','fingers','QWERTY','typing','muscle memory','typing']};
+  if (/spell|bee/.test(s))
+    return {letters:true,  words:['spelling','letters','syllables','sound it out','patterns','listen','spell','vowels']};
+  if (/writ|essay|oreo|revis|infer|grammar|justify|mark &/.test(s))
+    return {letters:false, words:['writing','draft','revise','structure','evidence','voice','paragraph','because','edit','argument','so what?','plan']};
+  if (/design|poster|\bart\b|paint|drawing/.test(s))
+    return {letters:false, words:['design','layout','colour','image','audience','compose','shape','type','make']};
+  if (/stem|stream|invent|mission|science/.test(s))
+    return {letters:false, words:['design','build','test','iterate','prototype','measure','why?','make']};
+  return   {letters:false, words:['reading','meaning','inference','evidence','skim','scan','theme','author','because','text','notice']};
+}
+function drawWordCloud(x, W, H, label, alpha, inset){
+  const spec = certCloudWords(label);
+  const pool = spec.words.slice();
+  if (spec.letters) 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(c => pool.push(c));
+  const cols = ['#E0403F','#F5B301','#2BA84F','#2b6cb0','#7A2FD0'];
+  let seed = 20260716;
+  const rnd = () => { seed = (seed*1664525 + 1013904223) >>> 0; return seed/4294967296; };
+  const COLS = 7, ROWS = 6, cw = W/COLS, ch = H/ROWS;
+  x.save();
+  /* clip to the panel — words placed near the grid edge would otherwise
+     bleed past the border, which is exactly the bug this file keeps having */
+  const m = (inset == null ? 74 : inset);
+  x.beginPath(); x.rect(m, m, W - 2*m, H - 2*m); x.clip();
+  x.globalAlpha = (alpha == null ? 0.11 : alpha);
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  let i = 0;
+  for (let r = 0; r < ROWS; r++){
+    for (let c = 0; c < COLS; c++){
+      const w = pool[i % pool.length]; i++;
+      const px = cw*(c + 0.5) + (rnd() - 0.5)*cw*0.55;
+      const py = ch*(r + 0.5) + (rnd() - 0.5)*ch*0.55;
+      const single = w.length === 1;
+      const size = (single ? 44 : 26) + rnd()*(single ? 30 : 20);
+      x.save();
+      x.translate(px, py); x.rotate((rnd() - 0.5)*0.46);
+      x.fillStyle = cols[Math.floor(rnd()*cols.length)];
+      x.font = (single ? '800 ' : '700 ') + size.toFixed(0) + 'px Georgia, serif';
+      x.fillText(w, 0, 0);
+      x.restore();
+    }
+  }
+  x.restore();
+  x.globalAlpha = 1;
+}
+
+/* Big, colourful, activity-specific background art. Drawn behind everything. */
+function drawCertMotif(x, W, H, label, alpha){
+  const kind = certMotifKind(label);
+  const r = H*0.30;
+  x.save();
+  x.beginPath(); x.rect(52, 52, W - 104, H - 104); x.clip();
+  x.globalAlpha = (alpha == null ? 0.16 : alpha);
+  x.translate(W/2, H*0.52);
+  ({bee: motifBee, book: motifBook, quill: motifQuill,
+    palette: motifPalette, rocket: motifRocket}[kind] || motifBook)(x, r);
+  x.restore();
+  x.globalAlpha = 1;
+  return kind;
+}
+
 function drawCert(o){
-  const t=o.theme; const W=1240,H=880; const c=document.createElement('canvas'); c.width=W;c.height=H; const x=c.getContext('2d');
+  const t=o.theme; const W=1240,H=950; const c=document.createElement('canvas'); c.width=W;c.height=H; const x=c.getContext('2d');
   x.fillStyle="#fffef9"; x.fillRect(0,0,W,H);
   x.fillStyle=t.soft; x.fillRect(60,60,W-120,H-120);
   x.fillStyle="#fffef9"; x.fillRect(74,74,W-148,H-148);
+  // activity-specific typographic background — the words the activity is made of
+  drawWordCloud(x, W, H, (o.motif||o.titleText||o.subtitle||''), 0.11);
   // ---- faint embedded iCAN logo watermark (behind all text) ----
   x.save();
   x.textAlign="center"; x.fillStyle="rgba(21,24,58,0.05)"; x.font="800 250px Georgia";
@@ -7361,6 +7575,7 @@ function drawCert(o){
   const corner=(cx,cy,sx,sy)=>{ x.strokeStyle=t.a; x.lineWidth=4; x.beginPath(); x.moveTo(cx,cy+sy*56); x.lineTo(cx,cy); x.lineTo(cx+sx*56,cy); x.stroke();
     x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(cx+sx*13,cy+sy*42); x.lineTo(cx+sx*13,cy+sy*13); x.lineTo(cx+sx*42,cy+sy*13); x.stroke(); };
   corner(72,72,1,1); corner(W-72,72,-1,1); corner(72,H-72,1,-1); corner(W-72,H-72,-1,-1);
+  drawCertBrand(x, 100, 92, 96);
   x.textAlign="center";
   x.fillStyle=t.ink; x.font="600 22px 'Lexend',Georgia,sans-serif"; x.fillText((CONFIG.schoolName||"iCAN English Practice").toUpperCase(), W/2, 122);
   x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(W/2-130,136); x.lineTo(W/2+130,136); x.stroke();
@@ -7370,7 +7585,7 @@ function drawCert(o){
   x.fillStyle=t.a; roundRect(x, W/2-bw/2, 278, bw, 46, 23); x.fill();
   x.fillStyle="#fff"; x.fillText(o.band, W/2, 310);
   x.fillStyle="#666"; x.font="22px Georgia"; x.fillText("This is proudly presented to", W/2, 386);
-  let nf=72; x.font="italic bold "+nf+"px Georgia"; while(x.measureText(o.name).width>W-280 && nf>30){ nf-=2; x.font="italic bold "+nf+"px Georgia"; }
+  let nf=72; x.font="bold "+nf+"px Georgia"; while(x.measureText(o.name).width>W-280 && nf>30){ nf-=2; x.font="bold "+nf+"px Georgia"; }
   x.fillStyle=t.ink; x.fillText(o.name, W/2, 470);
   x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(W/2-300,492); x.lineTo(W/2+300,492); x.stroke();
   x.fillStyle="#555"; x.font="22px Georgia"; x.fillText(o.line1, W/2, 538);
@@ -7392,14 +7607,14 @@ function drawCert(o){
   // tagline footer
   x.fillStyle="#9a9488"; x.font="italic 14px Georgia";
   const tag=CONFIG.tagline||"iCAN — an RWD-aligned project for English proficiency.";
-  x.fillText(tag.length>120?tag.slice(0,118)+"…":tag, W/2, H-14);
+  x.fillText(tag.length>120?tag.slice(0,118)+"…":tag, W/2, H-80);
   return c.toDataURL("image/png");
 }
 function makeCertificate(o){
   const theme = o.band==="Outstanding" ? {a:"#b8860b",b:"#e7c766",ink:"#5a4500",seal:"#caa12e",soft:"#fbf3da"}
               : o.band==="At-level"   ? {a:"#0c8a72",b:"#7ec9b6",ink:"#073d33",seal:"#0c8a72",soft:"#e6f4f0"}
               :                          {a:"#2b5fa6",b:"#9bbdee",ink:"#10294d",seal:"#2b5fa6",soft:"#e8f0fb"};
-  return drawCert({band:o.band.toUpperCase(), subtitle:"Certificate of Achievement", name:o.name||"Student",
+  return drawCert({motif:(o.skill||o.title||''), band:o.band.toUpperCase(), subtitle:"Certificate of Achievement", name:o.name||"Student",
     line1:"has successfully completed", titleText:o.title||"an iCAN activity",
     statText:`Score  ${o.percent}%   ·   ${o.score}/${o.max}`, date:o.date||new Date().toLocaleDateString(), theme});
 }
@@ -7616,7 +7831,7 @@ function typingFinish(){
 function makeTypingCert(o){
   const themes={Fantastic:{a:"#b8860b",b:"#e7c766",ink:"#5a4500",seal:"#caa12e",soft:"#fbf3da"},Advanced:{a:"#7c3aed",b:"#c3aef0",ink:"#3b2470",seal:"#7c3aed",soft:"#f1ebff"},"Pre-advanced":{a:"#0c8a72",b:"#7ec9b6",ink:"#073d33",seal:"#0c8a72",soft:"#e6f4f0"},Proficient:{a:"#2b5fa6",b:"#9bbdee",ink:"#10294d",seal:"#2b5fa6",soft:"#e8f0fb"},Emerging:{a:"#d98324",b:"#eebb86",ink:"#5e3608",seal:"#d98324",soft:"#fdf0e0"},Struggling:{a:"#6b7280",b:"#bcc3cd",ink:"#2c333d",seal:"#6b7280",soft:"#eef0f3"}};
   const t=themes[o.band]||themes.Emerging;
-  return drawCert({band:o.band.toUpperCase(), subtitle:"Typing Achievement", name:o.name||"Student",
+  return drawCert({motif:'typing', band:o.band.toUpperCase(), subtitle:"Typing Achievement", name:o.name||"Student",
     line1:"has demonstrated touch-typing at the level of", titleText:o.band+" typist",
     statText:`${o.wpm} WPM   ·   ${o.acc}% accuracy   ·   ${Math.round(o.secs)}s`, date:o.date||new Date().toLocaleDateString(), theme:t});
 }
@@ -10858,6 +11073,7 @@ function certWrap(x,text,cx,cy,maxW,lh){
    the two knowledge ideas the student wrote + the words they banked.
    Kept small so the teacher/parents can see exactly what was submitted. */
 function drawAadWorkTable(x, cert, W, topY){
+  x.save();   /* this function switches textAlign to 'left'; never let that escape */
   const pal = tierPalette(normTier(cert.tier || certTier(cert.level)));
   const tableW = Math.round(W*0.68);
   const tX = (W-tableW)/2;
@@ -10921,23 +11137,26 @@ function drawAadWorkTable(x, cert, W, topY){
     wlines.forEach(ln=>{ x.fillText(ln, W/2, wy); wy+=16; });
     y += boxH;
   }
+  x.restore();
   return y;
 }
 
 function drawEarnedCert(cert){
   const tier = normTier(cert.tier || certTier(cert.level));
   const pal  = tierPalette(tier);
-  const W=1400, H=990;
+  const W=1400, H=1040;
   const cv=document.createElement('canvas'); cv.width=W; cv.height=H;
   const x = cv.getContext('2d');
   // background
   x.fillStyle=pal.bg; x.fillRect(0,0,W,H);
   // watermark
   x.save(); x.translate(W/2,H/2); x.rotate(-Math.PI/9); x.textAlign='center';
-  x.fillStyle=pal.primary; x.globalAlpha=0.06; x.font='900 200px Georgia';
+  x.fillStyle=pal.primary; x.globalAlpha=0.05; x.font='900 200px Georgia';
   x.fillText((cert.skill||'READING').toUpperCase(),0,-40);
   x.fillText('EXCELLENCE',0,150);
   x.restore();
+  // activity-specific background art (bee / book / quill / palette / keyboard / rocket)
+  drawCertMotif(x, W, H, (cert.skill||'')+' '+(cert.activity||''), 0.16);
   // double border + corner circles
   x.strokeStyle=pal.gold; x.lineWidth=2; x.strokeRect(30,30,W-60,H-60);
   x.strokeStyle=pal.primary; x.lineWidth=3; x.strokeRect(50,50,W-100,H-100);
@@ -10945,6 +11164,8 @@ function drawEarnedCert(cert){
     x.fillStyle=pal.primary; x.beginPath(); x.arc(cx,cy,12,0,7); x.fill();
     x.strokeStyle=pal.gold; x.lineWidth=2; x.beginPath(); x.arc(cx,cy,12,0,7); x.stroke();
   });
+  // iCAN Academy logo + credit, top-left inside the frame
+  drawCertBrand(x, 86, 78, 104);
   // Header text
   x.textAlign='center'; x.fillStyle=pal.primary;
   x.font='600 22px Georgia'; x.fillText('UAE MINISTRY OF EDUCATION', W/2, 110);
@@ -10987,8 +11208,10 @@ function drawEarnedCert(cert){
   x.fillStyle='#555'; x.font='500 20px Georgia';
   x.fillText(tier==='Participation' ? 'This certificate of participation is awarded to' : 'This certificate of achievement is awarded to', W/2, rY+rH+56);
   // student name — italic cursive-ish
-  x.fillStyle=pal.primary; x.font='italic 700 62px "Snell Roundhand","Brush Script MT",Georgia,serif';
-  x.fillText(cert.name||'Student Name', W/2, rY+rH+130);
+  x.fillStyle=pal.primary; x.font='700 56px Georgia,"Times New Roman",serif';
+  x.textAlign='center'; if(x.letterSpacing!==undefined) x.letterSpacing='1.5px';
+  x.fillText(cert.name||'Student Name', W/2, rY+rH+128);
+  if(x.letterSpacing!==undefined) x.letterSpacing='0px';
   // dot divider
   const dY=rY+rH+170;
   x.strokeStyle=pal.gold; x.lineWidth=1;
@@ -11006,37 +11229,39 @@ function drawEarnedCert(cert){
   }
 
   // motivational quote
+  x.textAlign='center';   /* the work table above draws left-aligned rows */
   x.fillStyle=pal.primary; x.font='italic 500 18px Georgia';
-  x.fillText('A reader today is a leader tomorrow.', W/2, H-215);
+  x.fillText('A reader today is a leader tomorrow.', W/2, H-258);
   // awarded on
-  x.fillStyle='#666'; x.font='italic 500 14px Georgia'; x.fillText('Awarded on', W/2, H-165);
+  x.fillStyle='#666'; x.font='italic 500 14px Georgia'; x.fillText('Awarded on', W/2, H-210);
   x.fillStyle=pal.primary; x.font='700 18px Georgia';
   const d=new Date(cert.date); const dateStr=d.toLocaleDateString('en',{weekday:'long', day:'numeric', month:'long', year:'numeric'});
-  x.fillText(dateStr, W/2, H-138);
-  x.strokeStyle=pal.gold; x.lineWidth=1.5; x.beginPath(); x.moveTo(W/2-100,H-125); x.lineTo(W/2+100,H-125); x.stroke();
+  x.fillText(dateStr, W/2, H-183);
+  const dW=Math.max(200, x.measureText(dateStr).width+40);
+  x.strokeStyle=pal.gold; x.lineWidth=1.5; x.beginPath(); x.moveTo(W/2-dW/2,H-170); x.lineTo(W/2+dW/2,H-170); x.stroke();
   // Left signature
   const sL=270;
   x.fillStyle=pal.primary; x.font='italic 700 44px "Snell Roundhand","Brush Script MT",cursive';
-  x.textAlign='center'; x.fillText(certInitials(cert.sig1)||'—', sL, H-150);
-  x.strokeStyle='#444'; x.lineWidth=1; x.beginPath(); x.moveTo(sL-110,H-125); x.lineTo(sL+110,H-125); x.stroke();
-  x.fillStyle=pal.primary; x.font='italic 700 17px Georgia'; x.fillText('Teacher: '+(cert.sig1||CONFIG.teacherName||''), sL, H-104);
-  x.fillStyle='#666'; x.font='600 11px Georgia'; x.fillText((cert.sig1t||CONFIG.teacherTitle||'Teacher').toUpperCase(), sL, H-86);
-  x.fillStyle='#8a8a8a'; x.font='500 10px Georgia'; x.fillText(CONFIG.teacherCredit||'', sL, H-70);
+  x.textAlign='center'; x.fillText(certInitials(cert.sig1)||'—', sL, H-195);
+  x.strokeStyle='#444'; x.lineWidth=1; x.beginPath(); x.moveTo(sL-110,H-170); x.lineTo(sL+110,H-170); x.stroke();
+  x.fillStyle=pal.primary; x.font='italic 700 17px Georgia'; x.fillText('Teacher: '+(cert.sig1||CONFIG.teacherName||''), sL, H-149);
+  x.fillStyle='#666'; x.font='600 11px Georgia'; x.fillText((cert.sig1t||CONFIG.teacherTitle||'Teacher').toUpperCase(), sL, H-131);
+  x.fillStyle='#8a8a8a'; x.font='500 10px Georgia'; x.fillText(CONFIG.teacherCredit||'', sL, H-115);
   // Right signature
   const sR2=W-270;
   x.fillStyle=pal.primary; x.font='italic 700 44px "Snell Roundhand","Brush Script MT",cursive';
-  x.fillText(certInitials(cert.sig2)||'—', sR2, H-150);
-  x.strokeStyle='#444'; x.lineWidth=1; x.beginPath(); x.moveTo(sR2-110,H-125); x.lineTo(sR2+110,H-125); x.stroke();
-  x.fillStyle=pal.primary; x.font='700 14px Georgia'; x.fillText((cert.sig2||'').toUpperCase(), sR2, H-104);
-  x.fillStyle='#666'; x.font='500 12px Georgia'; x.fillText(cert.sig2t||'Principal', sR2, H-84);
+  x.fillText(certInitials(cert.sig2)||'—', sR2, H-195);
+  x.strokeStyle='#444'; x.lineWidth=1; x.beginPath(); x.moveTo(sR2-110,H-170); x.lineTo(sR2+110,H-170); x.stroke();
+  x.fillStyle=pal.primary; x.font='700 14px Georgia'; x.fillText((cert.sig2||'').toUpperCase(), sR2, H-149);
+  x.fillStyle='#666'; x.font='500 12px Georgia'; x.fillText(cert.sig2t||'Principal', sR2, H-129);
   // Bottom footer with serial (aside)
   x.strokeStyle=pal.primary; x.lineWidth=1;
-  x.beginPath(); x.moveTo(60,H-45); x.lineTo(W-60,H-45); x.stroke();
+  x.beginPath(); x.moveTo(80,H-92); x.lineTo(W-80,H-92); x.stroke();
   x.fillStyle='#666'; x.font='600 12px Georgia'; x.textAlign='left';
-  x.fillText((cert.activity||'iCAN')+' \u00b7 iCAN Read \u00b7 Write \u00b7 Design', 60, H-25);
+  x.fillText((cert.activity||'iCAN')+' \u00b7 iCAN Read \u00b7 Write \u00b7 Design', 80, H-68);
   x.textAlign='right';
   x.fillStyle=pal.primary; x.font='700 13px Georgia';
-  x.fillText(`No. ${cert.serial||''}`, W-60, H-25);
+  x.fillText(`No. ${cert.serial||''}`, W-80, H-68);
   return cv.toDataURL('image/png');
 }
 
