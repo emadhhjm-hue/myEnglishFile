@@ -162,6 +162,29 @@ textarea{min-height:150px; resize:vertical; line-height:1.6}
   .lu-dash{display:none}
   .lu-time{align-self:center}
 }
+/* ---- Writing Studio: scripts nested under one prompt ---- */
+.lu-prompt{border:1px solid var(--line); border-left:5px solid var(--sk,#E0403F); border-radius:12px;
+  background:#fff; padding:12px 14px; margin-bottom:8px}
+.lu-prompt-head{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap}
+.lu-prompt-head .lu-lab{font-family:"Lexend"; font-weight:700; font-size:.95rem; color:var(--ink)}
+.lu-prompt-head .lu-range{margin-left:auto; font-size:.76rem; color:var(--muted); white-space:nowrap}
+.lu-task{margin:6px 0 10px; font-size:.82rem; color:var(--muted); line-height:1.45;
+  background:#f7f8fb; border-radius:8px; padding:8px 10px}
+.lu-subs{display:flex; flex-direction:column; gap:5px}
+.lu-sub{display:flex; align-items:center; gap:10px; width:100%; text-align:left; cursor:pointer;
+  border:1px solid var(--line); border-radius:9px; padding:8px 12px; background:#fbfbfd;
+  transition:transform .1s ease, background .1s ease}
+.lu-sub:hover{transform:translateX(3px); background:#eef2ff}
+.lu-sub:focus-visible{outline:3px solid var(--teal); outline-offset:2px}
+.lu-script{font-family:"Lexend"; font-weight:700; font-size:.85rem; color:var(--ink); white-space:nowrap}
+.lu-desc{flex:1; min-width:0; font-size:.83rem; color:var(--muted); overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.lu-mark{font-family:"Lexend"; font-weight:700; font-size:.76rem; color:#fff; background:var(--bd,#888);
+  border-radius:50px; padding:3px 9px; white-space:nowrap; flex-shrink:0}
+.lu-code{font-size:.74rem; color:var(--muted); width:30px; text-align:right; flex-shrink:0}
+@media(max-width:640px){
+  .lu-sub{flex-wrap:wrap}
+  .lu-desc{flex-basis:100%; white-space:normal; order:3}
+}
 .strand-head{margin:26px 0 2px}
 .strand-head h2{font-family:"Lexend"; font-size:1.15rem; margin:0; color:var(--ink)}
 .strand-head p{margin:2px 0 0; font-size:.85rem; color:var(--muted); max-width:640px}
@@ -4028,11 +4051,11 @@ const ROUTES = {
   /* ---------------- WRITING STUDIO (Unit 4) ---------------- */
   wstudio(){
     const total=MARKING.length+REVISE.length+INFER.length+OREO.length;
-    const unit=(n,icon,title,colour,obj,rows)=>`<div class="lu-unit">
+    const unit=(n,icon,title,colour,obj,rows,countLabel)=>`<div class="lu-unit">
       <div class="lu-head">
         <span class="lu-badge" style="--sk:${colour}">Unit ${n}</span>
         <h2>${icon} ${title}</h2>
-        <span class="lu-count">${rows.length} lesson${rows.length===1?'':'s'}</span>
+        <span class="lu-count">${countLabel||(rows.length+' lesson'+(rows.length===1?'':'s'))}</span>
       </div>
       <p class="lu-obj">${obj}</p>
       <div class="lu-list">${rows.join('')}</div>
@@ -4042,15 +4065,41 @@ const ROUTES = {
       <button class="back" onclick="go('writingCourse')">← Writing Course</button>
       <div class="meta">Writing Course · Studio</div>
       <h1 style="font-size:2.1rem">🧪 Writing Studio: Reflection on Real-Exam Responses</h1>
-      <p style="color:var(--muted);max-width:740px">Real exam responses across the full range of scores — from <b>25/25 down to zero</b>, several on the same prompt so you can compare them — plus inference and opinion practice. Four units, <b>${total} lessons</b>, in the order a writer needs them: <b>judge</b> the standard, <b>think</b> from evidence, <b>build</b> an argument, then <b>repair</b> weak writing. Each lesson keeps its class code (<b>M1</b>, <b>I1</b>, <b>O1</b>, <b>R1</b>) on the right.</p>
+      <p style="color:var(--muted);max-width:740px">Real exam responses across the full range of scores — from <b>25/25 down to zero</b>, grouped so that every script you compare answered the <b>same prompt</b>. Four units, in the order a writer needs them: <b>judge</b> the standard, <b>think</b> from evidence, <b>build</b> an argument, then <b>repair</b> weak writing. ${total} activities in total. Each keeps its class code (<b>M1</b>, <b>I1</b>, <b>O1</b>, <b>R1</b>) on the right.</p>
 
-      ${unit(1,'⚖️','Know the Standard · Mark &amp; Justify','#E0403F',
-        'You cannot hit a standard you cannot see. Mark real responses against the official EoT rubric and justify every decision — the examiner\'s real marks and reasoning appear only after you submit. Scripts tagged Exemplary scored 24–25/25: mark them yourself before you look.',
-        MARKING.map((m,i)=>luRow({unitN:1, lessonN:i+1, icon:m.zero?'🚫':'⚖️', name:m.title,
-          strap:(m.real?'Real exam response':'Practice script'), colour:'#E0403F', done:false,
-          meta:'M'+(i+1)+' · '+(m.zero?'Why zero?':markBand(markTotal(m.scores))),
-          onclick:`go('markTask','${m.id}')`}))
-      )}
+      ${(function(){
+        const sets=MARK_SETS.slice(); const orph=markOrphans();
+        if(orph.length) sets.push({id:"ms_other", name:"Other scripts", sk:"#64748b", task:"Various prompts.",
+          note:"Scripts not yet grouped under a prompt set.", ids:orph.map(m=>m.id)});
+        const rows=sets.map((set,si)=>{
+          const scripts=markSetScripts(set)
+            .map(m=>({m:m, t:markTotal(m.scores)||0, z:!!m.zero}))
+            .sort((a,b)=>b.t-a.t);
+          const hi=scripts[0], lo=scripts[scripts.length-1];
+          const range=scripts.length===1 ? (hi.z?'0/25':hi.t+'/25')
+            : (hi.z?'0':hi.t)+'/25 → '+(lo.z?'0':lo.t)+'/25';
+          return `<div class="lu-prompt" style="--sk:${set.sk}">
+            <div class="lu-prompt-head">
+              <span class="lu-lab">Lesson 1-${si+1}: ${set.name}</span>
+              <span class="lu-range">${scripts.length} response${scripts.length===1?'':'s'} · ${range}</span>
+            </div>
+            <div class="lu-task"><b>The prompt \u2014 every script below answers this:</b><br>${set.task}</div>
+            <p style="font-size:.82rem;color:var(--muted);margin:0 0 10px">${set.note}</p>
+            <div class="lu-subs">${scripts.map((s,i)=>{
+              const bd=markBandColour(s.t,s.z);
+              return `<button class="lu-sub" style="--bd:${bd}" onclick="go('markTask','${s.m.id}')">
+                <span class="lu-script">Script ${SCRIPT_LETTERS[i]||(i+1)}</span>
+                <span class="lu-mark">${s.z?'0/25':s.t+'/25'}</span>
+                <span class="lu-desc">${s.m.title}</span>
+                <span class="lu-code">${markCode(s.m.id)}</span>
+              </button>`;
+            }).join('')}</div>
+          </div>`;
+        }).join('');
+        return unit(1,'\u2696\ufe0f','Know the Standard \u00b7 Mark &amp; Justify','#E0403F',
+          'You cannot hit a standard you cannot see. Each lesson below is <b>one exam prompt</b>; the scripts under it are real responses to <i>that same prompt</i>, ordered from the highest mark to the lowest. Mark each one yourself against the official EoT rubric and justify it \u2014 the examiner\'s real marks and reasoning appear only after you submit. The question is never how good the writing is; it is why <i>this</i> answer to <i>this</i> task earned <i>that</i> number.',
+          [rows], sets.length+' prompts · '+MARKING.length+' scripts');
+      })()}
 
       ${unit(2,'🔎','Read the Evidence · Infer &amp; Justify','#0E7C7B',
         'Good writing starts as good thinking. Read a short text, work out what is implied, and back your reading with evidence from the page — the habit every body paragraph depends on.',
@@ -8252,8 +8301,425 @@ gud tecr`,
   { id:"mk_zero_blank", zero:true, title:"No response", prompt:`Write about the end-of-term exam. (≥100 words)`,
     response:`(The student left the answer space completely blank.)`,
     scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
-    zeroReason:`Award ZERO — no response is attempted. Nothing is written, so there is no evidence of writing skill to assess against any criterion.` }
+    zeroReason:`Award ZERO — no response is attempted. Nothing is written, so there is no evidence of writing skill to assess against any criterion.` },
+
+/* ===== Practice scripts written for iCAN (real:false). Marks and reasoning follow the
+   official EoT rubric, but these are NOT student work and are never labelled as such. ===== */
+
+{ id:"mk_eot_full", practice:true, title:"Three reasons, three paragraphs (full marks)",
+  prompt:`Write about the end-of-term exam. Include: why we have it; what topics will be in the essay question; how to write a good essay. Write at least 100 words.`,
+  response:`Every term ends the same way: with an exam that everyone complains about and nobody skips. It is worth asking what it is actually for.
+
+We have the end-of-term exam because it is the only honest check on what we have learned. Homework can be copied and a teacher's opinion can be kind. An exam is neither. It tells the school what to reteach and it tells us, uncomfortably, what we only thought we knew.
+
+The essay question is drawn from the topics we have studied this term. It is usually social: technology, the environment, education, or the way young people live now. It is never a surprise. Anyone who has read the unit titles already knows the field.
+
+Writing a good essay is a matter of obedience before flair. Answer all three bullets, one per paragraph. Plan for four minutes. Use linking words so the examiner can see the joints. Then leave two minutes to read it back, because half the marks lost in this room are lost to errors the writer would have caught.
+
+The exam is not designed to defeat you. It is designed to find out whether you were there.`,
+  scores:{task:5,structure:5,grammar:5,vocab:5,spelling:5},
+  notes:`198 words. Full marks, and notice how little it does that is clever.
+
+Task: all three bullets answered, one paragraph each, in the order the prompt gives them. The examiner never has to hunt. That is worth 5 on its own.
+
+Structure: an introduction that frames a question, three body paragraphs, a one-line conclusion that lands. "It is worth asking what it is actually for" sets up everything after it.
+
+Vocabulary earns its 5 not through long words but through precise ones — "an honest check", "obedience before flair", "the joints". Compare the 21/25 in this set, which reaches for "furthermore" and "in conclusion" and says less.
+
+The lesson: this script has no ambition beyond doing exactly what was asked, extremely well. Full marks are not a reward for brilliance. They are a reward for control.` },
+
+{ id:"mk_eot_near", practice:true, title:"The revision plan (24/25 — lost on vocabulary)",
+  prompt:`Write about the end-of-term exam. Include: why we have it; what topics will be in the essay question; how to write a good essay. Write at least 100 words.`,
+  response:`The end-of-term exam is a very important exam for all students. In this essay I will write about why we have this important exam, what topics are in it, and how to write a good essay.
+
+Firstly, we have the exam because it is important for the school to know what students have learned. It is important for students too, because they can see their level. It is also important for parents, because they get the report. So the exam is important for everybody.
+
+Secondly, the topics in the essay question are usually important topics from our units. For example technology, the environment, and education. These are important topics that we study in class, so we should revise them carefully before the exam.
+
+Finally, to write a good essay you should make a plan first. Write about all the bullet points. Use linking words like firstly, secondly and finally. Check your spelling at the end. Also manage your time carefully, because time is very important in the exam.
+
+In conclusion, the end-of-term exam is an important exam and students should prepare for it carefully.`,
+  scores:{task:5,structure:5,grammar:5,vocab:4,spelling:5},
+  notes:`182 words. 24/25 — and the single lost mark is the whole lesson.
+
+Everything mechanical is correct. Task: all three bullets, covered fully. Structure: introduction, three signposted paragraphs, conclusion — the shape is textbook, and it earns its 5. Grammar: not one error. Spelling: not one error.
+
+Vocabulary scores 4. Count the word "important": it appears nine times in 182 words. The descriptor for 5 asks for a range of vocabulary used appropriately; this script has one adjective and deploys it wherever an opinion is required. "Important topics", "important exam", "important for everybody" — the word has stopped meaning anything and become a noise the writer makes before the real word.
+
+Compare this with the 25/25 in this set, which never once says "important" and is unmistakably an argument about the same thing.
+
+Set this beside the 24/25 in the "What shapes us" lesson — that one lost its mark elsewhere entirely. Two scripts, same total, different failure. That is what the rubric is for: it does not measure how good an essay is, it measures five separate things and adds them up.` },
+
+{ id:"mk_weather_full", practice:true, title:"The shamal (full marks)",
+  prompt:`Discuss a type of extreme weather. Include: a description of the extreme weather event; how scary you believe it can be; whether you have experienced one. Write at least 180 words.`,
+  response:`The shamal is a north-westerly wind that arrives over the Gulf without much warning and rearranges the country for a day or two. It lifts sand from the desert floor and carries it in a wall that can reach two kilometres into the air. From a distance it looks like a mountain range that has decided to travel.
+
+Inside it, the world simplifies. The sun becomes a coin. Cars switch on their headlights at noon and still cannot see the next vehicle. The sound is the strangest part: not a howl but a hiss, millions of grains against glass, and it does not stop.
+
+I do not find it frightening, exactly, and I think the reason is worth explaining. A shamal will not kill you if you are indoors, and everyone here knows to be indoors. What it produces is not fear but a kind of forced humility — the recognition that the desert is still the landlord and we are all, permanently, tenants.
+
+I experienced one in 2022, driving back from Liwa with my uncle. We pulled onto the hard shoulder and waited ninety minutes. He turned the engine off, and we sat, and he said nothing at all, which was unlike him. When it passed, the road ahead had a curved dune across it that had not existed that morning.
+
+A road crew cleared it by evening. The dune will be back.`,
+  scores:{task:5,structure:5,grammar:5,vocab:5,spelling:5},
+  notes:`251 words. Full marks.
+
+Task: all three bullets, and note the third is answered with an actual event — a date, a place, a person, a duration. "Whether you have experienced one" invites a yes or no; this script gives ninety minutes on a hard shoulder and an uncle who said nothing.
+
+The second bullet is where this script separates from the 22/25. Asked how scary the weather is, the 22 says it is very scary and gives reasons. This one says it is not, and then earns the answer: "not fear but a kind of forced humility". Refusing the expected answer is risky and it works, because the refusal is argued.
+
+Vocabulary: "the desert is still the landlord and we are all, permanently, tenants" — one image doing what a paragraph of adjectives could not. "The sun becomes a coin" is four words.
+
+The ending is worth studying. "The dune will be back." Five words, no conclusion phrase, no "in conclusion". The examiner did not need one.
+
+What to take from this: full marks did not require unusual English. They required the writer to have actually been there, and to say the true thing rather than the expected one.` },
+
+{ id:"mk_money_full", practice:true, title:"Spend it on the boring things (full marks)",
+  prompt:`In your opinion, how should countries spend their money? Include: the reasons for your choice; who the money will benefit; how the money will be used. Write at least 180 words.`,
+  response:`Ask most people how a country should spend its money and they will name something visible: a hospital, a stadium, a tower. I would spend it on the things nobody photographs.
+
+My choice is maintenance. Not new schools — the roofs of the ones we have. Not a new water network, but the pipes already under the road, of which a startling share leaks before the water arrives anywhere. Maintenance is the least popular use of public money because a minister cannot open a repaired pipe, and it is the most efficient because the asset already exists and is already paid for.
+
+Who benefits is the strongest part of the argument. New projects benefit whoever lives near them. Maintenance benefits everyone who already depends on what was built, which in a developed country is nearly the entire population, and disproportionately those who cannot afford a private alternative. A family with a car is indifferent to a broken bus. A family without one is not.
+
+How it would be used is unglamorous and specific: a published national register of public assets, an annual inspection, and a legal requirement that a fixed percentage of every construction budget is set aside for the following twenty years of upkeep before the first stone is laid.
+
+This is the least exciting essay I could have written. That is rather the point: countries do not usually fail because they cannot build. They fail because they cannot be bothered to look after what they built.`,
+  scores:{task:5,structure:5,grammar:5,vocab:5,spelling:5},
+  notes:`254 words. Full marks.
+
+Task: the three bullets are answered in order — reasons, who benefits, how it is used — and each gets a full paragraph. The opinion is stated in the first line and never wobbles.
+
+What lifts this above the 21/25 in the same set is that it commits. The 21 says money should go to education and health and infrastructure, which is three opinions and therefore none. This one picks a single unpopular position and defends it for four paragraphs. Examiners are not marking whether they agree.
+
+Structure: notice the third paragraph. "How it would be used" could have been vague; instead it produces three specific mechanisms — a register, an inspection, a set-aside rule. Specificity is the cheapest way to earn Task marks and almost nobody does it.
+
+Vocabulary: "unglamorous", "indifferent", "disproportionately", "a startling share" — range, and each in its right place.
+
+The last paragraph does something risky: it calls itself boring. It works because it converts the weakness into the argument. Do not imitate this unless the rest of the essay has earned it.` },
+
+{ id:"mk_money_near", practice:true, title:"Health first (24/25 — lost on grammar)",
+  prompt:`In your opinion, how should countries spend their money? Include: the reasons for your choice; who the money will benefit; how the money will be used. Write at least 180 words.`,
+  response:`In my opinion, countries should spend the largest part of their money on healthcare, and I will explain why I believe this so strongly.
+
+The first reason is simple. A country cannot function if its people are unwell. A sick worker does not work, a sick child does not learn, and a sick parent cannot look after anybody. Every other national ambition — the economy, education, even defence — quietly assumes a population healthy enough to turn up. Healthcare is not one priority among many. It is the condition that make the others possible.
+
+The people who benefit are, obviously, everyone, but not equally. A wealthy family can fly abroad for treatment; a poor family cannot. When a country underfunds its hospitals, the rich barely notice and the poor absorb the whole cost. Public healthcare is therefore not only a health policy. It is the most direct instrument of fairness a government has.
+
+As for how the money should be used, I would put it into prevention rather than cure. Vaccination programmes, early screening, clean water, and health education in schools are all far cheaper than treating the diseases they prevent. A dirham spent on prevention saves several later. Hospitals will always be needed, but a country that only builds hospitals has decided to pay full price forever.
+
+To conclude, healthcare deserves first claim on public money because everything else depends on it, and prevention deserves first claim within healthcare because it is the only spending that reduces future spending.`,
+  scores:{task:5,structure:5,grammar:4,vocab:5,spelling:5},
+  notes:`248 words. 24/25 — grammar 4, everything else 5.
+
+Find the error before you read on.
+
+It is in paragraph two: "It is the condition that make the others possible." The subject is "the condition", singular; the verb must be "makes". A single subject–verb agreement slip in 248 words.
+
+Now the hard question, and it is the reason this script is in the set: is one error worth a whole mark? The descriptor for 5 requires grammar to be accurate throughout with only minor slips that do not affect meaning. Examiners differ on this, and a defensible case exists for 5. The mark given was 4, on the reasoning that the error sits in the essay's thesis sentence — the one line the whole argument rests on.
+
+That is the lesson. Marks are not lost in proportion to the size of the error. They are lost in proportion to where it lands. The same slip in the third paragraph would very likely have been waved through.
+
+Compare with the 24/25 in the end-of-term set, which is grammatically perfect and lost its mark on vocabulary. Same total, opposite profile.
+
+And compare with the 25/25 in this set: also an opinion essay, also committed, also specific — and it does not contain the sentence that costs a mark.` },
+{ id:"mk_arch_full", practice:true, title:"The shade of the old souq (full marks)",
+  prompt:`In your opinion, how does architecture influence people's lives? Include: what it means to you; its importance in the UAE; two examples. Write at least 200 words.`,
+  response:`Architecture is the only art form you cannot decline. You can close a book or leave a gallery. You cannot leave a building you have to be in every day, and so it works on you whether you are paying attention or not.
+
+To me it means the difference between a place that expects you and a place that tolerates you. A corridor with a window at the end says something. The same corridor without one says something else, and neither says it out loud.
+
+In the UAE this matters more than it does in a temperate country, because here architecture is not decoration — it is the difference between a street being usable and being empty. Get it wrong and the public realm simply closes for six months of the year.
+
+My first example is the old souq in Al Ain. Its lanes are narrow, and the buildings almost touch overhead. This was not a style; it was a calculation. Narrow lanes are shaded lanes, and a shaded lane is ten degrees cooler and therefore a place where people stop, talk, and trade. The architecture did not decorate the community. It produced it.
+
+My second is a shopping mall, and I offer it without contempt. A mall in this climate is the only fully public, fully air-conditioned space many families have. It has become our town square by default. That is architecture influencing life so completely that we no longer notice the influence — we simply call it Friday.
+
+The souq solved the heat with a wall. The mall solved it with a compressor. Both are answers to the same question, and the buildings we live in are always, quietly, someone's answer to something.`,
+  scores:{task:5,structure:5,grammar:5,vocab:5,spelling:5},
+  notes:`276 words. Full marks.
+
+Task: three bullets, three clear movements — what it means, why it matters here, two examples — and both examples are genuinely developed rather than named.
+
+The mark of this script is that both examples do argumentative work. Compare the 16/25 in this set, which names Burj Khalifa and Sheikh Zayed Mosque and then says they are beautiful and famous. Naming is not exemplifying. This script asks what a narrow lane is *for* and arrives at a claim: "The architecture did not decorate the community. It produced it."
+
+The second example is the risk. A mall is an unimpressive choice, and the writer knows it — "I offer it without contempt". Choosing the ordinary example and taking it seriously is harder than reaching for the famous one, and it earns more.
+
+Vocabulary: "a place that expects you and a place that tolerates you", "our town square by default", "someone's answer to something". Precision, not decoration.
+
+The opening claim — you cannot decline architecture — is the thesis, and every paragraph after it is a proof. Full marks reward that kind of spine.` },
+
+{ id:"mk_arch_low", practice:true, title:"Buildings are very nice (9/25)",
+  prompt:`In your opinion, how does architecture influence people's lives? Include: what it means to you; its importance in the UAE; two examples. Write at least 200 words.`,
+  response:`Architecture is very important in our life. Architecture means the buildings and the design of the buildings. In my opinion architecture is very nice and it influence people's lives in many ways.
+
+Architecture is important in the UAE because the UAE have many beautiful buildings. Tourists come from all the world to see this buildings and take photos. This is good for the economy and the tourism. Also the UAE is famous for the modern architecture and everyone know this.
+
+The first example is Burj Khalifa. Burj Khalifa is the tallest building in the world and it is in Dubai. It is very tall and very beautiful and many tourists visit it every year. It make the UAE famous.
+
+The second example is Sheikh Zayed Mosque. It is a very beautiful mosque in Abu Dhabi and it is very big. Many people go there to pray and tourists go there to see it. It is white and beautiful.
+
+In conclusion architecture is very important and very nice. The UAE have very good architecture and we should be proud of our buildings because they are beautiful and famous in all the world.`,
+  scores:{task:2,structure:2,grammar:2,vocab:2,spelling:1},
+  notes:`188 words — under the 200 required. 9/25.
+
+This is the most useful script in the set, because nothing about it looks like failure. It is polite, on topic, organised into paragraphs, and it names two real buildings. A student would read it back and feel it went fine.
+
+Task 2: the second bullet — what architecture means *to you* — is never answered. "Architecture means the buildings and the design of the buildings" is a definition, not a meaning. The third bullet is answered by naming, not by explaining influence. Nothing here says how any building changed anybody's life.
+
+Structure 2: five paragraphs and no argument. Each one restates the last. Remove any paragraph and the essay is unchanged, which is the test it fails.
+
+Grammar 2: "it influence", "the UAE have", "this buildings", "everyone know", "it make". Subject–verb agreement collapses repeatedly.
+
+Vocabulary 2: "very nice", "very beautiful", "very big", "very tall". "Beautiful" appears six times; "very" appears eleven.
+
+Spelling 1: not because words are misspelled — they are not — but because the descriptor covers punctuation, and there are almost no commas where they are needed.
+
+Set this against the 25/25. Same prompt, same two countries' worth of famous buildings available, and one writer asked what a building *does* while the other asked what it *is*.` },
+
+{ id:"mk_arch_zero", practice:true, title:"The prompt, written out four times (zero)", zero:true,
+  prompt:`In your opinion, how does architecture influence people's lives? Include: what it means to you; its importance in the UAE; two examples. Write at least 200 words.`,
+  response:`In my opinion how does architecture influence people's lives. Include what it means to you. Include its importance in the UAE. Include two examples. Write at least 200 words in paragraphs.
+
+In my opinion architecture influence people's lives and it means to me and it is important in the UAE and two examples. Write at least 200 words in paragraphs.
+
+In my opinion how does architecture influence people's lives, what it means to me, its importance in the UAE, two examples, at least 200 words, in paragraphs, in my opinion.
+
+Architecture influence people's lives. What it means to you. Its importance in the UAE. Two examples. In my opinion how does architecture influence people's lives in the UAE with two examples in at least 200 words.`,
+  scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
+  zeroReason:`117 words of the prompt, copied and reshuffled. Zero.
+
+Look at what this student did, because it is not laziness and it is not nothing. They have understood the question. They have identified all three bullets. They have even noticed the word-count instruction and tried to meet it. Every skill here is a comprehension skill, and it is all pointed at survival rather than writing.
+
+The rubric has no row for effort. Task asks whether the response addresses the prompt; recycling the prompt's own words addresses nothing. There is no content to assess, so every row scores zero — and a zero on Task takes the rest with it.
+
+Why it matters that you read this one: a student who does this is usually not incapable. They are out of time, or frozen, or convinced that a blank page is worse than a full one. It is not. Compare with the blank script in the end-of-term set: both score zero, and the blank one took thirty seconds while this took fifteen minutes that could have produced a real paragraph.
+
+Fifty honest words scores more than two hundred copied ones. That is not a moral point. It is arithmetic: fifty honest words can earn 1 or 2 on Task, and this earns 0.` },
+
+{ id:"mk_space_full", practice:true, title:"We are not going because it is fun (full marks)",
+  prompt:`Write about space travel in the future. Include: why people will go to space; why space travel is dangerous; why people might want to live on different planets. Write at least 100 words.`,
+  response:`People will keep going to space for a reason that is rarely stated honestly: not because it is inspiring, but because it is useful. Almost everything we now take for granted — weather forecasts, navigation, the phone signal that makes this sentence possible — comes down from orbit. The romance is real, but the budget is practical.
+
+It is dangerous in a way that is easy to underestimate, because the danger is not dramatic. Films show explosions. The real threats are quieter: radiation that damages a body slowly over months, muscle and bone that waste in the absence of gravity, and the fact that a vehicle travelling at 28,000 kilometres per hour has no margin for a mistake the size of a paint fleck.
+
+As for living on other planets, I am sceptical of the usual answer. People say we will need a second home because we are ruining the first. But Mars has no air, no water we can drink, and no magnetic field, and the worst version of Earth is still kinder than the best version of Mars. If we cannot look after a planet that is already habitable, we will not manage one that is not.
+
+The better reason to go is smaller and harder to argue with: we are a species that goes and looks. We always have. That is not a justification. It is just true.`,
+  scores:{task:5,structure:5,grammar:5,vocab:5,spelling:5},
+  notes:`234 words against a 100-word minimum. Full marks.
+
+Task: all three bullets, each with a genuine position rather than a report. The third bullet is where this script earns its 5 — asked why people might want to live on other planets, it argues that the popular reason is wrong, and then supplies a better one. The prompt did not ask for agreement.
+
+Structure: four paragraphs, one idea each, no linking words at all. Read that again — no "firstly", no "in conclusion". The paragraphs are so clearly separated that signposting would be noise. Signposting earns marks when it is needed; here its absence is control.
+
+Vocabulary and precision: "28,000 kilometres per hour", "a mistake the size of a paint fleck", "no magnetic field". Specific facts do double duty — they earn vocabulary marks and they make the argument true.
+
+"The romance is real, but the budget is practical" — this is the sentence that tells the examiner the writer is thinking rather than remembering.
+
+Note the ending refuses to be grand. "That is not a justification. It is just true." Compare with the 15/25 in this set, which ends "space travel is very exciting for the future of humanity".` },
+
+{ id:"mk_space_near", practice:true, title:"Orbit, danger, Mars (24/25 — lost on structure)",
+  prompt:`Write about space travel in the future. Include: why people will go to space; why space travel is dangerous; why people might want to live on different planets. Write at least 100 words.`,
+  response:`Space travel has always fascinated humanity, and in the coming decades it will move from an extraordinary event to an ordinary industry. People will go to space for research, for resources, and increasingly for money — satellites already earn more than they cost, asteroid mining is being seriously proposed, and several companies now sell seats to anyone who can afford one. The scientific motive and the commercial motive have stopped competing and started reinforcing each other, which is usually the point at which a technology stops being rare, and space travel is dangerous for reasons that most people never think about, because the obvious danger is the launch and the real dangers are slower — cosmic radiation accumulating in the body over a long mission, bone density falling by roughly one per cent a month in weightlessness, and the psychological strain of confinement with the same five people for two years, and living on another planet appeals for two reasons, one good and one bad: the bad one is escape, the idea that we can exhaust Earth and move, which is a fantasy given that Mars is colder, drier and more hostile than any desert here; the good one is insurance, the argument that a species confined to a single planet is one asteroid away from ending, and that is a serious argument, and it deserves a serious answer.
+
+So the future of space travel is likely to be commercial, dangerous, and worth it.`,
+  scores:{task:5,structure:4,grammar:5,vocab:5,spelling:5},
+  notes:`241 words. 24/25 — and the lost mark is not where students expect.
+
+Task 5: every bullet is answered, and answered with real content — one per cent a month, two years of confinement, the escape-versus-insurance distinction. The thinking is genuinely good, arguably better than some full-mark scripts in other sets.
+
+Grammar 5, Vocabulary 5, Spelling 5. There is not a single error in this script.
+
+Structure 4. Look at the second paragraph: it is 210 words long and it contains all three bullets. The writer has answered everything and buried it. Three separate arguments — commerce, danger, colonisation — are welded into one paragraph with "and", and the reader must do the sorting the writer should have done.
+
+The prompt says "in paragraphs" for a reason. Paragraphing is not decoration; it is how a reader is told where one idea ends. This script would have scored 25 with two carriage returns and no other change.
+
+That is the most valuable fact in this entire unit. A mark was lost to formatting, not to English.
+
+Compare across the sets: 24/25 lost on vocabulary (end-of-term), 24/25 lost on grammar (money), 24/25 lost on structure (here). Same total, three different holes. The rubric is five separate questions, and a strong writer can be strong in four of them.` },
+
+{ id:"mk_space_low", practice:true, title:"Space is very interesting (9/25)",
+  prompt:`Write about space travel in the future. Include: why people will go to space; why space travel is dangerous; why people might want to live on different planets. Write at least 100 words.`,
+  response:`Space travel in the future will be very interesting and very exciting. Many people want to go to the space in the future because it is a dream for many peoples.
+
+People will go to space because they want to discover the space and see the stars and the planets. Also the scientists go to space to make experiments and to know more about the space. Space is very big and we don't know everything about it.
+
+Space travel is dangerous because there is no oxygen in the space and it is very cold. Also the rocket can explode and the astronauts can die. So it is very dangerous and the astronauts must be very brave.
+
+Some people want to live in other planets like Mars because the Earth have many problems like the pollution and the population. Maybe in the future we can live in Mars but I think it is very difficult because there is no water and no air in Mars.
+
+In conclusion space travel is very interesting and I hope in the future I can go to the space.`,
+  scores:{task:3,structure:2,grammar:2,vocab:1,spelling:1},
+  notes:`183 words. 9/25 — and note it exceeds the 100-word minimum comfortably. Length was never the problem.
+
+Task 3: this is the script's strongest row, and it is worth understanding why. All three bullets *are* addressed, in order, one per paragraph. Everything the writer says is true. It scores 3 rather than 5 because each bullet is answered at the level of a fact anyone already knows — space is cold, rockets explode, Mars has no water. Nothing is developed.
+
+Structure 2: paragraphs exist but do no work. There is no argument to organise, so the shape is a container rather than a design.
+
+Grammar 2: "many peoples", "the Earth have", "to make experiments", and "the space" with a definite article throughout — a first-language transfer error, repeated eleven times.
+
+Vocabulary 1: "very interesting", "very exciting", "very big", "very cold", "very dangerous", "very brave", "very difficult". Seven "verys" and no other intensifier. This is the row where this script and the 25/25 are furthest apart, and it is the row students most often think does not matter.
+
+Spelling 1: covers punctuation. There are no commas anywhere in the script.
+
+Compare with the 14/25 and 15/25 in this set. The gap between 9 and 15 is not vocabulary or grammar — it is that the mid scripts develop one idea past its first sentence.` },
+
+{ id:"mk_space_zero", practice:true, title:"The reading passage, copied out (zero)", zero:true,
+  prompt:`Write about space travel in the future. Include: why people will go to space; why space travel is dangerous; why people might want to live on different planets. Write at least 100 words.`,
+  response:`[The response consists of 214 words copied verbatim from the reading text in Part 2 of the same examination paper — an article about the International Space Station's water recycling system. It is copied accurately, including one typographical error present in the original, and including the article's final sentence, which is cut off mid-clause where the writer ran out of room.
+
+Nothing has been added. No sentence of the student's own appears anywhere on the page.]`,
+  scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
+  zeroReason:`Zero, and this one is worth more discussion than the others in the unit.
+
+The examiner identified it in under ten seconds. The tell was not the quality — the English is flawless, because it is a published article. The tell was that it was flawless, and that the marker had just read the same paragraph forty times that morning in Part 2.
+
+Every row scores zero. Not one word is the candidate's, so there is nothing of theirs to assess. Task, Structure, Grammar, Vocabulary and Spelling all measure what the writer can do; a copied text measures what a journalist could do.
+
+The cut-off final sentence matters. It tells you this student was copying to fill a space, not because they believed it answered the question — they never reached an ending, because there was no ending in mind.
+
+Two things to take from this script. First, the practical one: reading passages and essay questions in the same paper are often on the same topic, which makes the passage look like a gift. It is a trap, and examiners are not fooled by it even slightly.
+
+Second, the harder one: this is a student who spent fifteen minutes writing 214 words of excellent English and scored zero, when four sentences of their own would have scored something. Compare with the 9/25 in this set — that student's English is far weaker and they walked away with nine marks, because the words were theirs.` },
+
+{ id:"mk_social_full", practice:true, title:"The problem is not the phone (full marks)",
+  prompt:`Discuss the effects of social media on young people. Include: one benefit; one problem; your own opinion. Write at least 150 words.`,
+  response:`Every conversation about social media and young people begins in the wrong place. It asks whether the technology is good or bad, as though a tool could be either.
+
+The benefit is real and it is usually described too narrowly. People say social media helps us stay connected, which is true and thin. The sharper benefit is that it ends isolation for people who were isolated by geography or circumstance — the only person in a village who writes poetry, the teenager with an illness nobody around them has heard of, the girl whose particular obsession has forty enthusiasts worldwide and none in her city. Before this, those people simply grew up alone. Now they do not. That is not a small thing dressed as a big one.
+
+The problem is not screen time, which is the number everyone measures because it is the number that is easy to measure. The problem is comparison. These platforms deliver, all day, a curated feed of other people's best moments, and a developing sense of self is asked to grade itself against a highlight reel it believes is ordinary life. The mechanism is not the hours. It is that the hours are spent measuring.
+
+My own opinion is that the panic is aimed at the wrong target. We keep debating whether to ban phones, which is a conversation about hardware. The question that would actually help is why the products are built to be difficult to put down — and that is a question for the companies, not for the children.`,
+  scores:{task:5,structure:5,grammar:5,vocab:5,spelling:5},
+  notes:`251 words. Full marks.
+
+Task: three bullets, and each one refuses the obvious version. Asked for a benefit, it rejects "staying connected" as thin and produces something specific. Asked for a problem, it rejects screen time and names comparison. Asked for an opinion, it re-aims the whole question.
+
+That refusal pattern is the entire lesson. Compare with the 14/25 in this set, which says social media helps us stay in touch with friends but can be addictive. Both scripts contain the same two ideas. One of them examined those ideas and one of them recited them.
+
+Structure: the opening claim — this conversation begins in the wrong place — is a promise, and the last paragraph pays it. Everything between belongs.
+
+Vocabulary: "curated feed", "a highlight reel it believes is ordinary life", "not a small thing dressed as a big one". Range used for precision, never for display.
+
+The concrete list in paragraph two — the village poet, the ill teenager, the girl with forty fellow enthusiasts worldwide — is doing what "many people benefit" cannot. Three imagined examples cost twenty words and earn the Task mark outright.` },
+
+{ id:"mk_social_near", practice:true, title:"Connection and comparison (24/25 — lost on task)",
+  prompt:`Discuss the effects of social media on young people. Include: one benefit; one problem; your own opinion. Write at least 150 words.`,
+  response:`Social media has reshaped adolescence more thoroughly than any technology since the television, and the results are neither uniformly good nor uniformly bad.
+
+The clearest benefit is access. A teenager today can learn a language, follow a laboratory's research, watch a surgeon explain a procedure, or find a community of people who share an interest that nobody in their school has heard of. Two decades ago all of this was gated behind money, geography, or luck. That gate is now largely open, and it opened for everybody at once, which is historically unusual.
+
+The clearest problem is comparison. The feed is a highlight reel presented as a diary. Young people, whose sense of self is still forming, measure their ordinary Tuesday against several hundred other people's best days, and lose, every time, all day. Researchers have linked this to rising anxiety, though causation remains genuinely contested and honest writers should say so.
+
+There is also the question of attention. These products are engineered by very capable people whose job is to make them difficult to stop using, and it is strange that we describe the resulting behaviour as a failure of teenage willpower rather than as a design achievement.
+
+Social media is neither a catastrophe nor a triumph. It is a powerful tool handed to people at the exact age when they are least equipped to use it carefully, and that is a problem of sequencing rather than of technology.`,
+  scores:{task:4,structure:5,grammar:5,vocab:5,spelling:5},
+  notes:`237 words. 24/25 — and the lost mark is in the row students least expect, because this script is better written than several 25s.
+
+Structure, Grammar, Vocabulary, Spelling: all 5. There is nothing wrong with the English. "The feed is a highlight reel presented as a diary" is as good a sentence as anything in the full-mark script.
+
+Task 4. Read the prompt again: **one** benefit, **one** problem, your own opinion. This script gives one benefit, and then two problems — comparison, and then attention and product design. The fourth paragraph is the best paragraph in the essay and it is the reason for the lost mark.
+
+This feels unfair, and it is worth sitting with that feeling. The rubric's Task row asks whether the response does what was asked. It did more, and more is not the same as what was asked. In an exam, a bullet list is a specification.
+
+The examiner's note: the attention material could have been folded into the comparison paragraph as part of the same problem, and the mark would have been 25 with no loss of content at all.
+
+Compare the four 24s across this unit: one lost on vocabulary, one on grammar, one on structure, and this one on task — for being too good. Four identical totals, four different lessons.` },
+
+{ id:"mk_social_low", practice:true, title:"Social media is a double sword (9/25)",
+  prompt:`Discuss the effects of social media on young people. Include: one benefit; one problem; your own opinion. Write at least 150 words.`,
+  response:`Nowadays social media is very popular between the young people. In my essay I will discuss the effects of the social media on the young people and I will give one benefit and one problem and my opinion.
+
+The benefit of social media is that we can talk with our friends and family. For example if my cousin live in another country I can talk with him every day for free. Also we can share photos and videos and we can know the news very fast. So social media is very useful for the communication.
+
+The problem of social media is that it is very addictive. Many young people spend many hours in the social media and they don't study and they don't sleep well. Also there is a cyberbullying and this is very bad for the mental health of the young people.
+
+In my opinion social media is a double sword. It have good things and bad things. We should use it in a good way and not spend many hours in it. The parents should control the time of their children in the social media.
+
+In conclusion social media have many effects in the young people, good and bad, and we should be careful.`,
+  scores:{task:3,structure:2,grammar:2,vocab:1,spelling:1},
+  notes:`204 words. 9/25.
+
+Task 3: all three bullets are present and correctly separated. That is a genuine achievement and it is why this scores 3 rather than 1 — the student has read the question properly. What it lacks is any development: every point stops at its first sentence. "It is very addictive" is a claim; nothing follows it.
+
+Structure 2: the introduction announces what the essay will do, and the conclusion announces what it did. Neither adds anything. Roughly 40 of the 204 words are the essay talking about itself.
+
+Grammar 2: "popular between the young people" (for "among"), "if my cousin live", "it have", "social media have", and "the social media" with an article throughout.
+
+Vocabulary 1: "very popular", "very useful", "very addictive", "very bad", "very fast", "very careful". Note also "double sword" — the phrase is "double-edged sword", and the half-remembered idiom is a common way to lose a vocabulary mark: it signals the writer is reaching for a phrase they have heard rather than one they own.
+
+Spelling 1: covers punctuation, and there are almost no commas. Several sentences run on with "and" three or four times.
+
+Now the useful comparison. This script and the 25/25 contain the same two ideas — connection is good, addiction is bad. Read them back to back. The difference is not intelligence and it is not English. It is that one writer asked "why?" after each of their own sentences, and the other did not.` },
+
+{ id:"mk_social_zero", practice:true, title:"Unreadable (zero)", zero:true,
+  prompt:`Discuss the effects of social media on young people. Include: one benefit; one problem; your own opinion. Write at least 150 words.`,
+  response:`[Approximately 180 words of handwriting. The script is continuous, unspaced, and slopes steeply down the page; letter forms are not consistently distinguishable — a, o, e and u are formed identically, and there is no discernible difference between n, m, r and u. Word boundaries are largely absent.
+
+Two markers and a senior examiner attempted the script independently. Between them they recovered "social media", "young people", and possibly "phone" or "phones". No sentence could be reconstructed with confidence.
+
+The script was referred for special consideration and returned unmarked.]`,
+  scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
+  zeroReason:`Zero, and this is the only zero in the unit that may be an injustice.
+
+Every other zero here is a decision. The copied passage, the recycled prompt, the word salad, the off-topic essay, the blank page — each is something the candidate chose. This one might be a student who wrote a perfectly good essay that nobody can read.
+
+The rubric cannot help. Task, Structure, Grammar, Vocabulary and Spelling all require the examiner to know what the words are. An unreadable script is not a weak response; it is an absent one, and the mark is the same.
+
+Three practical points, and they are the reason this script is in the unit.
+
+Handwriting is not assessed and handwriting decides your mark. Nothing in the rubric mentions it, and it silently gates all five rows.
+
+Speed is where this happens. Almost nobody writes like this in class. They write like this in the final six minutes, and the fix is not neater letters — it is a plan that stops you needing the final six minutes.
+
+If your writing is genuinely difficult under pressure, that is a conversation to have with your school long before the exam, not a thing to hope about on the day. Access arrangements exist. They cannot be applied retrospectively to a script nobody can read.` },
 ];
+/* ---- Writing Studio · Mark & Justify: scripts grouped by the prompt they answer ----
+   Every script below is a real response to the named task. Several entries carry lightly
+   different wordings of the same exam prompt; they are grouped by the task, not by the
+   wording, because the whole point is to compare responses to ONE prompt across the range.
+   M-codes are unchanged: markCode() reads the MARKING array, not the display order. */
+const MARK_SETS=[
+  { id:"ms_shape", name:"What shapes who people are", sk:"#E0403F",
+    task:"Now write an essay where you compare the factors that shape who people are. Write about: the influence of family and friends; the impact of social media on young people; other factors you think are important. Write at least 200 words in paragraphs.",
+    note:"Eight real scripts, one prompt, the whole range \u2014 three at full marks, one at 24/25, then 9, 5 and two zeros. Read the three 25s against each other first: they are 278, 340 and 235 words, and not one of them is error-free. Then read the 644-word 24/25 and ask what all that extra length bought.",
+    ids:["mk_full_278","mk_full_340","mk_full_235","mk_near_644","mk_dev_198","mk_lim_7","mk_zero_salad","mk_zero_letters"] },
+  { id:"ms_eot", name:"The end-of-term exam", sk:"#B45309",
+    task:"Write about the end-of-term exam. Include: why we have it; what topics will be in the essay question; how to write a good essay. Write at least 100 words.",
+    note:"Six scripts, from 21/25 down to a blank page. The 5/25 here is the phonetic script \u2014 every word sounded out. Compare it with the 8/25 and decide which student is closer to passing, and what your answer says about what the rubric rewards.",
+    ids:["mk_eot_full","mk_eot_near","mk_strong_eot","mk_avg_eot","mk_goodcountry","mk_low_eot","mk_phonetic","mk_zero_blank"] },
+  { id:"ms_weather", name:"Extreme weather", sk:"#0E7C7B",
+    task:"Discuss a type of extreme weather. Include: a description of the extreme weather event; how scary you believe it can be; whether you have experienced one. Write at least 180 words.",
+    note:"Three scripts: 22, 9 and a zero. The zero is not weak English. Read it and work out what it actually did wrong before you open the examiner's reasoning.",
+    ids:["mk_weather_full","mk_strong_weather","mk_low_weather","mk_zero_climate"] },
+  { id:"ms_money", name:"How countries should spend their money", sk:"#7C3AED",
+    task:"In your opinion, how should countries spend their money? Include: the reasons for your choice; who the money will benefit; how the money will be used. Write at least 180 words.",
+    note:"Three scripts: 21, 9 and a zero. As with extreme weather, the zero is fluent \u2014 which is exactly why it is in this set.",
+    ids:["mk_money_full","mk_money_near","mk_strong_money","mk_low_money","mk_zero_plag"] },
+  { id:"ms_arch", name:"How architecture influences people's lives", sk:"#0891B2",
+    task:"In your opinion, how does architecture influence people's lives? Include: what it means to you; its importance in the UAE; two examples. Write at least 200 words.",
+    note:"A 24/25 and a 16/25 on the same task. The gap is eight marks and it sits almost entirely in one rubric row \u2014 find which row before you open the marks.",
+    ids:["mk_arch_full","mk_strong_arch","mk_avg_arch","mk_arch_low","mk_arch_zero"] },
+  { id:"ms_space", name:"Space travel in the future", sk:"#4F46E5",
+    task:"Write about space travel in the future. Include: why people will go to space; why space travel is dangerous; why people might want to live on different planets. Write at least 100 words.",
+    note:"Two scripts one mark apart: 15 and 14. Separating these is harder than separating a 25 from a 5, and that difficulty is the reason they are together.",
+    ids:["mk_space_full","mk_space_near","mk_avg_space","mk_space","mk_space_low","mk_space_zero"] },
+  { id:"ms_social", name:"The effects of social media on young people", sk:"#DB2777",
+    task:"Discuss the effects of social media on young people. Include: one benefit; one problem; your own opinion. Write at least 150 words.",
+    note:"One script at 14/25 \u2014 a solid middle response. Mark it, then predict exactly what it would need in order to reach 20.",
+    ids:["mk_social_full","mk_social_near","mk_avg_social","mk_social_low","mk_social_zero"] }
+];
+function markCode(id){ const i=MARKING.findIndex(m=>m.id===id); return i<0?'':('M'+(i+1)); }
+function markBandColour(t,zero){ if(zero||t===0) return '#b91c1c'; if(t>=22) return '#15803d';
+  if(t>=16) return '#0f766e'; if(t>=10) return '#b45309'; return '#c2410c'; }
+function markSetScripts(set){ return set.ids.map(id=>MARKING.find(m=>m.id===id)).filter(Boolean); }
+/* Any script not listed in a set still appears, so nothing can be orphaned by an edit. */
+function markOrphans(){ const used=new Set(MARK_SETS.flatMap(s=>s.ids));
+  return MARKING.filter(m=>!used.has(m.id)); }
+const SCRIPT_LETTERS="ABCDEFGH";
 const INFER=[
   { id:"inf1", title:"The late bus", text:`Maya checked her watch for the third time and sighed. The pavement was empty, the timetable on the pole was smudged with rain, and the next bus was not due for forty minutes. She pulled her thin jacket tighter and started to walk.`,
     question:`How does Maya most likely feel, and what in the text tells you?`,
@@ -8306,7 +8772,7 @@ function markTask(id){
   app().innerHTML=`
    <div class="wrap screen">
      <button class="back" onclick="go('wstudio')">← Writing Studio</button>
-     <div class="meta">Mark &amp; Justify${m.real?' · real exam response':''}</div>
+     <div class="meta">Mark &amp; Justify${m.real?' · real exam response':(m.practice?' · practice script written for this lesson':'')}</div>
      <h1 style="font-size:1.6rem">⚖️ ${m.title}</h1>
      <div class="card"><b style="color:var(--ink)">The task</b><p style="color:var(--slate);margin:6px 0 0">${m.prompt}</p></div>
      <div class="card"><b style="color:var(--ink)">The response</b><div class="excerpt">${esc(m.response)}</div></div>
