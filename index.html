@@ -185,6 +185,29 @@ textarea{min-height:150px; resize:vertical; line-height:1.6}
   .lu-sub{flex-wrap:wrap}
   .lu-desc{flex-basis:100%; white-space:normal; order:3}
 }
+/* ---- Mark & Justify: colour-coded error evidence ---- */
+.fl{border-radius:3px; padding:1px 2px; cursor:help; border-bottom:2px solid; background:transparent}
+.fl-sp{background:#fee2e2; border-color:#dc2626}   /* spelling & punctuation */
+.fl-gr{background:#ffedd5; border-color:#ea580c}   /* grammar */
+.fl-vc{background:#f3e8ff; border-color:#9333ea}   /* vocabulary */
+.fl-st{background:#dbeafe; border-color:#2563eb}   /* structure */
+.fl-tk{background:#dcfce7; border-color:#16a34a}   /* task */
+.fl-legend{display:flex; gap:8px; flex-wrap:wrap; margin:8px 0 10px}
+.fl-key{display:inline-flex; align-items:center; gap:5px; font-size:.76rem; color:var(--slate);
+  border:1px solid var(--line); border-radius:50px; padding:3px 9px; background:#fff}
+.fl-dot{width:10px; height:10px; border-radius:3px; display:inline-block}
+.fl-hint{font-size:.78rem; color:var(--muted); margin:2px 0 10px}
+.rb-chip{font-family:"Lexend"; font-weight:700; font-size:.62rem; letter-spacing:.06em;
+  border-radius:50px; padding:3px 8px; white-space:nowrap; flex-shrink:0; cursor:help;
+  color:var(--rb,#888); border:1.5px solid var(--rb,#888); background:#fff}
+.rb-has{background:var(--rb); color:#fff; border-color:var(--rb)}
+.rb-todo{border-style:dashed}
+.rb-note{display:flex; align-items:center; gap:8px; margin:10px 0 0; padding:9px 12px;
+  border-radius:10px; border:1px solid var(--line); background:#f8fafc; font-size:.83rem; color:var(--slate)}
+@media(max-width:640px){ .rb-chip{order:4} }
+.model-box{border:1px solid #15803d; border-left:5px solid #15803d; border-radius:12px;
+  background:#f6fdf9; padding:14px; margin-top:12px}
+.model-box h4{margin:0 0 6px; font-family:"Lexend"; color:#14532d; font-size:1rem}
 .strand-head{margin:26px 0 2px}
 .strand-head h2{font-family:"Lexend"; font-size:1.15rem; margin:0; color:var(--ink)}
 .strand-head p{margin:2px 0 0; font-size:.85rem; color:var(--muted); max-width:640px}
@@ -4067,6 +4090,15 @@ const ROUTES = {
       <h1 style="font-size:2.1rem">🧪 Writing Studio: Reflection on Real-Exam Responses</h1>
       <p style="color:var(--muted);max-width:740px">Real exam responses across the full range of scores — from <b>25/25 down to zero</b>, grouped so that every script you compare answered the <b>same prompt</b>. Four units, in the order a writer needs them: <b>judge</b> the standard, <b>think</b> from evidence, <b>build</b> an argument, then <b>repair</b> weak writing. ${total} activities in total. Each keeps its class code (<b>M1</b>, <b>I1</b>, <b>O1</b>, <b>R1</b>) on the right.</p>
 
+      <div class="card" style="border-color:#B45309;background:#fffbf3">
+        <b style="color:#7c2d12">📏 A note on length — read this before you mark anything</b>
+        <p style="font-size:.86rem;color:var(--slate);margin:8px 0 0">The word count is a <b>minimum</b>, not a target, and it is never a score. Nobody in this unit was given a single mark for length.</p>
+        <p style="font-size:.86rem;color:var(--slate);margin:8px 0 0"><b>Too little is fatal</b>, and obviously so. A script under the minimum cannot show a range of grammar, cannot be structured, and cannot cover every bullet — there is not enough of it to earn from. The one-sentence script, the 24-word script and the 61-word script in this unit all had real ideas, and none had room to prove it.</p>
+        <p style="font-size:.86rem;color:var(--slate);margin:8px 0 0"><b>Too much is the trap nobody warns you about</b>, and this unit is full of evidence for it. The three full-mark scripts on the first prompt run to 278, 340 and 235 words. The script that scored one mark lower runs to <b>648</b>. The longest essay in the lesson lost to the shortest one.</p>
+        <p style="font-size:.86rem;color:var(--slate);margin:8px 0 0">Wordiness costs you twice over. First, every extra sentence is another chance to make an error — look at the 22/25 sandstorm script, where <i>every one</i> of the four lost marks sits in the two paragraphs the writer added to reach the word count. The paragraphs they cared about were flawless. Second, those extra words eat the two minutes you needed to read the thing back, which is exactly where the last mark on a strong script is always found.</p>
+        <p style="font-size:.86rem;color:var(--slate);margin:8px 0 0"><b>So: comfortably past the minimum, then stop.</b> Roughly 110–130% of what was asked is plenty. Answer the question, develop each point once, and keep two minutes in hand. A 250-word essay that is finished beats a 650-word essay that is still going.</p>
+      </div>
+
       ${(function(){
         const sets=MARK_SETS.slice(); const orph=markOrphans();
         if(orph.length) sets.push({id:"ms_other", name:"Other scripts", sk:"#64748b", task:"Various prompts.",
@@ -4087,10 +4119,12 @@ const ROUTES = {
             <p style="font-size:.82rem;color:var(--muted);margin:0 0 10px">${set.note}</p>
             <div class="lu-subs">${scripts.map((s,i)=>{
               const bd=markBandColour(s.t,s.z);
+              const rb=rebuildState(s.m);
               return `<button class="lu-sub" style="--bd:${bd}" onclick="go('markTask','${s.m.id}')">
                 <span class="lu-script">Script ${SCRIPT_LETTERS[i]||(i+1)}</span>
                 <span class="lu-mark">${s.z?'0/25':s.t+'/25'}</span>
                 <span class="lu-desc">${s.m.title}</span>
+                <span class="rb-chip rb-${rb.k}" style="--rb:${rb.colour}" title="${escq(rb.why)}">${rb.label}</span>
                 <span class="lu-code">${markCode(s.m.id)}</span>
               </button>`;
             }).join('')}</div>
@@ -8149,6 +8183,45 @@ To add more to what I have written so far, I also believe that social media has 
 More over, I believe that the experiences we face growing up is the most important factor that shapes who we are. I do have an experience that I believe had the most influence on my personality growing up. When I first started online schoole in 2020, I wasn't paying attention on what effects it had on me. I became quiet and less communicating when I was known for being the most open and and social communicating person in my family. I would spend hours on my devices using social media or watching movies. After a while, my siblings and cousins started going back to school, but for some strange reason my school was online for two more years!, which made feel so lonely and isolated. After I finaly moved schools, I realised that iv'e became non-communicating and I wasn't able to express my slef as I used to. Until this day I believe that I sitll have trouble expressing my self or how I feel but not as much as before. So I strongly believe that experiences we face is the most important factor that shapes our personality and who we become.
 
 In conclusion, I believe that the influence that family and friends have on people's lives can change there personalites and characteristics. I also believe that social media can change the way young people act and behaive in both negative and positive ways. In my point of view, I believe that the most important factor is the experiences we face, because it can change our personality into a whole different one, which can be in a positive and a negative way.`,
+  flags:[
+    {t:"sp", s:"infuence", why:"Spelling: 'influence' \u2014 a missing letter. It is the essay's key term, used correctly in every other sense."},
+    {t:"sp", s:"agrassive", why:"Spelling: 'aggressive'. Phonetic \u2014 written as it sounds."},
+    {t:"sp", s:"encourge", why:"Spelling: 'encourage'. A dropped letter."},
+    {t:"sp", s:"nowdays", why:"Spelling: 'nowadays'."},
+    {t:"sp", s:"prankes", why:"Spelling: 'pranks'. An added letter \u2014 over-applying the -es plural rule."},
+    {t:"sp", s:"victoms", why:"Spelling: 'victims'. Phonetic."},
+    {t:"sp", s:"schoole", why:"Spelling: 'school'. An added letter."},
+    {t:"sp", s:"finaly", why:"Spelling: 'finally'. A missing double letter."},
+    {t:"sp", s:"iv'e", why:"Spelling: \"I've\" \u2014 the apostrophe is in the wrong place and the I is not capitalised."},
+    {t:"sp", s:"sitll", why:"Spelling: 'still'. Letter transposition."},
+    {t:"sp", s:"my slef", why:"Spelling: 'myself'. Transposition, plus a space that should not be there."},
+    {t:"sp", s:"behaive", why:"Spelling: 'behave'. An added letter."},
+    {t:"sp", s:"there families", why:"Spelling: 'their'. The possessive, not the adverb \u2014 the commonest error in English, and it appears three times."},
+    {t:"sp", s:"there personality", why:"Spelling: 'their' again."},
+    {t:"sp", s:"there personalites", why:"Spelling: 'their personalities' \u2014 both words wrong in three syllables."}
+  ],
+  model:`Over the past few years, we notice that the factors that shape who we are as a person depend on genetics and environment and experiences we have growing up, I totally understand that they play a huge role on who we become, but I believe that there are other factors that some people don't notice. For example, the influence of family and friends can totally change a person's personality. Another example is that social media also influence people to act in a certain way that might change how other people see them as a person. In this essay, I will talk about the influence that family and friends have on a persons personality, and how social media impacts our characteristics.
+
+To begin with, the influence that family and friends can totally change the way we act and behave, for example, some children might be born with an open personality and a positive vibe, but some might grow up in abusive relationships with their families that can make them more aggressive and less communicating with others. Another example is that some kids might grow up being shy and non-communicating, but at some point they would have some friends that would always be around them and talk alot with them which would encourage them to become less shy and open with others.
+
+To add more to what I have written so far, I also believe that social media has a huge impact on young people's personalities. Most teenagers that use social media nowadays use Tiktok and instagram to create content. Most would do the dumbest things just to gains views or likes, others would do pranks and tricks to friends of family members without realising the effects it would have on them. Eventually, they would start losing friends and would be annoying to hang out with. Another example is that some young people might get bullied online which effects their personality and would make them insecure about themselves. Bullying victims usually tend to be quiet and unsocial and less communicating with others, the comments they get in any ways from the bullies might effect them for a really long time even if they heal from it they would still make them think about it for a while.
+
+More over, I believe that the experiences we face growing up is the most important factor that shapes who we are. I do have an experience that I believe had the most influence on my personality growing up. When I first started online school in 2020, I wasn't paying attention on what effects it had on me. I became quiet and less communicating when I was known for being the most open and social communicating person in my family. I would spend hours on my devices using social media or watching movies. After a while, my siblings and cousins started going back to school, but for some strange reason my school was online for two more years!, which made feel so lonely and isolated. After I finally moved schools, I realised that I have become non-communicating and I wasn't able to express myself as I used to. Until this day I believe that I still have trouble expressing my self or how I feel but not as much as before. So I strongly believe that experiences we face are the most important factor that shapes our personality and who we become.
+
+In conclusion, I believe that the influence that family and friends have on people's lives can change their personalities and characteristics. I also believe that social media can change the way young people act and behave in both negative and positive ways. In my point of view, I believe that the most important factor is the experiences we face, because it can change our personality into a whole different one, which can be in a positive and a negative way.`,
+  modelNote:`This rebuild is unusual, and that is the lesson. Read it beside the original and you will struggle to see the difference.
+
+Nineteen edits in 648 words. Not one sentence rearranged, not one idea added, not one word of the argument touched — the essay is roughly 97% identical to what the student handed in.
+
+Fifteen of the edits are spelling, and they are the ones the examiner charged for: infuence → influence, agrassive → aggressive, iv'e → I've, my slef → myself, sitll → still, there → their, three times.
+
+Four are grammar, and they are more interesting, because the examiner did not charge for them at all. This script scored Grammar 5 with all four still on the page: “I've became non-communicating” (I have become), “the most open and and social” (a doubled and), “experiences we face is” (are), “an abusive relationships”. Band 5 permits minor slips that do not affect meaning, and these do not — you understood every one of them without noticing. The rebuild fixes them anyway, because a model with errors in it is not a model.
+
+That gap is worth holding on to. The rubric forgave four grammar errors and charged for thirteen spellings. Not because grammar matters less, but because these particular slips cost the reader nothing, and “there personality” makes a reader stop. Errors are priced by what they do to the person reading, not by what they are called.
+
+Now the arithmetic. This student wrote 648 words, more than three times the minimum, and finished one mark below the 235-word script in the same lesson. Somewhere in those extra 400 words was the two minutes it would have taken to find “there families” and “sitll”.
+
+Length did not cost this student a mark directly. It cost them the time to earn the last one — and it manufactured the errors that took it. Every additional sentence is another chance to make a mistake. Write what the question asks for, well, and stop.`,
   scores:{task:5,structure:5,grammar:5,vocab:5,spelling:4},
   notes:`644 words — more than three times the minimum — and it scored one mark below the 235-word script. Read those two side by side; the lesson is the whole point of this exercise.
 
@@ -8169,6 +8242,54 @@ in my opinen i lov my family moore i feel whte hem an sefte, i love my frinds ol
 in my opinein the young people the dont ned a social media, in social media sam tems hav a short vedie dengrs or nat good for as sam people wen see smthng he wont to do, sam a young people yus a social medi but dont mak ane think and alot of yong people hav acont and ceire she coging and wht do wah he sealder, in emirats socilety is natural.
 
 i think the other factor is important is a tacinloge at a development and emotiona wellbeing, in emirets the tacinloge a impove an social media , so we have moe detil abot the tagnloge, whe he is importent? in the fuoser we wil nat wos ane thnk als bat we wil wis a tgnloge we hav mor job an fuojer need a tgnloge`,
+  flags:[
+    {t:"sp", s:"socil", why:"Spelling: 'social'. Phonetic \u2014 the vowel the writer hears is not the one English writes."},
+    {t:"sp", s:"hav", why:"Spelling: 'have'. The silent final e is dropped throughout this script."},
+    {t:"sp", s:"mor actvute", why:"Spelling: 'more activity'. Vowels omitted \u2014 the consonant skeleton is correct, which is why it is readable."},
+    {t:"sp", s:"infrmesun", why:"Spelling: 'information'. Phonetic, and worth pausing on: the writer knows a four-syllable abstract noun and cannot spell it. That is a spelling problem, not a vocabulary one."},
+    {t:"sp", s:"sould", why:"Spelling: 'should'."},
+    {t:"sp", s:"opinen", why:"Spelling: 'opinion'. Also appears as 'opinein' \u2014 the same word, two different guesses, four lines apart."},
+    {t:"sp", s:"lov my family moore", why:"Spelling: 'love my family more'. The e dropped from one word and added to the next."},
+    {t:"sp", s:"whte hem an sefte", why:"Spelling: 'with them and safety'. Decodable if you read it aloud \u2014 which is exactly what the examiner did."},
+    {t:"sp", s:"frinds olso", why:"Spelling: 'friends also'."},
+    {t:"sp", s:"momery", why:"Spelling: 'memory'. Transposition."},
+    {t:"sp", s:"vedie dengrs", why:"Spelling: 'video dangerous'."},
+    {t:"sp", s:"tacinloge", why:"Spelling: 'technology'. It appears here as 'tacinloge', then 'tagnloge', then 'tgnloge' \u2014 three spellings of the writer's own key word within four lines."},
+    {t:"sp", s:"emirets", why:"Spelling: 'Emirates'. Also 'emirats' earlier."},
+    {t:"sp", s:"fuoser", why:"Spelling: 'future'. Later 'fuojer'."},
+    {t:"gr", s:"the dont ned a social media", why:"Grammar: 'they don't need social media' \u2014 subject pronoun wrong, and no article before an uncountable noun."},
+    {t:"gr", s:"sam a young people yus a social medi", why:"Grammar: 'some young people use social media'. Article inserted where none belongs, twice in one clause."},
+    {t:"gr", s:"he wont to do", why:"Grammar: 'they want to imitate it'. Singular pronoun for a plural subject."},
+    {t:"tk", s:"the influence of family and friends ar the most infrmesun in life", why:"Task: bullet one, and it IS attempted. This is why Task scores 2 and not 0 \u2014 the writer identified the bullet and answered it."},
+    {t:"tk", s:"i think the other factor is important is a tacinloge", why:"Task: bullet three \u2014 the writer chose their own third factor and named it. That is what the prompt asked for."},
+    {t:"tk", s:"in emirats socilety is natural", why:"Task: an idea nobody else in this lesson had \u2014 a claim about UAE society. It is four words long and then abandoned."},
+    {t:"st", s:"we sould do time for family and friends,", why:"Structure: the paragraph ends on a comma. Sentence boundaries are missing throughout, which is why Structure scores 2 despite the paragraphing being right."},
+    {t:"st", s:"alot of yong people hav acont and ceire she coging and wht do wah he sealder", why:"Structure: this clause cannot be recovered even by reading aloud. It is the only stretch in the script where meaning is genuinely lost."}
+  ],
+  model:`Many things shape who a person becomes. In my opinion the three that matter most are family and friends, social media, and technology.
+
+The influence of family and friends is the most important thing in life, and we should make time for them. I love my family more than anything, because with them I feel safe. I love my friends too, and together we make a lot of memories and a lot of thoughts I would not have had alone. Nobody chooses their family, and yet they are the first people who teach you what normal looks like.
+
+In my opinion young people do not need social media. Some of the short videos on it are dangerous, or not good for us, because when some people see something they want to copy it. A lot of young people use social media and make nothing with it. In the Emirates our society is natural, and I think that is worth protecting from a screen that shows us a life nobody actually lives.
+
+I think the other important factor is technology, because of what it does to our development and our emotional wellbeing. In the Emirates, technology and social media are both improving quickly, so we have more information about technology than any generation before us. Why is it important? Because in the future we will not use anything else. We will use technology. There will be more jobs, and the future will need it.
+
+So family gives us safety, social media can take it away, and technology decides what the future asks of us.`,
+  modelNote:`Read this beside the original before you decide what this student can do.
+
+Every idea here is theirs. Family and friends first. Feeling safe with family. Making memories with friends. Young people not needing social media. Dangerous short videos. People copying what they see. Using it and making nothing. Emirati society being natural. Technology as the third factor. Development and emotional wellbeing. Technology improving in the Emirates. Future jobs needing it. Not one idea was imported — all of it was already on the page, underneath the spelling.
+
+Spelling 2 → 5. This is where almost the entire gain is, and none of it required new English. 'socil' → social. 'tacinloge', 'tagnloge', 'tgnloge' → technology, once, spelt one way. 'infrmesun' → information — note that the writer already owned that word; they simply could not write it down.
+
+Grammar 2 → 5. 'the dont ned a social media' → 'they do not need social media'. The article errors and the pronoun errors are each one rule, repeated.
+
+Structure 2 → 5. The paragraphing was already right — one factor per paragraph, in the order the prompt gave. What was missing was full stops. The rebuild adds sentence boundaries and a closing line that ranks the three factors; the plan underneath did not change, because there already was one.
+
+Task 2 → 5. Each idea now survives past its first clause. 'in emirats socilety is natural' was four words and a good thought; it is now a sentence with a reason attached. Nothing was replaced — it was finished.
+
+Vocabulary 1 → 5, and this is the one that should stop you. The original scored 1 because the words looked poor. They were not poor. 'Information', 'influence', 'society', 'development', 'emotional wellbeing', 'technology' — this student has the vocabulary of a competent essayist and cannot spell it, and the rubric cannot tell those two things apart.
+
+That is the real lesson of this script. There is one honest word for 198 words carrying this many ideas through spelling this broken, and the word is not 'weak'. It is 'trapped'.`,
   scores:{task:2,structure:2,grammar:2,vocab:1,spelling:2},
   notes:`198 words, and the examiner's grid reads 2 · 2 · 2 · 1 · 2.
 
@@ -8183,6 +8304,11 @@ The path from 9 to 14 for this student is not more effort. It is one thing: lear
 { id:"mk_lim_7", real:true, title:"One sentence (5/25)",
   prompt:`Now write an essay where you compare the factors that shape who people are. Write about: the influence of family and friends; the impact of social media on young people; other factors you think are important. Write at least 200 words in paragraphs. (Grade 12 General · 25 marks)`,
   response:`Some scientists now emphasize the importance of nurture.`,
+  noRebuild:`Eight words is not enough to rebuild. A rebuild keeps the student's own writing and repairs what the rubric penalised — here there is one sentence, and it needs no repair. It is correctly spelt, correctly punctuated, and it reaches for exactly the right term.
+
+To produce a 25/25 version we would have to write roughly 240 words that this student never wrote, attach their one sentence to the front, and call it theirs. That is not a rebuild. That is us sitting the exam.
+
+Which is precisely why the mark is 5. The rubric cannot reward a sentence for the essay it might have opened, and neither can we. Note the difference from the zeros in this unit: this script is not empty, and it is not dishonest. It is simply too small to be measured — and 'too small to be measured' turns out to look identical, from the outside, to 'unable', which is the unfairness this student walked out with.`,
   scores:{task:1,structure:1,grammar:1,vocab:1,spelling:1},
   notes:`The whole script. One sentence, against a minimum of 200 words.
 
@@ -8199,6 +8325,7 @@ The lesson is blunt: an examiner can only award marks for writing that exists. W
   response:`lesson title family the my name is [name] ilove da kazan only family love people/ on the influen of family and friends pople. my blay fotpol and hoys and room today people show is english good famili good other factors you thin ,are im po rtant people young on media socicl of impact on and frinds pople of the of and t wrds niu byiiu care as wen for our clmaim ary ruiw bed nuoisx bdyu vty gyu xrex tyug gvuy crt ky crt giu gukl r77 ag my 19 ero of will have or will of rem ain the we bey care testle the yvvuj ctry me blay d family and people in vty crt hlo ,der joilu n crty giuoli, der zew docti xtjctr hiy, tr crty ilyexd dxtr in paragraphs imbrcrvy groo import, on are yon other grade 12.1 ganral good english famili, stagg wrtltng end eui uydfa j ioud vuyx v9udis b uyd vutz gvty hiusvgsd gvuyd gyud v tyd ihks crt shiu ,gyusef gsety uhjky gcsty lisu …
 
 [The script continues in the same way for 704 words. The name has been removed.]`,
+  noRebuild:`704 words and no recoverable meaning. A rebuild repairs how something was said; it cannot supply what was never said.`,
   scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
   zeroReason:`Seven hundred and four words, and zero marks. This script is here because it destroys the most persistent myth in any exam hall: that filling the page earns something.
 
@@ -8219,6 +8346,7 @@ deradw not' fvdret rashed took for ahyf em tdedu urjdgs foor taim noree cnofh po
 yrawqv porti rsgaude inguc kmkhtd hyigf khddvd esxw rfd poi gftgyr hbvcdsd pooliu no good is uhrytf …
 
 [The script continues in the same way for 206 words.]`,
+  noRebuild:`The words are real and the spellings are invented, so no sentence can be decoded with confidence. Guessing at the intended meaning would mean writing it ourselves.`,
   scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
   zeroReason:`Compare this with the 9/25 script. Both look, at a glance, like poor spelling. They are not the same thing at all, and the difference is worth five marks a criterion.
 
@@ -8231,86 +8359,798 @@ This is what the zero band exists for. It is not a punishment for weak English; 
 If a student in your class produces this, the mark is the least important thing about it. Something else is going on, and it is worth finding out what.` },
 
   // ---------- REAL responses from the exam set ----------
-  { id:"mk_space", real:true, title:"Space travel in the future", prompt:`Write about space travel in the future. Include: why people will go to space; why space travel is dangerous; why people might want to live on different planets. (≥100 words)`,
+  { id:"mk_space", real:true, title:"Space is a planet beautful place (14/25)", prompt:`Write about space travel in the future. Include: why people will go to space; why space travel is dangerous; why people might want to live on different planets. (≥100 words)`,
     response:`Space is a planet beautful place there is a galxy and most people is discuvar new worlds so why one day we will living there, and planets and they will carry scietific experimnts, they will living on another planet, they will new life and exprienc, they will living there different from earth, all which of we will know in the future.`,
-    scores:{task:3,structure:2,grammar:2,vocab:4,spelling:3},
-    notes:`The response attempts the prompt but misses one area and is under the word count. It is really one long run-on sentence, so it can't be read as connected sentences. Grammar is basic with frequent errors. There is, however, some good topic vocabulary ("galaxy", "discover", "scientific experiments") despite the spelling, and commas are used to divide clauses.` },
-  { id:"mk_goodcountry", real:true, title:"\"It is a good country and I like it.\"", prompt:`Write about the end-of-term exam. Include: why we have it; what topics will be in the essay question; how to write a good essay. (≥100 words)`,
+    flags:[
+    {t:"sp", s:"beautful", why:"Spelling: 'beautiful'. A dropped i."},
+    {t:"sp", s:"galxy", why:"Spelling: 'galaxy'."},
+    {t:"sp", s:"discuvar", why:"Spelling: 'discover'. Phonetic."},
+    {t:"sp", s:"scietific experimnts", why:"Spelling: 'scientific experiments'. Both words \u2014 letters omitted rather than guessed, which is a speed problem, not a knowledge problem."},
+    {t:"sp", s:"exprienc", why:"Spelling: 'experience'."},
+    {t:"gr", s:"Space is a planet", why:"Grammar: space is not a planet. This is either a slip or a real gap, and the examiner cannot tell which \u2014 which is itself the problem."},
+    {t:"gr", s:"most people is discuvar new worlds", why:"Grammar: 'are discovering'. Agreement and tense together."},
+    {t:"gr", s:"we will living there", why:"Grammar: 'we will live'. The pattern 'will + -ing' appears four times \u2014 one rule, four instances."},
+    {t:"gr", s:"they will living on another planet", why:"Grammar: 'will live'. Second."},
+    {t:"gr", s:"they will new life and exprienc", why:"Grammar: the verb is missing entirely \u2014 'they will have a new life'."},
+    {t:"st", s:"so why one day we will living there, and planets and they will carry scietific experimnts", why:"Structure: the whole response is one sentence, joined by commas and 'and'. There are no boundaries anywhere \u2014 this is why Structure scores 2 and not more."},
+    {t:"vc", s:"carry scietific experimnts", why:"Vocabulary: 'carry out' is the collocation, and the writer nearly has it. Note the row scores 4 \u2014 'galaxy', 'scientific experiments', 'discover new worlds' are ambitious words, correctly chosen and badly spelt."},
+    {t:"tk", s:"all which of we will know in the future", why:"Task: the response gestures at all three bullets and lands on none. It ends by deferring the question to the future."}
+  ],
+  model:`Space is a beautiful place. There is a galaxy out there, and most people want to discover new worlds — so why should we not live there one day?
+
+There are other planets, and people will carry out scientific experiments on them. I think they will live on another planet eventually. They will have a new life and a new experience there, and it will be different from Earth in every way we can imagine and probably in some ways we cannot.
+
+That is what makes it worth doing. We do not know what living somewhere else would do to us, and the only way to find out is to go.
+
+All of this we will know in the future.`,
+  modelNote:`Sixty-one words became 118, and not one idea is new.
+
+Space being beautiful. The galaxy. People discovering new worlds. Living there one day. Other planets. Carrying out scientific experiments. Living on another planet. A new life and experience. It being different from Earth. Knowing it all in the future. Every one of those is on the original page, in that order.
+
+Spelling 3 → 5: 'beautful', 'galxy', 'discuvar', 'scietific experimnts', 'exprienc'. Five words. Note what they have in common — letters left out, not letters guessed wrong. That is what happens when a hand cannot keep up with a head.
+
+Grammar 2 → 5: 'will living' → 'will live', four times, one rule. 'Most people is' → 'want'. 'They will new life' → 'they will have a new life'.
+
+Structure 2 → 5: the single 61-word sentence became five sentences and four paragraphs. Nothing was reordered — the ideas were already in a sensible sequence. They were simply never stopped.
+
+Task 3 → 5: 'so why one day we will living there' was a real question buried in the middle of a clause. It is now the thesis. And 'all which of we will know in the future' — the vaguest line in the script — kept its place at the end, but the paragraph before it now says why not knowing is the reason to go.
+
+Vocabulary 4 → 5: almost nothing changed, because almost nothing needed to. This row was already the strongest.
+
+Read the original and this side by side, and be careful about what you conclude. The distance between them is punctuation, one verb form, and five spellings. It is not intelligence, and it is not ambition — this student reached for 'galaxy' and 'scientific experiments' when they could have written 'stars' and 'tests', and the reaching is why the vocabulary row scored 4 in a script that looks, at a glance, like it should have scored nothing.`,
+  scores:{task:3,structure:2,grammar:2,vocab:4,spelling:3},
+    notes:`61 words, against a 100-word minimum. 14/25 — 3 · 2 · 2 · 4 · 3.
+
+Look at the grid before the script. Vocabulary scores 4 — higher than any other row, and higher than several better-looking scripts in this unit. That is not an error.
+
+'Galaxy'. 'Scientific experiments'. 'Discover new worlds'. 'A new life and experience'. This student reached for exactly the right words. Every one of them is misspelt and every one of them is correct.
+
+Task 3: all three bullets are gestured at — why people go, living on another planet, experiments, a new life different from Earth. Nothing is developed, and the response ends by handing the question to the future.
+
+Structure 2: the whole thing is one sentence. Sixty-one words joined by commas and 'and', with no boundary anywhere.
+
+Grammar 2: 'will living' four times — one rule, and it is the only rule standing between this student and a readable page.
+
+'Space is a planet' is the sentence the examiner cannot resolve. Is it a slip in a rush, or does this student not know? Nothing else in the script settles it, and the mark cannot ask.
+
+This is real work by a real student, and it is the clearest case in the unit of a writer whose ideas outrun their machinery.` },
+  { id:"mk_goodcountry", real:true, title:"One sentence, and the wrong subject (9/25)", prompt:`Write about the end-of-term exam. Include: why we have it; what topics will be in the essay question; how to write a good essay. (≥100 words)`,
     response:`It is a good country and I like it.`,
-    scores:{task:1,structure:2,grammar:2,vocab:1,spelling:3},
-    notes:`For a single sentence the spelling and punctuation are accurate, but the response does not address the task at all and is far below the word count, so no higher band can apply.` },
+    noRebuild:`Nine words, and they are about a country. The task asked about the end-of-term exam.
+
+A rebuild keeps what the student wrote and repairs what the rubric penalised. Here there is one clean sentence answering a question nobody set. To reach 25 we would have to discard the only sentence on the page and write an essay from nothing — which is not a rebuild, it is a forgery.
+
+That is worth saying plainly, because this script is not lazy. The sentence is correctly spelt, correctly punctuated, and grammatically sound. Whatever went wrong here happened before the pen moved: the student either did not read the prompt, or read it and had nothing, and wrote a true sentence to avoid a blank page.
+
+Compare it with the 8/25 in this lesson — twenty-four words, articles missing, every sentence lower-case, and three marks better. Accuracy is not what the Task row measures.`,
+  scores:{task:1,structure:2,grammar:2,vocab:1,spelling:3},
+    notes:`Nine words: “It is a good country and I like it.” Against a 100-word minimum, on a prompt about the end-of-term exam. 9/25 — 1 · 2 · 2 · 1 · 3.
+
+Read the grid before you judge the script. Spelling scores 3 and Grammar 2 — higher than several longer responses in this unit — because what is there is correct. The sentence is properly formed, properly capitalised, properly stopped. There is nothing wrong with it.
+
+Task 1: it addresses nothing that was asked. Not one of the three bullets is touched. The rubric's lowest band applies not because the writing failed but because the writing is not an answer.
+
+Vocabulary 1: nine words offer nothing to assess. 'Good' is the only evaluative word and it is the vaguest one available.
+
+Structure 2: there is a sentence, and a sentence has a shape. That is the entire case for the mark.
+
+This is a real script and a real mark, and it is here for one reason. Every other low scorer in this unit looks like a student who cannot write. This one looks like a student who can — and who, for nine words, was not writing about the exam at all. We do not know why. Out of time, out of ideas, or reading a different question in their head. The rubric cannot ask, and neither can we.` },
   { id:"mk_phonetic", real:true, title:"An emerging writer", prompt:`Write about the end-of-term exam. Include: why we have it; what topics will be in the essay question; how to write a good essay. (≥100 words)`,
     response:`sjfs canb exym writ cma gud cen muni
 gud
 gud tecr`,
-    scores:{task:1,structure:1,grammar:1,vocab:1,spelling:1},
-    notes:`No discernible grammatical structures or sentences can be identified. There is some phonemic awareness ("gud" = good, "muni" = money), which shows the very beginnings of writing, but the piece leans towards a 1 across the rubric.` },
+    noRebuild:`There is no response here to rebuild — only the beginning of one.
+
+'gud' is good. 'muni' is money. 'tecr' is teacher. 'exym' is exam. 'writ' is write. Each of those is a real act of decoding: the student heard a word and reached for letters that make its sound. That is phonemic awareness, and it is the foundation everything else is built on.
+
+But no sentence exists. Without a sentence there is no claim to keep, no idea to finish, nothing whose meaning we could preserve while fixing its spelling. A rebuild would be us writing an essay and putting this student's name on it.
+
+That is not a verdict on the student. It is a statement about where they are. This script does not belong in a conversation about exam technique — it belongs in a conversation about reading instruction, and the fact that it reached a Grade 12 exam hall at all is the thing worth being angry about.`,
+  scores:{task:1,structure:1,grammar:1,vocab:1,spelling:1},
+    notes:`Eleven words, none of them fully formed. 5/25 — 1 across every row.
+
+“sjfs canb exym writ cma gud cen muni / gud / gud tecr”
+
+No sentence can be identified, so no criterion has anything to weigh. Task, Structure, Grammar, Vocabulary and Spelling all require something to assess, and each scores the minimum available rather than zero, because the page is not empty and the marks are not nothing.
+
+Now look harder, because there is real information in these eleven words. 'exym' — exam. 'writ' — write. 'gud' — good. 'muni' — money. 'tecr' — teacher. Every one is a phonetic reach: the student heard a word and wrote letters that produce its sound. That is not random. It is the first thing a reader learns to do, arriving several years late and under exam conditions.
+
+'gud tecr' — good teacher. Whatever else is true, this student was trying to say something about the exam, and about who teaches them.
+
+This is a real script. It is in this unit not to be marked but to be seen. A rubric designed to separate a 21 from a 24 has no vocabulary for a student who cannot yet spell 'write', and it does the only thing it can: it gives them five marks and moves on. The number is correct and it is also useless, and both of those facts matter.` },
   { id:"mk_zero_climate", real:true, zero:true, title:"The 'climate change' essay", prompt:`Discuss a type of extreme weather. Include: a description of the extreme weather event; how scary you believe it can be; whether you have experienced one. (≥180 words)`,
     response:`Climate change is an urgent and complex challenge facing our planet today. It refers to the long-term changes in global temperature, precipitation, and other weather patterns caused by human activities such as burning fossil fuels, deforestation, and industrial processes. The effects of climate change are already being felt across the world, from melting glaciers and rising sea levels to more frequent and severe weather events… (continues as a polished general essay).`,
-    scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
+    noRebuild:`This is a competent essay about the wrong question. Rebuilding it to full marks would mean replacing every idea in it, because the ideas answer a task that was not set. Read the model in the extreme weather 25/25 instead — and note what a real response to THIS prompt would have needed.`,
+  scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
     zeroReason:`Award ZERO — off-topic / pre-memorised. The English is professional, but the response bears no real relationship to the actual prompt (a specific extreme-weather event, how scary it is, and a personal experience). The pre-released coverage was "weather/climate", so a polished general essay on climate change strongly suggests a memorised or AI-generated answer rather than the student's own spontaneous writing. Action: flag as suspicious, award zero, and re-sit on a new topic under exam conditions.` },
   { id:"mk_zero_plag", real:true, zero:true, title:"The 'public spending' essay", prompt:`In your opinion, how should countries spend their money? Include: the reasons for your choice; who the money will benefit; how the money will be used. (≥180 words)`,
     response:`Public spending enables governments to produce and purchase goods and services, in order to fulfil their objectives — such as the provision of public goods or the redistribution of resources. In this entry we study public spending through the lens of aggregate cross-country data on government expenditures… (continues in an encyclopaedic register).`,
-    scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
+    noRebuild:`The words are not the candidate's. There is nothing here to keep, and repairing a copied text teaches nothing except how to copy more carefully.`,
+  scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
     zeroReason:`Award ZERO — plagiarism. The response is strangely over-technical for the prompt, and a search of the opening sentence shows it was lifted word-for-word from a public website. Evidential plagiarism scores 0; note the source URL on the paper as evidence. (If only part of an answer is copied, strike through the copied portion and mark the rest as if it were the whole response.)` },
   // ---------- representative samples at each band ----------
-  { id:"mk_strong_eot", title:"End-of-term exam (strong)", prompt:`Write about the end-of-term exam. Include: why we have it; what topics will be in the essay question; how to write a good essay. (≥100 words)`,
-    response:`The end-of-term exam matters to us as students because it shows our teachers how much we have learned over the term and whether we are ready to move up. In the essay question, we can expect familiar topics such as technology, the environment, or social media. To write a good essay, I always plan first, organise my ideas into clear paragraphs, and use a range of linking words. Finally, I check my spelling and punctuation carefully before I hand it in, because small mistakes can cost easy marks.`,
-    scores:{task:5,structure:4,grammar:4,vocab:4,spelling:4},
-    notes:`A strong, on-task response that covers all three bullet points in clear paragraphs, with accurate grammar and good control. To reach the very top, the writer could vary sentence openings more and use one or two more sophisticated words.` },
-  { id:"mk_strong_weather", title:"Extreme weather (strong)", prompt:`Discuss a type of extreme weather. Include: a description of the event; how scary it can be; whether you have experienced one. (≥180 words)`,
-    response:`One of the most frightening kinds of extreme weather in our region is a sandstorm. The sky turns a thick orange, the wind howls, and within minutes you cannot see more than a few metres ahead. I will never forget the sandstorm that hit my city two years ago. The air grew heavy and warm, and a wall of dust rolled toward us like a moving mountain. We rushed inside, sealed the windows with wet towels, and still the fine sand crept under the doors. It was terrifying because everything familiar disappeared, and for an hour the whole city seemed to hold its breath. When it finally passed, a layer of dust covered every surface. That experience taught me how powerless we can feel against nature, and why we must respect the warnings the authorities give.`,
-    scores:{task:5,structure:5,grammar:4,vocab:4,spelling:4},
-    notes:`Fully on-task: it describes the event, conveys how frightening it is, and recounts a genuine personal experience, all in well-organised paragraphs. A couple of grammar slips and a little more precise weather vocabulary are all that separate this from a perfect script.` },
-  { id:"mk_strong_money", title:"How countries spend money (strong)", prompt:`In your opinion, how should countries spend their money? Include: reasons for your choice; who benefits; how the money is used. (≥180 words)`,
-    response:`In my opinion, countries should spend most of their money on education, because an educated population benefits everyone in the long run. When governments fund good schools, well-trained teachers and free resources, students from every background get a fair chance to succeed. This money is used to build classrooms, pay staff and provide technology, and the people who benefit are not only the students themselves but also businesses, which gain skilled workers, and society as a whole, which becomes healthier and more stable. Of course, health and infrastructure matter too, but I believe education is the foundation that makes all other progress possible. A country that invests in its young people is really investing in its own future.`,
-    scores:{task:4,structure:4,grammar:4,vocab:5,spelling:4},
-    notes:`A clear, well-argued opinion with reasons and examples, and a strong range of vocabulary. One or two comma splices are the main thing keeping grammar from full marks.` },
-  { id:"mk_strong_arch", title:"Architecture (strong)", prompt:`In your opinion, how does architecture influence people's lives? Include: what it means to you; its importance in the UAE; two examples. (≥200 words)`,
-    response:`Architecture shapes the way we feel about the places we live in. To me, it is much more than walls and roofs; it is the art of designing spaces that lift our mood and bring people together. In the UAE, architecture is especially important because our buildings are known all over the world. The Burj Khalifa, for example, is not only the tallest building on Earth but also a symbol of ambition that makes residents proud. The Louvre Abu Dhabi is another example: its huge silver dome lets light fall like rain, turning a museum visit into an experience. Both buildings show that thoughtful design can attract visitors, support the economy and give a city its identity. In my view, good architecture does not just give us shelter — it influences how we live, how we feel and how the world sees us.`,
-    scores:{task:5,structure:5,grammar:4,vocab:5,spelling:5},
-    notes:`Excellent: a personal definition, clear UAE focus, and two well-chosen examples, all in fluent paragraphs. To push grammar to 5, the writer could add a little more sentence variety.` },
-  { id:"mk_avg_space", title:"Space travel (average)", prompt:`Write about space travel in the future. Include: why people go to space; why it is dangerous; why people might live on other planets. (≥100 words)`,
-    response:`In the future many people will go to space because they want to discover new things. Space travel is dangerous because there is no air and the rockets can explode. Also the astronauts can get sick from the radiation. Some people want to live on other planets like Mars because the Earth is getting crowded and polluted. I think space travel is exciting but we need more technology to make it safe. Maybe one day normal people can travel to space too, not only astronauts.`,
-    scores:{task:3,structure:3,grammar:3,vocab:3,spelling:3},
-    notes:`An adequate response that covers the main points in simple paragraphs. The vocabulary and grammar are correct but stay basic; adding examples and more varied structures would lift it.` },
-  { id:"mk_avg_eot", title:"End-of-term exam (average)", prompt:`Write about the end-of-term exam. Include: why we have it; what topics; how to write a good essay. (≥100 words)`,
-    response:`We have the end of term exam to check what we learned. The teacher want to know if we understand the lessons. In the essay we can write about technology or environment. To write a good essay you should make paragraphs and use good grammar. You should also check the spelling. The exam is important so we must study hard and revise before it.`,
-    scores:{task:3,structure:3,grammar:2,vocab:3,spelling:3},
-    notes:`Covers most of the task in short paragraphs, but a little under length and with grammar slips ("the teacher want"). Clear enough to communicate, which fits the middle of the rubric.` },
-  { id:"mk_avg_social", title:"Social media (average)", prompt:`Discuss the effects of social media on young people. Include: one benefit; one problem; your own opinion. (≥150 words)`,
-    response:`Social media has many effects on young people. One benefit is that they can talk to their friends and family anytime and share photos. They can also learn new things from videos. But there is also a problem because some people spend too much time on their phone and they don't sleep well. Also there is cyberbullying which is very bad. In my opinion social media is good if we use it in a balanced way and not all the day.`,
-    scores:{task:3,structure:2,grammar:3,vocab:3,spelling:3},
-    notes:`The ideas address the prompt, but the response is written almost as one block with little paragraphing. Vocabulary and grammar are adequate but simple.` },
-  { id:"mk_avg_arch", title:"Architecture (average)", prompt:`In your opinion, how does architecture influence people's lives? Include: what it means to you; importance in the UAE; two examples. (≥200 words)`,
-    response:`Architecture means the design of buildings. It influences people because if the building is nice people feel happy and comfortable. In the UAE architecture is important because we have famous buildings. For example the Burj Khalifa is very tall and many tourists come to see it. Another example is the malls which are big and have nice design. So architecture is important for the country and for the people because it makes the city beautiful and brings money from tourists.`,
-    scores:{task:3,structure:3,grammar:3,vocab:3,spelling:4},
-    notes:`Covers the parts of the task with two examples, but the ideas stay general and the language is simple. Developing the examples and using richer vocabulary would move it up.` },
-  { id:"mk_low_weather", title:"Extreme weather (low)", prompt:`Discuss a type of extreme weather. Include: a description; how scary it is; a personal experience. (≥180 words)`,
-    response:`The rain is extreme weather. it is very strong and scary. one time it rain alot and the street is full of water. i was scared. the weather is dangerous sometimes.`,
-    scores:{task:2,structure:1,grammar:2,vocab:2,spelling:2},
-    notes:`Only a few short ideas, well under the word count, with little paragraphing and frequent errors (lower-case sentence starts, "rain alot", "i"). It touches the topic but does not develop it.` },
-  { id:"mk_low_eot", title:"End-of-term exam (low)", prompt:`Write about the end-of-term exam. Include: why we have it; what topics; how to write a good essay. (≥100 words)`,
+  { id:"mk_strong_eot", title:"The organised one (21/25)", prompt:`Write about the end-of-term exam. Include: why we have it; what topics will be in the essay question; how to write a good essay. (≥100 words)`,
+    response:`The end-of-term exam matters to us as students because it shows our teachers how much we have learned over the term and whether we are ready to move up. It also matters to the school, because they use the results to see which topics need to be taught again.
+
+In the essay question, we can expect familiar topics such as technology, the environment, or social media. These are the topics we studied this term, so we should revise them first. It is important to read all the bullet points before you start writing.
+
+To write a good essay, I always plan first, organise my ideas into clear paragraphs, and use a range of linking words. I always try to write an introduction and a conclusion. I always leave time at the end, because small mistakes can cost easy marks. Finaly, I check my spelling and punctuation carefully before I hand it in.`,
+    flags:[
+    {t:"st", s:"It also matters to the school, because they use the results to see which topics need to be taught again.", why:"Structure: a good second idea, bolted onto the first paragraph rather than given a home. The paragraph now does two jobs."},
+    {t:"st", s:"To write a good essay, I always plan first", why:"Structure: 'I always' opens three of the last four sentences. The paragraph reads as a list, not an argument \u2014 this is the band-4 descriptor exactly."},
+    {t:"st", s:"I always try to write an introduction and a conclusion.", why:"Structure: second 'I always'."},
+    {t:"st", s:"I always leave time at the end", why:"Structure: third. Vary the opening or the reader stops hearing the sentence."},
+    {t:"gr", s:"It is important to read all the bullet points before you start writing.", why:"Grammar: the essay is first person ('we', 'I') and this sentence switches to 'you'. Register drift \u2014 minor, but the examiner noticed."},
+    {t:"vc", s:"familiar topics such as technology", why:"Vocabulary: accurate and plain. Nothing here is wrong; nothing is precise either. Band 4 is where correct English stops short of chosen English."},
+    {t:"vc", s:"small mistakes can cost easy marks", why:"Vocabulary: the best phrase in the essay, and almost the only one that sounds like a person rather than a revision sheet."},
+    {t:"sp", s:"Finaly", why:"Spelling: 'finally'. A missing double letter \u2014 and the only misspelling in 146 words. It costs a mark because the row has nothing else to weigh."}
+  ],
+  model:`The end-of-term exam matters to us as students because it shows our teachers how much we have learned over the term, and whether we are ready to move up.
+
+It matters to the school for a different reason. They read the results backwards — not to judge us, but to find out which topics did not land and need teaching again. The same paper measures two things at once.
+
+In the essay question we can expect familiar ground: technology, the environment, social media. These are the topics we studied this term, so they are the ones to revise first. Read every bullet point before writing a word, because a bullet you skip is a mark you never had a chance at.
+
+Writing a good essay is mostly a matter of order. Plan first. Sort the ideas into paragraphs before the pen moves. Use linking words so the examiner can see the joints. Open with an introduction, close with a conclusion, and guard the last two minutes for reading it back — because small mistakes cost easy marks, and easy marks are the only kind nobody has to earn twice.`,
+  modelNote:`Every idea is the original's: the exam showing teachers what we learned, readiness to move up, the school seeing what needs reteaching, familiar topics, reading the bullets, planning, paragraphs, linking words, an introduction and conclusion, leaving time, and small mistakes costing easy marks. Nothing added.
+
+Structure 4 → 5. The school idea now has its own paragraph, because it is its own idea — and it earns a sentence the original did not have: the same paper measures two things at once. The three 'I always' openings are gone; the advice paragraph now runs as a sequence rather than a list.
+
+Grammar 4 → 5. The register no longer drifts.
+
+Vocabulary 4 → 5, and this is the only row that needed thought. Look at what replaced what: 'familiar topics' → 'familiar ground'. 'It is important to read all the bullet points' → 'a bullet you skip is a mark you never had a chance at'. 'I check my spelling carefully' → 'guard the last two minutes'. None of those is a harder word. Each is a more decided one.
+
+Spelling 4 → 5: 'Finaly' → gone. One letter.
+
+The honest summary: this student was four small decisions from full marks, and not one of them required knowing more English than they already knew.`,
+  scores:{task:5,structure:4,grammar:4,vocab:4,spelling:4},
+    notes:`146 words. 21/25 — the grid reads 5 · 4 · 4 · 4 · 4.
+
+Task 5: all three bullets, properly covered, with a second reason offered for the first one. Nothing is missing.
+
+The other four rows all score 4, and that pattern is worth naming: this is not an essay with a weakness. It is an essay with no strengths beyond correctness — four rows, each one good and none of them 5.
+
+Structure 4: see the highlights. The school idea is bolted onto the first paragraph instead of standing on its own, and then 'I always' opens three sentences in a row. The plan is there; the shape does not signal it.
+
+Grammar 4: one register slip — the essay is 'we' and 'I' throughout, then addresses 'you'.
+
+Vocabulary 4: accurate, plain, unchosen. 'Familiar topics', 'clear paragraphs', 'a range of linking words'. The one phrase that sounds like a person — 'small mistakes can cost easy marks' — shows what the rest could have been.
+
+Spelling 4: one misspelling in 146 words, 'Finaly'. In a script with nothing else to weigh, one error is enough to hold the row at 4.
+
+The lesson: 21 is a good mark, and the distance from here to 25 is not more work. It is four small decisions.` },
+  { id:"mk_strong_weather", title:"The wall of dust (22/25)", prompt:`Discuss a type of extreme weather. Include: a description of the event; how scary it can be; whether you have experienced one. (≥180 words)`,
+    response:`One of the most frightening kinds of extreme weather in our region is a sandstorm. The sky turns a thick orange, the wind howls, and within minutes you cannot see more than a few metres ahead. The weather forecast can warn us, but a sandstorm can arrive very fast and very sudden.
+
+I will never forget the sandstorm that hit my city two years ago. The air grew heavy and warm, and a wall of dust rolled toward us like a moving mountain. We rushed inside, sealed the windows with wet towels, and still the fine sand crept under the doors. My mother put a towel under every door but the sand still come inside. It was terrifying because everything familiar disappeared, and for an hour the whole city seemed to hold its breath.
+
+It is also very dangerous for the people who are driving. Every year there is accidents on the road because the drivers cannot see anything infront of them. The police close the road sometimes.
+
+When it finally passed, a layer of dust covered every surface. That experience taught me how powerless we can feel against nature, and why we must respect the warnings the authorities give.`,
+    flags:[
+    {t:"gr", s:"the sand still come inside", why:"Grammar: 'came'. The paragraph is in the past tense and this verb slips to the present."},
+    {t:"gr", s:"there is accidents on the road", why:"Grammar: 'there are accidents'. Agreement."},
+    {t:"sp", s:"infront", why:"Spelling: 'in front' \u2014 two words."},
+    {t:"sp", s:"very fast and very sudden", why:"Grammar: 'suddenly' \u2014 an adjective where an adverb belongs."},
+    {t:"vc", s:"very fast and very sudden", why:"Vocabulary: two 'verys' in five words, in a script that elsewhere writes 'a wall of dust rolled toward us like a moving mountain'. The gap between those two sentences is the whole of the vocabulary row."},
+    {t:"vc", s:"It is also very dangerous", why:"Vocabulary: 'very dangerous' \u2014 reaching for the intensifier instead of the image."},
+    {t:"st", s:"The police close the road sometimes.", why:"Structure: a good detail, dropped at the end of the paragraph and left. Nothing follows it."}
+  ],
+  model:`One of the most frightening kinds of extreme weather in our region is a sandstorm. The sky turns a thick orange, the wind howls, and within minutes you cannot see more than a few metres ahead. A forecast can warn us, but a sandstorm arrives faster than the warning travels.
+
+I will never forget the one that hit my city two years ago. The air grew heavy and warm, and a wall of dust rolled toward us like a moving mountain. We rushed inside and sealed the windows with wet towels, and still the fine sand crept under the doors — my mother laid a towel along every threshold and by evening there was a grey line beside each one anyway. It was terrifying because everything familiar disappeared, and for an hour the whole city seemed to hold its breath.
+
+It is worst for anyone caught driving. Every year there are accidents, because a driver who cannot see the car in front of them is travelling blind at a hundred kilometres an hour. The police close the roads when it is bad enough, and closing a road in this country is not a decision anyone takes lightly.
+
+When it finally passed, a layer of dust covered every surface. That experience taught me how powerless we can feel against nature, and why we must respect the warnings the authorities give.`,
+  modelNote:`Every idea is the original's, including the two weak paragraphs — the forecast and the drivers. Nothing was cut.
+
+Grammar 4 → 5: 'the sand still come' → 'crept... anyway'. 'There is accidents' → 'there are accidents'.
+
+Spelling 4 → 5: 'infront' → 'in front', and then the phrase disappeared into a better sentence anyway.
+
+Vocabulary 4 → 5: 'very fast and very sudden' → 'arrives faster than the warning travels'. 'Very dangerous' → a driver travelling blind at a hundred kilometres an hour. Neither replacement is a harder word — both are the image the writer was already capable of, applied to the sentence they had stopped caring about.
+
+Structure 4 → 5: 'The police close the road sometimes' was a dead end. It now closes the paragraph with a reason: closing a road here is not a light decision.
+
+The thing worth noticing: the two brilliant paragraphs are almost untouched. The rebuild only repaired the parts the student wrote to fill space — which is where every one of their four lost marks was hiding.`,
+  scores:{task:5,structure:5,grammar:4,vocab:4,spelling:4},
+    notes:`203 words. 22/25 — 5 · 5 · 4 · 4 · 4.
+
+Task 5 and Structure 5: all three bullets, in order, each developed. The personal experience paragraph is genuinely good — the wet towels, the hour of held breath, the layer of dust afterwards.
+
+So why not 25? Look at the highlights: they cluster. The two paragraphs the writer cared about are excellent. The two they added to reach the word count — the forecast sentence and the driving paragraph — carry every error in the script.
+
+Grammar 4: 'the sand still come inside', 'there is accidents'. Both are in the padding.
+
+Vocabulary 4: 'a wall of dust rolled toward us like a moving mountain' and 'very fast and very sudden' are in the same essay. The writer can do it. They stopped doing it when they stopped caring about the sentence.
+
+Spelling 4: 'infront'.
+
+The lesson is not 'proofread'. It is that the mark was lost in the material added to reach the minimum — and the minimum was already met. Compare with the 25/25 shamal script: 251 words, all of them wanted.` },
+  { id:"mk_strong_money", title:"Education is the foundation (21/25)", prompt:`In your opinion, how should countries spend their money? Include: reasons for your choice; who benefits; how the money is used. (≥180 words)`,
+    response:`In my opinion, countries should spend most of their money on education, because an educated population benefits everyone in the long run.
+
+When governments fund good schools, well-trained teachers and free resources, students from every background get a fair chance to succeed. This money is used to build classrooms, pay staff and provide technology. Every child should have this chance because education is a right and not a privilege.
+
+The people who benefit are not only the students themselves but also businesses, which gain skilled workers, and society as a whole, which becomes healthier and more stable. Also the country benefit because it will have doctors and engineers in the future.
+
+Of course, health and infrastructure matter too. Health is very important because people need hospitals, and infrastructure is important too because we need roads and electricity. But I believe education is the foundation that makes all other progress possible.
+
+A country that invests in its young people is really investing in its own future. This is why I think education should be the first priority for any goverment that want to develop.`,
+    flags:[
+    {t:"gr", s:"Also the country benefit because", why:"Grammar: 'benefits'. Agreement."},
+    {t:"gr", s:"any goverment that want to develop", why:"Grammar: 'wants'. Agreement, in the final sentence."},
+    {t:"sp", s:"goverment", why:"Spelling: 'government'. A dropped n, in the last line of the essay."},
+    {t:"tk", s:"Health is very important because people need hospitals, and infrastructure is important too because we need roads and electricity.", why:"Task: the prompt asked for YOUR choice and its reasons. This sentence concedes two rival priorities and gives each a reason \u2014 which weakens the single choice the essay is built on. A concession should be brief and then defeated."},
+    {t:"st", s:"Every child should have this chance because education is a right and not a privilege.", why:"Structure: the best sentence in the essay, and it is stranded at the end of a paragraph about classrooms and staff. It belongs in the argument, not after it."},
+    {t:"st", s:"Of course, health and infrastructure matter too.", why:"Structure: the fourth paragraph exists to be fair to opinions the essay does not hold. It costs 30 words and buys nothing."},
+    {t:"vc", s:"very important", why:"Vocabulary: 'very important' \u2014 in a script that elsewhere writes 'a right and not a privilege' and 'the foundation that makes all other progress possible'."}
+  ],
+  model:`In my opinion, countries should spend most of their money on education, because education is a right and not a privilege — and a country that treats it as a privilege pays for that choice for fifty years.
+
+When governments fund good schools, well-trained teachers and free resources, students from every background get a fair chance to succeed. The money buys classrooms, staff and technology, but what it actually buys is the chance itself, distributed evenly, to children who did not choose their parents.
+
+The people who benefit are not only the students. Businesses gain skilled workers. Society becomes healthier and more stable, because educated people make better decisions about their own lives and cost the state less when they make them. And the country gains the doctors and engineers it will need in twenty years, who are currently eleven years old and sitting in a classroom somebody decided to fund.
+
+Health and infrastructure matter too, of course. But hospitals need doctors and roads need engineers, and both of those are made in schools. Education is not one priority among three. It is the one that produces the other two.
+
+A country that invests in its young people is investing in its own future. That is why education should be the first claim on any government that intends to develop.`,
+  modelNote:`Every idea is the original's — education as the priority, fair chances for every background, classrooms and staff and technology, education as a right not a privilege, businesses gaining skilled workers, a healthier and more stable society, future doctors and engineers, health and infrastructure mattering, education as the foundation, investing in young people, and the government that wants to develop. Nothing imported.
+
+Grammar 4 → 5: 'the country benefit' → 'gains'. 'Any goverment that want' → 'any government that intends'.
+
+Spelling 4 → 5: 'goverment' → 'government'.
+
+Structure 4 → 5: 'a right and not a privilege' was the thesis, stranded at the bottom of paragraph two. It is now the first sentence of the essay, because it always was the first sentence of the argument.
+
+Task 4 → 5, and this is the real work. The concession paragraph is still here — nothing was cut. But it stopped agreeing. 'Health is very important because people need hospitals' became: hospitals need doctors and roads need engineers, and both are made in schools. The rival priorities are now the proof of the writer's own claim rather than a polite bow to the other side. That is what a concession is for.
+
+Vocabulary 5 → 5: unchanged, except that 'very important' is gone. It was the one lapse in a strong row.`,
+  scores:{task:4,structure:4,grammar:4,vocab:5,spelling:4},
+    notes:`177 words. 21/25 — 4 · 4 · 4 · 5 · 4.
+
+Vocabulary 5, and deservedly: 'a right and not a privilege', 'the foundation that makes all other progress possible', 'investing in its own future'. This student can write.
+
+Task 4: the three bullets are all covered — reasons, who benefits, how it is used. What holds it at 4 is the highlighted concession paragraph. Asked for an opinion, the essay spends 30 words being fair to two positions it does not hold, and gives each of them a reason. A concession is meant to be raised and then beaten; this one is raised and then agreed with.
+
+Structure 4: 'Education is a right and not a privilege' is the essay's thesis, and it is sitting at the bottom of a paragraph about buildings and salaries. The best sentence is in the wrong room.
+
+Grammar 4: 'the country benefit', 'any goverment that want' — two agreement slips, one of them in the final line.
+
+Spelling 4: 'goverment', also in the final line. The last sentence of this essay costs two marks.
+
+Compare with the 25/25 in this set. Both commit to one priority. The 25 never mentions a rival except to dismiss it in half a line.` },
+  { id:"mk_strong_arch", title:"Light falling like rain (24/25 — lost on grammar)", prompt:`In your opinion, how does architecture influence people's lives? Include: what it means to you; its importance in the UAE; two examples. (≥200 words)`,
+    response:`Architecture shapes the way we feel about the places we live in. To me, it is much more than walls and roofs; it is the art of designing spaces that lift our mood and bring people together. A building is not only a shelter, it is a decision about how the people inside it will spend their days.
+
+In the UAE, architecture is especially important because our buildings are known all over the world. But the more important reason is the climate. A building here must do something buildings in cooler countries never have to do, which is make the outdoors survivable, and the buildings that succeed are the ones that shape how the city actually lives.
+
+The Burj Khalifa, for example, is not only the tallest building on Earth but also a symbol of ambition that makes residents proud. It changed the way the world talk about this country, and it changed how we talk about ourselves.
+
+The Louvre Abu Dhabi is another example: its huge silver dome lets light fall like rain, turning a museum visit into an experience. Both buildings show that thoughtful design can attract visitors, support the economy and give a city its identity.
+
+In my view, good architecture does not just give us shelter — it influences how we live, how we feel and how the world sees us.`,
+    flags:[
+    {t:"gr", s:"the way the world talk about this country", why:"Grammar: 'talks'. The subject is 'the world', singular. This is the only error in 215 words \u2014 and it sits in the essay's best paragraph."}
+  ],
+  model:`Architecture shapes the way we feel about the places we live in. To me, it is much more than walls and roofs; it is the art of designing spaces that lift our mood and bring people together. A building is not only a shelter, it is a decision about how the people inside it will spend their days.
+
+In the UAE, architecture is especially important because our buildings are known all over the world. But the more important reason is the climate. A building here must do something buildings in cooler countries never have to do, which is make the outdoors survivable, and the buildings that succeed are the ones that shape how the city actually lives.
+
+The Burj Khalifa, for example, is not only the tallest building on Earth but also a symbol of ambition that makes residents proud. It changed the way the world talks about this country, and it changed how we talk about ourselves.
+
+The Louvre Abu Dhabi is another example: its huge silver dome lets light fall like rain, turning a museum visit into an experience. Both buildings show that thoughtful design can attract visitors, support the economy and give a city its identity.
+
+In my view, good architecture does not just give us shelter — it influences how we live, how we feel and how the world sees us.`,
+  modelNote:`One letter. 'Talk' became 'talks'. That is the entire rebuild — 214 of the 215 words are exactly as the student wrote them.
+
+Grammar 4 → 5. Task, Structure, Vocabulary and Spelling were 5 already and are untouched, because there was nothing in them to touch.
+
+There is no craft lesson here, and that is the lesson. This student wrote a genuinely fine essay — 'make the outdoors survivable', 'light fall like rain', a conclusion that returns without repeating — and handed back 24 because a singular subject took a plural verb in one clause.
+
+Two things follow. The first is practical: the last mark on a strong script is almost never earned by writing more. It is earned by reading back what you already wrote, slowly, looking for exactly this. Two minutes.
+
+The second is a warning about where the error was. Not in a throwaway sentence — in the Burj Khalifa paragraph, the part the writer most enjoyed. We proofread our weak sentences carefully and our best ones not at all, because we read them as we meant them. Start your check with the sentence you are proudest of.`,
+  scores:{task:5,structure:5,grammar:4,vocab:5,spelling:5},
+    notes:`215 words. 24/25 — 5 · 5 · 4 · 5 · 5.
+
+One error. It is highlighted, and it is the whole difference between this script and full marks.
+
+'It changed the way the world talk about this country.' The subject is 'the world' — singular — so the verb is 'talks'. One letter, in 215 words.
+
+Everything else earns 5 honestly. Task: all three bullets, both examples developed rather than named. Structure: a thesis, a reason specific to this country, two examples, a conclusion that returns to the opening without repeating it. Vocabulary: 'lets light fall like rain' is the best image in this lesson, and 'make the outdoors survivable' is the sharpest reason.
+
+Now the pattern worth seeing. Across this unit there are five 24/25 scripts, and each lost its mark in a different row — vocabulary, grammar, structure, task, spelling. Not one of them lost it for being unintelligent. The rubric is five separate questions, and a strong writer can answer four of them perfectly and still not have 25.
+
+Read this beside the 25/25 souq essay. Both are excellent. One of them says 'talks'.` },
+  { id:"mk_avg_space", title:"Exciting but we need more technology (15/25)", prompt:`Write about space travel in the future. Include: why people go to space; why it is dangerous; why people might live on other planets. (≥100 words)`,
+    response:`In the future many people will go to space because they want to discover new things. Also the companies want to make money from space tourism and this is a new business.
+
+Space travel is dangerous because there is no air and the rockets can explode. Also the astronauts can get sick from the radiation. It is dangerous for the body and for the mind because they are far from the family for a long time.
+
+Some people want to live on other planets like Mars because the Earth is getting crowded and polluted. Mars is very far but maybe in the future we can go there and build a city.
+
+I think space travel is exciting but we need more technology to make it safe. Maybe one day normal people can travel to space too, not only astronauts.`,
+    flags:[
+    {t:"tk", s:"they want to discover new things", why:"Task: bullet one, answered in five words. Discover what? The essay never asks its own question."},
+    {t:"tk", s:"It is dangerous for the body and for the mind because they are far from the family for a long time.", why:"Task: a genuinely good idea \u2014 the psychological cost \u2014 and it is over in one sentence. This is the essay's most original thought and its least developed."},
+    {t:"tk", s:"Mars is very far but maybe in the future we can go there and build a city.", why:"Task: bullet three ends on 'maybe'. The prompt asked why people might WANT to live there; the writer describes the possibility and never the motive."},
+    {t:"st", s:"Also the companies want to make money", why:"Structure: 'Also' opens sentences in three of the four paragraphs. It is the writer's only connective, and it signals addition without relation."},
+    {t:"st", s:"Also the astronauts can get sick", why:"Structure: second 'Also' as an opener."},
+    {t:"vc", s:"Mars is very far", why:"Vocabulary: 'very far' \u2014 of a planet 225 million kilometres away. The plainest possible word for the least ordinary distance in the essay."},
+    {t:"vc", s:"space travel is exciting", why:"Vocabulary: 'exciting' is the essay's verdict, and it is the word a brochure would use."},
+    {t:"gr", s:"far from the family", why:"Grammar: 'their families'. Definite article where a possessive belongs \u2014 first-language transfer."}
+  ],
+  model:`In the future many people will go to space because they want to discover new things — not new views, but new answers: what is out there, whether anything lives in it, and what the rules are somewhere the rules are different. Companies will go for a plainer reason. Space tourism is a new business, and businesses go where the money is.
+
+Space travel is dangerous, and the obvious dangers are the least of it. Yes, there is no air, and yes, rockets can explode. But astronauts also get sick from radiation that they cannot see, feel, or shield against, and which does its damage slowly across a whole mission. And it is dangerous for the mind as much as the body: they are far from their families for a long time, locked in a small space with the same few people, and there is nowhere to walk away to. On Earth, every argument has a door.
+
+Some people want to live on Mars because Earth is getting crowded and polluted. Mars is 225 million kilometres away, and it is colder and emptier than the worst place here. If we could not look after a planet that already worked, I do not believe we will build a city on one that does not.
+
+I think space travel is worth doing but we need better technology to make it safe. Maybe one day ordinary people will go, not only astronauts — and the day it stops being remarkable is the day it has actually succeeded.`,
+  modelNote:`Every idea is the original's: discovering new things, companies wanting money from space tourism, no air, rockets exploding, radiation sickness, danger to the body and the mind, being far from family for a long time, Earth being crowded and polluted, Mars being far, building a city there, needing more technology, and ordinary people travelling one day. Nothing imported.
+
+Grammar 3 → 5: 'far from the family' → 'their families'.
+
+Structure 3 → 5: every 'Also' is gone. The connections that replace them do work — 'the obvious dangers are the least of it' ranks the ideas instead of stacking them.
+
+Vocabulary 3 → 5: 'very far' → 225 million kilometres. 'Exciting' → 'worth doing'. Neither is a harder word; both are more decided.
+
+Task 3 → 5. Watch what happened to the nine-word sentence about the mind. It was the best idea in the essay and it now runs a third of a paragraph: locked in a small space with the same few people, nowhere to walk away to, and — the line that finishes it — on Earth, every argument has a door. That sentence is not a new idea. It is the student's idea, asked 'why does that matter?' once.
+
+'Discover new things' became: not new views, but new answers. Same three words, opened.
+
+And the ending. 'Maybe one day normal people can travel to space too' was a shrug. It became: the day it stops being remarkable is the day it has actually succeeded. The student had already written the thought. They just stopped one clause early.`,
+  scores:{task:3,structure:3,grammar:3,vocab:3,spelling:3},
+    notes:`136 words. 15/25 — 3 · 3 · 3 · 3 · 3.
+
+A straight line of 3s. Nothing is wrong; nothing is finished.
+
+Task 3: all three bullets, all answered at the level of a first sentence. But read the second green highlight again — 'It is dangerous for the body and for the mind because they are far from the family for a long time.' Nobody else in this lesson thought of that. It is the most original idea in the set, and it lasts nine words.
+
+Structure 3: 'Also' opens sentences in three paragraphs out of four. It is a word that means 'here comes another thing' and nothing else — no contrast, no consequence, no hierarchy.
+
+Grammar 3: 'far from the family' rather than 'their families'.
+
+Vocabulary 3: 'very far' for Mars. 'Exciting' as the essay's final judgement.
+
+Spelling 3: no errors; punctuation thin.
+
+Compare with the 14/25 in this lesson, which is one mark lower and far harder to mark — and with the 25/25, which had the same three bullets and asked 'so what?' after each of them.` },
+  { id:"mk_avg_eot", title:"Study hard and revise (14/25)", prompt:`Write about the end-of-term exam. Include: why we have it; what topics; how to write a good essay. (≥100 words)`,
+    response:`We have the end of term exam to check what we learned in the term. The teacher want to know if we understand the lessons or no. Also the school want to know this.
+
+In the essay we can write about technology or environment. Maybe also social media. These topic we study them in the class so we should revise them.
+
+To write a good essay you should make paragraphs and use good grammar. You should also check the spelling. Also you should write about all the points in the question and dont forget the introduction and the conclusion.
+
+The exam is important so we must study hard and revise before it. If we study hard we will get a good mark and our parents will be happy.`,
+    flags:[
+    {t:"gr", s:"The teacher want to know", why:"Grammar: 'wants'. Subject\u2013verb agreement."},
+    {t:"gr", s:"Also the school want to know this.", why:"Grammar: 'wants'. The same error, one line later \u2014 so it is a rule, not a slip."},
+    {t:"gr", s:"or no", why:"Grammar: 'or not'."},
+    {t:"gr", s:"These topic we study them in the class", why:"Grammar: 'these topics', and 'them' is redundant \u2014 the object is already named. First-language transfer."},
+    {t:"gr", s:"dont", why:"Grammar/punctuation: 'don't'. Missing apostrophe."},
+    {t:"st", s:"Also the school want to know this.", why:"Structure: 'Also' opens three sentences in this script. It is the writer's only link word, and it signals nothing \u2014 addition without direction."},
+    {t:"st", s:"Also you should write about all the points", why:"Structure: second 'Also' as a sentence opener."},
+    {t:"st", s:"If we study hard we will get a good mark and our parents will be happy.", why:"Structure: the essay ends on a new idea that answers no bullet. A conclusion should close, not open."},
+    {t:"tk", s:"To write a good essay you should make paragraphs and use good grammar.", why:"Task: bullet three is answered by naming the things a good essay has. It never says how to do any of them \u2014 'use good grammar' is not advice, it is a restatement of the goal."},
+    {t:"vc", s:"good essay", why:"Vocabulary: 'good' does all the work in this script \u2014 good essay, good grammar, good mark. Three uses, three different meanings, one word."},
+    {t:"vc", s:"study hard", why:"Vocabulary: the essay's answer to everything, and its last word on the subject."}
+  ],
+  model:`We have the end-of-term exam to check what we learned during the term. The teacher wants to know whether we understood the lessons or not, and the school wants to know too — though for a different reason. The teacher is measuring us; the school is measuring the teaching.
+
+In the essay we can expect technology, the environment, or social media. These are the topics we studied in class, which is exactly why they are the ones to revise: the question is never a surprise to anyone who looked at the units.
+
+To write a good essay, plan before you write, and give each bullet point its own paragraph so the examiner can find it. Write an introduction that says what you think and a conclusion that says it again with a reason attached. Then read it back, because the mistakes you catch yourself are free.
+
+The exam is worth preparing for, and not because our parents will be happy. It is worth preparing for because it is the one hour where you find out what you actually know rather than what you meant to learn.`,
+  modelNote:`Every idea belongs to the original student: checking what we learned, the teacher wanting to know if we understood, the school wanting to know too, technology and environment and social media, studying them in class, revising, paragraphs, grammar, checking spelling, covering all the points, the introduction and conclusion, studying hard, and even the parents. Nothing imported.
+
+Grammar 2 → 5. 'The teacher want' → 'wants'. 'The school want' → 'wants'. 'Or no' → 'or not'. 'These topic we study them' → 'these are the topics we studied'. 'Dont' → the apostrophe. Five fixes, and three of them are one rule.
+
+Task 3 → 5. Watch the third paragraph. 'Make paragraphs' became 'give each bullet point its own paragraph so the examiner can find it' — the same instruction, now with a reason, which is what turns a description into advice. 'Check the spelling' became 'the mistakes you catch yourself are free'.
+
+Structure 3 → 5. Every 'Also' is gone. The school sentence stopped being an addition and became a contrast — the teacher measures us, the school measures the teaching — which is the student's own idea, given the shape it deserved.
+
+Vocabulary 3 → 5. 'Good' no longer does three jobs.
+
+And the parents. The original ended on them, off-task; the rebuild keeps them and turns them into the point: not because our parents will be happy, but because it is the hour you find out what you actually know. The weakest sentence in the script became the strongest, and no new idea was needed to do it.`,
+  scores:{task:3,structure:3,grammar:2,vocab:3,spelling:3},
+    notes:`118 words. 14/25 — 3 · 3 · 2 · 3 · 3.
+
+This is the middle of the range, and the middle is a real place, not a failure. Everything here is on task and comprehensible.
+
+Task 3: all three bullets are touched and none is developed. Look at the green highlight — 'you should make paragraphs and use good grammar' names what a good essay contains without saying how to produce it. That is the difference between 3 and 5 across this whole script: it describes the destination and never the road.
+
+Structure 3: paragraphs exist, in the right order. But 'Also' opens three sentences, which is addition without direction — it tells the reader another thing is coming and nothing about how it relates. Then the conclusion introduces parents being happy, which answers no bullet at all.
+
+Grammar 2: this is the row that costs most. 'The teacher want', 'the school want' — the same agreement error twice in two lines, which makes it a rule the student has not met rather than a slip. Plus 'these topic', 'or no', 'dont'.
+
+Vocabulary 3: 'good' appears three times carrying three different meanings, and 'study hard' is the essay's entire theory of success.
+
+Spelling 3: no misspellings; the row is held down by the missing apostrophe and thin punctuation.
+
+Compare with the 21/25 in this set. Same ideas, roughly. The 21 knows how to end a paragraph.` },
+  { id:"mk_avg_social", practice:true, title:"Balanced, and going nowhere (14/25)",
+  prompt:`Discuss the effects of social media on young people. Include: one benefit; one problem; your own opinion. Write at least 150 words.`,
+  response:`Social media has many effects on young people, and these effects can be positive or negative depending on how we use it.
+
+One benefit is communication. Young people can talk to their friends and family anytime, even if they live in another country, and they can share photos and videos with them. They can also learn new things from educational videos, for example a student can watch a video and understand a difficult lesson better. This is very useful for students.
+
+One problem is that some people spend too much time on their phone. They stay awake until late at night watching videos and then they are tired at school and they can't concentrate. Also there is cyberbullying, which is very bad for young people, because some people write bad comments and this can affect their feelings. Many young people are affected by this problem.
+
+In my opinion, social media is good if we use it in a balanced way and not all the day. We should put limits on our time and we should be kind to each other online. Social media is a useful tool but we must use it carefully and in a balanced way.`,
+  scores:{task:3,structure:3,grammar:3,vocab:2,spelling:3},
+  flags:[
+    {t:"tk", s:"This is very useful for students.", why:"Task: the benefit paragraph stops here. WHY is it useful? What does the student do with the understanding? The point is asserted and abandoned."},
+    {t:"tk", s:"Many young people are affected by this problem.", why:"Task: a filler sentence. It adds no information — it restates that a problem is a problem. Roughly a fifth of this essay is sentences like this one."},
+    {t:"tk", s:"and not all the day", why:"Task: the opinion never becomes an opinion. 'Use it in a balanced way' is what everyone says. It commits to nothing and so cannot be disagreed with."},
+    {t:"st", s:"Social media has many effects on young people, and these effects can be positive or negative depending on how we use it.", why:"Structure: the opening announces that the essay will have two sides. It is a label, not an argument. Compare the 25/25, which opens with a claim you could argue against."},
+    {t:"st", s:"Social media is a useful tool but we must use it carefully and in a balanced way.", why:"Structure: the final sentence repeats the sentence before it, which repeated the opening. The essay ends where it started — no ground has been covered."},
+    {t:"vc", s:"very useful", why:"Vocabulary: 'very' + a plain adjective. This is the essay's only way of expressing degree."},
+    {t:"vc", s:"very bad", why:"Vocabulary: 'very bad' for cyberbullying. The word is doing no work; almost any stronger, more precise word would."},
+    {t:"vc", s:"bad comments", why:"Vocabulary: 'bad comments' — cruel? threatening? mocking? The vaguest available word has been chosen."},
+    {t:"vc", s:"in a balanced way", why:"Vocabulary: this exact phrase appears twice in the final paragraph, four lines apart."},
+    {t:"gr", s:"they can't concentrate", why:"Grammar: contraction in a formal essay. Minor, but the register slips here and at 'don't' elsewhere."},
+    {t:"gr", s:"because some people write bad comments and this can affect their feelings", why:"Grammar: 'their' is ambiguous — the bullies' feelings or the victims'? The pronoun has two possible antecedents in the same sentence."}
+  ],
+  notes:`198 words. 14/25 — a solid, blameless, forgettable essay. This is the most common script in the whole unit, and the hardest to improve, because nothing in it is *wrong*.
+
+Task 3: all three bullets are answered. That earns the 3. What stops it reaching 4 or 5 is that every point is asserted and then abandoned. "This is very useful for students" — why? "Many young people are affected by this problem" — this sentence contains no information at all. Count them: roughly forty of the 198 words are sentences that restate the sentence before them.
+
+Structure 3: four paragraphs, one idea each, correctly ordered. The shape is right, and that is worth 3. But look at the highlighted opening and closing. The essay begins by saying there are two sides and ends by saying there are two sides. Nothing between them changed anything. A structure is not just an arrangement of paragraphs; it is a route from somewhere to somewhere else.
+
+Grammar 3: broadly accurate. Two flags only — a contraction, and an ambiguous "their". Nothing here is costing real marks.
+
+Vocabulary 2: this is the row where the essay actually bleeds, and students never believe it. "Very useful", "very bad", "bad comments", and "in a balanced way" twice in four lines. When the writer needs to say how strongly they feel, they have exactly one tool: the word "very".
+
+Spelling 3: no errors, but the punctuation is thin — long compound sentences strung with "and" where a full stop was available.
+
+The lesson, and it is the most useful one in this unit. This student will get 14 every single time, and will never know why, because nothing they wrote was a mistake. The gap between 14 and 25 is not a list of errors to avoid. It is a habit: ask "why?" after your own sentence, and answer it. The 25/25 in this set contains the same two ideas as this script. It just refused to stop at the first sentence about either of them.`,
+  model:`Every conversation about social media and young people starts by asking whether it is good or bad, which is the wrong question. It is a tool, and the useful question is what it does to people who are still deciding who they are.
+
+The benefit is connection, and that word is usually used too thinly. It does not just mean messaging friends you already have. It means a student who does not understand a lesson can watch someone explain it a different way at eleven at night, and arrive the next morning no longer lost. It means the only person in a town with a particular interest can find the forty other people in the world who share it. Before this, that student stayed lost and that person stayed alone. That is not a small thing.
+
+The problem is not time, which is the number everyone measures because it is the easiest one to measure. A student can lose two hours to a documentary and be better for it. The problem is that these platforms deliver, all day, a stream of other people's best moments, and a young person still forming a sense of self grades themselves against a highlight reel they mistake for ordinary life. Cyberbullying works the same way: what damages someone is not the cruel comment, it is that it is permanent, public, and can be read again at three in the morning.
+
+My own opinion is that we are aiming at the wrong target. We argue about whether to ban phones, which is an argument about hardware. The question worth asking is why these products are built to be so difficult to put down — and that is a question for the companies who built them, not for the children who cannot.`,
+  modelNote:`This rebuild keeps everything the original student brought: connection, learning from videos, cyberbullying, time spent, and the view that the answer is careful use. Not one idea is imported. What changed is what the rubric measures.
+
+Task 3 → 5. Every point now survives its own first sentence. "They can learn new things from videos" became a student watching an explanation at eleven at night and arriving un-lost. "Cyberbullying is very bad" became an account of *why* it is bad — permanent, public, re-readable at three in the morning. The filler sentences are gone. The opinion stopped being "use it in a balanced way" and became a position someone could argue with.
+
+Structure 3 → 5. The original began and ended in the same place. This one opens with a claim (the usual question is the wrong one) and closes by paying it off (the question is for the companies, not the children). The route is now from somewhere to somewhere.
+
+Vocabulary 2 → 5. Every "very" is gone. "Bad comments" became "cruel". "In a balanced way" — used twice — is gone entirely. Note that the replacements are not harder words: "highlight reel", "still deciding who they are", "no longer lost". Precision, not decoration.
+
+Grammar 3 → 5 and Spelling 3 → 5: the contraction is gone, the ambiguous "their" is gone, and the long "and" chains are broken into sentences that end where the idea ends.
+
+The word count barely moved — 198 to 291 — but almost none of the growth is new content. It is the same content, finished.`
+},
+
+{ id:"mk_social_low", practice:true, title:"Social media is a double sword (9/25)",
+  prompt:`Discuss the effects of social media on young people. Include: one benefit; one problem; your own opinion. Write at least 150 words.`,
+  response:`Nowadays socail media is very popular between the young peaple. In my essay I will discus the effects of the socail media on the young peaple.
+
+The benifit of socail media is that we can talk with our freinds and familly. For example if my cousin live in another country I can talk with him every day for free. Also we can share photoes and videos and we can know the news very fast. So socail media is very usefull for the comunication.
+
+The problem of socail media is that it is very adictive. Many young peaple spend many hours in the socail media and they don't study and they don't sleep well. Also there is a cyberbulling and this is very bad for the mentel helth of the young peaple.
+
+Some peaple say that socail media is a double sword because it have good things and bad things. Other peaple say that the parents should controle the time of their childern in the socail media. Some peaple think we should ban it in the schools and other peaple think we should not ban it because it is usefull for the comunication and for the`,
+  scores:{task:2,structure:2,grammar:2,vocab:2,spelling:1},
+  flags:[
+    {t:"sp", s:"socail", why:"Spelling: 'social'. Letter transposition — the writer knows the letters and reverses two. Appears eight times."},
+    {t:"sp", s:"peaple", why:"Spelling: 'people'. Appears eight times. Not a difficult word."},
+    {t:"sp", s:"discus", why:"Spelling: 'discuss'. A missing double letter."},
+    {t:"sp", s:"benifit", why:"Spelling: 'benefit'. Transposition again — the same cause as 'socail' and 'freinds'."},
+    {t:"sp", s:"freinds", why:"Spelling: 'friends'. Transposition."},
+    {t:"sp", s:"familly", why:"Spelling: 'family'. Over-doubling — the opposite error to 'discus'."},
+    {t:"sp", s:"photoes", why:"Spelling: 'photos'. An added letter, applying a rule that does not apply here."},
+    {t:"sp", s:"usefull", why:"Spelling: 'useful'. Over-doubling. Appears twice."},
+    {t:"sp", s:"comunication", why:"Spelling: 'communication'. Phonetic — written as it sounds. Appears twice."},
+    {t:"sp", s:"adictive", why:"Spelling: 'addictive'. Phonetic."},
+    {t:"sp", s:"cyberbulling", why:"Spelling: 'cyberbullying'. Phonetic."},
+    {t:"sp", s:"mentel helth", why:"Spelling: 'mental health'. Both phonetic — written the way they are said."},
+    {t:"sp", s:"controle", why:"Spelling: 'control'. An added letter."},
+    {t:"sp", s:"childern", why:"Spelling: 'children'. Transposition."},
+    {t:"gr", s:"popular between the young peaple", why:"Grammar: 'among', not 'between'. 'Between' is for two things; 'among' is for a group."},
+    {t:"gr", s:"if my cousin live in another country", why:"Grammar: 'lives'. Subject–verb agreement."},
+    {t:"gr", s:"it have good things", why:"Grammar: 'it has'. Agreement again — the same error, so one lesson fixes both."},
+    {t:"gr", s:"there is a cyberbulling", why:"Grammar: cyberbullying is uncountable — 'there is cyberbullying', no article."},
+    {t:"gr", s:"the socail media", why:"Grammar: no definite article before 'social media'. A first-language transfer error, repeated every time the phrase appears."},
+    {t:"vc", s:"double sword", why:"Vocabulary: the phrase is 'double-edged sword'. A half-remembered idiom signals a phrase the writer has heard but does not own."},
+    {t:"vc", s:"very popular", why:"Vocabulary: 'very' + plain adjective. One of five in the script."},
+    {t:"vc", s:"very fast", why:"Vocabulary: 'very' again. The writer has one tool for degree."},
+    {t:"vc", s:"very adictive", why:"Vocabulary: 'very' — and the adjective is misspelled too, so this phrase costs marks in two rows at once."},
+    {t:"vc", s:"very bad", why:"Vocabulary: 'very bad' for cyberbullying. The vaguest available choice."},
+    {t:"tk", s:"Some peaple say that socail media is a double sword because it have good things and bad things.", why:"Task: THIS is the writer's opinion, and they have given it away to 'some peaple'. Four words — 'In my opinion' — would have claimed it and moved the Task mark."},
+    {t:"tk", s:"Other peaple say that the parents should controle the time of their childern in the socail media.", why:"Task: another position attributed to others. The third bullet asks what YOU think, and the writer keeps reporting a debate from outside it."},
+    {t:"st", s:"In my essay I will discus the effects of the socail media on the young peaple.", why:"Structure: the introduction only announces the essay. It opens nothing and could be deleted without loss."},
+    {t:"st", s:"and for the", why:"Structure: the script stops here. Mid-sentence, mid-page. There is no conclusion because the writer was still generating material when the clock stopped."}
+  ],
+  notes:`195 words. 9/25. Every row of the rubric is doing visible work here, so take them one at a time.
+
+Task 2: the prompt asks for three things — one benefit, one problem, and **your own opinion**. The first two arrive. The third never does. Read the last paragraph again: "Some peaple say… Other peaple say… Some peaple think… other peaple think". Four positions, and not one of them is the writer's. Asked what they thought, this student reported a debate and then stood outside it.
+
+That is the most expensive decision in the script. The opinion bullet is a third of the Task row, and summarising other people's views scores nothing against it. Note how close the student came: "socail media is a double sword" is an opinion, and it is handed to "some peaple" instead of being claimed. Four words — "In my opinion" — would have moved this row.
+
+Structure 2: there is an introduction of a kind, though it only announces the essay rather than opening it. There is no conclusion at all. **The script stops in the middle of a sentence** — "…and for the" — and then the page ends.
+
+This is what running out of time looks like, and it tells you something about the planning: the writer was still generating new material at the moment the clock stopped. A planned essay finishes even when it is rushed, because the writer knows where the ending is and can reach it in one line. An unplanned essay simply stops wherever the pen was.
+
+Grammar 2: "popular between the young peaple" (for "among"), "if my cousin live", "it have", "there is a cyberbulling". And "the socail media" with a definite article — a first-language transfer error, repeated every time the phrase carries an article, which makes it a habit rather than a slip and therefore fixable in a single lesson.
+
+Vocabulary 2: "very popular", "very fast", "very usefull", "very adictive", "very bad". Also "double sword" — the phrase is "double-edged sword". A half-remembered idiom is a reliable way to lose a vocabulary mark, because it signals a phrase the writer has heard rather than one they own.
+
+Spelling 1: this is the clearest row in the script, and the easiest to fix. Count them — socail (×8), peaple (×8), usefull (×2), comunication (×2), discus, benifit, freinds, familly, photoes, adictive, cyberbulling, mentel, helth, controle, childern. Thirty-one misspellings from fifteen distinct words in 195 words of writing — and not one of them is a difficult word.
+
+Look at the pattern, because it is three separate problems wearing one costume:
+• **socail, freinds, benifit** — letter transposition. The writer knows the letters and reverses two.
+• **familly, usefull, controle, photoes** — doubling and adding. Over-correction; the writer is guessing at English's habit of doubling.
+• **mentel, helth, adictive, comunication, cyberbulling** — phonetic. The word written the way it sounds when spoken.
+
+Three causes, three different fixes, and none of them is "revise the spelling list". The first needs proofreading, the second needs rules, the third needs the written form seen more often.
+
+The comparison that matters. Read this against the 25/25 in this set. Both contain the same two ideas — connection is good, addiction is bad. The gap is not intelligence and it is not fluency. One writer asked "why?" after each of their own sentences, gave an opinion when asked for one, and stopped early enough to read it back. This one did none of those three, and each omission cost roughly the same.`,
+  model:`Social media is popular among young people, and it has changed how we live in ways that are worth thinking about properly.
+
+The benefit is communication. If my cousin lives in another country, I can talk to him every day for free. That sounds small, but a generation ago it was not possible at all — my father saw his brother twice in ten years. We can also share photos and videos, and we can learn from them: a student who does not understand a lesson in class can watch someone explain it a different way that night.
+
+The problem is that social media is addictive by design. Many young people spend hours on it, and then they do not study and they do not sleep well. Cyberbullying is worse. Someone writes a cruel comment, and unlike a cruel word in a corridor it does not disappear — it stays on the screen, it is public, and it can be read again at three in the morning. That is what damages mental health: not the comment, but its permanence.
+
+In my opinion, social media is a double-edged sword, and the sharp edge is pointed at us. It is a useful tool that was built to be difficult to put down. So I do not think the answer is for parents to control their children's time, because that treats a design problem as a discipline problem. I think we should learn to notice when we are being kept, and leave.`,
+  modelNote:`Read this beside the original. Every idea in it came from the student: talking to a cousin abroad, sharing photos, learning from videos, addiction, sleep, cyberbullying, mental health, the double-edged sword, parents controlling time. Nothing was imported. The rebuild only does what the rubric asked.
+
+Spelling 1 → 5. Thirty-one misspellings, zero. That is four marks for proofreading, and it is the cheapest four marks in this unit. Nothing here required knowing more English — only reading the page back.
+
+Grammar 2 → 5. 'Between' became 'among'. 'My cousin live' became 'lives'. 'It have' became 'it has'. 'The socail media' lost its article. Four fixes, and three of them are the same error.
+
+Vocabulary 2 → 5. Every 'very' is gone. 'Bad comments' became 'cruel'. 'Double sword' became 'double-edged sword' — the idiom the writer was reaching for, now held correctly. Note again: no harder words were used. 'It does not disappear' is not advanced English.
+
+Task 2 → 5. The opinion is claimed. 'Some peaple say… other peaple say…' became 'In my opinion' and then an actual position — that this is a design problem, not a discipline problem — which is the student's own idea about parents, turned around and argued.
+
+Structure 2 → 5. The empty introduction is gone. The essay now finishes, because it was planned to finish. The last line is the writer's, and it is theirs to defend.
+
+The hardest thing to see here: this student was never far away. They had the ideas, the structure, and the sword. They lost sixteen marks to spelling they could fix, an opinion they gave away, and a clock they did not plan for.` },
+
+{ id:"mk_social_zero", practice:true, title:"Unreadable (zero)", zero:true,
+  prompt:`Discuss the effects of social media on young people. Include: one benefit; one problem; your own opinion. Write at least 150 words.`,
+  response:`[Approximately 180 words of handwriting. The script is continuous, unspaced, and slopes steeply down the page; letter forms are not consistently distinguishable — a, o, e and u are formed identically, and there is no discernible difference between n, m, r and u. Word boundaries are largely absent.
+
+Two markers and a senior examiner attempted the script independently. Between them they recovered "social media", "young people", and possibly "phone" or "phones". No sentence could be reconstructed with confidence.
+
+The script was referred for special consideration and returned unmarked.]`,
+  noRebuild:`Nobody knows what this student wrote. A rebuild needs a response to rebuild, and no sentence could be recovered — which may be the cruellest fact in this unit, because the writing might have been good.`,
+  scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
+  zeroReason:`Zero, and this is the only zero in the unit that may be an injustice.
+
+Every other zero here is a decision. The copied passage, the recycled prompt, the word salad, the off-topic essay, the blank page — each is something the candidate chose. This one might be a student who wrote a perfectly good essay that nobody can read.
+
+The rubric cannot help. Task, Structure, Grammar, Vocabulary and Spelling all require the examiner to know what the words are. An unreadable script is not a weak response; it is an absent one, and the mark is the same.
+
+Three practical points, and they are the reason this script is in the unit.
+
+Handwriting is not assessed and handwriting decides your mark. Nothing in the rubric mentions it, and it silently gates all five rows.
+
+Speed is where this happens. Almost nobody writes like this in class. They write like this in the final six minutes, and the fix is not neater letters — it is a plan that stops you needing the final six minutes.
+
+If your writing is genuinely difficult under pressure, that is a conversation to have with your school long before the exam, not a thing to hope about on the day. Access arrangements exist. They cannot be applied retrospectively to a script nobody can read.` },
+{ id:"mk_avg_arch", title:"Nice buildings, happy people (16/25)", prompt:`In your opinion, how does architecture influence people's lives? Include: what it means to you; importance in the UAE; two examples. (≥200 words)`,
+    response:`Architecture means the design of buildings. It influences people because if the building is nice people feel happy and comfortable. If the building is old and ugly people dont feel good when they are inside it.
+
+In the UAE architecture is important because we have famous buildings. For example the Burj Khalifa is very tall and many tourists come to see it. It is a symbol of Dubai and everyone know it.
+
+Another example is the malls which are big and have nice design. In the summer we go to the mall because outside is very hot. The mall is a good place for the family.
+
+So architecture is important for the country and for the people because it makes the city beautiful and brings money from tourists. This is why we should have good architecture in our country.`,
+    flags:[
+    {t:"tk", s:"Architecture means the design of buildings.", why:"Task: bullet one asks what architecture means TO YOU. This is a definition. The personal bullet is never answered."},
+    {t:"tk", s:"It is a symbol of Dubai and everyone know it.", why:"Task: the Burj Khalifa example stops at fame. The prompt asks how architecture influences LIVES \u2014 nothing here says what the tower does to anybody."},
+    {t:"tk", s:"In the summer we go to the mall because outside is very hot.", why:"Task: this is the best sentence in the essay and the writer does not know it. It is the only place where a building changes what a person actually does \u2014 and it is dropped after one line."},
+    {t:"gr", s:"people dont feel good", why:"Grammar/punctuation: 'don't'. Missing apostrophe."},
+    {t:"gr", s:"everyone know it", why:"Grammar: 'knows'. Agreement."},
+    {t:"gr", s:"outside is very hot", why:"Grammar: 'it is very hot outside'. The adverb is doing the work of a subject."},
+    {t:"vc", s:"the building is nice", why:"Vocabulary: 'nice' for an entire discipline. It appears three times \u2014 nice building, nice design, and 'not nice' implied."},
+    {t:"vc", s:"very tall", why:"Vocabulary: 'very' \u00d7 three across the script, and no other intensifier."},
+    {t:"vc", s:"a good place for the family", why:"Vocabulary: 'good place' \u2014 the vaguest available phrase, describing the one idea worth developing."},
+    {t:"st", s:"So architecture is important for the country and for the people", why:"Structure: the conclusion restates the opening. Four paragraphs and the essay ends where it began."}
+  ],
+  model:`Architecture means the design of buildings, but that definition is too small. To me it means that somebody decided, years before I arrived, how I would feel while I was standing here — and I never get a vote.
+
+You notice it when it goes wrong. In a nice building people feel comfortable and they stay. In an old, ugly one they do not feel good inside it, and they leave as soon as they can, without ever saying why.
+
+In the UAE this matters more than people admit. The Burj Khalifa is very tall and tourists come to see it, and it is a symbol of Dubai that everyone knows — but a symbol is the least of what a building does. The real influence is quieter and it is downstairs, in the mall.
+
+In the summer we go to the mall because it is too hot outside. That sentence sounds ordinary and it is not. It means that in this country, air conditioning is what makes a public square possible — so the mall is not really a shop. It is the only place a family can walk together for six months of the year, and architecture decided that.
+
+So architecture matters here not because it makes the city beautiful, or because it brings money from tourists, though it does both. It matters because it decides where we are allowed to be.`,
+  modelNote:`Every idea belongs to the original: architecture as the design of buildings, nice buildings making people happy and comfortable, old ugly buildings not feeling good, famous buildings in the UAE, the Burj Khalifa being very tall, tourists coming, it being a symbol of Dubai, malls being big with nice design, going to the mall in summer because it is hot, the mall being a good place for the family, the city being beautiful, money from tourists. Nothing imported.
+
+Grammar 3 → 5: 'everyone know' → 'knows'. 'Dont' → the apostrophe. 'Outside is very hot' → 'it is too hot outside'.
+
+Vocabulary 3 → 5: 'nice' survives once, on purpose, because it is the right word for a comfortable building. The other uses are gone. No new hard words were needed.
+
+Task 3 → 5, and here is the whole story of this rebuild. The student wrote 'In the summer we go to the mall because outside is very hot' and then walked past it. That sentence is the essay. It is the only place in 143 words where a building changes what a family does with its Friday — and it is now the centre of the argument: air conditioning is what makes a public square possible here, so the mall is not a shop, it is the town square, and architecture decided that.
+
+The 'means to you' bullet is now answered from the student's own instinct — somebody decided how I would feel before I arrived, and I never get a vote.
+
+Structure 3 → 5: the conclusion no longer restates the opening. It concedes the student's own two reasons — beauty and tourist money — and then goes past them.
+
+Nothing here required a better writer. It required someone to point at one sentence and say: you have already found it, now say why it matters.`,
+  scores:{task:3,structure:3,grammar:3,vocab:3,spelling:4},
+    notes:`143 words, against a 200-word minimum. 16/25 — 3 · 3 · 3 · 3 · 4.
+
+Every row scores 3. That is not a coincidence and it is not bad luck — it is what happens when an essay is correct and unfinished in equal measure.
+
+Task 3: two bullets are touched, one is missed. 'Architecture means the design of buildings' answers what the word means, not what it means to the writer, and the prompt asked the second.
+
+But look at the third green highlight. 'In the summer we go to the mall because outside is very hot.' That is the best observation in the essay. It is the only sentence where a building changes what a human being actually does with their day — and it sits there for one line and then the writer moves on, because they do not know they have found anything.
+
+Structure 3: four paragraphs, correct order, and a conclusion that restates the opening.
+
+Grammar 3: 'everyone know', 'dont', 'outside is very hot'.
+
+Vocabulary 3: 'nice' three times, 'very' three times.
+
+Spelling 4: no misspellings; punctuation thin.
+
+The 16 is the most improvable script in this unit. Compare it with the 25/25, which also chose a mall as an example — and then asked what a mall is FOR in a country like this.` },
+{ id:"mk_low_weather", title:"The rain is extreme weather (9/25)", prompt:`Discuss a type of extreme weather. Include: a description; how scary it is; a personal experience. (≥180 words)`,
+    response:`The rain is extreme weather. it is very strong and scary. in my country the rain is not alot but sometimes it come very strong.
+
+one time it rain alot and the street is full of water. the cars cannot pass and my father say we stay in the home. i was scared. my mother say dont go outside.
+
+the weather is dangerous sometimes. we must be carefull and listen to the news. the rain is good for the plants but too much rain is not good.`,
+    flags:[
+    {t:"sp", s:"alot", why:"Spelling: 'a lot' \u2014 two words. It appears twice."},
+    {t:"sp", s:"carefull", why:"Spelling: 'careful'. Over-doubling."},
+    {t:"sp", s:"dont", why:"Punctuation: 'don't'. Missing apostrophe."},
+    {t:"sp", s:"it is very strong and scary", why:"Punctuation: every sentence in this script begins with a lower-case letter. The Spelling row covers punctuation, and this is why it scores 2."},
+    {t:"gr", s:"it come very strong", why:"Grammar: 'it comes'. Agreement."},
+    {t:"gr", s:"it rain alot and the street is full of water", why:"Grammar: tense. The sentence is a memory and it is written in the present."},
+    {t:"gr", s:"my father say", why:"Grammar: 'said'. Tense again \u2014 and 'my mother say' below."},
+    {t:"gr", s:"we stay in the home", why:"Grammar: 'at home'. No article."},
+    {t:"vc", s:"very strong and scary", why:"Vocabulary: 'very' plus the two plainest available adjectives, in the second sentence."},
+    {t:"vc", s:"the rain is good for the plants but too much rain is not good", why:"Vocabulary: 'good' twice, meaning two different things, in one sentence."},
+    {t:"tk", s:"i was scared.", why:"Task: bullet two asks how scary it can be. Three words, and no reason. This is the one bullet the script gets closest to answering."},
+    {t:"st", s:"the weather is dangerous sometimes.", why:"Structure: the final paragraph collects three unrelated sentences \u2014 a warning, some advice, and a point about plants. None follows from another."}
+  ],
+  model:`Rain is not the first thing people think of as extreme weather, but here it should be. We do not get much of it, and that is exactly the problem — when it comes, it comes hard, and nothing in this country is built to absorb it.
+
+One time it rained heavily for a whole afternoon and by evening the street outside our house was a river. The cars could not pass; two of them stopped in the middle of the road with water up to the doors. My father said we would stay at home, and my mother told us not to go outside. I was scared, and I think what frightened me was not the rain itself but how quickly the ordinary street stopped being a street.
+
+Weather like this is dangerous precisely because it is rare. We must be careful and listen to the news, because a city that sees floods every year knows what to do and a city that sees one every decade does not. Rain is good for the plants. Too much of it, too fast, on ground that cannot drink it, is something else entirely.`,
+  modelNote:`Every idea belongs to the original: rain as extreme weather, it being strong and scary, rain being rare here, the flooded street, the cars unable to pass, the father saying stay home, the mother saying don't go outside, being scared, the danger, being careful, listening to the news, rain being good for plants, too much rain not being good. Nothing imported.
+
+Grammar 2 → 5. Almost the entire fix is tense: 'it rain alot and the street is full of water' → 'it rained... the street was a river'. 'My father say' → 'said'. One rule.
+
+Spelling 2 → 5: 'alot' × 2, 'carefull', 'dont', and every capital restored.
+
+Vocabulary 2 → 5: 'very strong and scary' is gone. 'Good' now appears once. The replacements are plain — 'it comes hard', 'a river', 'ground that cannot drink it'.
+
+Task 2 → 5. Watch 'i was scared', the three words that were the closest thing to an answer. They became: what frightened me was how quickly the ordinary street stopped being a street. That is the student's own fear, asked why once.
+
+Structure 1 → 5. The last paragraph's three orphan sentences are now one argument: rain is dangerous here BECAUSE it is rare, which is the student's own observation from paragraph one, finally connected to their own conclusion.`,
+  scores:{task:2,structure:1,grammar:2,vocab:2,spelling:2},
+    notes:`87 words, against a 180-word minimum. 9/25 — 2 · 1 · 2 · 2 · 2.
+
+Task 2: all three bullets are touched, which is why this is not a 1. Rain is described, 'i was scared' answers the scary bullet, and the flooded street is a real personal experience. The student read the question.
+
+Structure 1: this is the row that collapses. Three paragraphs, and the last one holds a warning, some advice and a remark about plants, none of which follow from each other. Sentences sit next to each other without ever being joined.
+
+Grammar 2: tense is the core problem. The flood is a memory told in the present — 'it rain alot and the street is full of water', 'my father say'. It is one rule, and it is everywhere.
+
+Spelling 2: 'alot' twice, 'carefull', 'dont', and every sentence lower-case.
+
+Vocabulary 2: 'very strong and scary', and 'good' doing two jobs in the final sentence.
+
+Compare with the 22/25 in this set. Both students were frightened by weather and both said so. One of them said why.` },
+{ id:"mk_low_eot", title:"Five sentences (8/25)", prompt:`Write about the end-of-term exam. Include: why we have it; what topics; how to write a good essay. (≥100 words)`,
     response:`exam is important. we study for exam. the exam have many question. i like english exam. good essay need good writing and no mistake.`,
-    scores:{task:1,structure:1,grammar:2,vocab:2,spelling:2},
-    notes:`A few disconnected sentences that barely touch the task and miss most of its parts. Errors are frequent and there is no real structure.` },
-  { id:"mk_low_money", title:"How countries spend money (low)", prompt:`In your opinion, how should countries spend their money? Include: reasons; who benefits; how it is used. (≥180 words)`,
-    response:`country must spend money on good things. money is important for people. they spend on school and hospital. it is good for everyone. i think money help the country to be better.`,
-    scores:{task:2,structure:1,grammar:2,vocab:2,spelling:2},
-    notes:`Very short and general, missing most of the prompt's detail. The ideas are relevant but undeveloped, with frequent basic errors.` },
-  { id:"mk_zero_blank", zero:true, title:"No response", prompt:`Write about the end-of-term exam. (≥100 words)`,
+    flags:[
+    {t:"tk", s:"exam is important.", why:"Task: bullet one asks WHY we have the exam. 'Important' is not a reason; it is the writer agreeing that a reason exists somewhere."},
+    {t:"tk", s:"i like english exam.", why:"Task: this answers no bullet at all. It is the only sentence with a person in it, and the prompt did not ask."},
+    {t:"tk", s:"good essay need good writing and no mistake.", why:"Task: bullet three, answered in seven words \u2014 and answered circularly. A good essay needs good writing is not information."},
+    {t:"st", s:"the exam have many question.", why:"Structure: five sentences, no connection between any two of them. Reorder them and nothing changes \u2014 that is the definition of no structure, and it is why the row scores 1."},
+    {t:"gr", s:"exam is important", why:"Grammar: 'the exam is important'. Missing article \u2014 the script drops articles throughout."},
+    {t:"gr", s:"we study for exam", why:"Grammar: 'for the exam'."},
+    {t:"gr", s:"the exam have many question", why:"Grammar: 'has many questions'. Agreement, plus a plural not marked."},
+    {t:"gr", s:"i like", why:"Grammar/punctuation: lower-case 'i' \u2014 every sentence in this script begins lower-case."},
+    {t:"vc", s:"important", why:"Vocabulary: the script has 24 words and this is the only evaluative one it owns."}
+  ],
+  model:`The exam is important, and it is worth saying why rather than just saying so. We study for the exam because it is the one place where we find out what we actually learned, instead of what we thought we learned.
+
+The exam has many questions, and they come from the topics we covered this term — technology, the environment, social media. None of them is a surprise. If you have read the unit titles, you already know the field.
+
+A good essay needs good writing, which means something specific: plan before you start, answer every bullet point, put each one in its own paragraph, and leave two minutes at the end to check for mistakes.
+
+I like the English exam. I think it is the fairest one we sit, because you cannot memorise your way through it — you either have something to say or you do not.`,
+  modelNote:`This rebuild is 143 words built from 24, and every one of the student's five sentences is still here, in order, doing the same job. That is deliberate: nothing was replaced, only finished.
+
+'Exam is important' → kept as the opening, and then asked why. 'We study for exam' → kept, and given the reason: to find out what we actually learned. 'The exam have many question' → kept, and connected to where the questions come from, which answers the bullet the original missed entirely. 'Good essay need good writing' → kept, and unpacked into four concrete things. 'I like english exam' → kept, and turned into the conclusion, with a reason attached.
+
+Task 1 → 5. Not by adding ideas — by asking 'why?' after each sentence the student already wrote. The one genuinely new element is the topics list, which the original omitted; everything else was expansion.
+
+Structure 1 → 5. The five sentences did not need reordering. They needed connecting.
+
+Grammar 2 → 5. Articles restored. Capitals restored. 'Have' → 'has'. 'Question' → 'questions'.
+
+The point of this rebuild is not that the student could have written it. They could not, yet. It is that the distance between what they wrote and full marks is one habit — never let a sentence stand without the next one explaining it — and that habit is teachable in a way that vocabulary is not.`,
+  scores:{task:1,structure:1,grammar:2,vocab:2,spelling:2},
+    notes:`24 words, against a 100-word minimum. 8/25 — 1 · 1 · 2 · 2 · 2.
+
+Read it again slowly, because there is more here than the mark suggests. Five sentences. Every one of them is a complete thought. Every one is on the general subject. The student knows what an exam is for, knows it contains questions, knows a good essay needs to be well written, and has an opinion about English. Nothing here is nonsense.
+
+Task 1: and yet almost nothing is answered. 'Exam is important' is agreement that a reason exists, not a reason. 'Good essay need good writing' is a circle. Bullet two — what topics will be in the essay question — is not attempted.
+
+Structure 1: five sentences with no relationship to each other. Shuffle them into any order and the script is unchanged. That is what a 1 in this row means: not bad organisation, but no organisation to judge.
+
+Grammar 2: articles are dropped almost everywhere — 'for exam', 'the exam have many question'. Every sentence opens lower-case.
+
+The useful comparison is with the 5/25 phonetic script in this same lesson. That student cannot yet spell. This one can — there is not a misspelled word here — and scores only three marks higher, because spelling was never the thing being tested. What separates 8 from 21 is not accuracy. It is that nobody has yet told this student that a sentence is supposed to be attached to the one before it.` },
+{ id:"mk_low_money", title:"Money is important for people (9/25)", prompt:`In your opinion, how should countries spend their money? Include: reasons; who benefits; how it is used. (≥180 words)`,
+    response:`country must spend money on good things. money is important for people. in my opinion the country must spend the money in a good way.
+
+they spend on school and hospital. school is good because the children learn. hospital is good because the people is sick and they need the doctor. it is good for everyone.
+
+i think money help the country to be better. if the country have money it can do many things. the people will be happy and the country will be strong. this is my opinion about how the country spend the money.`,
+    flags:[
+    {t:"gr", s:"country must spend money", why:"Grammar: 'a country' or 'countries'. The article is missing from the first word of the essay."},
+    {t:"gr", s:"the people is sick", why:"Grammar: 'are'. Agreement."},
+    {t:"gr", s:"money help the country", why:"Grammar: 'helps'."},
+    {t:"gr", s:"if the country have money", why:"Grammar: 'has'. Agreement \u2014 the third instance of one rule."},
+    {t:"gr", s:"how the country spend the money", why:"Grammar: 'spends'. Fourth."},
+    {t:"sp", s:"country must spend money on good things.", why:"Punctuation: every sentence in this script begins lower-case, and 'i' is never capitalised."},
+    {t:"vc", s:"good things", why:"Vocabulary: 'good' appears six times in 96 words \u2014 good things, good way, school is good, hospital is good, good for everyone. It is the script's only evaluative word."},
+    {t:"vc", s:"spend the money in a good way", why:"Vocabulary: 'in a good way' is the essay's entire opinion, and it means nothing that could be disagreed with."},
+    {t:"tk", s:"they spend on school and hospital.", why:"Task: bullet one asks for reasons for YOUR choice. This names two areas and never says why these rather than anything else."},
+    {t:"tk", s:"it is good for everyone.", why:"Task: bullet two asks who benefits. 'Everyone' is the one answer that identifies nobody."},
+    {t:"tk", s:"if the country have money it can do many things", why:"Task: bullet three asks HOW the money is used. 'Many things' is the question restated, not answered."},
+    {t:"st", s:"this is my opinion about how the country spend the money.", why:"Structure: the conclusion announces that an opinion was given. It was not \u2014 no sentence in this script states a preference anyone could argue with."}
+  ],
+  model:`A country must spend its money on good things, but "good" is easy to say and hard to choose, so I will choose. In my opinion the money should go to schools first, and hospitals second.
+
+Schools come first because children learn there, and everything a country needs later is made in a classroom. The doctor who staffs the hospital was a child in a school twenty years earlier. If you fund the hospital and not the school, you will have a building and nobody qualified to stand in it.
+
+Hospitals come second, and they matter for a reason nobody says out loud: people get sick whether or not the country is ready, and a family without money has no second option. A rich family flies abroad. A poor family waits. So public hospitals are not only medicine — they are the difference between two families getting the same illness and only one of them surviving it.
+
+I think money helps a country be better, but only if it is spent on people rather than on things that photograph well. If the country has money it can build anything. What it should build is the two places where its people are made and repaired.`,
+  modelNote:`Every idea is the original student's: countries spending money on good things, spending it in a good way, schools, hospitals, children learning, people being sick and needing the doctor, it being good for everyone, money helping the country be better, the country doing many things, people being happy and the country strong. Nothing imported.
+
+Grammar 2 → 5. Four agreement fixes, all one rule: 'the people is' → 'are'. 'Money help' → 'helps'. 'The country have' → 'has'. Plus the missing article in the opening word.
+
+Spelling 2 → 5. Capitals. That is the whole row — there was never a misspelling.
+
+Vocabulary 2 → 5. 'Good' now appears twice, and the second time it is being interrogated rather than used: "good" is easy to say and hard to choose.
+
+Task 2 → 5, and this is where everything happened. Nothing was replaced. 'They spend on school and hospital' became a choice with an order and a reason. 'The children learn' became: the doctor who staffs the hospital was a child in a school twenty years earlier — which is the student's own two nouns, connected. 'The people is sick and they need the doctor' became the sentence about a rich family flying abroad and a poor family waiting. 'It is good for everyone' — the emptiest line in the script — became the specific claim that everyone is exactly who benefits, and here is which everyone.
+
+Structure 1 → 5. The conclusion no longer announces an opinion. It has one.`,
+  scores:{task:2,structure:1,grammar:2,vocab:2,spelling:2},
+    notes:`96 words, against a 180-word minimum. 9/25 — 2 · 1 · 2 · 2 · 2.
+
+Task 2: the shape of an answer is here. Two areas named, a gesture at who benefits, a gesture at outcomes. What is missing is any choice. The prompt asks how a country SHOULD spend its money, which is a question about preference, and this script never prefers anything — look at the green highlights: 'good things', 'a good way', 'many things', 'good for everyone'. Each is the question handed back.
+
+Structure 1: three paragraphs, and the last announces that an opinion has been given when none has. Sentences accumulate; nothing develops.
+
+Grammar 2: four agreement errors — 'the people is', 'money help', 'the country have', 'the country spend'. One rule, four times, which is the good news.
+
+Vocabulary 2: 'good' six times in 96 words.
+
+Spelling 2: not one misspelling. The row is lost entirely to capitalisation.
+
+Set this beside the 21/25 in this set. That student also thinks money should go to schools and hospitals. The difference is that they chose one, and said why.` },
+{ id:"mk_zero_blank", zero:true, title:"No response", prompt:`Write about the end-of-term exam. (≥100 words)`,
     response:`(The student left the answer space completely blank.)`,
-    scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
+    noRebuild:`Nothing was written. A rebuild keeps the student's own words and repairs them \u2014 here there are none. This is the only script in the unit where that is literally, rather than nearly, true.`,
+  scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
     zeroReason:`Award ZERO — no response is attempted. Nothing is written, so there is no evidence of writing skill to assess against any criterion.` },
-
-/* ===== Practice scripts written for iCAN (real:false). Marks and reasoning follow the
-   official EoT rubric, but these are NOT student work and are never labelled as such. ===== */
-
 { id:"mk_eot_full", practice:true, title:"Three reasons, three paragraphs (full marks)",
   prompt:`Write about the end-of-term exam. Include: why we have it; what topics will be in the essay question; how to write a good essay. Write at least 100 words.`,
   response:`Every term ends the same way: with an exam that everyone complains about and nobody skips. It is worth asking what it is actually for.
 
-We have the end-of-term exam because it is the only honest check on what we have learned. Homework can be copied and a teacher's opinion can be kind. An exam is neither. It tells the school what to reteach and it tells us, uncomfortably, what we only thought we knew.
+We have the end-of-term exam because it is the only honest check on what we have learned. Homework can be copied and a teacher's opinion can be kind. An exam is neither. It tells the school what to reteach, and it tells us, uncomfortably, what we only thought we knew.
 
 The essay question is drawn from the topics we have studied this term. It is usually social: technology, the environment, education, or the way young people live now. It is never a surprise. Anyone who has read the unit titles already knows the field.
 
@@ -8339,16 +9179,46 @@ Secondly, the topics in the essay question are usually important topics from our
 Finally, to write a good essay you should make a plan first. Write about all the bullet points. Use linking words like firstly, secondly and finally. Check your spelling at the end. Also manage your time carefully, because time is very important in the exam.
 
 In conclusion, the end-of-term exam is an important exam and students should prepare for it carefully.`,
+  model:`The end-of-term exam matters to everyone in the building, and not for the same reason to each of them. In this essay I will explain why we sit it, what the essay question is likely to ask, and how to write a good answer.
+
+Firstly, we have the exam because the school needs to know what has actually been learned, rather than what was merely covered. Students need it too, for a blunter reason: it is the only place where you discover your real level instead of your hoped-for one. Parents need it because the report is the only window they are given. One exam, three audiences, three different uses.
+
+Secondly, the topics in the essay question are drawn from the units we have studied. Technology, the environment, education — these are the areas we work through in class, so they are the areas worth revising first. The question is never a surprise to anyone who has read the contents page.
+
+Finally, to write a good answer you should plan before you write. Cover every bullet point. Use linking words so the examiner can follow the joints. Check your spelling at the end. And guard your time, because in this room the clock takes more marks than ignorance does.
+
+In conclusion, the end-of-term exam is worth preparing for properly, because it is the one measurement that school, student and parent all agree to believe.`,
+  modelNote:`Count the word "important" in this rebuild. It is not there.
+
+That is the only change. Vocabulary 4 → 5; Task, Structure, Grammar and Spelling were already 5 and are untouched. The structure is identical — introduction, three signposted paragraphs, conclusion, in the same order, saying the same things. The ideas are all the student's: the school knowing what was learned, students seeing their level, parents getting the report, topics coming from the units, planning, bullet points, linking words, checking spelling, managing time.
+
+What changed is that each of the nine "importants" was replaced by the word the student actually meant. "It is important for the school to know" meant the school needs to know what was learned rather than covered. "Important for students too" meant students find out their real level rather than their hoped-for one. "Time is very important" meant the clock takes more marks than ignorance does.
+
+Notice what that reveals. The student was never short of a word — they were short of a *thought*, finished. "Important" is what you write when you have sensed that something matters and have not yet worked out why. It is a placeholder, and the rubric can tell.
+
+The replacements are not harder words. "Needs to know", "the only window", "guard your time" — all of it is ordinary English. Vocabulary 5 is not a reward for reaching higher. It is a reward for landing on the right word instead of the nearest one.`,
   scores:{task:5,structure:5,grammar:5,vocab:4,spelling:5},
+  flags:[
+    {t:"vc", s:"a very important exam for all students", why:"Vocabulary: 'important' arrives in the first line and never leaves. This is the first of nine."},
+    {t:"vc", s:"why we have this important exam", why:"Vocabulary: second use, four words after the first."},
+    {t:"vc", s:"it is important for the school", why:"Vocabulary: third."},
+    {t:"vc", s:"It is important for students too", why:"Vocabulary: fourth. Notice the sentence pattern is also repeating now — 'It is important for X, because Y.'"},
+    {t:"vc", s:"It is also important for parents", why:"Vocabulary: fifth, and the same clause shape a third time."},
+    {t:"vc", s:"the exam is important for everybody", why:"Vocabulary: sixth. This sentence exists only to restate the three before it."},
+    {t:"vc", s:"usually important topics", why:"Vocabulary: seventh — now modifying a noun it cannot describe. What would an unimportant topic look like?"},
+    {t:"vc", s:"These are important topics", why:"Vocabulary: eighth."},
+    {t:"vc", s:"time is very important in the exam", why:"Vocabulary: ninth, in 182 words. The word has stopped meaning anything and become a noise the writer makes before the real word."},
+    {t:"vc", s:"an important exam and students should prepare for it carefully", why:"Vocabulary: the conclusion reaches for it one last time. The descriptor for 5 asks for range used appropriately; this script has one adjective and deploys it wherever an opinion is required."}
+  ],
   notes:`182 words. 24/25 — and the single lost mark is the whole lesson.
 
 Everything mechanical is correct. Task: all three bullets, covered fully. Structure: introduction, three signposted paragraphs, conclusion — the shape is textbook, and it earns its 5. Grammar: not one error. Spelling: not one error.
 
-Vocabulary scores 4. Count the word "important": it appears nine times in 182 words. The descriptor for 5 asks for a range of vocabulary used appropriately; this script has one adjective and deploys it wherever an opinion is required. "Important topics", "important exam", "important for everybody" — the word has stopped meaning anything and become a noise the writer makes before the real word.
+Vocabulary scores 4. Count the highlights: "important" appears nine times in 182 words. The descriptor for 5 asks for a range of vocabulary used appropriately; this script has one adjective and reaches for it wherever an opinion is required. "Important topics", "important exam", "important for everybody" — the word has stopped meaning anything.
 
-Compare this with the 25/25 in this set, which never once says "important" and is unmistakably an argument about the same thing.
+Compare with the 25/25 in this set, which never once says "important" and is unmistakably an argument about the same thing.
 
-Set this beside the 24/25 in the "What shapes us" lesson — that one lost its mark elsewhere entirely. Two scripts, same total, different failure. That is what the rubric is for: it does not measure how good an essay is, it measures five separate things and adds them up.` },
+Then set this beside the 24/25 in the "What shapes us" lesson — that one lost its mark somewhere else entirely. Two scripts, same total, different failure. That is what the rubric is for: it does not measure how good an essay is, it measures five separate things and adds them up.` },
 
 { id:"mk_weather_full", practice:true, title:"The shamal (full marks)",
   prompt:`Discuss a type of extreme weather. Include: a description of the extreme weather event; how scary you believe it can be; whether you have experienced one. Write at least 180 words.`,
@@ -8409,12 +9279,33 @@ The people who benefit are, obviously, everyone, but not equally. A wealthy fami
 As for how the money should be used, I would put it into prevention rather than cure. Vaccination programmes, early screening, clean water, and health education in schools are all far cheaper than treating the diseases they prevent. A dirham spent on prevention saves several later. Hospitals will always be needed, but a country that only builds hospitals has decided to pay full price forever.
 
 To conclude, healthcare deserves first claim on public money because everything else depends on it, and prevention deserves first claim within healthcare because it is the only spending that reduces future spending.`,
+  model:`In my opinion, countries should spend the largest part of their money on healthcare, and I will explain why I believe this so strongly.
+
+The first reason is simple. A country cannot function if its people are unwell. A sick worker does not work, a sick child does not learn, and a sick parent cannot look after anybody. Every other national ambition — the economy, education, even defence — quietly assumes a population healthy enough to turn up. Healthcare is not one priority among many. It is the condition that makes the others possible.
+
+The people who benefit are, obviously, everyone, but not equally. A wealthy family can fly abroad for treatment; a poor family cannot. When a country underfunds its hospitals, the rich barely notice and the poor absorb the whole cost. Public healthcare is therefore not only a health policy. It is the most direct instrument of fairness a government has.
+
+As for how the money should be used, I would put it into prevention rather than cure. Vaccination programmes, early screening, clean water, and health education in schools are all far cheaper than treating the diseases they prevent. A dirham spent on prevention saves several later. Hospitals will always be needed, but a country that only builds hospitals has decided to pay full price forever.
+
+To conclude, healthcare deserves first claim on public money because everything else depends on it, and prevention deserves first claim within healthcare because it is the only spending that reduces future spending.`,
+  modelNote:`One word. That is the entire rebuild.
+
+"It is the condition that make the others possible" became "makes". Nothing else on the page was touched — not a sentence reordered, not an idea added, not a word of the argument changed. The rebuild is 99.6% identical to what this student handed in.
+
+Grammar 4 → 5. Task, Structure, Vocabulary and Spelling were already 5 and stayed 5, because there was nothing in them to fix.
+
+Sit with the arithmetic. This student produced 248 words of committed, specific, well-shaped argument — prevention over cure, the poor absorbing the whole cost, a dirham spent saving several later — and lost a mark to a missing letter s.
+
+Two lessons, and they point in opposite directions. The first is the cheerful one: proofreading is worth a whole mark and takes ninety seconds. The second is harder. The error was invisible to the writer because it sat in the sentence they cared most about — the thesis — and we read our best sentences as we meant them, not as we wrote them. That is exactly why you read the essay back slowly, and why you start with the line you are proudest of.`,
   scores:{task:5,structure:5,grammar:4,vocab:5,spelling:5},
+  flags:[
+    {t:"gr", s:"It is the condition that make the others possible.", why:"Grammar: 'makes'. The subject is 'the condition' — singular. This is the only error in 248 words, and it is sitting in the essay's thesis sentence."}
+  ],
   notes:`248 words. 24/25 — grammar 4, everything else 5.
 
-Find the error before you read on.
+Find the error before you read on. There is exactly one, and it is highlighted above.
 
-It is in paragraph two: "It is the condition that make the others possible." The subject is "the condition", singular; the verb must be "makes". A single subject–verb agreement slip in 248 words.
+"It is the condition that make the others possible." The subject is "the condition", singular; the verb must be "makes". A single subject–verb agreement slip in 248 words.
 
 Now the hard question, and it is the reason this script is in the set: is one error worth a whole mark? The descriptor for 5 requires grammar to be accurate throughout with only minor slips that do not affect meaning. Examiners differ on this, and a defensible case exists for 5. The mark given was 4, on the reasoning that the error sits in the essay's thesis sentence — the one line the whole argument rests on.
 
@@ -8441,7 +9332,7 @@ The souq solved the heat with a wall. The mall solved it with a compressor. Both
 
 Task: three bullets, three clear movements — what it means, why it matters here, two examples — and both examples are genuinely developed rather than named.
 
-The mark of this script is that both examples do argumentative work. Compare the 16/25 in this set, which names Burj Khalifa and Sheikh Zayed Mosque and then says they are beautiful and famous. Naming is not exemplifying. This script asks what a narrow lane is *for* and arrives at a claim: "The architecture did not decorate the community. It produced it."
+The mark of this script is that both examples do argumentative work. Compare the 16/25 in this set, which names Burj Khalifa and Sheikh Zayed Mosque and then says they are beautiful and famous. Naming is not exemplifying. This script asks what a narrow lane is for and arrives at a claim: "The architecture did not decorate the community. It produced it."
 
 The second example is the risk. A mall is an unimpressive choice, and the writer knows it — "I offer it without contempt". Choosing the ordinary example and taking it seriously is harder than reaching for the famous one, and it earns more.
 
@@ -8460,22 +9351,61 @@ The first example is Burj Khalifa. Burj Khalifa is the tallest building in the w
 The second example is Sheikh Zayed Mosque. It is a very beautiful mosque in Abu Dhabi and it is very big. Many people go there to pray and tourists go there to see it. It is white and beautiful.
 
 In conclusion architecture is very important and very nice. The UAE have very good architecture and we should be proud of our buildings because they are beautiful and famous in all the world.`,
+  model:`Architecture is the design of the buildings we live inside, and because we cannot leave them, it works on us whether we notice or not. To me it means that a building is never only a shape. It is a decision somebody made about how I would feel while I was in it, taken years before I arrived.
+
+Architecture matters in the UAE for a reason we do not always say out loud. Tourists do come from all over the world to photograph our buildings, and that is genuinely good for the economy. But the deeper reason is that in this climate a building decides whether a place can be used at all. Get the design wrong and the street is empty for six months of the year.
+
+My first example is the Burj Khalifa. It is the tallest building in the world, and I used to think that was the point. It is not. What it actually did was tell everyone — including us — that this country builds things nobody has built before. A tower changed the way a nation is spoken about, and that is an influence you cannot photograph.
+
+My second is the Sheikh Zayed Mosque. It is white, and vast, and beautiful, and tourists visit it in their thousands. But people also pray in it, every day, and that is the difference. It is the only building I know that is a monument to strangers and an ordinary Tuesday to the people who use it, and the architecture holds both at once without letting either win.
+
+So yes, we should be proud of our buildings. Not because they are beautiful and famous, though they are. Because they decided what life here feels like, and they got it right.`,
+  modelNote:`Every idea in this rebuild is the original student's. Architecture as buildings and design. Its importance in the UAE. Tourists coming from all over the world. Photographs. The economy. The Burj Khalifa being the tallest in the world. The Sheikh Zayed Mosque being white, big, and full of people praying while tourists look. Being proud of our buildings. Nothing was imported — the same essay, finished.
+
+Spelling 1 → 5. Not one word in the original was misspelled; the whole row was lost to missing punctuation. The rebuild adds commas and full stops. Four marks, no new English.
+
+Grammar 2 → 5. "It influence", "the UAE have", "this buildings", "everyone know", "it make" — five errors, all subject–verb agreement, all the same rule. One lesson fixes the row.
+
+Vocabulary 2 → 5. Eleven "verys" and six "beautifuls" are gone. Their replacements are not harder words: "vast", "in their thousands", "an ordinary Tuesday". Precision, not display.
+
+Task 2 → 5, and this is where the real work happened. The prompt asked what architecture means *to you*; the original gave a dictionary definition. It now gives an answer: a decision somebody made about how I would feel, taken before I arrived. And both examples stopped being names. "It is very tall and very beautiful" became a claim about what a tower did to how a country is spoken about. "It is white and beautiful" became the observation that the mosque is a monument and an ordinary Tuesday at the same time — which is the student's own noticing, from their own sentence, taken seriously.
+
+Structure 2 → 5. The original opened and closed with the same sentence. This one arrives somewhere: proud, but not for the reason we usually give.
+
+What this student needed was not more English. They needed to be asked "why?" once per sentence, and to answer it.`,
   scores:{task:2,structure:2,grammar:2,vocab:2,spelling:1},
+  flags:[
+    {t:"tk", s:"Architecture means the buildings and the design of the buildings.", why:"Task: the second bullet asks what architecture means TO YOU. This is a dictionary definition, not a meaning. The bullet is never answered."},
+    {t:"tk", s:"It is very tall and very beautiful and many tourists visit it every year.", why:"Task: this NAMES a building. The prompt asks how architecture influences lives — nothing here says what the Burj Khalifa does to anybody."},
+    {t:"tk", s:"It is white and beautiful.", why:"Task: the second example ends here. Naming is not exemplifying."},
+    {t:"st", s:"In conclusion architecture is very important and very nice.", why:"Structure: the conclusion repeats the opening sentence almost word for word. Remove any paragraph in this essay and nothing changes — that is the test it fails."},
+    {t:"gr", s:"it influence people's lives", why:"Grammar: 'influences'. Subject–verb agreement."},
+    {t:"gr", s:"the UAE have many beautiful buildings", why:"Grammar: 'has'. Agreement — the same error again."},
+    {t:"gr", s:"see this buildings", why:"Grammar: 'these buildings'. Demonstrative does not agree with the plural noun."},
+    {t:"gr", s:"everyone know this", why:"Grammar: 'knows'. Agreement, third time."},
+    {t:"gr", s:"It make the UAE famous", why:"Grammar: 'makes'. Fourth. One lesson fixes all five."},
+    {t:"vc", s:"very nice", why:"Vocabulary: 'nice' is the vaguest adjective in English, and it is describing an entire art form."},
+    {t:"vc", s:"very tall and very beautiful", why:"Vocabulary: two 'verys' in six words. The writer has one tool for degree."},
+    {t:"vc", s:"very beautiful mosque", why:"Vocabulary: 'beautiful' appears six times in this script; 'very' appears eleven."},
+    {t:"vc", s:"very big", why:"Vocabulary: the Sheikh Zayed Mosque, described as 'very big'."},
+    {t:"sp", s:"In conclusion architecture", why:"Punctuation: no comma after the linking phrase. The Spelling row covers punctuation, and there are almost none in this script."},
+    {t:"sp", s:"In my opinion architecture", why:"Punctuation: same again. No misspellings anywhere — this row is lost entirely on missing punctuation."}
+  ],
   notes:`188 words — under the 200 required. 9/25.
 
 This is the most useful script in the set, because nothing about it looks like failure. It is polite, on topic, organised into paragraphs, and it names two real buildings. A student would read it back and feel it went fine.
 
-Task 2: the second bullet — what architecture means *to you* — is never answered. "Architecture means the buildings and the design of the buildings" is a definition, not a meaning. The third bullet is answered by naming, not by explaining influence. Nothing here says how any building changed anybody's life.
+Task 2: the second bullet — what architecture means to you — is never answered. "Architecture means the buildings and the design of the buildings" is a definition, not a meaning. The third bullet is answered by naming, not by explaining influence. Nothing here says how any building changed anybody's life.
 
 Structure 2: five paragraphs and no argument. Each one restates the last. Remove any paragraph and the essay is unchanged, which is the test it fails.
 
-Grammar 2: "it influence", "the UAE have", "this buildings", "everyone know", "it make". Subject–verb agreement collapses repeatedly.
+Grammar 2: five agreement errors, highlighted above, and they are all the same error. That is good news — it is one lesson, not five.
 
 Vocabulary 2: "very nice", "very beautiful", "very big", "very tall". "Beautiful" appears six times; "very" appears eleven.
 
-Spelling 1: not because words are misspelled — they are not — but because the descriptor covers punctuation, and there are almost no commas where they are needed.
+Spelling 1: and this is the surprise. Not one word is misspelled. The row is lost entirely on punctuation — the descriptor covers both, and there is barely a comma in the script.
 
-Set this against the 25/25. Same prompt, same two countries' worth of famous buildings available, and one writer asked what a building *does* while the other asked what it *is*.` },
+Set this against the 25/25. Same prompt, the same famous buildings available to both writers, and one asked what a building does while the other asked what it is.` },
 
 { id:"mk_arch_zero", practice:true, title:"The prompt, written out four times (zero)", zero:true,
   prompt:`In your opinion, how does architecture influence people's lives? Include: what it means to you; its importance in the UAE; two examples. Write at least 200 words.`,
@@ -8486,6 +9416,7 @@ In my opinion architecture influence people's lives and it means to me and it is
 In my opinion how does architecture influence people's lives, what it means to me, its importance in the UAE, two examples, at least 200 words, in paragraphs, in my opinion.
 
 Architecture influence people's lives. What it means to you. Its importance in the UAE. Two examples. In my opinion how does architecture influence people's lives in the UAE with two examples in at least 200 words.`,
+  noRebuild:`The only words on the page are the examiner's own prompt, handed back. A rebuild keeps the student's writing and repairs it — there is none here to keep. To produce a full-mark version we would have to invent the entire response, at which point it is not a rebuild, it is a different student.`,
   scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
   zeroReason:`117 words of the prompt, copied and reshuffled. Zero.
 
@@ -8524,14 +9455,37 @@ Note the ending refuses to be grand. "That is not a justification. It is just tr
   response:`Space travel has always fascinated humanity, and in the coming decades it will move from an extraordinary event to an ordinary industry. People will go to space for research, for resources, and increasingly for money — satellites already earn more than they cost, asteroid mining is being seriously proposed, and several companies now sell seats to anyone who can afford one. The scientific motive and the commercial motive have stopped competing and started reinforcing each other, which is usually the point at which a technology stops being rare, and space travel is dangerous for reasons that most people never think about, because the obvious danger is the launch and the real dangers are slower — cosmic radiation accumulating in the body over a long mission, bone density falling by roughly one per cent a month in weightlessness, and the psychological strain of confinement with the same five people for two years, and living on another planet appeals for two reasons, one good and one bad: the bad one is escape, the idea that we can exhaust Earth and move, which is a fantasy given that Mars is colder, drier and more hostile than any desert here; the good one is insurance, the argument that a species confined to a single planet is one asteroid away from ending, and that is a serious argument, and it deserves a serious answer.
 
 So the future of space travel is likely to be commercial, dangerous, and worth it.`,
+  model:`Space travel has always fascinated humanity, and in the coming decades it will move from an extraordinary event to an ordinary industry. People will go to space for research, for resources, and increasingly for money — satellites already earn more than they cost, asteroid mining is being seriously proposed, and several companies now sell seats to anyone who can afford one. The scientific motive and the commercial motive have stopped competing and started reinforcing each other, which is usually the point at which a technology stops being rare.
+
+Space travel is dangerous for reasons that most people never think about, because the obvious danger is the launch and the real dangers are slower — cosmic radiation accumulating in the body over a long mission, bone density falling by roughly one per cent a month in weightlessness, and the psychological strain of confinement with the same five people for two years.
+
+Living on another planet appeals for two reasons, one good and one bad: the bad one is escape, the idea that we can exhaust Earth and move, which is a fantasy given that Mars is colder, drier and more hostile than any desert here; the good one is insurance, the argument that a species confined to a single planet is one asteroid away from ending, and that is a serious argument, and it deserves a serious answer.
+
+So the future of space travel is likely to be commercial, dangerous, and worth it.`,
+  modelNote:`Two full stops and two carriage returns. That is the entire rebuild.
+
+Read it beside the original: 97.9% identical, and the only word-level edits are "rare, and space" becoming "rare. Space", and "years, and living" becoming "years. Living". Not one idea was added, removed, or reworded. The essay went from two paragraphs to four.
+
+Structure 4 → 5. Task, Grammar, Vocabulary and Spelling were already 5.
+
+This is the cheapest mark in the entire unit, and it is worth understanding why it was lost. The writer had a plan — commerce, danger, colonisation, in that order, each with real content. The plan was in their head and it never reached the page. "And" is how a good thinker joins ideas while speaking; a full stop is how a writer tells a reader that one idea has finished and another has begun.
+
+The examiner is not being pedantic about layout. Paragraphing is the only tool you have for saying "I have answered bullet two, and here is bullet three." Without it, the marker has to reconstruct your structure from your sentences, and a marker who has to reconstruct your structure is not going to give you 5 for having one.
+
+Say your paragraph breaks out loud before you write. Where you would take a breath, take a line.`,
   scores:{task:5,structure:4,grammar:5,vocab:5,spelling:5},
+  flags:[
+    {t:"st", s:"which is usually the point at which a technology stops being rare, and space travel is dangerous", why:"Structure: bullet one ends and bullet two begins — inside the same sentence, joined by 'and'. The reader is given no signal that the topic has changed."},
+    {t:"st", s:"and it deserves a serious answer", why:"Structure: this 210-word paragraph contains all three bullets. Two carriage returns — here and at the earlier highlight — would have made this script 25/25 with no other change."},
+    {t:"st", s:"for two years, and living on another planet appeals for two reasons", why:"Structure: bullet two ends and bullet three begins, again mid-sentence, again on 'and'. Three arguments welded into one block."}
+  ],
   notes:`241 words. 24/25 — and the lost mark is not where students expect.
 
 Task 5: every bullet is answered, and answered with real content — one per cent a month, two years of confinement, the escape-versus-insurance distinction. The thinking is genuinely good, arguably better than some full-mark scripts in other sets.
 
 Grammar 5, Vocabulary 5, Spelling 5. There is not a single error in this script.
 
-Structure 4. Look at the second paragraph: it is 210 words long and it contains all three bullets. The writer has answered everything and buried it. Three separate arguments — commerce, danger, colonisation — are welded into one paragraph with "and", and the reader must do the sorting the writer should have done.
+Structure 4. Look at the highlights. The second paragraph is 210 words long and it contains all three bullets. The writer has answered everything and buried it — three separate arguments welded together with "and", and the reader must do the sorting the writer should have done.
 
 The prompt says "in paragraphs" for a reason. Paragraphing is not decoration; it is how a reader is told where one idea ends. This script would have scored 25 with two carriage returns and no other change.
 
@@ -8550,16 +9504,53 @@ Space travel is dangerous because there is no oxygen in the space and it is very
 Some people want to live in other planets like Mars because the Earth have many problems like the pollution and the population. Maybe in the future we can live in Mars but I think it is very difficult because there is no water and no air in Mars.
 
 In conclusion space travel is very interesting and I hope in the future I can go to the space.`,
+  model:`Space travel in the future will become ordinary, and that is stranger than it sounds.
+
+People will go because we want to discover what is out there — the stars, the planets, and the things we have not named yet. Scientists go to run experiments that cannot be run down here, because gravity ruins them. Space is enormous and we know almost nothing about it, and I think a species that stopped asking would be a smaller species.
+
+It is dangerous, but not in the way films suggest. Yes, a rocket can explode and astronauts can die. The quieter dangers are worse. There is no oxygen, so the only air you have is the air you brought with you. It is cold enough to kill in seconds. Radiation passes through a spacecraft wall as though it were paper, and it does its damage slowly, over months, where nobody can see it. Astronauts must be brave, but bravery is not what keeps them alive. Engineering is.
+
+Some people want to live on Mars because Earth has too many problems — pollution, and too many of us. I understand that argument and I do not accept it. Mars has no water we can drink and no air we can breathe. The worst version of Earth is still kinder than the best version of Mars, and people who could not look after a planet that was already working will not rescue one that is not.
+
+I still hope I will go one day. Not because it would fix anything. Because I want to see it.`,
+  modelNote:`Every idea belongs to the original student. Discovering space. Seeing the stars and the planets. Scientists running experiments. No oxygen. The cold. Rockets exploding. Astronauts dying, and being brave. Mars. Earth's problems — pollution and population. No water and no air on Mars. It being very difficult. And the hope, at the end, of going one day. Nothing was imported.
+
+Spelling 1 → 5: the original had no misspellings at all and no commas either. The row was lost entirely on punctuation.
+
+Grammar 2 → 5: "many peoples" → "people". "To the space" → "to space", eleven times. "Make experiments" → "run experiments". "The Earth have" → "Earth has". "Live in Mars" → "live on Mars". Five rules.
+
+Vocabulary 1 → 5: seven "verys", gone. Their replacements are ordinary words — "enormous", "quieter", "as though it were paper". The row was never about knowing rarer vocabulary.
+
+Task 3 → 5, and this is the interesting one, because Task was already the original's best row. Every bullet was answered; each answer stopped at a fact everyone knows. Watch what happened to them. "There is no oxygen in the space" became: the only air you have is the air you brought. "It is very cold" became: cold enough to kill in seconds. "The astronauts must be very brave" became: bravery is not what keeps them alive, engineering is. Not one of those is a new idea. Each is the student's own idea, asked "so what?" once.
+
+Structure 2 → 5. The original's paragraphs were already in the right order — that is why the rebuild's are too. What they lacked was an argument to hold. Now the third paragraph disagrees with the second, and the ending refuses to be grand.
+
+The final line is the student's. "I hope in the future I can go to the space" became "I still hope I will go one day. Not because it would fix anything. Because I want to see it." Same wish, same writer — allowed to mean it.`,
   scores:{task:3,structure:2,grammar:2,vocab:1,spelling:1},
+  flags:[
+    {t:"gr", s:"many peoples", why:"Grammar: 'people' is already plural. 'Peoples' means nations or ethnic groups."},
+    {t:"gr", s:"to the space", why:"Grammar: no definite article — 'to space'. A first-language transfer error, and it appears eleven times in this script."},
+    {t:"gr", s:"to make experiments", why:"Grammar: collocation — you DO an experiment, you do not make one."},
+    {t:"gr", s:"the Earth have many problems", why:"Grammar: 'has'. Subject–verb agreement."},
+    {t:"gr", s:"live in other planets", why:"Grammar: 'on' a planet, not 'in'. Same again with 'live in Mars' below."},
+    {t:"vc", s:"very interesting and very exciting", why:"Vocabulary: two 'verys' in the opening line. There are seven in the script and no other intensifier."},
+    {t:"vc", s:"Space is very big", why:"Vocabulary: 'very big', of space."},
+    {t:"vc", s:"it is very cold", why:"Vocabulary: 'very' again."},
+    {t:"vc", s:"very dangerous and the astronauts must be very brave", why:"Vocabulary: two more in one clause."},
+    {t:"vc", s:"it is very difficult", why:"Vocabulary: seventh. This is the row where this script and the 25/25 are furthest apart — and the row students most often think does not matter."},
+    {t:"tk", s:"there is no oxygen in the space and it is very cold", why:"Task: true, and known to everyone. Every bullet in this script is answered at the level of a fact requiring no thought."},
+    {t:"tk", s:"Also the rocket can explode and the astronauts can die.", why:"Task: the danger bullet stops here. Compare the 25/25, which gets to radiation, bone loss and closing speed."},
+    {t:"sp", s:"In conclusion space travel", why:"Punctuation: no comma. The Spelling row covers punctuation and there are no commas anywhere in this script."}
+  ],
   notes:`183 words. 9/25 — and note it exceeds the 100-word minimum comfortably. Length was never the problem.
 
-Task 3: this is the script's strongest row, and it is worth understanding why. All three bullets *are* addressed, in order, one per paragraph. Everything the writer says is true. It scores 3 rather than 5 because each bullet is answered at the level of a fact anyone already knows — space is cold, rockets explode, Mars has no water. Nothing is developed.
+Task 3: this is the script's strongest row, and it is worth understanding why. All three bullets are addressed, in order, one per paragraph. Everything the writer says is true. It scores 3 rather than 5 because each bullet is answered at the level of a fact anyone already knows — space is cold, rockets explode, Mars has no water. Nothing is developed.
 
 Structure 2: paragraphs exist but do no work. There is no argument to organise, so the shape is a container rather than a design.
 
-Grammar 2: "many peoples", "the Earth have", "to make experiments", and "the space" with a definite article throughout — a first-language transfer error, repeated eleven times.
+Grammar 2: "many peoples", "the Earth have", "to make experiments", and "the space" with a definite article eleven times — a first-language transfer error, repeated.
 
-Vocabulary 1: "very interesting", "very exciting", "very big", "very cold", "very dangerous", "very brave", "very difficult". Seven "verys" and no other intensifier. This is the row where this script and the 25/25 are furthest apart, and it is the row students most often think does not matter.
+Vocabulary 1: seven "verys" and no other intensifier. Look at how many highlights are purple.
 
 Spelling 1: covers punctuation. There are no commas anywhere in the script.
 
@@ -8570,6 +9561,7 @@ Compare with the 14/25 and 15/25 in this set. The gap between 9 and 15 is not vo
   response:`[The response consists of 214 words copied verbatim from the reading text in Part 2 of the same examination paper — an article about the International Space Station's water recycling system. It is copied accurately, including one typographical error present in the original, and including the article's final sentence, which is cut off mid-clause where the writer ran out of room.
 
 Nothing has been added. No sentence of the student's own appears anywhere on the page.]`,
+  noRebuild:`Every word belongs to a published journalist. A rebuild keeps the student's own writing and repairs it, and there is not one sentence here that is theirs to keep. Rebuilding this would improve the article, not the candidate.`,
   scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
   zeroReason:`Zero, and this one is worth more discussion than the others in the unit.
 
@@ -8616,66 +9608,38 @@ The clearest problem is comparison. The feed is a highlight reel presented as a 
 There is also the question of attention. These products are engineered by very capable people whose job is to make them difficult to stop using, and it is strange that we describe the resulting behaviour as a failure of teenage willpower rather than as a design achievement.
 
 Social media is neither a catastrophe nor a triumph. It is a powerful tool handed to people at the exact age when they are least equipped to use it carefully, and that is a problem of sequencing rather than of technology.`,
+  model:`Social media has reshaped adolescence more thoroughly than any technology since the television, and the results are neither uniformly good nor uniformly bad.
+
+The clearest benefit is access. A teenager today can learn a language, follow a laboratory's research, watch a surgeon explain a procedure, or find a community of people who share an interest that nobody in their school has heard of. Two decades ago all of this was gated behind money, geography, or luck. That gate is now largely open, and it opened for everybody at once, which is historically unusual.
+
+The clearest problem is comparison. The feed is a highlight reel presented as a diary. Young people, whose sense of self is still forming, measure their ordinary Tuesday against several hundred other people's best days, and lose, every time, all day. Researchers have linked this to rising anxiety, though causation remains genuinely contested and honest writers should say so. And what makes the comparison inescapable is that these products are engineered by very capable people whose job is to make them difficult to put down — so the measuring never stops. It is strange that we call the result a failure of teenage willpower rather than what it is: a design achievement.
+
+Social media is neither a catastrophe nor a triumph. It is a powerful tool handed to people at the exact age when they are least equipped to use it carefully, and that is a problem of sequencing rather than of technology.`,
+  modelNote:`Nothing was deleted. Look closely — the attention material is still here, every word of it. It has simply stopped being a second problem and become the reason the first one is inescapable.
+
+That is the whole rebuild. The paragraph that opened "There is also the question of attention" now folds into the comparison paragraph as its mechanism: the products are engineered to be hard to put down, therefore the measuring never stops. One problem, fully answered, exactly as the prompt asked.
+
+Task 4 → 5. Structure, Grammar, Vocabulary and Spelling were already 5.
+
+This is the most instructive rebuild in the unit, because the original was not weaker than the model — it was bigger. The student had two genuinely good ideas and gave them one paragraph each, which is correct essay writing and wrong exam writing. A bullet list is a specification. "One problem" does not mean "at least one".
+
+But notice what the fix is *not*. It is not "cut your best paragraph". The rebuild keeps the sentence about design achievement, which was the sharpest thing in the essay, and finds it a home inside the answer that was asked for. When you have written more than the prompt wanted, the move is almost never deletion — it is subordination. Ask whether your extra idea is a second answer, or the reason your first answer is true. Usually it is the second, and then it costs you nothing at all.`,
   scores:{task:4,structure:5,grammar:5,vocab:5,spelling:5},
+  flags:[
+    {t:"tk", s:"There is also the question of attention.", why:"Task: the prompt asks for ONE problem. Comparison was that problem, and it was answered fully. This paragraph opens a second one."},
+    {t:"tk", s:"These products are engineered by very capable people whose job is to make them difficult to stop using, and it is strange that we describe the resulting behaviour as a failure of teenage willpower rather than as a design achievement.", why:"Task: this is the best sentence in the essay, and it costs a mark. Folded into the comparison paragraph as part of the same problem, it would have scored 25 with no loss of content."}
+  ],
   notes:`237 words. 24/25 — and the lost mark is in the row students least expect, because this script is better written than several 25s.
 
 Structure, Grammar, Vocabulary, Spelling: all 5. There is nothing wrong with the English. "The feed is a highlight reel presented as a diary" is as good a sentence as anything in the full-mark script.
 
-Task 4. Read the prompt again: **one** benefit, **one** problem, your own opinion. This script gives one benefit, and then two problems — comparison, and then attention and product design. The fourth paragraph is the best paragraph in the essay and it is the reason for the lost mark.
+Task 4. Read the prompt again: one benefit, one problem, your own opinion. This script gives one benefit, and then two problems — comparison, and then attention and product design. The highlighted fourth paragraph is the best paragraph in the essay and it is the reason for the lost mark.
 
 This feels unfair, and it is worth sitting with that feeling. The rubric's Task row asks whether the response does what was asked. It did more, and more is not the same as what was asked. In an exam, a bullet list is a specification.
 
 The examiner's note: the attention material could have been folded into the comparison paragraph as part of the same problem, and the mark would have been 25 with no loss of content at all.
 
 Compare the four 24s across this unit: one lost on vocabulary, one on grammar, one on structure, and this one on task — for being too good. Four identical totals, four different lessons.` },
-
-{ id:"mk_social_low", practice:true, title:"Social media is a double sword (9/25)",
-  prompt:`Discuss the effects of social media on young people. Include: one benefit; one problem; your own opinion. Write at least 150 words.`,
-  response:`Nowadays social media is very popular between the young people. In my essay I will discuss the effects of the social media on the young people and I will give one benefit and one problem and my opinion.
-
-The benefit of social media is that we can talk with our friends and family. For example if my cousin live in another country I can talk with him every day for free. Also we can share photos and videos and we can know the news very fast. So social media is very useful for the communication.
-
-The problem of social media is that it is very addictive. Many young people spend many hours in the social media and they don't study and they don't sleep well. Also there is a cyberbullying and this is very bad for the mental health of the young people.
-
-In my opinion social media is a double sword. It have good things and bad things. We should use it in a good way and not spend many hours in it. The parents should control the time of their children in the social media.
-
-In conclusion social media have many effects in the young people, good and bad, and we should be careful.`,
-  scores:{task:3,structure:2,grammar:2,vocab:1,spelling:1},
-  notes:`204 words. 9/25.
-
-Task 3: all three bullets are present and correctly separated. That is a genuine achievement and it is why this scores 3 rather than 1 — the student has read the question properly. What it lacks is any development: every point stops at its first sentence. "It is very addictive" is a claim; nothing follows it.
-
-Structure 2: the introduction announces what the essay will do, and the conclusion announces what it did. Neither adds anything. Roughly 40 of the 204 words are the essay talking about itself.
-
-Grammar 2: "popular between the young people" (for "among"), "if my cousin live", "it have", "social media have", and "the social media" with an article throughout.
-
-Vocabulary 1: "very popular", "very useful", "very addictive", "very bad", "very fast", "very careful". Note also "double sword" — the phrase is "double-edged sword", and the half-remembered idiom is a common way to lose a vocabulary mark: it signals the writer is reaching for a phrase they have heard rather than one they own.
-
-Spelling 1: covers punctuation, and there are almost no commas. Several sentences run on with "and" three or four times.
-
-Now the useful comparison. This script and the 25/25 contain the same two ideas — connection is good, addiction is bad. Read them back to back. The difference is not intelligence and it is not English. It is that one writer asked "why?" after each of their own sentences, and the other did not.` },
-
-{ id:"mk_social_zero", practice:true, title:"Unreadable (zero)", zero:true,
-  prompt:`Discuss the effects of social media on young people. Include: one benefit; one problem; your own opinion. Write at least 150 words.`,
-  response:`[Approximately 180 words of handwriting. The script is continuous, unspaced, and slopes steeply down the page; letter forms are not consistently distinguishable — a, o, e and u are formed identically, and there is no discernible difference between n, m, r and u. Word boundaries are largely absent.
-
-Two markers and a senior examiner attempted the script independently. Between them they recovered "social media", "young people", and possibly "phone" or "phones". No sentence could be reconstructed with confidence.
-
-The script was referred for special consideration and returned unmarked.]`,
-  scores:{task:0,structure:0,grammar:0,vocab:0,spelling:0},
-  zeroReason:`Zero, and this is the only zero in the unit that may be an injustice.
-
-Every other zero here is a decision. The copied passage, the recycled prompt, the word salad, the off-topic essay, the blank page — each is something the candidate chose. This one might be a student who wrote a perfectly good essay that nobody can read.
-
-The rubric cannot help. Task, Structure, Grammar, Vocabulary and Spelling all require the examiner to know what the words are. An unreadable script is not a weak response; it is an absent one, and the mark is the same.
-
-Three practical points, and they are the reason this script is in the unit.
-
-Handwriting is not assessed and handwriting decides your mark. Nothing in the rubric mentions it, and it silently gates all five rows.
-
-Speed is where this happens. Almost nobody writes like this in class. They write like this in the final six minutes, and the fix is not neater letters — it is a plan that stops you needing the final six minutes.
-
-If your writing is genuinely difficult under pressure, that is a conversation to have with your school long before the exam, not a thing to hope about on the day. Access arrangements exist. They cannot be applied retrospectively to a script nobody can read.` },
 ];
 /* ---- Writing Studio · Mark & Justify: scripts grouped by the prompt they answer ----
    Every script below is a real response to the named task. Several entries carry lightly
@@ -8767,6 +9731,74 @@ const OREO=[
     model:{o:"It is very important to learn a second language.", r:"Knowing another language opens doors to new cultures, friendships and job opportunities.", e:"For example, someone who speaks English and Arabic can work with people from many countries and understand different points of view.", o2:"Therefore, learning a second language is a valuable skill that benefits us throughout our lives."} }
 ];
 let MARK_CUR=null, INFER_CUR=null, OREO_CUR=null;
+/* ---- Mark & Justify: evidence layer ----
+   flags: [{t:"sp|gr|vc|st|tk", s:"exact text in the response", why:"what is wrong"}]
+   model / modelNote: a full-mark rebuild of THIS student's response, shown after submitting. */
+/* ---- Rebuild status ----
+   Four honest states, derived from the script itself so nothing has to be tagged by hand:
+     has  — a 25/25 rebuild is written and the button appears
+     top  — the script already scores 25/25; it IS what a rebuild aims at
+     none — a rebuild is impossible: there is nothing of the student's own to build on
+     todo — a rebuild belongs here and has not been written yet (said plainly, not hidden) */
+function rebuildState(m){
+  if(m.model) return {k:'has', label:'REBUILD', colour:'#15803d',
+    why:'A 25/25 version of this response — the student\u2019s own ideas, rebuilt \u2014 appears after you submit your marking.'};
+  if(m.noRebuild) return {k:'none', label:'NO REBUILD', colour:'#b91c1c', why:m.noRebuild};
+  const t=markTotal(m.scores)||0;
+  if(m.zero||t===0) return {k:'none', label:'NO REBUILD', colour:'#b91c1c',
+    why:'This script cannot be rebuilt: a rebuild keeps the student\u2019s own writing and repairs it, and there is no writing of theirs here to keep. That is what a zero means.'};
+  if(t>=25) return {k:'top', label:'IS THE MODEL', colour:'#0f766e',
+    why:'This script already scores 25/25. It needs no rebuild \u2014 it is what the rebuilds in this lesson are aiming at.'};
+  return {k:'todo', label:'REBUILD PENDING', colour:'#94a3b8',
+    why:'A 25/25 rebuild of this response has not been written yet. The examiner\u2019s marks and reasoning below are complete.'};
+}
+const FL_TYPES={sp:["#dc2626","Spelling & punctuation"], gr:["#ea580c","Grammar"],
+  vc:["#9333ea","Vocabulary"], st:["#2563eb","Structure"], tk:["#16a34a","Task"]};
+function markAnnotate(text, flags){
+  let out=esc(text); const store=[];
+  (flags||[]).forEach(f=>{
+    const needle=esc(f.s||''); if(!needle) return;
+    let i=0;
+    while(out.indexOf(needle,i)>-1){
+      const at=out.indexOf(needle,i);
+      const tok='\u0000'+store.length+'\u0000';
+      store.push('<mark class="fl fl-'+f.t+'" title="'+escq(f.why||'')+'">'+needle+'</mark>');
+      out=out.slice(0,at)+tok+out.slice(at+needle.length);
+      i=at+tok.length;
+    }
+  });
+  store.forEach((h,i)=>{ out=out.split('\u0000'+i+'\u0000').join(h); });
+  return out;
+}
+function flLegend(flags){
+  const used=[...new Set((flags||[]).map(f=>f.t))].filter(t=>FL_TYPES[t]);
+  if(!used.length) return '';
+  return '<div class="fl-legend">'+used.map(t=>{
+    const n=flags.filter(f=>f.t===t).length;
+    return '<span class="fl-key"><span class="fl-dot" style="background:'+FL_TYPES[t][0]+'"></span>'+FL_TYPES[t][1]+' · '+n+'</span>';
+  }).join('')+'</div>';
+}
+function markShowEvidence(){
+  const m=MARK_CUR; if(!m||!m.flags||!m.flags.length) return;
+  const box=document.getElementById('mkEvidence'); if(!box) return;
+  box.innerHTML=`<div class="card" style="border-color:#94a3b8">
+    <b style="color:var(--ink)">The response, marked up</b>
+    <p class="fl-hint">Every highlight is a place the examiner could point to. Hover or tap one to see what is wrong with it.</p>
+    ${flLegend(m.flags)}
+    <div class="excerpt">${markAnnotate(m.response, m.flags)}</div>
+  </div>`;
+}
+function markShowModel(){
+  const m=MARK_CUR; if(!m||!m.model) return;
+  const box=document.getElementById('mkModel'); if(!box) return;
+  box.innerHTML=`<div class="model-box">
+    <h4>📈 The same response, rebuilt to 25/25</h4>
+    <p style="font-size:.83rem;color:var(--slate);margin:0 0 8px">This is not a different essay. It keeps this student's own ideas, examples and voice, and fixes only what the rubric penalised.</p>
+    <div class="excerpt" style="background:#fff">${esc(m.model)}</div>
+    ${m.modelNote?`<div class="feedbk" style="margin-top:10px"><b>What changed, and what it was worth</b><p style="margin:6px 0 0;color:var(--slate)">${esc(m.modelNote)}</p></div>`:''}
+  </div>`;
+  box.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
 function markTask(id){
   const m=MARKING.find(x=>x.id===id)||MARKING[0]; MARK_CUR=m;
   app().innerHTML=`
@@ -8775,7 +9807,10 @@ function markTask(id){
      <div class="meta">Mark &amp; Justify${m.real?' · real exam response':(m.practice?' · practice script written for this lesson':'')}</div>
      <h1 style="font-size:1.6rem">⚖️ ${m.title}</h1>
      <div class="card"><b style="color:var(--ink)">The task</b><p style="color:var(--slate);margin:6px 0 0">${m.prompt}</p></div>
-     <div class="card"><b style="color:var(--ink)">The response</b><div class="excerpt">${esc(m.response)}</div></div>
+     <div class="card"><b style="color:var(--ink)">The response</b><div class="excerpt">${esc(m.response)}</div>
+       ${(function(){const rb=rebuildState(m);
+         return `<div class="rb-note"><span class="rb-chip rb-${rb.k}" style="--rb:${rb.colour}">${rb.label}</span><span>${rb.why}</span></div>`;})()}
+     </div>
      <details class="card" style="cursor:pointer"><summary style="font-weight:700;color:var(--ink)">📋 Show the marking rubric</summary><p style="color:var(--muted);font-size:.85rem;margin:8px 0">${WRITING_RUBRIC.title}</p>${writingRubricHTML()}</details>
      <h3 style="font-size:1.15rem;margin:16px 0 6px">You be the examiner</h3>
      <p style="color:var(--muted);font-size:.9rem;margin:0 0 8px">Give each criterion a mark out of 5 using the rubric, then justify your decision. <b>The examiner's marks appear only after you submit.</b></p>
@@ -8785,6 +9820,8 @@ function markTask(id){
        <textarea id="mkJust" style="min-height:90px" placeholder="Refer to the rubric: task completion, structure, grammar, vocabulary, spelling & punctuation…"></textarea></div>
      <button class="btn" onclick="markSubmit()">Submit my marking →</button>
      <div id="mkResult" style="margin-top:14px"></div>
+     <div id="mkEvidence" style="margin-top:4px"></div>
+     <div id="mkModel" style="margin-top:4px"></div>
    </div>`;
   window.scrollTo({top:0});
 }
@@ -8804,8 +9841,15 @@ function markSubmit(){
        <tr style="background:var(--mist)"><td><b>Total</b></td><td style="text-align:center"><b>${myTotal}/25</b></td><td style="text-align:center"><b>${exTotal}/25</b></td></tr></tbody></table>
      <p style="margin:10px 0 4px"><b>${m.zero?'Result: ZERO':'Band: '+band+' ('+exTotal+'/25)'}.</b> ${verdict}</p>
      <div class="feedbk"><b>Examiner's reasoning</b><p style="margin:6px 0 0;color:var(--slate)">${esc(m.zero?m.zeroReason:m.notes)}</p></div>
-     <div style="margin-top:10px"><button class="btn ghost sm" onclick="go('wstudio')">← More practices</button></div>
+     <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+       ${(function(){const rb=rebuildState(m);
+         return rb.k==='has'
+           ? `<button class="btn sm" style="background:#15803d" onclick="markShowModel()">📈 Show the 25/25 rebuild</button>`
+           : `<span class="rb-note" style="margin:0"><span class="rb-chip rb-${rb.k}" style="--rb:${rb.colour}">${rb.label}</span><span>${rb.why}</span></span>`;})()}
+       <button class="btn ghost sm" onclick="go('wstudio')">← More practices</button>
+     </div>
    </div>`;
+  markShowEvidence();
   document.getElementById('mkResult').scrollIntoView({behavior:'smooth'});
 }
 function inferTask(id){
