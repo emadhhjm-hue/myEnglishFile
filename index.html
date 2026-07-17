@@ -862,6 +862,65 @@ table.data tr:nth-child(even){background:#fff}
 @media print{body *{visibility:hidden} .hp-page,.hp-page *{visibility:visible} .hp-page{position:absolute;left:0;top:0;width:100%;max-height:none;border:0}}
 
 .dl-tile-wide{grid-column:1/-1;width:100%;margin-top:8px;text-align:left}
+
+/* --- term rail + week popup --- */
+.wk-row{display:flex;gap:14px;align-items:flex-start}
+.wk-main{flex:1;min-width:0}
+.wk-rail{flex:0 0 148px;position:sticky;top:12px;background:#fff;border:1px solid var(--line,#dfd9c9);border-radius:14px;padding:8px;max-height:calc(100vh - 24px);overflow:auto}
+.wk-head{display:flex;justify-content:space-between;align-items:baseline;padding:4px 6px 8px;border-bottom:1px solid var(--line,#dfd9c9);margin-bottom:6px}
+.wk-head b{font-size:.86rem}
+.wk-head small{font-size:.68rem;color:var(--muted,#6b6b6b)}
+.wk-btn{display:block;width:100%;text-align:left;border:1px solid var(--line,#dfd9c9);border-radius:10px;padding:7px 8px;margin-bottom:5px;background:#fbfaf6;cursor:pointer;transition:transform .1s}
+.wk-btn:hover{transform:translateX(2px)}
+.wk-btn .wk-n{display:block;font-weight:700;font-size:.82rem}
+.wk-btn .wk-t{display:block;font-size:.68rem;color:var(--muted,#6b6b6b);line-height:1.25;margin:1px 0 2px}
+.wk-btn .wk-s{display:block;font-size:.62rem;font-weight:600}
+.wk-btn.on{background:linear-gradient(180deg,#f2fbf8,#e6f6f0);border-color:#0f766e}
+.wk-btn.on .wk-s{color:#0f766e}
+.wk-btn.off{opacity:.72}
+.wk-btn.off .wk-s{color:#9a9ebe}
+.wk-foot{font-size:.64rem;color:var(--muted,#6b6b6b);line-height:1.35;margin:6px 4px 2px;font-style:italic}
+#wkModalHost .wk-modal{position:fixed;inset:0;background:rgba(10,12,32,.55);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:24px 14px;overflow:auto}
+.wk-card{background:#fff;border-radius:18px;max-width:680px;width:100%;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+.wk-x{position:absolute;top:10px;right:12px;border:none;background:rgba(255,255,255,.25);color:#fff;width:30px;height:30px;border-radius:50%;font-size:1.2rem;cursor:pointer;line-height:1}
+.wk-card-head{background:linear-gradient(135deg,#15183A,#2c3070);color:#fff;padding:18px 18px 16px;border-radius:18px 18px 0 0}
+.wk-card-head.locked{background:linear-gradient(135deg,#4a4f70,#6b7096)}
+.wk-badge{display:inline-block;background:#FFD23F;color:#15183A;font-weight:700;font-size:.68rem;padding:3px 9px;border-radius:20px;letter-spacing:.5px}
+.wk-card-head h3{margin:8px 0 6px;font-size:1.3rem}
+.wk-why{font-size:.84rem;color:#D6D8EC;line-height:1.5;margin:0 0 6px}
+.wk-builds{font-size:.76rem;color:#9CA0C8;margin:0}
+.wk-builds b{color:#FFD23F}
+.wk-teach{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff8e6;border-bottom:1px solid #f0e3bb;padding:11px 18px}
+.wk-teach b{display:block;font-size:.85rem}
+.wk-teach small{display:block;font-size:.72rem;color:var(--muted,#6b6b6b)}
+.wk-switch{position:relative;display:inline-block;width:50px;height:28px;flex:none}
+.wk-switch input{opacity:0;width:0;height:0}
+.wk-slider{position:absolute;inset:0;background:#c9ccd8;border-radius:28px;transition:.2s;cursor:pointer}
+.wk-slider:before{content:"";position:absolute;height:22px;width:22px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.wk-switch input:checked+.wk-slider{background:#0f766e}
+.wk-switch input:checked+.wk-slider:before{transform:translateX(22px)}
+.wk-locked-note{background:#f4f4f8;color:var(--muted,#6b6b6b);font-size:.8rem;padding:10px 18px;border-bottom:1px solid var(--line,#dfd9c9)}
+.wk-body{padding:14px 18px 18px;max-height:56vh;overflow:auto}
+.wk-sec{margin-bottom:14px}
+.wk-sec h4{font-size:.76rem;letter-spacing:.5px;text-transform:uppercase;color:var(--muted,#6b6b6b);margin:0 0 6px}
+.wk-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line,#dfd9c9);border-radius:10px;padding:9px 10px;margin-bottom:6px;background:#fff;cursor:pointer;transition:transform .1s}
+.wk-item:hover:not(:disabled){transform:translateX(3px);border-color:#0f766e}
+.wk-item:disabled{opacity:.5;cursor:not-allowed}
+.wk-dot{width:9px;height:9px;border-radius:50%;flex:none}
+.wk-item-b{flex:1;min-width:0}
+.wk-item-b b{display:block;font-size:.88rem}
+.wk-item-b small{display:block;font-size:.72rem;color:var(--muted,#6b6b6b);line-height:1.3}
+.wk-item-k{font-size:.6rem;font-weight:700;color:#9a9ebe;letter-spacing:.5px;flex:none}
+@media(max-width:860px){
+  .wk-row{flex-direction:column}
+  .wk-rail{position:static;flex:none;width:100%;max-height:none;display:flex;gap:6px;overflow-x:auto;padding:8px}
+  .wk-head{flex:0 0 auto;flex-direction:column;border:0;border-right:1px solid var(--line,#dfd9c9);margin:0 4px 0 0;padding:0 8px 0 2px}
+  .wk-btn{flex:0 0 118px;margin:0}
+  .wk-foot{display:none}
+}
+
+.wk-note{font-size:.74rem;color:var(--muted,#6b6b6b);line-height:1.45;margin:2px 2px 0;font-style:italic}
+.wk-note b{font-style:normal}
 </style>
 </head>
 <body>
@@ -1000,7 +1059,7 @@ function allResults(){
   CLOUD_CACHE.forEach(r=>{ if(r && !seen.has(rkey(r))){ seen.add(rkey(r)); merged.push(r); } });
   return merged.sort((a,b)=>a.date-b.date);
 }
-function refreshCloud(then){ cloudList(data=>{ if(Array.isArray(data)) CLOUD_CACHE = data; if(then) then(); }); }
+function refreshCloud(then){ cloudList(data=>{ if(Array.isArray(data)) CLOUD_CACHE = data; try{ if(typeof mergeCloudWeeks==='function') mergeCloudWeeks(); }catch(e){} if(then) then(); }); }
 
 let SESSION = null; // {role, name, class, code, id}
 
@@ -3833,6 +3892,9 @@ const ROUTES = {
   dashboard(){
     app().innerHTML = `
     <div class="wrap screen">
+     <div class="wk-row">
+      <aside class="wk-rail" id="wkRail">${weekRailHTML()}</aside>
+      <div class="wk-main">
       <div class="hub">
         <div class="hub-greet">Hello ${SESSION&&SESSION.name?esc(SESSION.name.split(' ')[0]):'there'} 👋 — tap a circle to begin. <b>Read · Write · Design</b> sit at the core; more practice orbits around.</div>
         <svg class="hub-map" viewBox="0 0 900 590" xmlns="http://www.w3.org/2000/svg" font-family="Lexend,system-ui,sans-serif">
@@ -3911,6 +3973,8 @@ const ROUTES = {
         <h3 style="font-size:1.2rem">My recent results</h3>
         ${myResultsTable()}
       </div>
+      </div>
+     </div>
     </div>`;
   },
 
@@ -13428,6 +13492,301 @@ function dlMicroPlan(){
   }catch(e){ alert('Could not build the plan: '+e.message); }
 }
 
+
+/* ============================================================================
+   TERM MAP \u2014 10 weeks, sequenced so every week stands on the one before it.
+   Bindings are REAL ids: RSKILLS.id, WSKILLS.id, GRAMMAR topic id, STEM_UNITS.id,
+   AAD_PROG.w. Nothing here is decorative \u2014 each opens its live lesson.
+
+   Load per week: 2 reading + 2 writing + 1 grammar + 1 design + 1 Article-A-Day
+   week, across 4 x 40-minute sessions. STEM lands in 4 weeks only, because a
+   mission is a fortnight of work squeezed into one, and running it weekly is
+   how you burn a class out.
+
+   Scope note: all 22 reading skills fit a 10-week term. The Writing Course has
+   29 \u2014 at a sustainable 2/week only 20 fit. wu3 essay (part) + wu4 IELTS are
+   deferred to Term 2 by design, not by omission. See WEEK_DEFERRED.
+   ========================================================================== */
+const TERM_WEEKS = [
+  { w:1, title:'Getting the gist',
+    read:['skim','scan'], text:'r1', listen:'lc1', speak:0,
+    write:['ws11','ws12'], gram:'g_pres', studio:null,
+    design:null, designFree:'One-card main-idea summary', stem:null,
+    revise:'rv_hobby', exam:null, aad:1,
+    builds:'Entry week \u2014 the Diagnostic sets your tier.',
+    why:'Skimming and scanning are the two moves every later skill stands on. You cannot infer what you cannot first find.' },
+
+  { w:2, title:'Words, and what they imply',
+    read:['vocab','infer'], text:'r4', listen:null, speak:1,
+    write:['ws13','ws14'], gram:'g_past', studio:'inferTask',
+    design:null, designFree:'Vocabulary card set', stem:null,
+    revise:'rv_trip', exam:0, aad:2,
+    builds:'Week 1 \u00b7 skimming & scanning',
+    why:'Inference runs on Week 1: skim for the gist, scan for the line, then work out what the writer did not say. Drafting turns Week 1\u2019s ideas and plan into prose.' },
+
+  { w:3, title:'Why the writer wrote it',
+    read:['purpose','structure'], text:'r2', listen:'lc3', speak:6,
+    write:['ws15','ws16'], gram:'g_art', studio:'markTask',
+    design:null, designFree:'Annotated-text poster', stem:null,
+    revise:'rv_online', exam:null, aad:3,
+    builds:'Week 2 \u00b7 inference',
+    why:'Purpose is inference aimed at the writer instead of the text. Editing then publishing closes the writing process you opened in Week 1.' },
+
+  { w:4, title:'Judging a text',
+    read:['factop','summary'], text:'r6', listen:null, speak:6,
+    write:['ws21','ws22'], gram:'g_comp', studio:'oreoTask',
+    design:'w4', designFree:null, stem:null,
+    revise:'rv_arch', exam:1, aad:4, check:'Checkpoint 1',
+    builds:'Week 3 \u00b7 purpose, tone & attitude',
+    why:'Bias is tone with an agenda \u2014 you can only spot it once Week 3 taught you to hear tone. The artefact is <b>Summarise a text and map it</b>, set the week summarising is taught.' },
+
+  { w:5, title:'The whole reading kit',
+    read:['critical','visual'], text:'r3', listen:'lc2', speak:6,
+    write:['ws23','ws24'], gram:'g_modal', studio:null,
+    design:null, designFree:null, stem:'u1',
+    revise:'rv_weather', exam:null, aad:5,
+    builds:'Week 4 \u00b7 fact vs opinion',
+    why:'Critical response is Week 4\u2019s judgement written down. Visual reading opens the multimodal half \u2014 and the mission\u2019s READ stage is a labelled visual, so it cannot run before this week.' },
+
+  { w:6, title:'Reading pictures',
+    read:['infographic','advert'], text:null, listen:null, speak:4,
+    write:['ws51','ws55'], gram:'g_cond', studio:null,
+    design:'w2', designFree:null, stem:null,
+    revise:'rv_exam', exam:2, aad:6,
+    builds:'Week 5 \u00b7 visual & multimodal reading',
+    why:'An infographic is Week 4\u2019s summary, drawn. The artefact is <b>Explain a process with an infographic</b> \u2014 it needs both infographic reading and writing to inform, and this is the week both land.' },
+
+  { w:7, title:'Processes and persuasion',
+    read:['process','directions'], text:null, listen:null, speak:5,
+    write:['ws52','ws54'], gram:'g_ging', studio:'oreoTask',
+    design:'w1', designFree:null, stem:null,
+    revise:null, exam:null, aad:7,
+    builds:'Week 6 \u00b7 reading advertisements',
+    why:'You read the persuasion in Week 6; now you write it. The artefact is <b>Persuade with a campaign poster</b> \u2014 advert reading from last week, writing to persuade from this one.' },
+
+  { w:8, title:'Story opens',
+    read:['mmstory','plot'], text:null, listen:null, speak:4,
+    write:['ws53','ws25'], gram:'g_rel', studio:null,
+    design:'w3', designFree:null, stem:null,
+    revise:null, exam:3, aad:8, check:'Checkpoint 2',
+    builds:'Week 7 \u00b7 multimodal & process reading',
+    why:'The multimodal story bridges picture-reading into literature. Plot is Week 3\u2019s text structure applied to narrative \u2014 and <b>Turn a scene into a film script</b> needs exactly that, plus writing to entertain.' },
+
+  { w:9, title:'People in stories',
+    read:['character','pov','conflict'], text:null, listen:null, speak:2,
+    write:['ws26','ws27'], gram:'g_cleft', studio:null,
+    design:null, designFree:null, stem:'u7',
+    revise:null, exam:null, aad:9,
+    builds:'Week 8 \u00b7 story structure & plot',
+    why:'Once you can follow a plot you can ask who is telling it and what they want. The second mission lands here because its WRITE stage is worth 35 \u2014 and paragraph architecture, taught this week, is what that stage runs on.' },
+
+  { w:10, title:'What it all means',
+    read:['theme','figlang','irony'], text:'r5', listen:null, speak:7,
+    write:['ws31','ws32'], gram:'g_inv', studio:'markTask',
+    design:'w5', designFree:null, stem:null,
+    revise:null, exam:4, aad:10, check:'Term CA + certificates',
+    builds:'Week 9 \u00b7 character, point of view & conflict',
+    why:'Theme is what Week 9\u2019s conflict was for. Irony needs Week 3\u2019s tone and Week 4\u2019s fact-vs-opinion together. <b>Make a 4-slide awareness post</b> closes the term, and the essay unit opens here and carries into Term 2.' }
+];
+const WEEK_DEFERRED = ['ws33','ws34','ws35','ws36','ws41','ws42','ws43','ws44','ws45'];
+
+/* ---- state: week 1 is open by default; the rest are teacher-activated ---- */
+function weekStates(){ return Store.get('ican_week_states') || {}; }
+function weekOpen(w){ const g = weekStates(); return (w===1) ? (g[1] !== false) : !!g[w]; }
+function setWeekOpen(w, v){
+  const g = weekStates(); g[w] = !!v; Store.set('ican_week_states', g);
+  /* Propagate to the class. The cloud is an append-only log, so we write a
+     record and every device replays the latest per week (same shape as qa_reply). */
+  try{ cloudSave({ type:'week_state', week:w, on:!!v, date:Date.now() }); }catch(e){}
+  paintWeekRail();
+}
+function mergeCloudWeeks(){
+  const latest = {};
+  (CLOUD_CACHE||[]).forEach(r=>{
+    if(r && r.type==='week_state' && r.week){
+      const cur = latest[r.week];
+      if(!cur || (r.date||0) > (cur.date||0)) latest[r.week] = r;
+    }
+  });
+  const g = weekStates(); let changed = false;
+  Object.keys(latest).forEach(w=>{ if(g[w] !== latest[w].on){ g[w] = latest[w].on; changed = true; } });
+  if(changed){ Store.set('ican_week_states', g); if(typeof paintWeekRail==='function') paintWeekRail(); }
+}
+function weekIsTeacher(){ return !!(SESSION && SESSION.role === 'teacher'); }
+
+/* ---- lookups against the live content arrays ---- */
+function wkRead(id){ return (typeof RSKILLS!=='undefined') ? RSKILLS.find(x=>x.id===id) : null; }
+function wkWrite(id){ return (typeof WSKILLS!=='undefined') ? WSKILLS.find(x=>x.id===id) : null; }
+function wkGram(id){
+  if(typeof GRAMMAR==='undefined') return null;
+  for(const lv of Object.keys(GRAMMAR)){
+    const t = (GRAMMAR[lv].topics||[]).find(x=>x.id===id);
+    if(t) return t;
+  }
+  return null;
+}
+function wkStem(id){ return (typeof STEM_UNITS!=='undefined') ? STEM_UNITS.find(x=>x.id===id) : null; }
+function wkText(id){ return (typeof READING!=='undefined') ? READING.find(x=>x.id===id) : null; }
+function wkListen(id){ return (typeof LISTEN_COMP!=='undefined') ? LISTEN_COMP.find(x=>x.id===id) : null; }
+function wkSpeak(i){ return (typeof SPEAKING!=='undefined' && SPEAKING[i]) ? SPEAKING[i] : null; }
+function wkTask(id){ return (typeof WRITING!=='undefined') ? WRITING.find(x=>x.id===id) : null; }
+function wkRevise(id){ return (typeof REVISE!=='undefined') ? REVISE.find(x=>x.id===id) : null; }
+function wkExam(i){ return (typeof EXAMS!=='undefined' && EXAMS[i]) ? EXAMS[i] : null; }
+const WK_STUDIO = { markTask:'Marking task \u2014 score a script before you write one',
+                    inferTask:'Inference task \u2014 what the text implies but never says',
+                    oreoTask:'OREO task \u2014 Opinion \u00b7 Reason \u00b7 Example \u00b7 Opinion' };
+
+/* ---- the left rail ---- */
+function weekRailHTML(){
+  const teach = weekIsTeacher();
+  const openCount = TERM_WEEKS.filter(x=>weekOpen(x.w)).length;
+  return `
+  <div class="wk-head">
+    <b>The term</b>
+    <small>${openCount} of ${TERM_WEEKS.length} open</small>
+  </div>
+  ${TERM_WEEKS.map(x=>{
+    const on = weekOpen(x.w);
+    return `<button class="wk-btn ${on?'on':'off'}" onclick="openWeek(${x.w})" title="${esc(x.title)}">
+      <span class="wk-n">Week ${x.w}</span>
+      <span class="wk-t">${esc(x.title)}</span>
+      <span class="wk-s">${on?'\u25cf open':'\u25cf locked'}</span>
+    </button>`;
+  }).join('')}
+  <p class="wk-foot">${teach
+    ? 'You are signed in as a teacher \u2014 open a week to activate or lock it for the class.'
+    : 'Your teacher opens each week when the class is ready.'}</p>`;
+}
+function paintWeekRail(){
+  const el = document.getElementById('wkRail');
+  if(el) el.innerHTML = weekRailHTML();
+}
+
+/* ---- the popup ---- */
+function openWeek(w){
+  const x = TERM_WEEKS.find(t=>t.w===w); if(!x) return;
+  const teach = weekIsTeacher();
+  const on = weekOpen(w);
+  const prev = TERM_WEEKS.find(t=>t.w===w-1);
+
+  const item = (label, name, strap, route, arg, colour) =>
+    `<button class="wk-item" ${on?`onclick="wkGo('${route}','${arg}')"`:'disabled'}>
+       <span class="wk-dot" style="background:${colour}"></span>
+       <span class="wk-item-b"><b>${esc(name)}</b><small>${esc(strap||'')}</small></span>
+       <span class="wk-item-k">${label}</span>
+     </button>`;
+
+  const sec = (h, inner) => inner ? `<div class="wk-sec"><h4>${h}</h4>${inner}</div>` : '';
+
+  let body = '';
+
+  /* READ */
+  let r = x.read.map(id=>{ const l=wkRead(id); return item('SKILL', l?l.name:id, l?l.strap:'', 'rcLesson', id, (l&&l.colour)||'#E0403F'); }).join('');
+  const tx = x.text && wkText(x.text);
+  if(tx) r += item('ANCHOR TEXT', tx.title, tx.genre, 'readItem', x.text, '#E0403F');
+  body += sec('\ud83d\udcd6 Read', r);
+
+  /* LISTEN + SPEAK */
+  let ls = '';
+  const lc = x.listen && wkListen(x.listen);
+  if(lc) ls += item('LISTEN', lc.title, lc.kind, 'listenComp', x.listen, '#0FA98B');
+  const sp = (x.speak!==null && x.speak!==undefined) ? wkSpeak(x.speak) : null;
+  if(sp) ls += `<button class="wk-item" ${on?`onclick="wkGo('speaking','')"`:'disabled'}>
+      <span class="wk-dot" style="background:#F5A301"></span>
+      <span class="wk-item-b"><b>${esc(sp.cat)}</b><small>${esc(sp.note||'')}</small></span>
+      <span class="wk-item-k">SPEAK</span></button>`;
+  body += sec('\ud83c\udfa7 Listen &amp; speak \u2014 on the same anchor', ls);
+
+  /* WRITE */
+  let wr = x.write.map(id=>{ const l=wkWrite(id); return item('SKILL', l?l.name:id, l?l.strap:'', 'wcLesson', id, (l&&l.colour)||'#2BA84F'); }).join('');
+  if(x.studio) wr += `<button class="wk-item" ${on?`onclick="wkGo('wstudio','')"`:'disabled'}>
+      <span class="wk-dot" style="background:#D6336C"></span>
+      <span class="wk-item-b"><b>Writing Studio</b><small>${esc(WK_STUDIO[x.studio]||'')}</small></span>
+      <span class="wk-item-k">STUDIO</span></button>`;
+  body += sec('\u270d\ufe0f Write', wr);
+
+  /* GRAMMAR — every week, without exception */
+  const g = wkGram(x.gram);
+  body += sec('\ud83e\udde9 Grammar \u2014 this week\u2019s regular practice',
+    item('EVERY SESSION', g?g.title:x.gram, 'One structure, taken from this week\u2019s text \u2014 not a syllabus dropped in from outside', 'grammarLesson', x.gram, '#0FA98B'));
+
+  /* DESIGN — exactly one artefact per week: a task, a mission, or a light card */
+  let d = '';
+  if(x.stem){
+    const s = wkStem(x.stem);
+    d += item('MISSION \u00b7 R25 W35 D40', s?s.title:x.stem, s?s.theme:'', 'stemUnit', x.stem, '#4A6FA5');
+    d += `<p class="wk-note">The mission <b>is</b> this week\u2019s artefact. It already contains its own Read \u00b7 Write \u00b7 Design cycle, so there is no second design task \u2014 two cycles would compete for the same 160 minutes.</p>`;
+  } else if(x.design){
+    const t = wkTask(x.design);
+    d += item('ARTEFACT', t?t.title:x.design, t?t.genre:'', 'writeItem', x.design, '#7A2FD0');
+    if(t && t.audience) d += `<p class="wk-note">Audience: ${esc(t.audience)}${t.wordCount?' \u00b7 '+esc(t.wordCount):''}</p>`;
+  } else {
+    d += `<button class="wk-item" ${on?`onclick="wkGo('dstudio','')"`:'disabled'}>
+      <span class="wk-dot" style="background:#7A2FD0"></span>
+      <span class="wk-item-b"><b>${esc(x.designFree||'Design Studio')}</b><small>A light artefact \u2014 one card or panel, built in Design Studio</small></span>
+      <span class="wk-item-k">DESIGN</span></button>`;
+  }
+  body += sec('\ud83c\udfa8 Design \u2014 one artefact, no more', d);
+
+  /* HOME + CHECK */
+  let h = `<button class="wk-item" ${on?`onclick="wkGo('articleaday','')"`:'disabled'}>
+      <span class="wk-dot" style="background:#F5A301"></span>
+      <span class="wk-item-b"><b>Article-A-Day \u00b7 week ${x.aad}</b><small>One article a day \u00b7 gist + two ideas in your own words</small></span>
+      <span class="wk-item-k">DAILY</span></button>
+    <button class="wk-item" ${on?`onclick="wkGo('spellType','')"`:'disabled'}>
+      <span class="wk-dot" style="background:#5B8DEF"></span>
+      <span class="wk-item-b"><b>Spelling &amp; Typing</b><small>Say it \u00b7 Spell it \u00b7 Type it \u2014 on the words you banked this week</small></span>
+      <span class="wk-item-k">DAILY</span></button>`;
+  const rv = x.revise && wkRevise(x.revise);
+  if(rv) h += item('HOME', rv.title, rv.level, 'reviseTask', x.revise, '#8A8FBB');
+  body += sec('\ud83c\udfe0 Every day, at home', h);
+
+  const ex = (x.exam!==null && x.exam!==undefined) ? wkExam(x.exam) : null;
+  if(ex || x.check){
+    let c = '';
+    if(ex) c += `<button class="wk-item" ${on?`onclick="wkGo('exams','')"`:'disabled'}>
+        <span class="wk-dot" style="background:#15183A"></span>
+        <span class="wk-item-b"><b>${esc(ex.label)}</b><small>${esc(ex.topic||'')} \u00b7 only what was taught this week, on this anchor</small></span>
+        <span class="wk-item-k">QUIZ</span></button>`;
+    if(x.check) c += `<p class="wk-note"><b>${esc(x.check)}</b> \u2014 reported on the Multiliteracies Assessment Standards: Reading /25 \u00b7 Writing /30 \u00b7 Digital design /25 = /80.</p>`;
+    body += sec('\ud83c\udf93 Check', c);
+  }
+
+  const teacherBar = teach ? `
+    <div class="wk-teach">
+      <div>
+        <b>${on?'This week is open to the class':'This week is locked'}</b>
+        <small>${on?'Students can see and open every lesson above.':'Students see the button, but the lessons stay shut.'}</small>
+      </div>
+      <label class="wk-switch">
+        <input type="checkbox" ${on?'checked':''} onchange="setWeekOpen(${w}, this.checked); openWeek(${w});">
+        <span class="wk-slider"></span>
+      </label>
+    </div>` : '';
+
+  const html = `
+  <div class="wk-modal" onclick="if(event.target===this) closeWeek()">
+    <div class="wk-card">
+      <button class="wk-x" onclick="closeWeek()">\u00d7</button>
+      <div class="wk-card-head ${on?'':'locked'}">
+        <span class="wk-badge">Week ${x.w}${x.check?' \u00b7 '+esc(x.check):''}</span>
+        <h3>${esc(x.title)}</h3>
+        <p class="wk-why">${x.why}</p>
+        <p class="wk-builds"><b>Builds on:</b> ${esc(x.builds)}</p>
+      </div>
+      ${teacherBar}
+      ${!on && !teach ? `<div class="wk-locked-note"> Your teacher has not opened this week yet. Here is what is in it.</div>` : ''}
+      <div class="wk-body">${body}</div>
+    </div>
+  </div>`;
+  let host = document.getElementById('wkModalHost');
+  if(!host){ host = document.createElement('div'); host.id = 'wkModalHost'; document.body.appendChild(host); }
+  host.innerHTML = html;
+}
+function closeWeek(){ const h = document.getElementById('wkModalHost'); if(h) h.innerHTML=''; }
+function wkGo(route, arg){ closeWeek(); if(arg) go(route, arg); else go(route); }
+
+
 const HP_MODS = {
   readingCourse:{ic:'📖', lab:'Reading Course', tag:'RWD core · Read',
     path:'Dashboard → Reading Course (red circle) → choose a skill → open a lesson',
@@ -15977,8 +16336,8 @@ function ylBeeRender(){
 function ylCReadListHTML(){
   if(typeof YL_CREAD==='undefined'||!YL_CREAD.length) return '';
   const groups=[['A','Level A \u00b7 A1\u2013A2','#3a9d8a'],['B','Level B \u00b7 B1\u2013B2','#5B8DEF'],['C','Level C \u00b7 C1\u2013C2','#8B5CF6']];
-  const card=x=>'<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">'+x.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+x.lv+'">'+x.lv+'</span> <span class="genre-tag">'+esc(x.unit)+'</span> <b>'+esc(x.title)+'</b><div class="meta">\U0001f4d6 '+esc(x.meta.genre)+' \u00b7 '+esc(x.meta.lexile)+' \u00b7 '+esc(x.meta.skill)+' '+(typeof doneTag==="function"?doneTag("Young Learners","Reading \u2014 "+x.title):"")+'</div></div><button class="btn sm" onclick="go(\'ylCReadRun\',\''+x.id+'\')">Open \u2192</button></div>';
-  let out='<h2 class="stem-h2" style="margin-top:20px">\U0001f4da Reading for the World <span style="font-weight:400;color:var(--muted);font-size:.92rem">\u2014 full-apparatus readings, each with a design task</span></h2>';
+  const card=x=>'<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">'+x.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+x.lv+'">'+x.lv+'</span> <span class="genre-tag">'+esc(x.unit)+'</span> <b>'+esc(x.title)+'</b><div class="meta"> '+esc(x.meta.genre)+' \u00b7 '+esc(x.meta.lexile)+' \u00b7 '+esc(x.meta.skill)+' '+(typeof doneTag==="function"?doneTag("Young Learners","Reading \u2014 "+x.title):"")+'</div></div><button class="btn sm" onclick="go(\'ylCReadRun\',\''+x.id+'\')">Open \u2192</button></div>';
+  let out='<h2 class="stem-h2" style="margin-top:20px"> Reading for the World <span style="font-weight:400;color:var(--muted);font-size:.92rem">\u2014 full-apparatus readings, each with a design task</span></h2>';
   groups.forEach(g=>{ const items=YL_CREAD.filter(x=>x.lv===g[0]); if(!items.length) return; out+='<h3 class="sub" style="margin-top:12px;border-left:4px solid '+g[2]+';padding-left:8px">'+g[1]+'</h3><div class="grid c2">'+items.map(card).join('')+'</div>'; });
   return out;
 }
