@@ -921,6 +921,39 @@ table.data tr:nth-child(even){background:#fff}
 
 .wk-note{font-size:.74rem;color:var(--muted,#6b6b6b);line-height:1.45;margin:2px 2px 0;font-style:italic}
 .wk-note b{font-style:normal}
+
+/* --- teacher week activation card --- */
+.wkc-item{display:flex;align-items:center;gap:10px;border:1px solid var(--line,#dfd9c9);border-radius:10px;padding:8px 10px;margin-bottom:6px;background:#fbfaf6}
+.wkc-item.on{background:linear-gradient(180deg,#f2fbf8,#e8f7f1);border-color:#0f766e}
+.wkc-n{flex:none;width:28px;height:28px;border-radius:50%;background:#15183A;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.82rem}
+.wkc-item.on .wkc-n{background:#0f766e}
+.wkc-b{flex:1;min-width:0}
+.wkc-b b{display:block;font-size:.92rem}
+.wkc-b small{display:block;font-size:.74rem;color:var(--muted,#6b6b6b);line-height:1.35}
+.wkc-chk{display:inline-block;margin-top:2px;font-size:.68rem;font-style:normal;font-weight:700;color:#A15C07;background:#fff3d6;border-radius:20px;padding:1px 7px}
+.wkc-s{flex:none;font-size:.64rem;font-weight:700;letter-spacing:.5px;color:#9a9ebe;width:52px;text-align:right}
+.wkc-item.on .wkc-s{color:#0f766e}
+@media(max-width:560px){.wkc-item{flex-wrap:wrap}.wkc-b{flex:1 0 100%;order:2;margin-top:4px}}
+
+/* --- start-of-year placement --- */
+.pl-bar{display:flex;height:22px;border-radius:6px;overflow:hidden;margin-bottom:8px;background:#eee}
+.pl-seg{display:flex;align-items:center;justify-content:center;color:#fff;font-size:.68rem;font-weight:700}
+.pl-key{display:flex;gap:12px;flex-wrap:wrap;font-size:.74rem;color:var(--muted,#6b6b6b);margin-bottom:12px}
+.pl-key span{display:flex;align-items:center;gap:4px}
+.pl-key i{width:9px;height:9px;border-radius:2px;display:inline-block}
+.pl-group{border:1px solid var(--line,#dfd9c9);border-radius:10px;padding:9px 11px;margin-bottom:8px;background:#fbfaf6}
+.pl-head{display:flex;justify-content:space-between;align-items:baseline;border-left:3px solid;padding-left:8px;margin-bottom:4px}
+.pl-head b{font-size:.95rem}
+.pl-head span{font-size:.72rem;color:var(--muted,#6b6b6b)}
+.pl-means{font-size:.78rem;color:var(--muted,#6b6b6b);margin:0 0 4px;padding-left:8px;font-style:italic}
+.pl-doing{font-size:.76rem;line-height:1.45;margin:0 0 7px;padding-left:8px}
+.pl-names{display:flex;gap:5px;flex-wrap:wrap;padding-left:8px}
+.pl-chip{font-size:.74rem;background:#fff;border:1px solid var(--line,#dfd9c9);border-radius:20px;padding:2px 9px}
+.pl-chip b{color:var(--teal-dk,#0f766e)}
+
+.place-tag{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;border:1.5px solid;border-radius:20px;padding:3px 10px;background:#fff;font-weight:600}
+.pl-chip select{border:none;background:transparent;font-size:.68rem;color:var(--muted,#6b6b6b);margin-left:4px;cursor:pointer;max-width:88px}
+.pl-chip.ov{border-color:#A15C07;background:#fff8e6}
 </style>
 </head>
 <body>
@@ -1059,7 +1092,7 @@ function allResults(){
   CLOUD_CACHE.forEach(r=>{ if(r && !seen.has(rkey(r))){ seen.add(rkey(r)); merged.push(r); } });
   return merged.sort((a,b)=>a.date-b.date);
 }
-function refreshCloud(then){ cloudList(data=>{ if(Array.isArray(data)) CLOUD_CACHE = data; try{ if(typeof mergeCloudWeeks==='function') mergeCloudWeeks(); }catch(e){} if(then) then(); }); }
+function refreshCloud(then){ cloudList(data=>{ if(Array.isArray(data)) CLOUD_CACHE = data; try{ if(typeof mergeCloudWeeks==='function') mergeCloudWeeks(); }catch(e){} try{ if(typeof mergeCloudOverrides==='function') mergeCloudOverrides(); }catch(e){} try{ if(typeof applyPlacement==='function') applyPlacement(); }catch(e){} if(then) then(); }); }
 
 let SESSION = null; // {role, name, class, code, id}
 
@@ -4822,6 +4855,10 @@ const ROUTES = {
           <button onclick="setRcTier('advanced')" aria-pressed="${tier==='advanced'}">Advanced · Challenge</button>
           <span class="knob"></span>
         </div>
+        ${(function(){ const p = (typeof myPlacement==='function') ? myPlacement() : null;
+          return p ? `<span class="place-tag" style="border-color:${p.band.colour};color:${p.band.colour}">
+            \ud83e\udded Set by your diagnostic \u00b7 <b>${esc(p.band.label)}</b>${p.manual?' (set by your teacher)':''}
+          </span>` : ''; })()}
         <span class="tier-note">${tier==='standard'?'Shorter texts. The skill, clearly signposted.':'Longer, denser texts. The same skill, with less help.'}</span>
       </div>
       <div class="rc-chips">${chip('all','All texts')}${chip('Non-fiction','📄 Non-fiction')}${chip('Fiction','📖 Fiction')}</div>
@@ -5210,8 +5247,9 @@ function doStudentLogin(){
   const id = code+"::"+name.toLowerCase();
   SESSION={role:"student", name, first, middle, last, class:cls, code, id};
   setStudent(id,{name, class:cls, code});
-  if(cloudUrl()){ err.textContent="Loading your online record…"; pullContent(()=>refreshCloud(()=>go('dashboard'))); }
-  else go('dashboard');
+  /* Set this student's tier from their diagnostic before the first screen paints. */
+  if(cloudUrl()){ err.textContent="Loading your online record…"; pullContent(()=>refreshCloud(()=>{ applyPlacement(); go('dashboard'); })); }
+  else { applyPlacement(); go('dashboard'); }
 }
 function doTeacherLogin(){
   const code=val('tCode'); const err=document.getElementById('tErr');
@@ -6260,7 +6298,17 @@ function refreshWcComplete(id){
    READING COURSE — instant MCQ scoring + written self-check / self-grading
    ========================================================================= */
 let RC_STATE=null;
-function setRcTier(t){ RC_TIER=t; go('rcSkill', CURRENT_ARG); }
+function setRcTier(t){
+  const p = (typeof myPlacement==='function') ? myPlacement() : null;
+  if(p && t !== p.band.tier){
+    /* Placement decides the tier. Trying the other one is allowed for this view only,
+       but it is not saved, and the next login returns to the placed tier. */
+    RC_TIER = t; go('rcSkill', CURRENT_ARG);
+    setTimeout(()=>{ const n=document.getElementById('tierPeek'); if(n) n.style.opacity='1'; }, 30);
+    return;
+  }
+  RC_TIER = t; go('rcSkill', CURRENT_ARG);
+}
 function setRcGenre(g){ RC_GENRE=g; go(CURRENT_SCREEN, CURRENT_ARG); }
 function rcDone(){ return (Store.get("ican_rc_done")||{})[sid()] || []; }
 function markRcDone(id){ const all=Store.get("ican_rc_done")||{}; const arr=all[sid()]||[]; if(!arr.includes(id)){ arr.push(id); all[sid()]=arr; Store.set("ican_rc_done",all); } }
@@ -7381,6 +7429,8 @@ function gradeExam(){
   const tot=V.c+G.c+rC, max=V.max+G.max+rM, pct=Math.round(tot/max*100);
   saveResult({skill:ctx.skill, activity:ex.label, score:tot, max, percent:pct,
     detail:`Vocab ${V.c}/${V.max} · Grammar ${G.c}/${G.max} · Reading ${rC}/${rM} · Essay ${words}w: ${essay.slice(0,800)}`});
+  /* A start-of-year diagnostic places the student immediately — no waiting for a reload. */
+  try{ if(ctx.skill==='Diagnostic' && typeof applyPlacement==='function') applyPlacement(); }catch(e){}
   showExamResults(ex,ctx,{V,G,RA,RB,rC,rM,tot,max,pct,essay,words});
 }
 function showExamResults(ex,ctx,r){
@@ -11559,8 +11609,8 @@ function injectTeacherBar(){
 function injectTeacherCards(){
   const wrap=document.querySelector('#app .wrap'); if(!wrap) return;
   const anchor=wrap.querySelector('.card'); if(!anchor) return;
-  anchor.insertAdjacentHTML('afterend', gateCardHTML()+aadWeekCardTeacherHTML()+aadJournalsCardHTML()+initCardHTML()+consentCardHTML()+qaCardHTML());
-  paintGates(); paintAadWeeks(); paintAadJournals(); paintInits(); paintConsents(); paintQA();
+  anchor.insertAdjacentHTML('afterend', weekCardTeacherHTML()+gateCardHTML()+aadWeekCardTeacherHTML()+aadJournalsCardHTML()+initCardHTML()+consentCardHTML()+qaCardHTML());
+  paintWeekCard(); paintPlaceCard(); paintGates(); paintAadWeeks(); paintAadJournals(); paintInits(); paintConsents(); paintQA();
 }
 
 /* ---------- Activation manager ---------- */
@@ -13509,12 +13559,13 @@ function dlMicroPlan(){
    ========================================================================== */
 const TERM_WEEKS = [
   { w:1, title:'Getting the gist',
+    diag:'pre',
     read:['skim','scan'], text:'r1', listen:'lc1', speak:0,
     write:['ws11','ws12'], gram:'g_pres', studio:null,
     design:null, designFree:'One-card main-idea summary', stem:null,
     revise:'rv_hobby', exam:null, aad:1,
-    builds:'Entry week \u2014 the Diagnostic sets your tier.',
-    why:'Skimming and scanning are the two moves every later skill stands on. You cannot infer what you cannot first find.' },
+    builds:'Entry week \u2014 nothing precedes it.',
+    why:'The <b>Start-of-year diagnostic comes first</b>: it is the baseline every later week is measured against, and it sorts the class into the four teaching groups. Take it before any lesson. Then skimming and scanning \u2014 the two moves every later skill stands on, because you cannot infer what you cannot first find.' },
 
   { w:2, title:'Words, and what they imply',
     read:['vocab','infer'], text:'r4', listen:null, speak:1,
@@ -13590,15 +13641,183 @@ const TERM_WEEKS = [
 ];
 const WEEK_DEFERRED = ['ws33','ws34','ws35','ws36','ws41','ws42','ws43','ws44','ws45'];
 
+/* ============================================================================
+   START-OF-YEAR PLACEMENT — four groups.
+   The Diagnostic (DIAG.pre) already scores vocabulary + grammar + two reading
+   passages and saves {skill:'Diagnostic', activity:'Start-of-year diagnostic',
+   percent}. What it lacked was a placement: certBand() returns only three
+   labels (Outstanding / At-level / Emerging), which cannot carry a four-group
+   class. These bands read the same percentage and sort it into the four groups
+   teaching actually uses — and each carries the platform settings it implies,
+   so a placement is a teaching decision, not a label.
+   ========================================================================== */
+const DIAG_PLACE = [
+  { key:'struggling', min:0,  max:39,  label:'Struggling', colour:'#E0403F',
+    tier:'standard', gram:'beginner',
+    means:'Below the level the term assumes. Not a verdict — a starting point.',
+    doing:'Standard tier · read-to-me on · A−/A+ zoom · Beginner grammar · bank 3 words, not 5 · sentence frames · target Exit Level 1 every session · Young Learners readers as a bridge where needed.' },
+  { key:'emerging',   min:40, max:59,  label:'Emerging',   colour:'#F5A301',
+    tier:'standard', gram:'beginner',
+    means:'The skills are there but not yet reliable under time or pressure.',
+    doing:'Standard tier · read-to-me available, not required · Beginner grammar rising to Intermediate by Week 4 · sentence frames withdrawn once two exit tickets reach Level 2.' },
+  { key:'proficient', min:60, max:79,  label:'Proficient', colour:'#2BA84F',
+    tier:'standard', gram:'intermediate',
+    means:'At the level the term is written for. This is the target for every student by Week 10.',
+    doing:'Standard tier · Intermediate grammar · the plan exactly as written · no scaffold, no extension.' },
+  { key:'advanced',   min:80, max:100, label:'Advanced',   colour:'#7A2FD0',
+    tier:'advanced',  gram:'advanced',
+    means:'Above the level the term assumes. Extension is depth, never extra volume.',
+    doing:'Advanced tier · extended text version · Advanced grammar · bank 8 words and rank them · leads the “whose view is missing?” discussion · STEM mission as the artefact where offered.' }
+];
+function diagPlaceOf(pct){
+  const p = Math.max(0, Math.min(100, Math.round(pct||0)));
+  return DIAG_PLACE.find(b => p >= b.min && p <= b.max) || DIAG_PLACE[0];
+}
+/* Read the class's placements straight out of the saved results — no second store. */
+function diagPlacements(){
+  let rows = [];
+  try{ rows = (typeof allResults==='function') ? allResults() : (Store.get('ican_results')||[]); }
+  catch(e){ rows = Store.get('ican_results')||[]; }
+  const best = {};
+  rows.forEach(r=>{
+    if(!r || r.skill !== 'Diagnostic') return;
+    if(!/start-of-year/i.test(r.activity||'')) return;
+    const nm = (r.name||'').trim() || 'Unnamed';
+    const pct = (typeof r.percent === 'number') ? r.percent
+              : (r.max ? Math.round((r.score||0)/r.max*100) : 0);
+    if(!best[nm] || (r.date||0) > (best[nm].date||0)) best[nm] = { name:nm, pct, date:r.date||0 };
+  });
+  const out = Object.values(best).map(x => {
+    const ov = placeOverrides()[x.name];
+    const b = ov ? (bandByKey(ov) || diagPlaceOf(x.pct)) : diagPlaceOf(x.pct);
+    return { ...x, band: b, manual: !!ov };
+  });
+  /* Students the teacher placed by hand who have not sat the test yet. */
+  Object.keys(placeOverrides()).forEach(nm=>{
+    if(out.some(o=>o.name===nm)) return;
+    const b = bandByKey(placeOverrides()[nm]); if(!b) return;
+    out.push({ name:nm, pct:null, date:0, band:b, manual:true });
+  });
+  return out.sort((a,b) => (a.pct==null?-1:a.pct) - (b.pct==null?-1:b.pct));
+}
+/* ---- placement drives the tier ----------------------------------------------
+   RC_TIER and LEVEL are in-memory globals that reset on every reload, and the
+   student picked them per lesson. That made the diagnostic advisory: a struggling
+   reader could sit on Advanced all term and nothing would notice. Placement now
+   SETS them at login, from that student's own diagnostic result.
+
+   A diagnostic is one data point, so the teacher can override any student, and an
+   override outranks the score until it is cleared. Nothing is auto-downgraded on a
+   retake going up: the latest score always wins, in either direction.
+--------------------------------------------------------------------------- */
+function placeOverrides(){ return Store.get('ican_place_override') || {}; }
+function setPlaceOverride(name, key){
+  const o = placeOverrides();
+  if(key) o[name] = key; else delete o[name];
+  Store.set('ican_place_override', o);
+  try{ cloudSave({ type:'place_override', who:name, band:key||'', date:Date.now() }); }catch(e){}
+  if(typeof paintPlaceCard==='function') paintPlaceCard();
+  applyPlacement();
+}
+function mergeCloudOverrides(){
+  const latest = {};
+  (CLOUD_CACHE||[]).forEach(r=>{
+    if(r && r.type==='place_override' && r.who){
+      const cur = latest[r.who];
+      if(!cur || (r.date||0) > (cur.date||0)) latest[r.who] = r;
+    }
+  });
+  const o = placeOverrides(); let changed = false;
+  Object.keys(latest).forEach(w=>{
+    const b = latest[w].band;
+    if(b){ if(o[w] !== b){ o[w] = b; changed = true; } }
+    else if(o[w]){ delete o[w]; changed = true; }
+  });
+  if(changed){ Store.set('ican_place_override', o); if(typeof paintPlaceCard==='function') paintPlaceCard(); }
+}
+function bandByKey(k){ return DIAG_PLACE.find(b=>b.key===k) || null; }
+
+/* The placement for one student: teacher override first, then their own score. */
+function placementFor(name){
+  const nm = (name||'').trim();
+  if(!nm) return null;
+  const ov = placeOverrides()[nm];
+  if(ov){ const b = bandByKey(ov); if(b) return { name:nm, pct:null, band:b, manual:true }; }
+  const row = diagPlacements().find(p => p.name === nm);
+  return row ? { ...row, manual:false } : null;
+}
+function myPlacement(){
+  if(!SESSION || SESSION.role !== 'student') return null;
+  return placementFor(SESSION.name);
+}
+/* Apply it to the live globals. Called at login, at boot and after the diagnostic. */
+function applyPlacement(){
+  /* Teachers browse freely — never touch their view. */
+  if(!SESSION || SESSION.role !== 'student') return null;
+  const p = myPlacement();
+  if(!p){
+    /* No placement yet. Reset to the defaults, or on a shared classroom device the
+       previous student's tier leaks into the next one's session. */
+    RC_TIER = 'standard'; LEVEL = 'standard'; Store.set('ican_my_place', null);
+    return null;
+  }
+  RC_TIER = p.band.tier;
+  LEVEL   = (p.band.key === 'struggling') ? 'scaffolded' : 'standard';
+  Store.set('ican_my_place', { sid: sid(), band: p.band.key, tier: p.band.tier,
+                               level: LEVEL, gram: p.band.gram, manual: !!p.manual, date: Date.now() });
+  return p;
+}
+function placementLocked(){ return !!myPlacement(); }
+function myGrammarLevel(){ const p = myPlacement(); return p ? p.band.gram : null; }
+
+function diagGroupCounts(){
+  const g = {}; DIAG_PLACE.forEach(b => g[b.key] = 0);
+  diagPlacements().forEach(p => g[p.band.key]++);
+  return g;
+}
+
 /* ---- state: week 1 is open by default; the rest are teacher-activated ---- */
 function weekStates(){ return Store.get('ican_week_states') || {}; }
 function weekOpen(w){ const g = weekStates(); return (w===1) ? (g[1] !== false) : !!g[w]; }
+/* Which module gates does a week actually need? The hub gates access per MODULE
+   (ican_gates); a week promises specific LESSONS. If a week says "open" while the
+   module gate says locked, the student clicks and hits "Not activated yet" — the
+   rail would be writing a cheque the gate refuses to cash. So opening a week
+   opens exactly the gates its own bindings require, and nothing else. */
+function weekGateKeys(x){
+  const k = new Set(['readCourse','writeCourse','grammar','aad','spelling']);
+  if(x.diag) k.add('diag');
+  if(x.text)   k.add('readLib');
+  if(x.listen) k.add('listenQuiz');
+  if(x.studio) k.add('wstudio');
+  if(x.design) k.add('writeLib');
+  if(x.designFree) k.add('design');
+  if(x.stem)   k.add('stem');
+  if(x.revise) k.add('revise');
+  if(x.exam !== null && x.exam !== undefined) k.add('exams');
+  return [...k];
+}
 function setWeekOpen(w, v){
   const g = weekStates(); g[w] = !!v; Store.set('ican_week_states', g);
-  /* Propagate to the class. The cloud is an append-only log, so we write a
-     record and every device replays the latest per week (same shape as qa_reply). */
+  const x = TERM_WEEKS.find(t=>t.w===w);
+  if(v && x){
+    /* Open what this week needs, so every lesson in the popup actually opens. */
+    try{
+      const gt = (typeof gates==='function') ? gates() : {};
+      weekGateKeys(x).forEach(k=>{ gt[k] = true; });
+      Store.set('ican_gates', gt);
+      if(typeof paintGates==='function') paintGates();
+    }catch(e){}
+    /* The week's Article-A-Day week travels with it. */
+    try{ if(typeof setAadWeek==='function') setAadWeek(x.aad, true); }catch(e){}
+  }
+  /* Closing a week does NOT close modules: another open week may need the same
+     module, and the teacher may have opened it deliberately. Modules stay under
+     the teacher's own control in the Activity activation card. */
   try{ cloudSave({ type:'week_state', week:w, on:!!v, date:Date.now() }); }catch(e){}
   paintWeekRail();
+  if(typeof paintWeekCard==='function') paintWeekCard();
+  if(typeof paintPlaceCard==='function') paintPlaceCard();
 }
 function mergeCloudWeeks(){
   const latest = {};
@@ -13657,6 +13876,102 @@ function weekRailHTML(){
     ? 'You are signed in as a teacher \u2014 open a week to activate or lock it for the class.'
     : 'Your teacher opens each week when the class is ready.'}</p>`;
 }
+/* ---- teacher dashboard: the week activation card ---- */
+function weekCardTeacherHTML(){ return `
+  <div class="card" id="weekCard" style="margin-bottom:22px">
+    <h3 style="font-size:1.2rem">\ud83d\uddd3\ufe0f Week activation <span class="pill">teacher-controlled</span></h3>
+    <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">
+      The term runs in ten weeks, each building on the one before it. Open a week and its lessons appear on every student\u2019s
+      homepage \u2014 <b>and the modules that week needs are opened for you</b>, so nothing in it can be clicked and refused.
+      Week 1 is open from the start. Closing a week hides it again but leaves modules open, since another week may still need them.</p>
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">
+      <button class="btn sm teal" onclick="setAllWeeks(true)">Open all ten</button>
+      <button class="btn sm ghost" onclick="setAllWeeks(false)">Close all</button>
+      <button class="btn sm ghost" onclick="openNextWeek()">Open the next one</button>
+    </div>
+    <div id="weekGrid"></div>
+  </div>
+  <div class="card" id="placeCard" style="margin-bottom:22px">
+    <h3 style="font-size:1.2rem">\ud83e\udded Start-of-year placement <span class="pill">from the Week 1 diagnostic</span></h3>
+    <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">
+      Every student who has taken the <b>Start-of-year diagnostic</b>, sorted into the four teaching groups.
+      This is read live from their results \u2014 there is nothing to mark and nothing to enter.
+      Each group carries its own tier, grammar level and scaffolds; open a group to see them.</p>
+    <div id="placeGrid"></div>
+  </div>`;
+}
+function paintPlaceCard(){
+  const g = document.getElementById('placeGrid'); if(!g) return;
+  const rows = diagPlacements();
+  const counts = diagGroupCounts();
+  const total = rows.length;
+  if(!total){
+    g.innerHTML = `<p style="color:var(--muted);font-size:.9rem;margin:0">
+      No one has taken it yet. Open <b>Week 1</b> above \u2014 that opens the diagnostic for the class \u2014 and this fills itself in as students finish.</p>`;
+    return;
+  }
+  g.innerHTML = `
+    <div class="pl-bar">${DIAG_PLACE.map(b=>{
+      const n = counts[b.key], pc = Math.round(n/total*100);
+      return n ? `<span class="pl-seg" style="width:${pc}%;background:${b.colour}" title="${b.label}: ${n}">${pc>=12?n:''}</span>` : '';
+    }).join('')}</div>
+    <div class="pl-key">${DIAG_PLACE.map(b=>`<span><i style="background:${b.colour}"></i>${b.label} \u00b7 <b>${counts[b.key]}</b></span>`).join('')}</div>
+    ${DIAG_PLACE.map(b=>{
+      const mine = rows.filter(r=>r.band.key===b.key);
+      if(!mine.length) return '';
+      return `<div class="pl-group">
+        <div class="pl-head" style="border-left-color:${b.colour}">
+          <b style="color:${b.colour}">${b.label}</b>
+          <span>${b.min}\u2013${b.max}% \u00b7 ${mine.length} student${mine.length>1?'s':''}</span>
+        </div>
+        <p class="pl-means">${esc(b.means)}</p>
+        <p class="pl-doing"><b>Set for this group:</b> ${esc(b.doing)}</p>
+        <div class="pl-names">${mine.map(r=>{
+          const ov = placeOverrides()[r.name];
+          return `<span class="pl-chip ${ov?'ov':''}">${esc(r.name)} <b>${r.pct==null?'\u2014':r.pct+'%'}</b>${ov?' \ud83d\udd12':''}
+            <select onchange="setPlaceOverride('${esc(r.name).replace(/'/g,"\\'")}', this.value)" title="Override this placement">
+              <option value=""${ov?'':' selected'}>auto</option>
+              ${DIAG_PLACE.map(b=>`<option value="${b.key}"${ov===b.key?' selected':''}>${b.label}</option>`).join('')}
+            </select></span>`;
+        }).join('')}</div>
+      </div>`;
+    }).join('')}
+    <p style="color:var(--muted);font-size:.78rem;margin:10px 0 0;font-style:italic">
+      ${total} student${total>1?'s':''} placed. A group is a starting point, not a label \u2014 re-read it at each checkpoint, and expect the bottom two to shrink.</p>`;
+}
+function paintWeekCard(){
+  const g = document.getElementById('weekGrid'); if(!g) return;
+  g.innerHTML = TERM_WEEKS.map(x=>{
+    const on = weekOpen(x.w);
+    const bits = [];
+    if(x.diag) bits.push('DIAGNOSTIC');
+    bits.push(x.read.length + ' reading');
+    bits.push(x.write.length + ' writing');
+    bits.push('grammar');
+    if(x.stem) bits.push('STEM mission');
+    else if(x.design){ const t = wkTask(x.design); bits.push('artefact: ' + (t?t.title:x.design)); }
+    else if(x.designFree) bits.push('design card');
+    if(x.exam !== null && x.exam !== undefined) bits.push('quiz');
+    return `<div class="wkc-item ${on?'on':''}">
+      <span class="wkc-n">${x.w}</span>
+      <span class="wkc-b">
+        <b>${esc(x.title)}</b>
+        <small>${esc(bits.join(' \u00b7 '))}</small>
+        ${x.check?`<em class="wkc-chk">${esc(x.check)}</em>`:''}
+      </span>
+      <span class="wkc-s">${on?'OPEN':'LOCKED'}</span>
+      <button class="btn sm ghost" onclick="openWeek(${x.w})">View</button>
+      <button class="btn sm ${on?'ghost':'teal'}" onclick="setWeekOpen(${x.w}, ${on?'false':'true'})">${on?'Close':'Open'}</button>
+    </div>`;
+  }).join('');
+}
+function setAllWeeks(v){ TERM_WEEKS.forEach(x=>setWeekOpen(x.w, v)); }
+function openNextWeek(){
+  const next = TERM_WEEKS.find(x=>!weekOpen(x.w));
+  if(!next){ alert('Every week is already open.'); return; }
+  setWeekOpen(next.w, true);
+  openWeek(next.w);
+}
 function paintWeekRail(){
   const el = document.getElementById('wkRail');
   if(el) el.innerHTML = weekRailHTML();
@@ -13679,6 +13994,17 @@ function openWeek(w){
   const sec = (h, inner) => inner ? `<div class="wk-sec"><h4>${h}</h4>${inner}</div>` : '';
 
   let body = '';
+
+  /* DIAGNOSTIC — before anything else, in the week that carries it */
+  if(x.diag){
+    const done = diagPlacements().length;
+    body += sec('\ud83e\udded Start here \u2014 the diagnostic',
+      `<button class="wk-item" ${on?`onclick="wkGo('diagnostic','')"`:'disabled'} style="border-color:#15183A">
+        <span class="wk-dot" style="background:#15183A"></span>
+        <span class="wk-item-b"><b>Start-of-year diagnostic</b><small>Vocabulary \u00b7 grammar \u00b7 two reading passages \u00b7 one written response \u00b7 35 min</small></span>
+        <span class="wk-item-k">FIRST</span></button>
+      <p class="wk-note">Take this <b>before</b> the lessons below. It is the baseline every later week is measured against, and it sorts the class into four groups: ${DIAG_PLACE.map(b=>`<b style="color:${b.colour}">${b.label}</b>`).join(' \u00b7 ')}. Your group decides your tier, your grammar level and your scaffolds \u2014 so a guess here costs you the whole term.</p>`);
+  }
 
   /* READ */
   let r = x.read.map(id=>{ const l=wkRead(id); return item('SKILL', l?l.name:id, l?l.strap:'', 'rcLesson', id, (l&&l.colour)||'#E0403F'); }).join('');
