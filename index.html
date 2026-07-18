@@ -801,7 +801,7 @@ table.data tr:nth-child(even){background:#fff}
 .stem-rubric th,.stem-rubric td{border:1px solid var(--line);padding:7px 10px;text-align:left;vertical-align:top}
 .stem-rubric th{background:var(--mist);color:var(--ink)}
 
-/* ---------- Young Learners World ---------- */
+/* ---------- Foundational Course ---------- */
 .yl-hero{background:linear-gradient(120deg,#e6464b,#F5A301 55%,#0FA98B);border-radius:20px;padding:24px;color:#fff;display:flex;gap:18px;flex-wrap:wrap;align-items:center;justify-content:space-between;box-shadow:var(--shadow)}
 .yl-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:10px 14px;margin:14px 0;font-size:.88rem}
 .yl-in{border:1.5px solid var(--line);border-radius:10px;padding:7px 10px;font-family:inherit;font-size:.95rem;min-width:110px}
@@ -3977,7 +3977,7 @@ const ROUTES = {
             <text x="${cx}" y="${cy+((bee||stem)?18:22)}" text-anchor="middle" fill="#ffffff" font-size="${labSize}" font-weight="700">${lab}</text>
             ${sub?`<text x="${cx}" y="${cy+((bee||stem)?34:38)}" text-anchor="middle" fill="#ffe39a" font-size="10.5" font-weight="700" letter-spacing="0.02em">${sub}</text>`:''}</g>`; }).join('')}
         </svg>
-        <button class="yl-banner" onclick="go('ylhub')"><span style="font-size:2rem">🧒</span><span><b>Young Learners World</b> — Grades 1–8 · picture readers with read-to-me & tap-a-word, games after every read, printable quizzes.<br><span style="font-size:.8rem;opacity:.9">Read it · Write it · Design it — fun-sized ⭐</span></span><span class="sb-go" style="background:#fff;color:#15183A;border-radius:999px;padding:8px 16px;font-weight:700;white-space:nowrap">Play & learn →</span></button>
+        <button class="yl-banner" onclick="go('ylhub')"><span style="font-size:2rem">🧒</span><span><b>Foundational Course</b> — Grades 1–8 · picture readers with read-to-me & tap-a-word, games after every read, printable quizzes.<br><span style="font-size:.8rem;opacity:.9">Read it · Write it · Design it — fun-sized ⭐</span></span><span class="sb-go" style="background:#fff;color:#15183A;border-radius:999px;padding:8px 16px;font-weight:700;white-space:nowrap">Play & learn →</span></button>
         <div class="hub-foot">Tap any circle to begin.</div>
         <div class="hub-copyright">© 2026 Emad Ali Mohamed · <i>Developer of iCAN my English File — a multiliteracy hub for EFL learners</i></div>
       </div>
@@ -6066,7 +6066,7 @@ function dictChip(){
   return `<button class="btn ghost sm ${READER.dict?'on':''}" id="rdDict" onclick="toggleDict()" aria-pressed="${!!READER.dict}">📖 Dictionary${READER.dict?': on':''}</button>`;
 }
 /* opts.dict  — false in exams: a live dictionary would change what is being tested
-   opts.hl    — false where the text is already word-tappable (Young Learners) */
+   opts.hl    — false where the text is already word-tappable (Foundational) */
 function readerBar(targetId, extra, opts){
   opts = Object.assign({dict:true, hl:true}, opts||{});
   const rate=String(READER.rate.toFixed(2)).replace(/0$/,'');
@@ -10889,7 +10889,7 @@ const COACH_NAV=[
   ["📝 Exams","exams"],["📖 Reading","readingCourse"],["✍️ Writing","writingCourse"],
   ["🐝 Spell & Drill","spelldrill"],["📚 Vocabulary","vocab"],["🧩 Grammar","grammar"],
   ["🧭 Diagnostic","diagnostic"],["🎨 Design","dstudio"],["⌨️ Typing","typing"],
-  ["🚀 STEM·STREAM","stemlab"],["🧒 Young Learners","ylhub"]
+  ["🚀 STEM·STREAM","stemlab"],["🧒 Foundational","ylhub"]
 ];
 const COACH_HELP={
   start:   {t:"How to use iCAN", m:"Sign in with your name, then tap any circle on your hub. <b>Read · Write · Design</b> sit in the middle; Spelling & Typing, Grammar, Article-A-Day, STEM·STREAM, Diagnostic and Exams orbit around them. Everything you finish is saved for your teacher."},
@@ -10900,11 +10900,11 @@ const COACH_HELP={
   grammar: {t:"🧩 Grammar", route:"grammar", m:"Do the topic quizzes, then the mixed set, then the challenges. <b>Tip:</b> read the explanation after every answer — that's where the real learning happens."},
   vocab:   {t:"📚 Vocabulary", route:"vocab", m:"Save new words with an example sentence and even a recording. <b>Tip:</b> your spelling practice adds words here for you — review the list once a week to make them stick."},
   diagnostic:{t:"🧭 Diagnostic", route:"diagnostic", m:"Take the <b>pre</b>-test to find your level, the <b>mid</b>-test to check progress, and the <b>post</b>-test at the end. <b>Tip:</b> don't revise first — it's meant to show your true starting point."},
-  reading_aids: {t:"🔊 Reading aids & dictionary", route:"readingCourse", m:"Every text has a reader bar. <b>Read to me</b> plays the text aloud; <b>Speed</b> and <b>Volume</b> adjust it; <b>A− / A+</b> change the text size. Turn on <b>📖 Dictionary</b> and tap any word to see what it means, hear it said, add it to your word bank, or open the full entry on Vocabulary.com. Your settings are remembered. You will find these aids on Reading Course texts, Reading Practice, Article-A-Day, the Young Learners reader, the Revise excerpt and the listening transcript. <b>In a test the dictionary is switched off</b> — reading aloud and text size stay on."},
+  reading_aids: {t:"🔊 Reading aids & dictionary", route:"readingCourse", m:"Every text has a reader bar. <b>Read to me</b> plays the text aloud; <b>Speed</b> and <b>Volume</b> adjust it; <b>A− / A+</b> change the text size. Turn on <b>📖 Dictionary</b> and tap any word to see what it means, hear it said, add it to your word bank, or open the full entry on Vocabulary.com. Your settings are remembered. You will find these aids on Reading Course texts, Reading Practice, Article-A-Day, the Foundational reader, the Revise excerpt and the listening transcript. <b>In a test the dictionary is switched off</b> — reading aloud and text size stay on."},
   design:  {t:"🎨 Design", route:"dstudio", m:"Pick a text you have read and build a <b>four-slide deck</b>: the text, the idea you took from it, your own claim, and the artefact you made. <b>Tip:</b> the design must come out of the reading — if it could sit beside any text, start again."},
   typing:  {t:"⌨️ Typing", route:"typing", m:"Build speed and accuracy. <b>Tip:</b> keep your eyes on the text, not the keys — accuracy first, and speed follows."},
   stemstream:{t:"🚀 STEM·STREAM", route:"stemlab", m:"Real-world engineering missions run on the RWD cycle. <b>Read</b> a short science text (with 🔊 read-to-me + zoom), <b>Write</b> a claim-evidence-reasoning paragraph, then <b>Design</b> your artefact and upload it in the PowerPoint template. Every mission is scored 25/35/40 (R/W/D) and mints a certificate. <b>Tip:</b> plan your test in writing <i>before</i> you build — engineers let the data decide."},
-  yl:      {t:"🧒 Young Learners", route:"ylhub", m:"A fun-sized RWD world for Grades 1–8. Picture readers with 🔊 <b>Read-to-me</b>, tap-any-word pronunciation + meaning, standard <b>and</b> extended texts, and a game after every practice. Also: grade-labelled mini-quizzes, exam practice organised by grade (5–6 · 7 · 8), and a Drawing Pad for the Design it · STEM tasks. <b>Tip:</b> struggling readers should turn on read-to-me for a first listen, then read again while tapping any tricky word."},
+  yl:      {t:"🧒 Foundational", route:"ylhub", m:"A fun-sized RWD world for Grades 1–8. Picture readers with 🔊 <b>Read-to-me</b>, tap-any-word pronunciation + meaning, standard <b>and</b> extended texts, and a game after every practice. Also: grade-labelled mini-quizzes, exam practice organised by grade (5–6 · 7 · 8), and a Drawing Pad for the Design it · STEM tasks. <b>Tip:</b> struggling readers should turn on read-to-me for a first listen, then read again while tapping any tricky word."},
   teacher: {t:"👩‍🏫 For teachers", route:"teacher", m:"From your dashboard: open <b>Manage content</b> to add readings, writing lessons, speaking prompts and textbook spelling lists; use <b>Analytics</b> to see each student's skills and an intervention plan; share access codes so students can log in."}
 };
 function coachLoggedIn(){ return (typeof SESSION!=='undefined') && SESSION && !!SESSION.role; }
@@ -10972,7 +10972,7 @@ function coachAsk(){
   let key=null; for(const [re,k] of rules){ if(re.test(t)){ key=k; break; } }
   if(!key && /how|use|start|begin|guide|help|where|tip/.test(t)) key='start';
   if(key){ coachTip(key); }
-  else { b.innerHTML=`<div class="cbot">I can explain any of these — just tap a topic below, or ask “how do I…”. I can help with Reading, Writing, Spell &amp; Drill, Exams, Grammar, Vocabulary, Diagnostic, Design, Typing, STEM·STREAM and Young Learners.</div>`; renderCoachTopics(); }
+  else { b.innerHTML=`<div class="cbot">I can explain any of these — just tap a topic below, or ask “how do I…”. I can help with Reading, Writing, Spell &amp; Drill, Exams, Grammar, Vocabulary, Diagnostic, Design, Typing, STEM·STREAM and Foundational.</div>`; renderCoachTopics(); }
 }
 
 /* ===================== CREATION TOOLS POP-UP ===================== */
@@ -11520,7 +11520,7 @@ function gateDefs(){ return [
   {key:'exams',      icon:'🎓', label:'Exams, quizzes & mock tests'},
   {key:'aad',        icon:'📰', label:'Article-A-Day (10-week reading)'},
   {key:'stem',       icon:'🚀', label:'STEM·STREAM missions (RWD challenges)'},
-  {key:'yl',         icon:'🧒', label:'Young Learners exam practice'}
+  {key:'yl',         icon:'🧒', label:'Foundational exam practice'}
 ];}
 function gateKeyOf(screen){
   return ({
@@ -11537,7 +11537,13 @@ function gateKeyOf(screen){
     listenComp:'listenQuiz', spellQuiz:'spelling',
     articleaday:'aad',
     stemUnit:'stem',
-    ylExamTask:'yl'
+    /* Every Foundational Course route, not just the exam task. Previously only
+       ylExamTask was mapped, so the whole course stayed open when locked. */
+    ylhub:'yl', ylReader:'yl', ylReading:'yl', ylCReadRun:'yl',
+    ylGrammar:'yl', ylMaze:'yl', ylMazeRun:'yl',
+    ylWriting:'yl', ylWriteRun:'yl', ylDesign:'yl',
+    ylMM:'yl', ylMini:'yl', ylArcade:'yl',
+    ylExam:'yl', ylExams:'yl', ylExamRun:'yl', ylExamTask:'yl'
   })[screen]||null;
 }
 function gates(){ return Store.get('ican_gates')||{}; }
@@ -13655,7 +13661,7 @@ const DIAG_PLACE = [
   { key:'struggling', min:0,  max:39,  label:'Struggling', colour:'#E0403F',
     tier:'standard', gram:'beginner',
     means:'Below the level the term assumes. Not a verdict — a starting point.',
-    doing:'Standard tier · read-to-me on · A−/A+ zoom · Beginner grammar · bank 3 words, not 5 · sentence frames · target Exit Level 1 every session · Young Learners readers as a bridge where needed.' },
+    doing:'Standard tier · read-to-me on · A−/A+ zoom · Beginner grammar · bank 3 words, not 5 · sentence frames · target Exit Level 1 every session · Foundational readers as a bridge where needed.' },
   { key:'emerging',   min:40, max:59,  label:'Emerging',   colour:'#F5A301',
     tier:'standard', gram:'beginner',
     means:'The skills are there but not yet reliable under time or pressure.',
@@ -14164,9 +14170,9 @@ const HP_MODS = {
     D:'The mission DESIGN stage — build the solution, complete the five-slide artefact template, upload the finished file.',
     ev:'Mission score R25 / W35 / D40 · artefact deck · auto-minted certificate'},
 
-  ylhub:{ic:'🧒', lab:'Young Learners World', tag:'Grades 1–8',
-    path:'Dashboard → Young Learners World banner → Readers / Quizzes / Games',
-    anchor:'one picture reader (Level A, B or C) from Young Learners World',
+  ylhub:{ic:'🧒', lab:'Foundational Course', tag:'Grades 1–8',
+    path:'Dashboard → Foundational Course banner → Readers / Quizzes / Games',
+    anchor:'one picture reader (Level A, B or C) from Foundational Course',
     R:'Three passes, rising independence: read-to-me first, then tap-a-word, then the extended text alone. The three passes are the lesson.',
     C:'Two mini-quizzes on <i>the same reader</i> — one vocabulary, one grammar. Not a different story, or the thread breaks.',
     A:'The multimodal literacy item on the same theme: what do the pictures tell that the words do not?',
@@ -16174,7 +16180,7 @@ const YL_EXAM=[
  prompt:'READ this brief: birds at school have no water in summer. WRITE a plan (30+ words) for a bird water station made from recycled things. DESIGN it in the Drawing Pad with labels — then describe how it helps.'}
 ];
 
-const YL_MAZE = [{"id": "gm1", "grade": "5–6", "theme": "Daily routines", "focus": "Present simple", "title": "A School Morning", "intro": "Choose the correct present-simple verb for each gap.", "parts": ["Every morning, Layla ", {"o": ["wake", "wakes", "waking"], "a": 1}, " up at six o’clock. She ", {"o": ["brush", "brushes", "brushing"], "a": 1}, " her teeth and ", {"o": ["eat", "eats", "eaten"], "a": 1}, " a healthy breakfast. Her little brother ", {"o": ["do not", "does not", "not"], "a": 1}, " like eggs, so he ", {"o": ["have", "has", "having"], "a": 1}, " toast instead. They ", {"o": ["walks", "walk", "walking"], "a": 1}, " to school together because it ", {"o": ["is", "are", "be"], "a": 0}, " very near. Their first lesson ", {"o": ["start", "starts", "started"], "a": 1}, " at eight."]}, {"id": "gm2", "grade": "5–6", "theme": "Sport", "focus": "Present continuous", "title": "On the Football Pitch", "intro": "Pick the correct present-continuous form.", "parts": ["Look at the pitch! The team ", {"o": ["is playing", "are playing", "play"], "a": 1}, " the final match. Salem ", {"o": ["run", "is running", "runs"], "a": 1}, " towards the goal, and the crowd ", {"o": ["is cheering", "cheer", "cheering"], "a": 0}, " loudly. “We ", {"o": ["winning", "are winning", "wins"], "a": 1}, "!” shouts the captain. The goalkeeper ", {"o": ["is jumping", "jump", "jumps"], "a": 0}, " high to catch the ball, while two players ", {"o": ["waits", "are waiting", "wait"], "a": 1}, " near the net. Right now, everyone ", {"o": ["enjoy", "is enjoying", "enjoys"], "a": 1}, " the game."]}, {"id": "gm3", "grade": "5–6", "theme": "Story", "focus": "Past simple", "title": "The Lost Kitten", "intro": "Choose the correct past-simple verb.", "parts": ["Yesterday, Noor ", {"o": ["find", "found", "finds"], "a": 1}, " a tiny kitten near her gate. It ", {"o": ["was", "were", "is"], "a": 0}, " cold and hungry, so she ", {"o": ["carry", "carried", "carries"], "a": 1}, " it inside. She ", {"o": ["give", "gave", "gives"], "a": 1}, " it warm milk, and the kitten ", {"o": ["drink", "drank", "drunk"], "a": 1}, " every drop. Then it ", {"o": ["sleep", "slept", "sleeps"], "a": 1}, " on a soft blanket. In the evening, the family ", {"o": ["decide", "decided", "decides"], "a": 1}, " to keep it and ", {"o": ["name", "named", "names"], "a": 1}, " it Simba."]}, {"id": "gm4", "grade": "5–6", "theme": "Education", "focus": "Articles (a / an / the)", "title": "My New Classroom", "intro": "Choose a, an or the.", "parts": ["This year I have ", {"o": ["a", "an", "the"], "a": 0}, " new classroom. It has ", {"o": ["a", "an", "the"], "a": 1}, " interactive board on ", {"o": ["a", "an", "the"], "a": 2}, " front wall. ", {"o": ["A", "An", "The"], "a": 2}, " teacher, Mr Adel, gave each of us ", {"o": ["a", "an", "the"], "a": 0}, " notebook and ", {"o": ["a", "an", "the"], "a": 1}, " eraser. My favourite place is ", {"o": ["a", "an", "the"], "a": 2}, " reading corner, where there is ", {"o": ["a", "an", "the"], "a": 0}, " shelf full of stories."]}, {"id": "gm5", "grade": "5–6", "theme": "Environment", "focus": "Quantifiers (some / any / much / many)", "title": "Saving Water", "intro": "Choose the correct quantifier.", "parts": ["We should not waste ", {"o": ["many", "much", "a"], "a": 1}, " water at home. There isn’t ", {"o": ["some", "any", "much"], "a": 1}, " reason to leave the tap running. ", {"o": ["How much", "How many", "A lot of"], "a": 0}, " water do you use when you brush your teeth? If everyone saves ", {"o": ["a little", "many", "few"], "a": 0}, " every day, we can protect ", {"o": ["much", "many", "some"], "a": 2}, " rivers and lakes. There are ", {"o": ["much", "many", "any"], "a": 1}, " simple ways to help, and they don’t cost ", {"o": ["many", "much", "some"], "a": 1}, " money."]}, {"id": "gm6", "grade": "5–6", "theme": "Art", "focus": "Prepositions of place", "title": "At the Art Gallery", "intro": "Choose the correct preposition.", "parts": ["The paintings hang ", {"o": ["on", "in", "at"], "a": 0}, " the white walls. A large statue stands ", {"o": ["on", "in", "at"], "a": 1}, " the middle of the room. Sara sits ", {"o": ["on", "under", "between"], "a": 2}, " two of her classmates and draws. Her pencil case is ", {"o": ["on", "in", "under"], "a": 2}, " her chair, on the floor. “Look ", {"o": ["at", "on", "in"], "a": 0}, " that blue sky!” she says, pointing ", {"o": ["at", "on", "to"], "a": 2}, " a famous picture ", {"o": ["above", "under", "between"], "a": 0}, " the door."]}, {"id": "gm7", "grade": "5–6", "theme": "Communication", "focus": "Comparatives", "title": "Phones and Letters", "intro": "Choose the correct comparative form.", "parts": ["Sending a message today is ", {"o": ["fast", "faster", "fastest"], "a": 1}, " than sending a letter. A phone is ", {"o": ["small", "smaller", "smallest"], "a": 1}, " than a computer, so it is ", {"o": ["easy", "easier", "easiest"], "a": 1}, " to carry. However, a long letter can feel ", {"o": ["more special", "specialer", "most special"], "a": 0}, " than a quick text. My grandmother writes ", {"o": ["more slow", "slower", "slowest"], "a": 1}, " than I do, but her words are ", {"o": ["more kind", "kinder", "kindest"], "a": 1}, " than any emoji. Talking face to face is ", {"o": ["good", "better", "best"], "a": 1}, " than both."]}, {"id": "gm8", "grade": "7", "theme": "Science", "focus": "Present perfect", "title": "A Trip to the Space Centre", "intro": "Choose the correct present-perfect (or matching) form.", "parts": ["Our class ", {"o": ["has visited", "have visited", "visited"], "a": 0}, " the space centre today. Scientists ", {"o": ["has discovered", "have discovered", "discovers"], "a": 1}, " many new facts about Mars in recent years. “We ", {"o": ["has never seen", "have never seen", "never saw"], "a": 1}, " such clear photos before,” our guide said. Humans ", {"o": ["has not landed", "have not landed", "did not land"], "a": 1}, " on Mars yet, but robots ", {"o": ["has already explored", "have already explored", "explored already"], "a": 1}, " its surface. Since 2000, technology ", {"o": ["has improved", "have improved", "improves"], "a": 0}, " enormously, and space travel ", {"o": ["has become", "have become", "became"], "a": 0}, " safer than ever."]}, {"id": "gm9", "grade": "7", "theme": "History", "focus": "Past continuous & past simple", "title": "The Day the Dam Was Built", "intro": "Choose the correct past form.", "parts": ["While the engineers ", {"o": ["were planning", "was planning", "planned"], "a": 0}, " the dam, the villagers ", {"o": ["waited", "were waiting", "waits"], "a": 1}, " anxiously. One morning, as the workers ", {"o": ["were digging", "dug", "digging"], "a": 0}, ", they ", {"o": ["find", "found", "were finding"], "a": 1}, " ancient pottery in the ground. Everyone ", {"o": ["stopped", "was stopping", "stops"], "a": 0}, " to look. While experts ", {"o": ["examined", "were examining", "examine"], "a": 1}, " the objects, a journalist ", {"o": ["took", "was taking", "takes"], "a": 0}, " photographs. That discovery ", {"o": ["was changing", "changed", "change"], "a": 1}, " the whole project."]}, {"id": "gm10", "grade": "7", "theme": "AI", "focus": "Future forms (will / going to)", "title": "Robots in the Classroom", "intro": "Choose the correct future form.", "parts": ["Many experts believe that AI ", {"o": ["will change", "is changing", "changed"], "a": 0}, " education in the coming years. “Look at those plans — the school ", {"o": ["will", "is going to", "was going to"], "a": 1}, " install smart tutors next term,” said the principal. Some people worry that machines ", {"o": ["will replace", "replaced", "replacing"], "a": 0}, " teachers, but that ", {"o": ["will not", "is not going", "won’t be"], "a": 0}, " happen soon. A good teacher ", {"o": ["will always", "always will be", "is always going"], "a": 0}, " understand feelings better than a robot. “I think you ", {"o": ["will enjoy", "are enjoying", "enjoyed"], "a": 0}, " learning with AI,” she added, “but we ", {"o": ["will still need", "are still needing", "still needed"], "a": 0}, " each other.”"]}, {"id": "gm11", "grade": "7", "theme": "Media and art", "focus": "Superlatives", "title": "The School Film Festival", "intro": "Choose the correct superlative form.", "parts": ["This was ", {"o": ["the good", "the better", "the best"], "a": 2}, " film festival our school has ever held. Amira’s short film was ", {"o": ["the more creative", "the most creative", "the creativest"], "a": 1}, " of them all. It also had ", {"o": ["the funnier", "the funniest", "the most funny"], "a": 1}, " ending. The judges said it was ", {"o": ["the more original", "the originalest", "the most original"], "a": 2}, " entry. Yusuf won the prize for ", {"o": ["the better", "the best", "the goodest"], "a": 1}, " soundtrack, and Lina’s poster was ", {"o": ["the most colourful", "the colourfullest", "the more colourful"], "a": 0}, " in the hall. It was, honestly, ", {"o": ["the more exciting", "the excitingest", "the most exciting"], "a": 2}, " evening of the year."]}, {"id": "gm12", "grade": "7", "theme": "Education", "focus": "Modal verbs", "title": "Library Rules", "intro": "Choose the correct modal verb.", "parts": ["You ", {"o": ["must", "can", "might"], "a": 0}, " return your books on time; it is a rule. Students ", {"o": ["should not", "cannot", "need not"], "a": 0}, " eat near the shelves, because food ", {"o": ["can", "must", "should"], "a": 0}, " damage the pages. If you finish early, you ", {"o": ["must", "may", "should must"], "a": 1}, " read quietly in the corner. You ", {"o": ["don’t have to", "mustn’t", "can’t"], "a": 0}, " whisper the whole time, but you ", {"o": ["should", "must not", "need"], "a": 0}, " respect others. “Excuse me, ", {"o": ["could", "must", "should"], "a": 0}, " you help me find this title?” is a polite way to ask."]}, {"id": "gm13", "grade": "7", "theme": "Social media", "focus": "Conjunctions (although / because / so / however)", "title": "Screens and Balance", "intro": "Choose the correct linking word.", "parts": ["Social media can be useful ", {"o": ["although", "because", "so"], "a": 1}, " it helps friends stay in touch. ", {"o": ["Because", "However", "So"], "a": 1}, ", spending too long online can harm sleep. Maryam turns off her phone at nine, ", {"o": ["so", "although", "because"], "a": 0}, " she feels rested in the morning. ", {"o": ["However", "Although", "So"], "a": 1}, " she loves posting photos, she also enjoys the real world. She reads before bed ", {"o": ["so", "because", "however"], "a": 1}, " it relaxes her. “I still check my apps,” she says, “", {"o": ["so", "however", "but"], "a": 2}, " I set a timer.” Balance matters ", {"o": ["although", "because", "so"], "a": 1}, " our health comes first."]}, {"id": "gm14", "grade": "7", "theme": "Story", "focus": "Adverbs of manner & frequency", "title": "The Careful Detective", "intro": "Choose the correct adverb.", "parts": ["Detective Rashid works ", {"o": ["careful", "carefully", "more careful"], "a": 1}, " on every case. He ", {"o": ["always", "never", "usually not"], "a": 0}, " checks the smallest clues. He walked ", {"o": ["quiet", "quietly", "quiet ly"], "a": 1}, " into the room and looked around ", {"o": ["slow", "slowly", "more slow"], "a": 1}, ". “Something is wrong here,” he said ", {"o": ["calm", "calmly", "more calm"], "a": 1}, ". He ", {"o": ["rarely", "rare", "rarely ever more"], "a": 0}, " makes mistakes, because he thinks ", {"o": ["logical", "logically", "logic"], "a": 1}, ". In the end, he solved the mystery ", {"o": ["easy", "easily", "more easy"], "a": 1}, "."]}, {"id": "gm15", "grade": "8", "theme": "Science", "focus": "First conditional", "title": "The Experiment", "intro": "Choose the correct first-conditional form.", "parts": ["If we ", {"o": ["heat", "will heat", "heated"], "a": 0}, " the water, it ", {"o": ["boils", "will boil", "would boil"], "a": 1}, " at one hundred degrees. The reaction ", {"o": ["changes", "will change", "would change"], "a": 1}, " colour if we ", {"o": ["add", "will add", "added"], "a": 0}, " the powder slowly. “Unless you ", {"o": ["wear", "will wear", "wore"], "a": 0}, " goggles, you ", {"o": ["cannot", "will not can", "won’t able"], "a": 0}, " join the experiment,” the teacher warned. If the mixture ", {"o": ["gets", "will get", "got"], "a": 0}, " too hot, it ", {"o": ["overflows", "will overflow", "would overflow"], "a": 1}, ". We will record the results as soon as it ", {"o": ["cools", "will cool", "would cool"], "a": 0}, "."]}, {"id": "gm16", "grade": "8", "theme": "Environment", "focus": "Second conditional", "title": "If I Ran the City", "intro": "Choose the correct second-conditional form.", "parts": ["If I ", {"o": ["am", "was", "were"], "a": 2}, " the mayor, I ", {"o": ["will plant", "would plant", "planted"], "a": 1}, " a thousand trees. The air ", {"o": ["would be", "will be", "is"], "a": 0}, " cleaner if fewer cars ", {"o": ["enter", "entered", "would enter"], "a": 1}, " the centre. If people ", {"o": ["recycled", "would recycle", "recycle"], "a": 0}, " more, we ", {"o": ["will produce", "would produce", "produced"], "a": 1}, " far less waste. “If I ", {"o": ["could", "can", "will"], "a": 0}, " change one thing,” she said, “I ", {"o": ["will build", "would build", "built"], "a": 1}, " safe cycle lanes.” Sadly, nothing changes unless we ", {"o": ["act", "acted", "would act"], "a": 0}, "."]}, {"id": "gm17", "grade": "8", "theme": "History", "focus": "Passive voice", "title": "The Ancient Fort", "intro": "Choose the correct passive form.", "parts": ["The old fort ", {"o": ["built", "was built", "has building"], "a": 1}, " more than two hundred years ago. Its walls ", {"o": ["were made", "made", "was made"], "a": 0}, " of coral stone and mud. Every year, the site ", {"o": ["is visited", "visits", "is visiting"], "a": 0}, " by thousands of tourists. Recently, several rooms ", {"o": ["have been restored", "has restored", "restored"], "a": 0}, " by local experts. The project ", {"o": ["is funding", "is being funded", "funds"], "a": 1}, " by the government. “Nothing ", {"o": ["must be touched", "must touch", "touches"], "a": 0}, " without permission,” the guide explained. Soon a new museum ", {"o": ["will be opened", "will open it", "opens by"], "a": 0}, " beside the fort."]}, {"id": "gm18", "grade": "8", "theme": "Communication", "focus": "Reported speech", "title": "The Interview", "intro": "Choose the correct reported-speech form.", "parts": ["The journalist asked the scientist how long she ", {"o": ["has worked", "had worked", "works"], "a": 1}, " on the project. The scientist replied that she ", {"o": ["has spent", "had spent", "spends"], "a": 1}, " ten years on it. She said that the results ", {"o": ["are", "were", "will be"], "a": 1}, " promising. When asked whether she ", {"o": ["will", "would", "is going"], "a": 1}, " continue, she answered that she ", {"o": ["will", "would", "can"], "a": 1}, " never give up. She added that science ", {"o": ["needs", "needed", "had needed"], "a": 0}, " patience. Finally, she told the reporter that he ", {"o": ["could", "can", "will"], "a": 0}, " publish the story. The reporter said thank you and ", {"o": ["leaves", "left", "had left"], "a": 1}, "."]}, {"id": "gm19", "grade": "8", "theme": "Literature", "focus": "Relative clauses (who / which / whose / that)", "title": "The Author’s Study", "intro": "Choose the correct relative pronoun.", "parts": ["The novelist ", {"o": ["who", "which", "whose"], "a": 0}, " won the prize lives in a quiet town. The book ", {"o": ["who", "which", "whose"], "a": 1}, " made her famous took seven years to write. She works in a study ", {"o": ["who", "whose", "which"], "a": 2}, " has thousands of books. Readers ", {"o": ["which", "who", "whose"], "a": 1}, " love her stories send hundreds of letters. One reader, ", {"o": ["who", "whose", "which"], "a": 1}, " letter she keeps on her desk, is only twelve. The theme ", {"o": ["which", "who", "whose"], "a": 0}, " she explores most is courage. “A story ", {"o": ["who", "that", "whose"], "a": 1}, " teaches nothing,” she says, “is soon forgotten.”"]}, {"id": "gm20", "grade": "8", "theme": "Drama", "focus": "Mixed perfect tenses", "title": "Backstage Before the Play", "intro": "Choose the correct perfect tense.", "parts": ["By the time the curtain rose, the actors ", {"o": ["have rehearsed", "had rehearsed", "rehearse"], "a": 1}, " for months. “I ", {"o": ["have never felt", "had never feeling", "never have felt"], "a": 0}, " this nervous,” whispered Dana, who ", {"o": ["has performed", "had performed", "performing"], "a": 1}, " many times before. The director ", {"o": ["has just checked", "had just checked", "just checks"], "a": 1}, " the lights when a bulb broke. “We ", {"o": ["have solved", "had solved", "solving"], "a": 1}, " worse problems,” he said calmly. Since morning, the crew ", {"o": ["has been working", "have working", "had work"], "a": 0}, " without a break, and by tonight they ", {"o": ["will have earned", "have earned", "had earned"], "a": 0}, " their applause."]}, {"id": "gm21", "grade": "8", "theme": "AI", "focus": "Present perfect continuous & contrast", "title": "Learning with Machines", "intro": "Choose the correct form.", "parts": ["Researchers ", {"o": ["have been developing", "have developing", "has been developing"], "a": 0}, " language models for several years. Students ", {"o": ["have been using", "are used to use", "has been using"], "a": 0}, " AI tutors more and more, ", {"o": ["although", "because", "so"], "a": 0}, " teachers remain essential. “I ", {"o": ["have been practising", "have practised being", "am practising been"], "a": 0}, " my writing with feedback tools,” Omar said, “", {"o": ["so", "although", "however"], "a": 0}, " my essays have improved.” ", {"o": ["However", "Because", "So"], "a": 0}, ", experts warn that machines ", {"o": ["have been making", "have make", "has been making"], "a": 0}, " mistakes too. The debate ", {"o": ["has been growing", "have grown", "is grow"], "a": 0}, " ever since these tools ", {"o": ["appeared", "have appeared", "had appeared"], "a": 0}, "."]}];
+const YL_MAZE = [{"id": "gm1", "connect": [{"t": "mcq", "q": "Which sentence is about something that happens <b>every</b> day?", "o": ["She is eating breakfast now.", "She eats breakfast at seven.", "She ate breakfast yesterday."], "a": 1, "why": "A repeated habit takes the present simple."}, {"t": "gap", "q": "He ___ football every Friday.  (play)", "a": "plays", "why": "With he / she / it, the present simple adds -s."}], "study": ["Use the <b>present simple</b> for habits, routines and facts — things that happen again and again.", "With <b>he, she, it</b>, add <b>-s</b>: I play → he play<b>s</b>. After -ch, -sh, -ss, -x or -o, add <b>-es</b>: she brush<b>es</b>, he go<b>es</b>.", "Negatives and questions use <b>do / does</b>: He <b>does not</b> like eggs. <b>Does</b> she walk to school?"], "grade": "5–6", "theme": "Daily routines", "focus": "Present simple", "title": "A School Morning", "intro": "Choose the correct present-simple verb for each gap.", "parts": ["Every morning, Layla ", {"o": ["wake", "wakes", "waking"], "a": 1}, " up at six o’clock. She ", {"o": ["brush", "brushes", "brushing"], "a": 1}, " her teeth and ", {"o": ["eat", "eats", "eaten"], "a": 1}, " a healthy breakfast. Her little brother ", {"o": ["do not", "does not", "not"], "a": 1}, " like eggs, so he ", {"o": ["have", "has", "having"], "a": 1}, " toast instead. They ", {"o": ["walks", "walk", "walking"], "a": 1}, " to school together because it ", {"o": ["is", "are", "be"], "a": 0}, " very near. Their first lesson ", {"o": ["start", "starts", "started"], "a": 1}, " at eight."]}, {"id": "gm2", "connect": [{"t": "mcq", "q": "Which sentence is about <b>right now</b>?", "o": ["He plays every day.", "He is playing at the moment.", "He played last week."], "a": 1, "why": "\"At the moment\" signals an action in progress."}, {"t": "drag", "q": "Build the sentence.", "chips": ["is", "playing", "The team"], "slots": [{"s": "___ the final match.", "a": "The team"}, {"s": "The team ___ the final match.", "a": "is"}, {"s": "The team is ___ the final match.", "a": "playing"}], "why": "Present continuous = be + verb-ing."}], "study": ["Use the <b>present continuous</b> for an action happening <b>now</b>, at this moment.", "Form: <b>am / is / are + verb-ing</b>. The team <b>is playing</b>. Two players <b>are waiting</b>.", "Signal words: <i>now, at the moment, right now, look!, listen!</i>"], "grade": "5–6", "theme": "Sport", "focus": "Present continuous", "title": "On the Football Pitch", "intro": "Pick the correct present-continuous form.", "parts": ["Look at the pitch! The team ", {"o": ["is playing", "are playing", "play"], "a": 1}, " the final match. Salem ", {"o": ["run", "is running", "runs"], "a": 1}, " towards the goal, and the crowd ", {"o": ["is cheering", "cheer", "cheering"], "a": 0}, " loudly. “We ", {"o": ["winning", "are winning", "wins"], "a": 1}, "!” shouts the captain. The goalkeeper ", {"o": ["is jumping", "jump", "jumps"], "a": 0}, " high to catch the ball, while two players ", {"o": ["waits", "are waiting", "wait"], "a": 1}, " near the net. Right now, everyone ", {"o": ["enjoy", "is enjoying", "enjoys"], "a": 1}, " the game."]}, {"id": "gm3", "connect": [{"t": "mcq", "q": "Which verb is in the <b>past</b>?", "o": ["find", "found", "finds"], "a": 1, "why": "<i>Found</i> is the past of the irregular verb <i>find</i>."}, {"t": "gap", "q": "Yesterday she ___ the kitten inside.  (carry)", "a": "carried", "why": "Regular verbs add -ed; -y after a consonant becomes -ied."}], "study": ["Use the <b>past simple</b> for finished actions at a finished time: <i>yesterday, last week, in 2019</i>.", "Regular verbs add <b>-ed</b>: decide → decided. After a consonant, <b>-y → -ied</b>: carry → carried.", "Many common verbs are <b>irregular</b> and must simply be learned: find → found, give → gave, drink → drank, sleep → slept."], "grade": "5–6", "theme": "Story", "focus": "Past simple", "title": "The Lost Kitten", "intro": "Choose the correct past-simple verb.", "parts": ["Yesterday, Noor ", {"o": ["find", "found", "finds"], "a": 1}, " a tiny kitten near her gate. It ", {"o": ["was", "were", "is"], "a": 0}, " cold and hungry, so she ", {"o": ["carry", "carried", "carries"], "a": 1}, " it inside. She ", {"o": ["give", "gave", "gives"], "a": 1}, " it warm milk, and the kitten ", {"o": ["drink", "drank", "drunk"], "a": 1}, " every drop. Then it ", {"o": ["sleep", "slept", "sleeps"], "a": 1}, " on a soft blanket. In the evening, the family ", {"o": ["decide", "decided", "decides"], "a": 1}, " to keep it and ", {"o": ["name", "named", "names"], "a": 1}, " it Simba."]}, {"id": "gm4", "connect": [{"t": "mcq", "q": "Which is correct?", "o": ["a interactive board", "an interactive board", "the a board"], "a": 1, "why": "<i>Interactive</i> starts with a vowel <b>sound</b>, so it takes <i>an</i>."}, {"t": "gap", "q": "This year I have ___ new classroom.  (a / an / the)", "a": "a", "why": "It is mentioned for the first time, and <i>new</i> starts with a consonant sound."}], "study": ["Use <b>a</b> before a consonant sound and <b>an</b> before a vowel sound: <i>a notebook, an eraser</i>.", "Use <b>the</b> when we both know which one is meant, or when there is only one: <i>the front wall, the teacher</i>.", "It is the <b>sound</b> that decides, not the letter: <i>a university</i> (yoo‑), <i>an hour</i> (ow‑)."], "grade": "5–6", "theme": "Education", "focus": "Articles (a / an / the)", "title": "My New Classroom", "intro": "Choose a, an or the.", "parts": ["This year I have ", {"o": ["a", "an", "the"], "a": 0}, " new classroom. It has ", {"o": ["a", "an", "the"], "a": 1}, " interactive board on ", {"o": ["a", "an", "the"], "a": 2}, " front wall. ", {"o": ["A", "An", "The"], "a": 2}, " teacher, Mr Adel, gave each of us ", {"o": ["a", "an", "the"], "a": 0}, " notebook and ", {"o": ["a", "an", "the"], "a": 1}, " eraser. My favourite place is ", {"o": ["a", "an", "the"], "a": 2}, " reading corner, where there is ", {"o": ["a", "an", "the"], "a": 0}, " shelf full of stories."]}, {"id": "gm5", "connect": [{"t": "mcq", "q": "Which noun can you <b>count</b>?", "o": ["water", "rivers", "money"], "a": 1, "why": "You can say one river, two rivers. You cannot say two waters."}, {"t": "gap", "q": "There isn’t ___ reason to leave the tap running.  (some / any)", "a": "any", "why": "Negative sentences take <i>any</i>."}], "study": ["Use <b>much</b> with uncountable nouns (<i>water, money, time</i>) and <b>many</b> with countable ones (<i>rivers, ways, lakes</i>).", "Use <b>some</b> in positive sentences, <b>any</b> in negatives and questions: <i>We save some water. There isn’t any reason.</i>", "<b>A little</b> goes with uncountable nouns; <b>a few</b> goes with countable ones."], "grade": "5–6", "theme": "Environment", "focus": "Quantifiers (some / any / much / many)", "title": "Saving Water", "intro": "Choose the correct quantifier.", "parts": ["We should not waste ", {"o": ["many", "much", "a"], "a": 1}, " water at home. There isn’t ", {"o": ["some", "any", "much"], "a": 1}, " reason to leave the tap running. ", {"o": ["How much", "How many", "A lot of"], "a": 0}, " water do you use when you brush your teeth? If everyone saves ", {"o": ["a little", "many", "few"], "a": 0}, " every day, we can protect ", {"o": ["much", "many", "some"], "a": 2}, " rivers and lakes. There are ", {"o": ["much", "many", "any"], "a": 1}, " simple ways to help, and they don’t cost ", {"o": ["many", "much", "some"], "a": 1}, " money."]}, {"id": "gm6", "connect": [{"t": "mcq", "q": "The paintings hang ___ the white walls.", "o": ["on", "in", "at"], "a": 0, "why": "A wall is a surface, so it takes <i>on</i>."}, {"t": "drag", "q": "Put each preposition with its idea.", "chips": ["on", "in", "at"], "slots": [{"s": "a surface → ___ the wall", "a": "on"}, {"s": "an enclosed space → ___ the room", "a": "in"}, {"s": "a point → ___ the door", "a": "at"}], "why": "Surface → on. Enclosed space → in. Point → at."}], "study": ["<b>on</b> = a surface (<i>on the wall</i>). <b>in</b> = an enclosed space (<i>in the room, in the middle</i>). <b>at</b> = a point (<i>at the door</i>).", "<b>between</b> = two things. <b>among</b> = more than two. <b>above</b> = higher than, not touching. <b>under</b> = below.", "Some verbs always take one preposition: <i>look <b>at</b>, point <b>to</b>, listen <b>to</b></i>."], "grade": "5–6", "theme": "Art", "focus": "Prepositions of place", "title": "At the Art Gallery", "intro": "Choose the correct preposition.", "parts": ["The paintings hang ", {"o": ["on", "in", "at"], "a": 0}, " the white walls. A large statue stands ", {"o": ["on", "in", "at"], "a": 1}, " the middle of the room. Sara sits ", {"o": ["on", "under", "between"], "a": 2}, " two of her classmates and draws. Her pencil case is ", {"o": ["on", "in", "under"], "a": 2}, " her chair, on the floor. “Look ", {"o": ["at", "on", "in"], "a": 0}, " that blue sky!” she says, pointing ", {"o": ["at", "on", "to"], "a": 2}, " a famous picture ", {"o": ["above", "under", "between"], "a": 0}, " the door."]}, {"id": "gm7", "connect": [{"t": "mcq", "q": "Which is correct English?", "o": ["more fast", "faster", "most fast"], "a": 1, "why": "<i>Fast</i> is short, so it adds -er rather than taking <i>more</i>."}, {"t": "gap", "q": "A phone is ___ than a computer.  (small)", "a": "smaller", "why": "Short adjective + -er, followed by <i>than</i>."}], "study": ["Compare <b>two</b> things with a comparative. Short adjectives add <b>-er</b>: <i>small → smaller</i>. Long adjectives take <b>more</b>: <i>more special</i>.", "Spelling: one vowel + one consonant → double it (<i>big → bigger</i>). <b>-y → -ier</b> (<i>easy → easier</i>).", "Irregulars: <i>good → better, bad → worse, far → further</i>. A comparative is nearly always followed by <b>than</b>."], "grade": "5–6", "theme": "Communication", "focus": "Comparatives", "title": "Phones and Letters", "intro": "Choose the correct comparative form.", "parts": ["Sending a message today is ", {"o": ["fast", "faster", "fastest"], "a": 1}, " than sending a letter. A phone is ", {"o": ["small", "smaller", "smallest"], "a": 1}, " than a computer, so it is ", {"o": ["easy", "easier", "easiest"], "a": 1}, " to carry. However, a long letter can feel ", {"o": ["more special", "specialer", "most special"], "a": 0}, " than a quick text. My grandmother writes ", {"o": ["more slow", "slower", "slowest"], "a": 1}, " than I do, but her words are ", {"o": ["more kind", "kinder", "kindest"], "a": 1}, " than any emoji. Talking face to face is ", {"o": ["good", "better", "best"], "a": 1}, " than both."]}, {"id": "gm8", "connect": [{"t": "mcq", "q": "Which one links the past to <b>now</b>?", "o": ["I saw those photos yesterday.", "I have never seen such clear photos.", "I was seeing the photos."], "a": 1, "why": "An experience up to now takes the present perfect."}, {"t": "gap", "q": "Our class ___ visited the space centre today.  (has / have)", "a": "has", "why": "<i>Class</i> is singular here, so it takes <i>has</i>."}], "study": ["Use the <b>present perfect</b> for a past action with a link to <b>now</b>: a result, an experience, or an unfinished time (<i>today, this year</i>).", "Form: <b>have / has + past participle</b>. <i>Our class has visited. Scientists have discovered.</i>", "Signals: <i>never, already, yet, since, recently</i>. Never use it with a finished time such as <i>yesterday</i> — that needs the past simple."], "grade": "7", "theme": "Science", "focus": "Present perfect", "title": "A Trip to the Space Centre", "intro": "Choose the correct present-perfect (or matching) form.", "parts": ["Our class ", {"o": ["has visited", "have visited", "visited"], "a": 0}, " the space centre today. Scientists ", {"o": ["has discovered", "have discovered", "discovers"], "a": 1}, " many new facts about Mars in recent years. “We ", {"o": ["has never seen", "have never seen", "never saw"], "a": 1}, " such clear photos before,” our guide said. Humans ", {"o": ["has not landed", "have not landed", "did not land"], "a": 1}, " on Mars yet, but robots ", {"o": ["has already explored", "have already explored", "explored already"], "a": 1}, " its surface. Since 2000, technology ", {"o": ["has improved", "have improved", "improves"], "a": 0}, " enormously, and space travel ", {"o": ["has become", "have become", "became"], "a": 0}, " safer than ever."]}, {"id": "gm9", "connect": [{"t": "mcq", "q": "Which action lasted <b>longer</b>?", "o": ["They found ancient pottery.", "The workers were digging."], "a": 1, "why": "The -ing form marks the long background action."}, {"t": "gap", "q": "While the engineers ___ planning, the villagers waited.  (was / were)", "a": "were", "why": "<i>Engineers</i> is plural, so it takes <i>were</i>."}], "study": ["Use the <b>past continuous</b> for the <b>longer background</b> action, and the <b>past simple</b> for the <b>shorter</b> action that interrupts it.", "<i>While the workers <b>were digging</b> (long), they <b>found</b> pottery (short).</i>", "Form: <b>was / were + verb-ing</b>. Use <b>while</b> with the long action and <b>when</b> with the short one."], "grade": "7", "theme": "History", "focus": "Past continuous & past simple", "title": "The Day the Dam Was Built", "intro": "Choose the correct past form.", "parts": ["While the engineers ", {"o": ["were planning", "was planning", "planned"], "a": 0}, " the dam, the villagers ", {"o": ["waited", "were waiting", "waits"], "a": 1}, " anxiously. One morning, as the workers ", {"o": ["were digging", "dug", "digging"], "a": 0}, ", they ", {"o": ["find", "found", "were finding"], "a": 1}, " ancient pottery in the ground. Everyone ", {"o": ["stopped", "was stopping", "stops"], "a": 0}, " to look. While experts ", {"o": ["examined", "were examining", "examine"], "a": 1}, " the objects, a journalist ", {"o": ["took", "was taking", "takes"], "a": 0}, " photographs. That discovery ", {"o": ["was changing", "changed", "change"], "a": 1}, " the whole project."]}, {"id": "gm10", "connect": [{"t": "mcq", "q": "Which shows a plan that is <b>already decided</b>?", "o": ["I think it will rain later.", "Look at the plans — the school is going to install smart tutors."], "a": 1, "why": "Evidence you can see + an existing plan → <i>going to</i>."}, {"t": "gap", "q": "I think you ___ enjoy learning with AI.  (will / are going to)", "a": "will", "why": "\"I think\" marks an opinion or prediction → <i>will</i>."}], "study": ["Use <b>will</b> for predictions, opinions, and decisions made <b>as you speak</b>: <i>I think you will enjoy it.</i>", "Use <b>going to</b> for plans <b>already decided</b>, and for evidence you can see right now: <i>Look at those clouds — it is going to rain.</i>", "Both are correct English. The difference is simply whether the decision already exists."], "grade": "7", "theme": "AI", "focus": "Future forms (will / going to)", "title": "Robots in the Classroom", "intro": "Choose the correct future form.", "parts": ["Many experts believe that AI ", {"o": ["will change", "is changing", "changed"], "a": 0}, " education in the coming years. “Look at those plans — the school ", {"o": ["will", "is going to", "was going to"], "a": 1}, " install smart tutors next term,” said the principal. Some people worry that machines ", {"o": ["will replace", "replaced", "replacing"], "a": 0}, " teachers, but that ", {"o": ["will not", "is not going", "won’t be"], "a": 0}, " happen soon. A good teacher ", {"o": ["will always", "always will be", "is always going"], "a": 0}, " understand feelings better than a robot. “I think you ", {"o": ["will enjoy", "are enjoying", "enjoyed"], "a": 0}, " learning with AI,” she added, “but we ", {"o": ["will still need", "are still needing", "still needed"], "a": 0}, " each other.”"]}, {"id": "gm11", "connect": [{"t": "mcq", "q": "You are comparing <b>three or more</b> films. Which is right?", "o": ["the better film", "the best film"], "a": 1, "why": "Two → comparative. Three or more → superlative."}, {"t": "gap", "q": "It had ___ ending of them all.  (funny)", "a": "the funniest", "why": "Short adjective → the ...-est; -y becomes -iest."}], "study": ["Use a <b>comparative</b> for two things, and a <b>superlative</b> for <b>three or more</b>.", "Short adjectives take <b>the ...-est</b>: <i>the funniest</i>. Long adjectives take <b>the most</b>: <i>the most creative</i>.", "Irregulars: <i>good → the best, bad → the worst</i>. A superlative almost always takes <b>the</b>."], "grade": "7", "theme": "Media and art", "focus": "Superlatives", "title": "The School Film Festival", "intro": "Choose the correct superlative form.", "parts": ["This was ", {"o": ["the good", "the better", "the best"], "a": 2}, " film festival our school has ever held. Amira’s short film was ", {"o": ["the more creative", "the most creative", "the creativest"], "a": 1}, " of them all. It also had ", {"o": ["the funnier", "the funniest", "the most funny"], "a": 1}, " ending. The judges said it was ", {"o": ["the more original", "the originalest", "the most original"], "a": 2}, " entry. Yusuf won the prize for ", {"o": ["the better", "the best", "the goodest"], "a": 1}, " soundtrack, and Lina’s poster was ", {"o": ["the most colourful", "the colourfullest", "the more colourful"], "a": 0}, " in the hall. It was, honestly, ", {"o": ["the more exciting", "the excitingest", "the most exciting"], "a": 2}, " evening of the year."]}, {"id": "gm12", "connect": [{"t": "mcq", "q": "Which one is a <b>rule</b>, not a choice?", "o": ["You may read quietly in the corner.", "You must return your books on time."], "a": 1, "why": "<i>Must</i> = obligation. <i>May</i> = permission."}, {"t": "gap", "q": "Excuse me, ___ you help me find this title?  (polite request)", "a": "could", "why": "<i>Could</i> is the polite request form."}], "study": ["<b>must</b> = a rule or strong obligation. <b>should</b> = advice. <b>may / can</b> = permission. <b>could</b> = a polite request.", "Careful: <b>mustn’t</b> = it is forbidden. <b>don’t have to</b> = it is not necessary. They are <b>not</b> the same thing.", "A modal is followed by the <b>bare infinitive</b>: <i>must return, should respect</i> — never <i>must to return</i>."], "grade": "7", "theme": "Education", "focus": "Modal verbs", "title": "Library Rules", "intro": "Choose the correct modal verb.", "parts": ["You ", {"o": ["must", "can", "might"], "a": 0}, " return your books on time; it is a rule. Students ", {"o": ["should not", "cannot", "need not"], "a": 0}, " eat near the shelves, because food ", {"o": ["can", "must", "should"], "a": 0}, " damage the pages. If you finish early, you ", {"o": ["must", "may", "should must"], "a": 1}, " read quietly in the corner. You ", {"o": ["don’t have to", "mustn’t", "can’t"], "a": 0}, " whisper the whole time, but you ", {"o": ["should", "must not", "need"], "a": 0}, " respect others. “Excuse me, ", {"o": ["could", "must", "should"], "a": 0}, " you help me find this title?” is a polite way to ask."]}, {"id": "gm13", "connect": [{"t": "mcq", "q": "Which word gives a <b>reason</b>?", "o": ["because", "however", "so"], "a": 0, "why": "<i>Because</i> answers \"why?\". <i>So</i> gives the result."}, {"t": "drag", "q": "Match each linker to its job.", "chips": ["because", "so", "although"], "slots": [{"s": "reason → ___", "a": "because"}, {"s": "result → ___", "a": "so"}, {"s": "contrast → ___", "a": "although"}], "why": "Reason, result, contrast — three different jobs."}], "study": ["<b>because</b> gives the <b>reason</b>. <b>so</b> gives the <b>result</b>: <i>She turns off her phone, <b>so</b> she feels rested.</i>", "<b>although</b> and <b>however</b> both show <b>contrast</b>, but they sit differently in the sentence.", "<i><b>Although</b> she loves posting photos, she also enjoys the real world.</i> / <i>She loves photos. <b>However</b>, she enjoys the real world.</i>"], "grade": "7", "theme": "Social media", "focus": "Conjunctions (although / because / so / however)", "title": "Screens and Balance", "intro": "Choose the correct linking word.", "parts": ["Social media can be useful ", {"o": ["although", "because", "so"], "a": 1}, " it helps friends stay in touch. ", {"o": ["Because", "However", "So"], "a": 1}, ", spending too long online can harm sleep. Maryam turns off her phone at nine, ", {"o": ["so", "although", "because"], "a": 0}, " she feels rested in the morning. ", {"o": ["However", "Although", "So"], "a": 1}, " she loves posting photos, she also enjoys the real world. She reads before bed ", {"o": ["so", "because", "however"], "a": 1}, " it relaxes her. “I still check my apps,” she says, “", {"o": ["so", "however", "but"], "a": 2}, " I set a timer.” Balance matters ", {"o": ["although", "because", "so"], "a": 1}, " our health comes first."]}, {"id": "gm14", "connect": [{"t": "mcq", "q": "Which word describes <b>how</b> he works?", "o": ["careful", "carefully"], "a": 1, "why": "An adverb describes the verb; an adjective describes a noun."}, {"t": "gap", "q": "He thinks ___ , so he rarely makes mistakes.  (logical)", "a": "logically", "why": "Describing the verb <i>thinks</i> → adverb."}], "study": ["An <b>adjective</b> describes a noun (<i>a careful detective</i>). An <b>adverb</b> describes a verb (<i>he works carefully</i>).", "Most adverbs of manner add <b>-ly</b>: <i>quiet → quietly, calm → calmly</i>. After -y: <i>easy → easily</i>.", "Adverbs of <b>frequency</b> (<i>always, usually, rarely, never</i>) go <b>before</b> the main verb: <i>He <b>always</b> checks.</i>"], "grade": "7", "theme": "Story", "focus": "Adverbs of manner & frequency", "title": "The Careful Detective", "intro": "Choose the correct adverb.", "parts": ["Detective Rashid works ", {"o": ["careful", "carefully", "more careful"], "a": 1}, " on every case. He ", {"o": ["always", "never", "usually not"], "a": 0}, " checks the smallest clues. He walked ", {"o": ["quiet", "quietly", "quiet ly"], "a": 1}, " into the room and looked around ", {"o": ["slow", "slowly", "more slow"], "a": 1}, ". “Something is wrong here,” he said ", {"o": ["calm", "calmly", "more calm"], "a": 1}, ". He ", {"o": ["rarely", "rare", "rarely ever more"], "a": 0}, " makes mistakes, because he thinks ", {"o": ["logical", "logically", "logic"], "a": 1}, ". In the end, he solved the mystery ", {"o": ["easy", "easily", "more easy"], "a": 1}, "."]}, {"id": "gm15", "connect": [{"t": "mcq", "q": "Which is a <b>real, possible</b> future?", "o": ["If we heat the water, it will boil.", "If I were the mayor, I would plant trees."], "a": 0, "why": "Heating water is possible. Being mayor is imaginary."}, {"t": "gap", "q": "If the mixture ___ too hot, it will overflow.  (get)", "a": "gets", "why": "The if-part takes the present simple, never <i>will</i>."}], "study": ["Use the <b>first conditional</b> for a real, possible future: <b>If + present simple, will + verb</b>.", "Never put <b>will</b> in the if-part: <i>If we <b>heat</b> it</i> (not <i>if we will heat it</i>), <i>it <b>will boil</b></i>.", "<b>unless</b> = if not. <i>When, as soon as</i> and <i>until</i> also take the present for future meaning."], "grade": "8", "theme": "Science", "focus": "First conditional", "title": "The Experiment", "intro": "Choose the correct first-conditional form.", "parts": ["If we ", {"o": ["heat", "will heat", "heated"], "a": 0}, " the water, it ", {"o": ["boils", "will boil", "would boil"], "a": 1}, " at one hundred degrees. The reaction ", {"o": ["changes", "will change", "would change"], "a": 1}, " colour if we ", {"o": ["add", "will add", "added"], "a": 0}, " the powder slowly. “Unless you ", {"o": ["wear", "will wear", "wore"], "a": 0}, " goggles, you ", {"o": ["cannot", "will not can", "won’t able"], "a": 0}, " join the experiment,” the teacher warned. If the mixture ", {"o": ["gets", "will get", "got"], "a": 0}, " too hot, it ", {"o": ["overflows", "will overflow", "would overflow"], "a": 1}, ". We will record the results as soon as it ", {"o": ["cools", "will cool", "would cool"], "a": 0}, "."]}, {"id": "gm16", "connect": [{"t": "mcq", "q": "Which one is <b>imaginary</b>?", "o": ["If I were the mayor, I would plant a thousand trees.", "If we heat the water, it will boil."], "a": 0, "why": "The past form signals \"this is not real\"."}, {"t": "gap", "q": "If fewer cars ___ the centre, the air would be cleaner.  (enter)", "a": "entered", "why": "Second conditional: past simple in the if-part."}], "study": ["Use the <b>second conditional</b> for something <b>unreal or imaginary</b>: <b>If + past simple, would + verb</b>.", "The past form does <b>not</b> mean past time — it is a signal that this is <b>not real</b>.", "With <i>be</i>, traditional English uses <b>were</b> for every person: <i>If I <b>were</b> the mayor…</i>"], "grade": "8", "theme": "Environment", "focus": "Second conditional", "title": "If I Ran the City", "intro": "Choose the correct second-conditional form.", "parts": ["If I ", {"o": ["am", "was", "were"], "a": 2}, " the mayor, I ", {"o": ["will plant", "would plant", "planted"], "a": 1}, " a thousand trees. The air ", {"o": ["would be", "will be", "is"], "a": 0}, " cleaner if fewer cars ", {"o": ["enter", "entered", "would enter"], "a": 1}, " the centre. If people ", {"o": ["recycled", "would recycle", "recycle"], "a": 0}, " more, we ", {"o": ["will produce", "would produce", "produced"], "a": 1}, " far less waste. “If I ", {"o": ["could", "can", "will"], "a": 0}, " change one thing,” she said, “I ", {"o": ["will build", "would build", "built"], "a": 1}, " safe cycle lanes.” Sadly, nothing changes unless we ", {"o": ["act", "acted", "would act"], "a": 0}, "."]}, {"id": "gm17", "connect": [{"t": "mcq", "q": "We do not know or do not care who did it. Which fits?", "o": ["Somebody built the fort two hundred years ago.", "The fort was built two hundred years ago."], "a": 1, "why": "The passive lets you leave the doer out."}, {"t": "gap", "q": "Every year, the site ___ visited by thousands of tourists.  (is / are)", "a": "is", "why": "<i>The site</i> is singular → <i>is</i>."}], "study": ["Use the <b>passive</b> when the action matters more than who did it, or when the doer is unknown or obvious.", "Form: <b>be + past participle</b>. <i>The fort <b>was built</b>. Rooms <b>have been restored</b>. It <b>is being funded</b>.</i>", "Add <b>by + doer</b> only if it matters: <i>restored <b>by local experts</b></i>."], "grade": "8", "theme": "History", "focus": "Passive voice", "title": "The Ancient Fort", "intro": "Choose the correct passive form.", "parts": ["The old fort ", {"o": ["built", "was built", "has building"], "a": 1}, " more than two hundred years ago. Its walls ", {"o": ["were made", "made", "was made"], "a": 0}, " of coral stone and mud. Every year, the site ", {"o": ["is visited", "visits", "is visiting"], "a": 0}, " by thousands of tourists. Recently, several rooms ", {"o": ["have been restored", "has restored", "restored"], "a": 0}, " by local experts. The project ", {"o": ["is funding", "is being funded", "funds"], "a": 1}, " by the government. “Nothing ", {"o": ["must be touched", "must touch", "touches"], "a": 0}, " without permission,” the guide explained. Soon a new museum ", {"o": ["will be opened", "will open it", "opens by"], "a": 0}, " beside the fort."]}, {"id": "gm18", "connect": [{"t": "mcq", "q": "She said: “I work here.”  →  She said she ___ there.", "o": ["works", "worked"], "a": 1, "why": "Reporting steps the tense back one."}, {"t": "gap", "q": "“I will never give up.” → She answered that she ___ never give up.", "a": "would", "why": "will → would."}], "study": ["When you <b>report</b> what someone said, the tense usually <b>steps back one</b>: present → past, <i>will</i> → <i>would</i>, <i>can</i> → <i>could</i>.", "<i>have worked → had worked</i>. Words for time and place shift too: <i>today → that day, here → there</i>.", "Reported questions lose the question word order: <i>“How long have you worked?” → He asked how long she <b>had worked</b>.</i>"], "grade": "8", "theme": "Communication", "focus": "Reported speech", "title": "The Interview", "intro": "Choose the correct reported-speech form.", "parts": ["The journalist asked the scientist how long she ", {"o": ["has worked", "had worked", "works"], "a": 1}, " on the project. The scientist replied that she ", {"o": ["has spent", "had spent", "spends"], "a": 1}, " ten years on it. She said that the results ", {"o": ["are", "were", "will be"], "a": 1}, " promising. When asked whether she ", {"o": ["will", "would", "is going"], "a": 1}, " continue, she answered that she ", {"o": ["will", "would", "can"], "a": 1}, " never give up. She added that science ", {"o": ["needs", "needed", "had needed"], "a": 0}, " patience. Finally, she told the reporter that he ", {"o": ["could", "can", "will"], "a": 0}, " publish the story. The reporter said thank you and ", {"o": ["leaves", "left", "had left"], "a": 1}, "."]}, {"id": "gm19", "connect": [{"t": "mcq", "q": "The novelist ___ won the prize lives in a quiet town.", "o": ["who", "which"], "a": 0, "why": "<i>Who</i> is for people."}, {"t": "drag", "q": "Match each pronoun to what it stands for.", "chips": ["who", "which", "whose"], "slots": [{"s": "people → ___", "a": "who"}, {"s": "things → ___", "a": "which"}, {"s": "belonging to someone → ___", "a": "whose"}], "why": "who = people, which = things, whose = possession."}], "study": ["<b>who</b> = people. <b>which</b> = things. <b>whose</b> = belonging to someone. <b>that</b> = people or things, in defining clauses.", "<i>The novelist <b>who</b> won the prize. The book <b>which</b> made her famous. One reader, <b>whose</b> letter she keeps.</i>", "The clause goes <b>straight after</b> the noun it describes — move it, and the meaning moves with it."], "grade": "8", "theme": "Literature", "focus": "Relative clauses (who / which / whose / that)", "title": "The Author’s Study", "intro": "Choose the correct relative pronoun.", "parts": ["The novelist ", {"o": ["who", "which", "whose"], "a": 0}, " won the prize lives in a quiet town. The book ", {"o": ["who", "which", "whose"], "a": 1}, " made her famous took seven years to write. She works in a study ", {"o": ["who", "whose", "which"], "a": 2}, " has thousands of books. Readers ", {"o": ["which", "who", "whose"], "a": 1}, " love her stories send hundreds of letters. One reader, ", {"o": ["who", "whose", "which"], "a": 1}, " letter she keeps on her desk, is only twelve. The theme ", {"o": ["which", "who", "whose"], "a": 0}, " she explores most is courage. “A story ", {"o": ["who", "that", "whose"], "a": 1}, " teaches nothing,” she says, “is soon forgotten.”"]}, {"id": "gm20", "connect": [{"t": "mcq", "q": "Which happened <b>first</b>?", "o": ["The curtain rose.", "The actors had rehearsed for months."], "a": 1, "why": "<i>Had + participle</i> marks the earlier action."}, {"t": "gap", "q": "By tonight they ___ have earned their applause.  (will / had)", "a": "will", "why": "Finished before a future point → future perfect."}], "study": ["<b>Past perfect</b> (<i>had</i> + participle) = the <b>earlier</b> of two past actions: <i>By the time the curtain rose, they <b>had rehearsed</b>.</i>", "<b>Present perfect</b> (<i>have / has</i> + participle) = past linked to <b>now</b>: <i>I <b>have never felt</b> this nervous.</i>", "<b>Future perfect</b> (<i>will have</i> + participle) = finished <b>before a future point</b>: <i>By tonight they <b>will have earned</b> it.</i>"], "grade": "8", "theme": "Drama", "focus": "Mixed perfect tenses", "title": "Backstage Before the Play", "intro": "Choose the correct perfect tense.", "parts": ["By the time the curtain rose, the actors ", {"o": ["have rehearsed", "had rehearsed", "rehearse"], "a": 1}, " for months. “I ", {"o": ["have never felt", "had never feeling", "never have felt"], "a": 0}, " this nervous,” whispered Dana, who ", {"o": ["has performed", "had performed", "performing"], "a": 1}, " many times before. The director ", {"o": ["has just checked", "had just checked", "just checks"], "a": 1}, " the lights when a bulb broke. “We ", {"o": ["have solved", "had solved", "solving"], "a": 1}, " worse problems,” he said calmly. Since morning, the crew ", {"o": ["has been working", "have working", "had work"], "a": 0}, " without a break, and by tonight they ", {"o": ["will have earned", "have earned", "had earned"], "a": 0}, " their applause."]}, {"id": "gm21", "connect": [{"t": "mcq", "q": "Which one stresses <b>how long</b> it has been going on?", "o": ["Researchers have developed language models.", "Researchers have been developing language models for years."], "a": 1, "why": "The continuous form stresses the duration."}, {"t": "gap", "q": "Students ___ been using AI tutors more and more.  (has / have)", "a": "have", "why": "<i>Students</i> is plural → <i>have</i>."}], "study": ["<b>Present perfect continuous</b> = started in the past, <b>still going</b>, with the <b>length</b> stressed: <b>have / has been + verb-ing</b>.", "It goes with <b>for</b> and <b>since</b>: <i>for several years, since these tools appeared</i>.", "Contrast: <b>although</b> joins a contrast inside one sentence; <b>however</b> starts a new one; <b>so</b> gives the result."], "grade": "8", "theme": "AI", "focus": "Present perfect continuous & contrast", "title": "Learning with Machines", "intro": "Choose the correct form.", "parts": ["Researchers ", {"o": ["have been developing", "have developing", "has been developing"], "a": 0}, " language models for several years. Students ", {"o": ["have been using", "are used to use", "has been using"], "a": 0}, " AI tutors more and more, ", {"o": ["although", "because", "so"], "a": 0}, " teachers remain essential. “I ", {"o": ["have been practising", "have practised being", "am practising been"], "a": 0}, " my writing with feedback tools,” Omar said, “", {"o": ["so", "although", "however"], "a": 0}, " my essays have improved.” ", {"o": ["However", "Because", "So"], "a": 0}, ", experts warn that machines ", {"o": ["have been making", "have make", "has been making"], "a": 0}, " mistakes too. The debate ", {"o": ["has been growing", "have grown", "is grow"], "a": 0}, " ever since these tools ", {"o": ["appeared", "have appeared", "had appeared"], "a": 0}, "."]}];
 
 const YL_EXAMS = [{"id": "ye1", "grade": "5–6", "title": "Everyday English — Exam A", "mins": 25, "reading": {"title": "A Busy Morning", "text": "Every school day, Salma wakes up at half past six. First, she makes her bed and opens the curtains to let in the morning light. Then she washes her face and brushes her teeth. For breakfast, she usually eats bread with honey and drinks a glass of milk. Her younger brother, Adam, does not like milk, so he drinks orange juice instead. At seven o’clock, their mother drives them to school because the bus does not stop near their home. Salma always checks her bag the night before, so she never forgets her books. She likes mornings that are calm and organised. “A good morning,” she says, “makes a good day.”", "q": [{"q": "What does Salma drink for breakfast?", "o": ["orange juice", "milk", "tea"], "a": 1}, {"q": "Why does their mother drive them to school?", "o": ["the bus is always full", "the bus does not stop near their home", "they always wake up late"], "a": 1}, {"q": "Salma checks her bag the night before because she…", "o": ["likes reading at night", "wants to be ready and not forget things", "has too many books"], "a": 1}]}, "grammar": [{"q": "Every day, Salma ___ up at half past six.", "o": ["wake", "wakes", "waking"], "a": 1}, {"q": "Adam does not like milk, ___ he drinks juice.", "o": ["but", "so", "because"], "a": 1}, {"q": "She eats bread ___ honey.", "o": ["with", "on", "at"], "a": 0}, {"q": "She never forgets her ___.", "o": ["book", "books", "bookes"], "a": 1}], "vocab": [{"q": "“Calm” means…", "o": ["noisy", "quiet and relaxed", "very fast"], "a": 1}, {"q": "“Organised” means…", "o": ["tidy and planned", "messy", "tired"], "a": 0}, {"q": "A “curtain” usually covers a…", "o": ["window", "floor", "shoe"], "a": 0}], "writing": {"prompt": "Describe your own morning routine on a school day.", "points": ["when you wake up", "two things you do", "how you feel"], "model": ["On school days I wake up at six o’clock.", "First, I make my bed and wash my face; then I eat breakfast with my family, usually eggs and bread.", "I feel calm and ready, because a good, organised start helps me learn better at school."]}}, {"id": "ye2", "grade": "7", "title": "Ideas & Opinions — Exam B", "mins": 30, "reading": {"title": "The Recycling Team", "text": "Last term, the students at Al Noor School started a recycling project. At first, only a few classes joined, but soon the whole school wanted to help. The team placed three coloured bins in every corridor: blue for paper, green for glass, and yellow for plastic. Every Thursday, two volunteers weighed the collected material and wrote the results on a big chart near the entrance. By the end of the term, the school had recycled more than four hundred kilograms of waste. The principal was so impressed that she promised to plant a tree for every hundred kilograms collected. “We did not expect such a big change,” said Mariam, the team leader. “It started small, but everyone believed in it.”", "q": [{"q": "Which coloured bin is for plastic?", "o": ["blue", "green", "yellow"], "a": 2}, {"q": "The project grew mainly because…", "o": ["it was made compulsory", "more and more students wanted to help", "the bins were expensive"], "a": 1}, {"q": "The principal’s promise to plant trees shows that she…", "o": ["wanted to reward the effort", "did not like trees", "was angry with the team"], "a": 0}]}, "grammar": [{"q": "Last term, the students ___ a project.", "o": ["start", "started", "starting"], "a": 1}, {"q": "Recycling paper is ___ than throwing it away.", "o": ["good", "better", "best"], "a": 1}, {"q": "___ it started small, the project grew quickly.", "o": ["Because", "Although", "So"], "a": 1}, {"q": "Every Thursday, two volunteers ___ the material.", "o": ["weigh", "weighs", "weighing"], "a": 0}], "vocab": [{"q": "“Volunteers” are people who…", "o": ["are paid a large salary", "help without being paid", "refuse to help"], "a": 1}, {"q": "“Impressed” means…", "o": ["bored", "admiring and pleased", "confused"], "a": 1}, {"q": "“Collected” means…", "o": ["gathered together", "thrown away", "lost"], "a": 0}], "writing": {"prompt": "Should every school have a recycling project? Give your opinion.", "points": ["your opinion", "one clear reason", "one example"], "model": ["In my opinion, every school should have a recycling project.", "It teaches students to care for the environment and to work together as a team.", "For example, the recycling team at Al Noor School collected over four hundred kilograms of waste in one term — proof that small daily actions add up to a real difference."]}}, {"id": "ye3", "grade": "8", "title": "Think & Explain — Exam C", "mins": 35, "reading": {"title": "Screens and Sleep", "text": "Many teenagers say they feel tired even after a full night in bed. Scientists have discovered that one common habit may be to blame: using screens late at night. Phones, tablets and laptops give off a blue light that is similar to daylight. When our eyes receive this light in the evening, the brain produces less melatonin, the natural chemical that makes us feel sleepy. As a result, the body is tricked into staying awake, and falling asleep becomes harder. Studies suggest that students who stop using screens an hour before bed fall asleep faster and wake up feeling fresher. Experts therefore recommend keeping devices out of the bedroom. Although screens are useful for learning and staying in touch, the evidence is clear: how we use them in the evening can shape how well we think, feel and learn the next day.", "q": [{"q": "According to the text, blue light reduces…", "o": ["energy", "melatonin", "daylight"], "a": 1}, {"q": "The main idea of the text is that…", "o": ["teenagers are simply lazy", "evening screen use can harm sleep", "phones are useless for learning"], "a": 1}, {"q": "The writer would most likely agree that…", "o": ["screens should be banned completely", "when you use screens matters", "melatonin is dangerous"], "a": 1}]}, "grammar": [{"q": "Scientists ___ that screens affect sleep.", "o": ["have discovered", "has discovered", "discovering"], "a": 0}, {"q": "Melatonin is ___ by the brain.", "o": ["produce", "produced", "producing"], "a": 1}, {"q": "Experts say students ___ keep devices out of the bedroom.", "o": ["should", "need", "musting"], "a": 0}, {"q": "With screen light, falling asleep becomes ___.", "o": ["hard", "harder", "hardest"], "a": 1}], "vocab": [{"q": "“Recommend” means…", "o": ["forbid", "suggest as a good idea", "forget"], "a": 1}, {"q": "“Evidence” means…", "o": ["facts that prove something", "a wild guess", "a personal opinion"], "a": 0}, {"q": "“Tricked” means…", "o": ["helped", "deceived or fooled", "rewarded"], "a": 1}], "writing": {"prompt": "Explain why using screens late at night can affect sleep, and suggest one solution.", "points": ["the cause (blue light)", "the effect on the body", "one practical solution"], "model": ["Using screens late at night affects sleep because the blue light from phones and tablets is similar to daylight.", "When the eyes receive this light in the evening, the brain produces less melatonin, the chemical that makes us feel sleepy, so falling asleep becomes harder.", "One simple solution is to stop using screens about an hour before bed and to keep devices out of the bedroom, which helps the body relax and prepare for rest."]}}];
 const YL_WRITE = [{"id": "yw1", "band": "5–6", "field": "Daily routines", "title": "My Daily Routine", "prompt": "Write about what you do on a normal school day.", "points": ["what you do in the morning", "what you do in the afternoon", "what you do in the evening"], "std": "Standard: 40–60 words, simple sentences.", "ext": "Extended: 70–90 words, with time linkers (first, then, after that).", "weak": "my day is normal. i wake up and go school. then i come home and do homework and play. after i sleep. it is a good day i like it.", "strong": ["In the morning, I wake up at six o’clock, wash my face and eat breakfast before I walk to school.", "In the afternoon, I have my lessons, eat lunch with my friends, and then travel home on the bus.", "In the evening, I finish my homework, help my mother, and read a little before I go to bed feeling tired but happy."], "tips": ["Use time words: first, then, after that, finally.", "Write in the present simple: I wake up, I eat.", "Give one small detail for each part of the day."], "drillFrame": "In the morning, I ____ and ____.", "drillStarter": "In the morning, I wake up at six o’clock, wash my face and eat breakfast with my family.", "hiVocab": ["routine", "organised", "breakfast"]}, {"id": "yw2", "band": "5–6", "field": "People", "title": "A Person I Admire", "prompt": "Write about a person you admire.", "points": ["who the person is", "what they do", "why you admire them"], "std": "Standard: 40–60 words.", "ext": "Extended: 70–90 words, with at least two adjectives to describe the person.", "weak": "i admire my mother. she is nice and good. she help me alot. she is the best person and i love her so much thats why i admire her.", "strong": ["The person I admire most is my grandmother, who lives with us in Al Ain.", "She spends her days cooking wonderful meals, caring for our whole family, and telling us stories about the past.", "I admire her because she is patient and kind, and she never complains even when she is tired — she has taught me to be generous with others."], "tips": ["Say who the person is in your first sentence.", "Use adjectives: kind, patient, brave.", "End by explaining WHY you admire them."], "drillFrame": "The person I admire is ____ because ____.", "drillStarter": "The person I admire most is my grandmother, who is kind, patient and always ready to help.", "hiVocab": ["admire", "patient", "generous"]}, {"id": "yw3", "band": "5–6", "field": "Hobbies", "title": "My Favourite Hobby", "prompt": "Write about a hobby you enjoy.", "points": ["what your hobby is", "when and where you do it", "why you love it"], "std": "Standard: 40–60 words.", "ext": "Extended: 70–90 words, giving one clear reason with a detail.", "weak": "my hobby is football. i play it. it is fun and i like it very much. me and my friends play alot it is the best hobby ever.", "strong": ["My favourite hobby is drawing, especially sketching animals and cartoon characters.", "I usually draw in the evening at the desk in my bedroom, and sometimes I take my sketchbook to the park at the weekend.", "I love it because it helps me relax after a busy day, and every finished drawing makes me feel proud of what I can create."], "tips": ["Name your hobby clearly at the start.", "Say when and where you do it.", "Give one reason you enjoy it."], "drillFrame": "My favourite hobby is ____. I do it ____.", "drillStarter": "My favourite hobby is drawing. I usually draw in the evening at my desk because it helps me relax.", "hiVocab": ["favourite", "relax", "create"]}, {"id": "yw4", "band": "7", "field": "Travel", "title": "A Memorable Trip", "prompt": "Write about a trip or journey you will never forget.", "points": ["where you went", "what you did there", "how you felt"], "std": "Standard: 60–80 words.", "ext": "Extended: 90–120 words, using past-tense verbs and descriptive detail.", "weak": "last year we went to the desert. we did alot of things and it was fun. i felt happy. it was a good trip and i want to go again because it was nice.", "strong": ["Last winter, my family drove out to the desert near Liwa for a weekend camping trip among the tall dunes.", "We rode in a four-wheel drive over the bumpy sand, cooked dinner on an open campfire, and lay back to watch millions of stars appear in the dark sky.", "I felt completely peaceful that night, far from the noise of the city — it is a memory I still return to whenever I need to feel calm."], "tips": ["Use the past simple: we went, we saw, we ate.", "Say where you went and what you did.", "Describe how you felt."], "drillFrame": "Last ____, we went to ____.", "drillStarter": "Last winter, my family drove to the desert near Liwa and camped among the tall golden dunes.", "hiVocab": ["memorable", "journey", "peaceful"]}, {"id": "yw5", "band": "7", "field": "Education", "title": "School Uniforms", "prompt": "Some people think students should wear school uniforms. Others disagree. What is your opinion?", "points": ["your opinion", "one clear reason", "one example"], "std": "Standard: 60–80 words.", "ext": "Extended: 90–120 words, with a linking word for your reason (because, therefore).", "weak": "i think uniform is good. because it is nice and everyone same. some school have it some dont. i think all school should have uniform its better for the students.", "strong": ["In my opinion, school uniforms are a good idea and every school should have one.", "The main reason is that uniforms remove the pressure to wear expensive, fashionable clothes, so students can focus on learning instead of appearance.", "For example, in my own school nobody is teased for what they wear, because we all look the same — this makes the classroom a fairer and friendlier place."], "tips": ["State your opinion in the first sentence.", "Give one clear reason using because or so.", "Add one example to support it."], "drillFrame": "In my opinion, ____ because ____.", "drillStarter": "In my opinion, school uniforms are a good idea because they remove the pressure to wear expensive clothes.", "hiVocab": ["opinion", "pressure", "equal"]}, {"id": "yw6", "band": "7", "field": "Literature", "title": "Why Reading Matters", "prompt": "Explain why reading is important for young people.", "points": ["one benefit of reading", "an example of that benefit", "a recommendation to other students"], "std": "Standard: 60–80 words.", "ext": "Extended: 90–120 words, with an example that shows the benefit clearly.", "weak": "reading is good and important. it help you learn new things and words. everyone should read books because its useful and good for you and your brain.", "strong": ["One of the greatest benefits of reading is that it quietly builds your vocabulary and imagination at the same time.", "For example, after I read a novel set in Japan, I not only learned new words like “lantern” and “festival” but could also picture a country I had never visited.", "I would recommend that every student read for just fifteen minutes each night; it costs nothing and slowly makes you a sharper, more thoughtful person."], "tips": ["Name one clear benefit of reading.", "Give an example that proves it.", "End with advice to other students."], "drillFrame": "Reading is important because ____.", "drillStarter": "One great benefit of reading is that it quietly builds your vocabulary and your imagination at the same time.", "hiVocab": ["benefit", "vocabulary", "imagination"]}, {"id": "yw7", "band": "8", "field": "Health", "title": "Staying Healthy as a Teenager", "prompt": "Give advice on how teenagers can stay healthy.", "points": ["one healthy habit", "why that habit helps the body or mind", "a practical tip to keep it up"], "std": "Standard: 70–90 words.", "ext": "Extended: 100–130 words, using at least one modal verb (should, can, must).", "weak": "teenagers should be healthy. they must eat good and sleep and do sport. if you dont you will be tired and sick. so its important to be healthy and not be lazy all the time.", "strong": ["One of the most important healthy habits for teenagers is getting enough sleep — ideally eight to nine hours every night.", "Sleep matters because it allows the brain to rest and store what we have learned, so a well-rested student concentrates better and feels less stressed the next day.", "A practical tip is to switch off screens an hour before bed and keep the phone in another room, so that the blue light does not trick the body into staying awake."], "tips": ["Choose ONE clear habit to focus on.", "Explain why it helps the body or mind.", "Use a modal verb: should, can, must."], "drillFrame": "Teenagers should ____ because ____.", "drillStarter": "One of the most important habits is getting enough sleep, because it lets the brain rest and store what we learn.", "hiVocab": ["habit", "concentrate", "balance"]}, {"id": "yw8", "band": "8", "field": "Social media", "title": "Is Social Media Good for Students?", "prompt": "Social media is part of daily life. Do its benefits outweigh its risks for students?", "points": ["your overall opinion", "one real benefit", "one real risk"], "std": "Standard: 70–90 words.", "ext": "Extended: 100–130 words, presenting the benefit and risk in separate sentences.", "weak": "social media is good and bad. its good because you talk to friends but its bad because you waste time. i think its ok if you dont use it too much. everyone use it now anyway.", "strong": ["In my opinion, social media can be valuable for students, but only when it is used with care and clear limits.", "A genuine benefit is connection: platforms let students share ideas, revise together in group chats, and stay in touch with friends and relatives who live far away.", "The real risk, however, is that endless scrolling steals time and sleep, and comparing our lives to others online can quietly damage our confidence — which is why balance matters so much."], "tips": ["Give your overall opinion first.", "Explain one real benefit.", "Then explain one real risk — in a separate sentence."], "drillFrame": "Social media can be ____, but ____.", "drillStarter": "In my opinion, social media can be valuable for students, but only when it is used with care and clear limits.", "hiVocab": ["balance", "connection", "distraction"]}, {"id": "yw9", "band": "8", "field": "UAE heritage", "title": "A Festival in My Country", "prompt": "Describe an important festival or celebration in your country.", "points": ["which festival it is and when it happens", "what people do during it", "why it matters to your community"], "std": "Standard: 70–90 words.", "ext": "Extended: 100–130 words, with sensory detail (what you see, hear or smell).", "weak": "in my country we have eid. its a big festival. people eat and give money and visit family. its very fun and happy. i like it because we get gifts and food and see everyone.", "strong": ["One of the most treasured celebrations in the UAE is Eid Al Fitr, which arrives at the end of the holy month of Ramadan.", "During Eid, families wake early for prayers, wear their finest clothes, exchange gifts and sweets, and open their homes to a stream of relatives and neighbours.", "It matters deeply to our community because it rewards a month of patience and giving, and it reminds us that generosity and family are at the heart of our heritage."], "tips": ["Name the festival and when it happens.", "Describe what people do — add a sense detail.", "Say why it matters to your community."], "drillFrame": "One important festival is ____, which happens ____.", "drillStarter": "One of the most treasured celebrations in the UAE is Eid Al Fitr, which arrives at the end of Ramadan.", "hiVocab": ["celebration", "heritage", "generosity"]}, {"id": "yw10", "band": "8", "field": "Story", "title": "The Day Everything Changed", "prompt": "Write a short story that begins on an ordinary day and ends with a surprise.", "points": ["set the scene (an ordinary moment)", "describe the event that changed things", "end with how it turned out"], "std": "Standard: 70–90 words.", "ext": "Extended: 100–140 words, using past tenses and at least one line of dialogue.", "weak": "one day i was at home and it was boring. then something happen and everything change. it was crazy and i was shocked. in the end it was ok and i was happy. the end.", "strong": ["It began as the most ordinary of afternoons: I was lying on the sofa, half-watching television, while rain tapped steadily against the window.", "Then the phone rang, and my mother’s face changed as she listened. “Pack a bag,” she whispered, “your grandfather is awake — the operation worked.” For weeks we had feared the worst.", "By evening we were standing at his hospital bedside, laughing and crying at once. That ordinary, rainy day had turned, in a single phone call, into the happiest one of the year."], "tips": ["Set an ordinary scene first.", "Describe the event that changes everything.", "Use past tenses and one line of dialogue."], "drillFrame": "It began as an ordinary ____ when suddenly ____.", "drillStarter": "It began as the most ordinary of afternoons, with rain tapping softly against the window — until the phone rang.", "hiVocab": ["ordinary", "suddenly", "relief"]}];
@@ -16204,13 +16210,13 @@ ROUTES.ylGrammar=function(){
       '<div class="item-row" style="align-items:center"><div style="font-size:1.5rem">🧩</div>'
       +'<div style="flex:1"><span class="mz-gpill" style="background:'+mzGradeColor(m.grade)+'">'+labelOf[m.grade]+'</span> '
       +'<span class="genre-tag">'+esc(m.theme)+'</span> <b>'+esc(m.title)+'</b>'
-      +'<div class="meta">🎯 '+esc(m.focus)+' '+(typeof doneTag==='function'?doneTag('Young Learners','Grammar Maze — '+m.title):'')+'</div></div>'
+      +'<div class="meta">🎯 '+esc(m.focus)+' '+(typeof doneTag==='function'?doneTag('Foundational','Grammar Maze — '+m.title):'')+'</div></div>'
       +'<button class="btn sm" onclick="go(\'ylMazeRun\',\''+m.id+'\')">Start →</button></div>').join('');
     return '<h3 style="margin:16px 0 6px"><span class="mz-gpill" style="background:'+mzGradeColor(b)+'">'+labelOf[b]+'</span></h3><div class="grid c2">'+rows+'</div>';
   }).join('');
   app().innerHTML=MZ_STYLE+`
   <div class="wrap screen">
-    <button class="back" onclick="go('ylhub')">← Young Learners</button>
+    <button class="back" onclick="go('ylhub')">← Foundational</button>
     <div class="stem-kicker" style="color:#8B5CF6">Grammar · grammar-in-context</div>
     <h1 style="font-size:1.9rem">🧩 Grammar Mazes</h1>
     <p style="color:var(--muted);max-width:680px">Read a themed story and choose <b>a</b>, <b>b</b> or <b>c</b> at every gap — grammar-in-context that also builds reading. Each maze is grade-labelled; submit to reveal the key.</p>
@@ -16222,10 +16228,10 @@ ROUTES.ylMaze=ROUTES.ylGrammar;
 ROUTES.ylExams=function(){
   try{speechSynthesis.cancel();}catch(e){}
   const labelOf={'5–6':'Grade 5–6','7':'Grade 7','8':'Grade 8'};
-  const rows=YL_EXAMS.map(x=>'<div class="item-row" style="align-items:center"><div style="font-size:1.6rem">📝</div><div style="flex:1"><span class="mz-gpill" style="background:'+mzGradeColor(x.grade)+'">'+(labelOf[x.grade]||('Grade '+x.grade))+'</span> <b>'+esc(x.title)+'</b><div class="meta">Reading · Grammar · Vocabulary · Writing · ~'+x.mins+' min '+(typeof doneTag==='function'?doneTag('Young Learners','Exam — '+x.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylExamRun\',\''+x.id+'\')">Start →</button></div>').join('');
+  const rows=YL_EXAMS.map(x=>'<div class="item-row" style="align-items:center"><div style="font-size:1.6rem">📝</div><div style="flex:1"><span class="mz-gpill" style="background:'+mzGradeColor(x.grade)+'">'+(labelOf[x.grade]||('Grade '+x.grade))+'</span> <b>'+esc(x.title)+'</b><div class="meta">Reading · Grammar · Vocabulary · Writing · ~'+x.mins+' min '+(typeof doneTag==='function'?doneTag('Foundational','Exam — '+x.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylExamRun\',\''+x.id+'\')">Start →</button></div>').join('');
   app().innerHTML=MZ_STYLE+`
   <div class="wrap screen">
-    <button class="back" onclick="go('ylhub')">← Young Learners</button>
+    <button class="back" onclick="go('ylhub')">← Foundational</button>
     <div class="stem-kicker" style="color:#e6464b">Exams &amp; Quizzes · full exam mode</div>
     <h1 style="font-size:1.9rem">⚡ Exams &amp; Quizzes</h1>
     <p style="color:var(--muted);max-width:700px">A full practice exam in one sitting: a <b>reading</b> passage with comprehension questions, a <b>grammar</b> section, a <b>vocabulary</b> section, and a <b>short-response writing</b> task. Submit to reveal the answer key.</p>
@@ -16271,19 +16277,19 @@ function ylExamSubmit(id){
   if(res) res.innerHTML='<div class="scorebox"><div class="big">'+face+'</div><div><b>'+s+' / '+m+'</b> on the multiple-choice sections ('+pct+'%). Green shows the answer key at each question.</div></div>'
     +(function(){var BG=['#e8f7f2','#f2edfe','#fdecec'],BD=['#0c8a72','#8B5CF6','#E6464B'];var mdl=Array.isArray(ex.writing.model)?ex.writing.model:[ex.writing.model];var leg='<div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:8px;font-size:.78rem">'+ex.writing.points.map(function(p,k){return '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:3px;background:'+(BD[k]||'#999')+'"></span>'+esc(p)+'</span>';}).join('')+'</div>';var seg='<p style="line-height:2">'+mdl.map(function(t,k){return '<span style="background:'+(BG[k]||'#eef1f6')+';padding:2px 6px;border-radius:3px;box-shadow:inset 3px 0 '+(BD[k]||'#999')+'">'+esc(t)+'</span>';}).join(' ')+'</p>';return '<div class="card" style="margin-top:10px;background:#fbfcff;border:1px solid var(--line)"><b>✍️ Writing — model answer</b><p style="font-size:.82rem;color:var(--muted);margin:2px 0 8px">You wrote '+w+' words. This full-mark model covers all three points — each shown in its own colour:</p>'+leg+seg+'</div>';})();
   const btn=document.getElementById('ylExamSubmitBtn'); if(btn){btn.disabled=true;btn.textContent='✓ Submitted';}
-  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Young Learners',activity:'Exam — '+ex.title,score:s,max:m,percent:pct,detail:'Grade '+ex.grade+' · reading/grammar/vocab + writing'}); }catch(e){} }
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Exam — '+ex.title,score:s,max:m,percent:pct,detail:'Grade '+ex.grade+' · reading/grammar/vocab + writing'}); }catch(e){} }
 }
 
 ROUTES.ylReading=function(){
   try{speechSynthesis.cancel();}catch(e){}
   const groups=[['A','Level A \u00b7 A1\u2013A2','emerging readers'],['B','Level B \u00b7 B1\u2013B2','developing readers'],['C','Level C \u00b7 C1\u2013C2','confident readers']];
   const rowOf=r=>{ const m=r.meta||{}; const sub=m.genre?('\ud83d\udcd6 '+esc(m.genre)+' \u00b7 '+esc(m.lexile||'')+' \u00b7 '+esc(m.skill||'')):('\ud83c\udfaf '+esc(r.obj));
-    return '<div class="item-row" style="align-items:center"><div style="font-size:1.9rem">'+r.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+r.lv+'">'+r.lv+'</span> <b>'+esc(r.title)+'</b><div class="meta">'+sub+' '+(typeof doneTag==='function'?doneTag('Young Learners',r.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylReader\',\''+r.id+'\')">Open \u2192</button></div>'; };
+    return '<div class="item-row" style="align-items:center"><div style="font-size:1.9rem">'+r.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+r.lv+'">'+r.lv+'</span> <b>'+esc(r.title)+'</b><div class="meta">'+sub+' '+(typeof doneTag==='function'?doneTag('Foundational',r.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylReader\',\''+r.id+'\')">Open \u2192</button></div>'; };
   const secs=groups.map(gr=>{ const lv=gr[0]; const rows=YL_READERS.filter(r=>r.lv===lv).map(rowOf).join('');
     return rows?('<h2 class="stem-h2" style="margin-top:18px">'+gr[1]+' <span style="font-weight:400;color:var(--muted);font-size:.95rem">\u2014 '+gr[2]+'</span></h2><div class="grid c2">'+rows+'</div>'):''; }).join('');
   app().innerHTML=`
   <div class="wrap screen">
-    <button class="back" onclick="go('ylhub')">\u2190 Young Learners</button>
+    <button class="back" onclick="go('ylhub')">\u2190 Foundational</button>
     <div class="stem-kicker" style="color:#0FA98B">Reading \u00b7 read to discover</div>
     <h1 style="font-size:1.9rem">\ud83d\udcd6 Reading</h1>
     <p style="color:var(--muted);max-width:700px">Multimodal texts grouped by CEFR level, roughly in the <b>600\u20131000L</b> Lexile range. Every reader has a <b>Standard</b> and an <b>Extended</b> version, a visual to interpret, and a details panel like a real reading library. Full affordances: \ud83d\udd0a read-to-me \u00b7 A\u00b1 zoom \u00b7 tap any word for a live definition (opens vocabulary.com).</p>
@@ -16294,11 +16300,11 @@ ROUTES.ylReading=function(){
 ROUTES.ylWriting=function(){
   try{speechSynthesis.cancel();}catch(e){}
   const labelOf={'5–6':'Grade 5–6','7':'Grade 7','8':'Grade 8'}; const bands=['5–6','7','8'];
-  const rowOf=x=>'<div class="item-row" style="align-items:center"><div style="font-size:1.6rem">✍️</div><div style="flex:1"><span class="mz-gpill" style="background:'+mzGradeColor(x.band)+'">'+labelOf[x.band]+'</span> <span class="genre-tag">'+esc(x.field)+'</span> <b>'+esc(x.title)+'</b><div class="meta">'+esc(x.prompt)+' '+(typeof doneTag==='function'?doneTag('Young Learners','Writing — '+x.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylWriteRun\',\''+x.id+'\')">Write →</button></div>';
+  const rowOf=x=>'<div class="item-row" style="align-items:center"><div style="font-size:1.6rem">✍️</div><div style="flex:1"><span class="mz-gpill" style="background:'+mzGradeColor(x.band)+'">'+labelOf[x.band]+'</span> <span class="genre-tag">'+esc(x.field)+'</span> <b>'+esc(x.title)+'</b><div class="meta">'+esc(x.prompt)+' '+(typeof doneTag==='function'?doneTag('Foundational','Writing — '+x.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylWriteRun\',\''+x.id+'\')">Write →</button></div>';
   const secs=bands.map(b=>{ const rows=YL_WRITE.filter(x=>x.band===b).map(rowOf).join(''); return rows?'<h3 style="margin:16px 0 6px"><span class="mz-gpill" style="background:'+mzGradeColor(b)+'">'+labelOf[b]+'</span></h3><div class="grid c2">'+rows+'</div>':''; }).join('');
   app().innerHTML=MZ_STYLE+`
   <div class="wrap screen">
-    <button class="back" onclick="go('ylhub')">← Young Learners</button>
+    <button class="back" onclick="go('ylhub')">← Foundational</button>
     <div class="stem-kicker" style="color:#e6608a">Writing · write to explain</div>
     <h1 style="font-size:1.9rem">✍️ Writing</h1>
     <p style="color:var(--muted);max-width:700px">Choose a prompt and address all three points. Every task is differentiated — a <b>Standard</b> target for emerging writers and an <b>Extended</b> target for stronger ones. Submit to reveal <b>two model answers</b> (a weaker piece to learn from and a full-mark model) and the marking <b>rubric</b>.</p>
@@ -16352,7 +16358,7 @@ function ylWriteSubmit(id){
    +'<div class="card" style="margin-top:8px;background:#fbfcff;border:1px solid var(--line)"><b>\ud83c\udf1f Model B \u2014 Band 7 (aim for this)</b><p style="font-size:.8rem;color:var(--muted);margin:2px 0 8px">Colours = the three points \u00b7 <span style="color:#E6464B;font-weight:600">red</span> = linking words \u00b7 <b>bold</b> = strong vocabulary.</p>'+legend+modelB+'</div>'
    +'<details style="margin-top:8px"><summary style="cursor:pointer;font-weight:700;color:#2b5fa6">\ud83d\udccb Full marking rubric (MoE \u00b7 /25)</summary><div style="margin-top:6px">'+writingRubricHTML()+'</div></details>';
   const b=document.getElementById('ylWrBtn'); if(b){b.disabled=true;b.textContent='\u2713 Submitted';}
-  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Young Learners',activity:'Writing \u2014 '+x.title,score:wc>0?1:0,max:1,percent:wc>0?100:0,detail:'Grade '+x.band+' \u00b7 '+wc+' words'}); }catch(e){} }
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Writing \u2014 '+x.title,score:wc>0?1:0,max:1,percent:wc>0?100:0,detail:'Grade '+x.band+' \u00b7 '+wc+' words'}); }catch(e){} }
 }
 function ylwFinalSubmit(id){
   const x=YL_WRITE.find(w=>w.id===id); if(!x)return;
@@ -16361,16 +16367,16 @@ function ylwFinalSubmit(id){
   if(wc<10){ out.innerHTML='<span class="feedback">Write a little more in your final version before submitting.</span>'; return; }
   const face=ticks>=4?'\ud83c\udfc5':(ticks>=2?'\u2705':'\ud83c\udf31');
   out.innerHTML='<div class="scorebox"><div class="big">'+face+'</div><div>Final version submitted \u2014 <b>'+wc+'</b> words, <b>'+ticks+'/'+YLW_PEER.length+'</b> self-checks ticked. Great job reviewing and improving your work!</div></div>';
-  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Young Learners',activity:'Writing (final) \u2014 '+x.title,score:ticks,max:YLW_PEER.length,percent:Math.round(ticks/YLW_PEER.length*100),detail:wc+' words'}); }catch(e){} }
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Writing (final) \u2014 '+x.title,score:ticks,max:YLW_PEER.length,percent:Math.round(ticks/YLW_PEER.length*100),detail:wc+' words'}); }catch(e){} }
 }
 
 ROUTES.ylDesign=function(){
   try{speechSynthesis.cancel();}catch(e){}
   const tasks=YL_EXAM.filter(t=>t.sk==='Design' || t.id==='e9');
-  const rows=tasks.map(t=>`<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">${t.icon}</div><div style="flex:1"><span class="genre-tag">${t.sk}</span> <b>${t.title}</b><div class="meta">🎯 ${t.obj} ${typeof doneTag==='function'?doneTag('Young Learners',t.title):''}</div></div><button class="btn sm" onclick="go('ylExamTask','${t.id}')">Start →</button></div>`).join('');
+  const rows=tasks.map(t=>`<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">${t.icon}</div><div style="flex:1"><span class="genre-tag">${t.sk}</span> <b>${t.title}</b><div class="meta">🎯 ${t.obj} ${typeof doneTag==='function'?doneTag('Foundational',t.title):''}</div></div><button class="btn sm" onclick="go('ylExamTask','${t.id}')">Start →</button></div>`).join('');
   app().innerHTML=`
   <div class="wrap screen">
-    <button class="back" onclick="go('ylhub')">← Young Learners</button>
+    <button class="back" onclick="go('ylhub')">← Foundational</button>
     <div class="stem-kicker" style="color:#8B5CF6">Designing · design to build</div>
     <h1 style="font-size:1.9rem">🔧 Designing</h1>
     <p style="color:var(--muted);max-width:680px">Read a brief, then design and build something from it. Plan it in writing, draw it in the Drawing Pad, and upload your artefact — a real Read → Write → Design loop.</p>
@@ -16378,6 +16384,150 @@ ROUTES.ylDesign=function(){
     <div style="margin-top:10px"><button class="btn ghost" onclick="ylDrawPad()">🎨 Open Drawing Pad</button></div>
   </div>`;
 };
+
+/* ============================================================================
+   FOUNDATIONAL GRAMMAR \u2014 Connect \u00b7 Study \u00b7 Test
+   The maze on its own tests a rule it never taught. These three phases put the
+   teaching back in front of it:
+     1 CONNECT  \u2014 2 quick questions on what they already half-know. No rule yet:
+                   the point is to make the gap felt before it is filled.
+     2 STUDY    \u2014 the rule itself, in two or three plain sentences.
+     3 TEST     \u2014 the maze, unchanged.
+   Connect is not scored. It is a door, not a gate \u2014 a wrong answer explains
+   itself and moves on, because a learner who is punished for not yet knowing
+   the rule learns only to stop guessing.
+   ========================================================================== */
+let MZ_PHASE = 1, MZ_ID = null, MZ_DRAGPICK = null;
+
+function mzGoPhase(n){
+  MZ_PHASE = n;
+  ['mzP1','mzP2','mzP3'].forEach((k,i)=>{ const el=document.getElementById(k); if(el) el.style.display = (i+1===n)?'':'none'; });
+  for(let i=1;i<=3;i++){
+    const t=document.getElementById('mzStep'+i);
+    if(t){ t.classList.toggle('on', i===n); t.classList.toggle('done', i<n); }
+  }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function mzConnectHTML(mz){
+  if(!mz.connect || !mz.connect.length) return '';
+  return mz.connect.map((q,i)=>{
+    let inner='';
+    if(q.t==='mcq'){
+      inner = `<div class="mzc-opts">${q.o.map((o,j)=>
+        `<button type="button" class="mzc-opt" onclick="mzcMcq(this,${i},${j},${q.a})"><span class="mz-tag">${'abc'[j]}</span>${esc(o)}</button>`).join('')}</div>`;
+    } else if(q.t==='gap'){
+      inner = `<div class="mzc-gapwrap">
+        <input class="mzc-in" id="mzcIn${i}" placeholder="type your answer" autocomplete="off"
+               onkeydown="if(event.key==='Enter')mzcGap(${i},'${esc(q.a).replace(/'/g,"\\'")}')">
+        <button type="button" class="btn sm teal" onclick="mzcGap(${i},'${esc(q.a).replace(/'/g,"\\'")}')">Check</button>
+      </div>`;
+    } else if(q.t==='drag'){
+      inner = `<div class="mzc-chips" id="mzcChips${i}">${q.chips.map(c=>
+        `<button type="button" class="mzc-chip" draggable="true"
+           ondragstart="MZ_DRAGPICK='${esc(c)}'" onclick="mzcPickChip(this,'${esc(c)}')">${esc(c)}</button>`).join('')}</div>
+        <div class="mzc-slots">${q.slots.map((sl,k)=>
+        `<div class="mzc-slot" ondragover="event.preventDefault()"
+              ondrop="event.preventDefault();mzcDrop(${i},${k},'${esc(sl.a).replace(/'/g,"\\'")}',MZ_DRAGPICK)"
+              onclick="mzcDrop(${i},${k},'${esc(sl.a).replace(/'/g,"\\'")}',MZ_DRAGPICK)">
+           <span class="mzc-slot-t">${sl.s.replace('___','<b class="mzc-blank" id="mzcSlot'+i+'_'+k+'">____</b>')}</span>
+         </div>`).join('')}</div>`;
+    }
+    return `<div class="mzc-q" id="mzcQ${i}">
+      <p class="mzc-qt"><b>${i+1}.</b> ${q.q}</p>
+      ${inner}
+      <p class="mzc-why" id="mzcWhy${i}">${q.why||''}</p>
+    </div>`;
+  }).join('');
+}
+function mzcReveal(i, ok){
+  const w=document.getElementById('mzcWhy'+i); if(w){ w.classList.add('show'); w.classList.toggle('ok', !!ok); }
+}
+function mzcMcq(btn, i, chosen, ans){
+  const box=document.getElementById('mzcQ'+i); if(!box) return;
+  box.querySelectorAll('.mzc-opt').forEach(b=>b.disabled=true);
+  btn.classList.add(chosen===ans?'right':'wrong');
+  if(chosen!==ans){ const opts=box.querySelectorAll('.mzc-opt'); if(opts[ans]) opts[ans].classList.add('right'); }
+  mzcReveal(i, chosen===ans);
+}
+function mzcGap(i, ans){
+  const el=document.getElementById('mzcIn'+i); if(!el) return;
+  const ok = el.value.trim().toLowerCase().replace(/\s+/g,' ') === String(ans).trim().toLowerCase();
+  el.classList.remove('right','wrong'); el.classList.add(ok?'right':'wrong');
+  if(!ok) el.value = ans;
+  el.disabled = true;
+  mzcReveal(i, ok);
+}
+function mzcPickChip(btn, val){
+  MZ_DRAGPICK = val;
+  const wrap = btn.parentElement;
+  wrap.querySelectorAll('.mzc-chip').forEach(c=>c.classList.remove('picked'));
+  btn.classList.add('picked');
+}
+function mzcDrop(i, k, ans, val){
+  if(!val) return;
+  const slot=document.getElementById('mzcSlot'+i+'_'+k); if(!slot) return;
+  const ok = String(val).trim().toLowerCase() === String(ans).trim().toLowerCase();
+  slot.textContent = val;
+  slot.classList.remove('right','wrong'); slot.classList.add(ok?'right':'wrong');
+  if(!ok) setTimeout(()=>{ slot.textContent = ans; slot.classList.remove('wrong'); slot.classList.add('right'); }, 900);
+  MZ_DRAGPICK = null;
+  const box=document.getElementById('mzcQ'+i);
+  if(box) box.querySelectorAll('.mzc-chip').forEach(c=>c.classList.remove('picked'));
+  const all=[...document.querySelectorAll('#mzcQ'+i+' .mzc-blank')];
+  if(all.every(b=>b.classList.contains('right')||b.classList.contains('wrong'))) mzcReveal(i, true);
+}
+function mzStudyHTML(mz){
+  if(!mz.study || !mz.study.length) return '';
+  return `<div class="mzs-card">
+    <div class="mzs-head"><span>\ud83c\udfaf</span><b>${esc(mz.focus)}</b></div>
+    <ol class="mzs-list">${mz.study.map(x=>`<li>${x}</li>`).join('')}</ol>
+    <p class="mzs-foot">Read it once. Then try the maze \u2014 you can come back to this page at any time.</p>
+  </div>`;
+}
+const MZ_PHASE_CSS = `<style>
+.mz-steps{display:flex;gap:6px;margin:10px 0 14px}
+.mz-step{flex:1;display:flex;align-items:center;gap:7px;border:1.5px solid var(--line,#dfd9c9);border-radius:10px;padding:7px 10px;background:#fff;cursor:pointer;transition:.15s}
+.mz-step b{display:block;font-size:.84rem}
+.mz-step small{display:block;font-size:.68rem;color:var(--muted,#6b6b6b)}
+.mz-step .n{flex:none;width:22px;height:22px;border-radius:50%;background:#c9ccd8;color:#fff;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700}
+.mz-step.on{border-color:#0f766e;background:linear-gradient(180deg,#f2fbf8,#e8f7f1)}
+.mz-step.on .n{background:#0f766e}
+.mz-step.done .n{background:#2BA84F}
+.mz-step.done .n:after{content:'\\2713';font-size:.7rem}
+.mz-step.done .n{font-size:0}
+.mzc-q{border:1px solid var(--line,#dfd9c9);border-radius:12px;padding:12px 14px;margin-bottom:10px;background:#fff}
+.mzc-qt{margin:0 0 9px;font-size:.98rem;line-height:1.5}
+.mzc-opts{display:flex;flex-direction:column;gap:6px}
+.mzc-opt{text-align:left;border:1.5px solid var(--line,#dfd9c9);border-radius:9px;padding:9px 11px;background:#fbfaf6;font-size:.92rem;cursor:pointer}
+.mzc-opt:hover:not(:disabled){border-color:#0f766e}
+.mzc-opt:disabled{cursor:default;opacity:.75}
+.mzc-opt.right{background:#e9f9ef;border-color:#2BA84F;opacity:1}
+.mzc-opt.wrong{background:#fdeeee;border-color:#E0403F;opacity:1}
+.mzc-gapwrap{display:flex;gap:7px}
+.mzc-in{flex:1;border:1.5px solid var(--line,#dfd9c9);border-radius:9px;padding:9px 11px;font:inherit;font-size:.92rem}
+.mzc-in.right{background:#e9f9ef;border-color:#2BA84F}
+.mzc-in.wrong{background:#fdeeee;border-color:#E0403F}
+.mzc-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
+.mzc-chip{border:1.5px dashed #7A2FD0;color:#7A2FD0;background:#faf6ff;border-radius:20px;padding:6px 13px;font-size:.88rem;font-weight:600;cursor:grab}
+.mzc-chip.picked{background:#7A2FD0;color:#fff;border-style:solid}
+.mzc-slots{display:flex;flex-direction:column;gap:6px}
+.mzc-slot{border:1px solid var(--line,#dfd9c9);border-radius:9px;padding:9px 11px;background:#fbfaf6;font-size:.92rem;cursor:pointer}
+.mzc-slot:hover{border-color:#7A2FD0}
+.mzc-blank{display:inline-block;min-width:64px;text-align:center;border-bottom:2px dashed #b9bccd;color:#b9bccd}
+.mzc-blank.right{border-bottom-color:#2BA84F;color:#2BA84F}
+.mzc-blank.wrong{border-bottom-color:#E0403F;color:#E0403F}
+.mzc-why{margin:9px 0 0;font-size:.82rem;color:var(--muted,#6b6b6b);font-style:italic;max-height:0;overflow:hidden;opacity:0;transition:.2s}
+.mzc-why.show{max-height:80px;opacity:1}
+.mzc-why.ok{color:#0f766e}
+.mzs-card{border:1.5px solid #0f766e;border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,#f7fdfb,#eef8f5)}
+.mzs-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:1.05rem}
+.mzs-list{margin:0;padding-left:20px}
+.mzs-list li{margin-bottom:9px;line-height:1.6;font-size:.96rem}
+.mzs-foot{margin:12px 0 0;font-size:.8rem;color:var(--muted,#6b6b6b);font-style:italic}
+.mz-nav{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+@media(max-width:560px){.mz-steps{flex-direction:column}.mz-step small{display:none}}
+</style>`;
 
 ROUTES.ylMazeRun=function(id){
   const mz=YL_MAZE.find(x=>x.id===id); if(!mz){go('ylMaze');return;}
@@ -16393,7 +16543,9 @@ ROUTES.ylMazeRun=function(id){
     }
   });
   const labelOf={'5\u20136':'Grade 5\u20136','7':'Grade 7','8':'Grade 8'};
-  app().innerHTML=MZ_STYLE+`
+  MZ_ID=id; MZ_PHASE=1; MZ_DRAGPICK=null;
+  const hasTeach = !!(mz.connect && mz.connect.length) || !!(mz.study && mz.study.length);
+  app().innerHTML=MZ_STYLE+MZ_PHASE_CSS+`
   <div class="wrap screen">
     <button class="back" onclick="go('ylMaze')">\u2190 All mazes</button>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:2px">
@@ -16403,10 +16555,33 @@ ROUTES.ylMazeRun=function(id){
     </div>
     <h1 style="font-size:1.7rem;margin:2px 0">\ud83e\udde9 ${esc(mz.title)}</h1>
     <p style="color:var(--muted);margin:0 0 12px">${esc(mz.intro)}</p>
+
+    ${hasTeach?`<div class="mz-steps">
+      <div class="mz-step on" id="mzStep1" onclick="mzGoPhase(1)"><span class="n">1</span><span><b>Connect</b><small>what you already know</small></span></div>
+      <div class="mz-step" id="mzStep2" onclick="mzGoPhase(2)"><span class="n">2</span><span><b>Study</b><small>the rule</small></span></div>
+      <div class="mz-step" id="mzStep3" onclick="mzGoPhase(3)"><span class="n">3</span><span><b>Test</b><small>the maze</small></span></div>
+    </div>`:''}
+
+    ${hasTeach?`<div id="mzP1">
+      <p style="font-size:.88rem;color:var(--muted);margin:0 0 10px"><b>Before the rule.</b> Answer from instinct — these are not scored, and a wrong answer tells you exactly what to look for on the next page.</p>
+      ${mzConnectHTML(mz)}
+      <div class="mz-nav"><button class="btn teal" onclick="mzGoPhase(2)">Next · Study the rule →</button>
+        <button class="btn ghost" onclick="mzGoPhase(3)">Skip to the maze</button></div>
+    </div>
+
+    <div id="mzP2" style="display:none">
+      ${mzStudyHTML(mz)}
+      <div class="mz-nav"><button class="btn" onclick="mzGoPhase(3)">Next · Take the maze →</button>
+        <button class="btn ghost" onclick="mzGoPhase(1)">← Back to Connect</button></div>
+    </div>`:''}
+
+    <div id="mzP3" ${hasTeach?'style="display:none"':''}>
     <div class="card"><div id="mzText" class="mz-text">${body}</div></div>
     <div style="display:flex;gap:8px;margin-top:12px">
       <button id="mzSubmitBtn" class="btn" onclick="mzSubmit('${mz.id}')">Submit \u2713</button>
       <button class="btn ghost" onclick="go('ylMaze')">\u2190 Back to mazes</button>
+    </div>
+    ${hasTeach?`<p class="tools-note" style="margin-top:10px">Stuck? <a onclick="mzGoPhase(2)" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">Re-read the rule</a> — going back is not cheating.</p>`:''}
     </div>
     <div id="mzRes" style="margin-top:12px"></div>
   </div>`;
@@ -16424,7 +16599,7 @@ function mzSubmit(id){
   const res=document.getElementById('mzRes');
   if(res) res.innerHTML='<div class="scorebox"><div class="big">'+face+'</div><div><b>'+s+' / '+m+'</b> correct ('+pct+'%). Grammar focus: <b>'+esc(mz.focus)+'</b>. Green shows the key answer at each gap.</div></div>';
   const btn=document.getElementById('mzSubmitBtn'); if(btn){ btn.disabled=true; btn.textContent='\u2713 Submitted'; }
-  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Young Learners',activity:'Grammar Maze \u2014 '+mz.title,score:s,max:m,percent:pct,detail:mz.focus+' \u00b7 Grade '+mz.grade}); }catch(e){} }
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Grammar Maze \u2014 '+mz.title,score:s,max:m,percent:pct,detail:mz.focus+' \u00b7 Grade '+mz.grade}); }catch(e){} }
 }
 
 /* ================= YL ENGINE =================  */
@@ -16494,7 +16669,7 @@ function ylZoomBox(id,d){ const el=document.getElementById(id); if(!el) return; 
 function ylPrint(title,inner){
   const w=window.open('','ylprint','width=900,height=700'); if(!w){ alert('Please allow pop-ups to print.'); return; }
   w.document.write('<html><head><title>'+title+'</title><style>body{font-family:Georgia,serif;padding:28px;color:#222;max-width:720px;margin:auto}h1{font-size:20pt;color:#15183A}.ln{border-bottom:1.5px solid #999;display:inline-block;min-width:180px}.q{margin:14px 0}.meta{color:#666;font-size:10pt}.box{border:1.5px solid #999;border-radius:8px;min-height:90px;margin:8px 0}@media print{button{display:none}}</style></head><body>'+
-  '<h1>iCAN Young Learners · '+title+'</h1><p class="meta">Name: <span class="ln"></span> &nbsp; Class: <span class="ln" style="min-width:90px"></span> &nbsp; Date: <span class="ln" style="min-width:110px"></span></p>'+inner+
+  '<h1>iCAN Foundational · '+title+'</h1><p class="meta">Name: <span class="ln"></span> &nbsp; Class: <span class="ln" style="min-width:90px"></span> &nbsp; Date: <span class="ln" style="min-width:110px"></span></p>'+inner+
   '<p class="meta" style="margin-top:24px">© iCAN Academy — Read it. Write it. Design it.</p><button onclick="window.print()">🖨️ Print / Save as PDF</button></body></html>');
   w.document.close();
 }
@@ -16533,7 +16708,7 @@ ROUTES.ylhub=function(){
     <button class="back" onclick="go('dashboard')">← Home</button>
     <div class="yl-hero"><div>
       <div class="stem-kicker" style="color:#ffe39a">iCAN Academy · Grades 1–8</div>
-      <h1 style="color:#fff;margin:4px 0">🧒 Young Learners World</h1>
+      <h1 style="color:#fff;margin:4px 0">🧒 Foundational Course</h1>
       <p style="margin:0;opacity:.95;max-width:660px">Choose where to go. Every component runs on one powerful idea — the <b>RWD loop</b>: read to discover, write to explain, design to build, then loop back and have fun.</p></div>
       <div class="stem-hero-stats"><div><b>${YL_READERS.length}</b><span>picture<br>readers</span></div><div><b>${YL_MAZE.length}</b><span>grammar<br>mazes</span></div><div><b>5</b><span>learning<br>zones</span></div><div><b>🎮</b><span>game after<br>every read</span></div></div>
     </div>
@@ -16599,7 +16774,7 @@ function ylSpellBee(readerId){
   if(words.length<3){ cand.forEach(w=>{ w=(w||'').toLowerCase().trim(); if(!w||words.some(x=>x.word===w))return; const d=(typeof YL_DICT!=='undefined')?YL_DICT[w]:null; if(d&&d.def) words.push({word:w,pos:d.pos||'',def:d.def,ex:d.ex||''}); }); }
   const list=words.slice(0,8);
   if(!list.length){ alert('Spelling words for this reader are coming soon.'); return; }
-  YL_BEE={r:r,label:r.title,skill:'Young Learners',list:list,i:0,attempt:1,score:0,timer:null,left:20}; ylBeeRender();
+  YL_BEE={r:r,label:r.title,skill:'Foundational',list:list,i:0,attempt:1,score:0,timer:null,left:20}; ylBeeRender();
 }
 /* Generic Spelling Bee launcher — any module can feed it a word list.
    list items: {word, def, pos?, ex?} */
@@ -16635,7 +16810,7 @@ function ylBeeFinish(){
   if(!YL_BEE)return; if(YL_BEE.timer)clearInterval(YL_BEE.timer);
   const n=YL_BEE.list.length, s=YL_BEE.score, pct=Math.round(s/n*100); const face=pct>=80?'\ud83c\udf1f':(pct>=50?'\ud83d\udc4d':'\ud83d\udcaa');
   const label=YL_BEE.label||((YL_BEE.r&&YL_BEE.r.title)||'');
-  const skill=YL_BEE.skill||'Young Learners';
+  const skill=YL_BEE.skill||'Foundational';
   const card=document.getElementById('ylBeeCard'); if(card) card.innerHTML='<div style="text-align:center"><div style="font-size:3rem">'+face+'</div><h2 style="margin:6px 0">'+s+' / '+n+' correct</h2><p style="color:var(--muted);margin:0 0 12px">Spelling Bee \u2014 '+esc(label)+'</p><button class="btn" onclick="ylBeeClose()">Done</button></div>';
   if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:skill,activity:'Spelling Bee \u2014 '+label,score:s,max:n,percent:pct,detail:'key vocabulary'}); }catch(e){} }
 }
@@ -16662,7 +16837,7 @@ function ylBeeRender(){
 function ylCReadListHTML(){
   if(typeof YL_CREAD==='undefined'||!YL_CREAD.length) return '';
   const groups=[['A','Level A \u00b7 A1\u2013A2','#3a9d8a'],['B','Level B \u00b7 B1\u2013B2','#5B8DEF'],['C','Level C \u00b7 C1\u2013C2','#8B5CF6']];
-  const card=x=>'<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">'+x.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+x.lv+'">'+x.lv+'</span> <span class="genre-tag">'+esc(x.unit)+'</span> <b>'+esc(x.title)+'</b><div class="meta"> '+esc(x.meta.genre)+' \u00b7 '+esc(x.meta.lexile)+' \u00b7 '+esc(x.meta.skill)+' '+(typeof doneTag==="function"?doneTag("Young Learners","Reading \u2014 "+x.title):"")+'</div></div><button class="btn sm" onclick="go(\'ylCReadRun\',\''+x.id+'\')">Open \u2192</button></div>';
+  const card=x=>'<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">'+x.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+x.lv+'">'+x.lv+'</span> <span class="genre-tag">'+esc(x.unit)+'</span> <b>'+esc(x.title)+'</b><div class="meta"> '+esc(x.meta.genre)+' \u00b7 '+esc(x.meta.lexile)+' \u00b7 '+esc(x.meta.skill)+' '+(typeof doneTag==="function"?doneTag("Foundational","Reading \u2014 "+x.title):"")+'</div></div><button class="btn sm" onclick="go(\'ylCReadRun\',\''+x.id+'\')">Open \u2192</button></div>';
   let out='<h2 class="stem-h2" style="margin-top:20px"> Reading for the World <span style="font-weight:400;color:var(--muted);font-size:.92rem">\u2014 full-apparatus readings, each with a design task</span></h2>';
   groups.forEach(g=>{ const items=YL_CREAD.filter(x=>x.lv===g[0]); if(!items.length) return; out+='<h3 class="sub" style="margin-top:12px;border-left:4px solid '+g[2]+';padding-left:8px">'+g[1]+'</h3><div class="grid c2">'+items.map(card).join('')+'</div>'; });
   return out;
@@ -16736,7 +16911,7 @@ function ylCReadSubmit(id){
   const _el=Math.floor((Date.now()-(YL_CT0||Date.now()))/1000); const mmss=Math.floor(_el/60)+':'+String(_el%60).padStart(2,'0'); clearInterval(YL_CTIMER);
   const pct=m?Math.round(s/m*100):0; const face=pct>=80?'🌟':(pct>=50?'👍':'💪');
   const r=document.getElementById('creadRes'); if(r) r.innerHTML='<div class="scorebox"><div class="big">'+face+'</div><div><b>'+s+' / '+m+'</b> ('+pct+'%) · ⏱ you spent '+mmss+'. Green shows the answer key; both knowledge ideas count when filled. Your written answers are for discussion — compare them with a partner and the text.</div></div>';
-  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Young Learners',activity:'Reading — '+x.title,score:s,max:m,percent:pct,detail:'C-level · '+x.meta.genre}); }catch(e){} }
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Reading — '+x.title,score:s,max:m,percent:pct,detail:'C-level · '+x.meta.genre}); }catch(e){} }
 }
 function ylCReadBee(id){
   const x=YL_CREAD.find(r=>r.id===id); if(!x) return;
@@ -16792,7 +16967,7 @@ function ylReaderSubmit(id,mode){
   if(ext){ const w=stemWordCount(val('ylShort')); m+=2; if(w>=30){s+=2; extra=' · short answer ✓ ('+w+' words)';} else if(w>0){s+=1; extra=' · short answer: aim for 30+ words (you have '+w+')';} else extra=' · short answer missing'; }
   const pct=Math.round(s/m*100);
   document.getElementById('ylRes').innerHTML='<div class="scorebox"><div class="big">'+(pct>=80?'🌟':pct>=50?'👍':'💪')+'</div><div>'+s+'/'+m+' ('+pct+'%)'+extra+'</div></div>';
-  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Young Learners',activity:r.title+(ext?' (extended)':''),score:s,max:m,percent:pct,detail:r.obj}); }catch(e){} }
+  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:r.title+(ext?' (extended)':''),score:s,max:m,percent:pct,detail:r.obj}); }catch(e){} }
 }
 function ylPrintReader(id,mode){
   const r=YL_READERS.find(x=>x.id===id); const ext=mode==='ext'; const v=ext?r.ext:r.std;
@@ -16808,7 +16983,7 @@ ROUTES.ylMM=function(id){
   const m=YL_MM.find(x=>x.id===id); if(!m){go('ylhub');return;}
   app().innerHTML=`
   <div class="wrap screen">
-    <button class="back" onclick="go('ylhub')">← Young Learners</button>
+    <button class="back" onclick="go('ylhub')">← Foundational</button>
     <span class="genre-tag">${m.mode} — multimodal literacy — visual + verbal</span>
     <h1 style="font-size:1.8rem">${m.icon} ${m.title}</h1>
     <p class="note">🎯 <b>Objective:</b> ${m.obj}</p>
@@ -16822,7 +16997,7 @@ ROUTES.ylMM=function(id){
 function ylMMSubmit(id){
   const m=YL_MM.find(x=>x.id===id); const r=ylCheckSet('ylQuiz'); const pct=Math.round(r.s/r.m*100);
   document.getElementById('ylRes').innerHTML='<div class="scorebox"><div class="big">'+(pct>=80?'🌟':'👍')+'</div><div>'+r.s+'/'+r.m+' — multimodal detective!</div></div>';
-  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Young Learners',activity:'Multimodal: '+m.title,score:r.s,max:r.m,percent:pct,detail:m.obj}); }catch(e){} }
+  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Multimodal: '+m.title,score:r.s,max:r.m,percent:pct,detail:m.obj}); }catch(e){} }
 }
 
 ROUTES.ylMini=function(){
@@ -16830,7 +17005,7 @@ ROUTES.ylMini=function(){
   const item=YL_MINI[i]; const open=item[1]==='OPEN';
   app().innerHTML=`
   <div class="wrap screen">
-    <button class="back" onclick="go('ylhub')">← Young Learners</button>
+    <button class="back" onclick="go('ylhub')">← Foundational</button>
     <h1 style="font-size:1.8rem">⚡ Mini-Quiz ${i+1} <span style="font-size:1rem;color:var(--muted)">of ${YL_MINI.length}</span></h1>
     <span class="genre-tag">${item[2]}</span>
     <div class="card" style="margin-top:10px;font-size:1.1rem"><b>${item[0]}</b>
@@ -16846,7 +17021,7 @@ function ylMiniCheck(i){
   if(item[1]==='OPEN'){ ok=vraw.split(/\s+/).filter(Boolean).length>=1 && vraw.length>=3; }
   else ok=item[1].some(a=>vraw===a.toLowerCase());
   fb.innerHTML=ok?'<div class="feedback good">✓ '+(item[1]==='OPEN'?'Great idea — designers say yes first!':'Correct!')+'</div>':'<div class="feedback">Answer: <b>'+(item[1]==='OPEN'?'any idea works — try a word or two!':item[1][0])+'</b></div>';
-  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Young Learners',activity:'Mini-quiz '+(i+1),score:ok?1:0,max:1,percent:ok?100:0,detail:item[2]}); }catch(e){} }
+  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Mini-quiz '+(i+1),score:ok?1:0,max:1,percent:ok?100:0,detail:item[2]}); }catch(e){} }
   const st=Store.get('ican_ylmini')||{}; st[sid&&sid()]=i+1; Store.set('ican_ylmini',st);
   setTimeout(()=>go('ylMini'), ok?900:2200);
 }
@@ -16854,7 +17029,7 @@ function ylMiniCheck(i){
 ROUTES.ylExam=function(){
   app().innerHTML=`
   <div class="wrap screen">
-    <button class="back" onclick="go('ylhub')">← Young Learners</button>
+    <button class="back" onclick="go('ylhub')">← Foundational</button>
     <h1 style="font-size:1.9rem">🎯 Exam Practice</h1>
     <p style="color:var(--muted);max-width:700px">Every task names its <b>objective</b> and its <b>rubric</b>, works online, and prints as a PDF worksheet. Listening tasks read the audio aloud to you.</p>
     <div class="grid c2" style="margin-top:12px">${YL_EXAM.map(t=>`<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">${t.icon}</div><div style="flex:1"><span class="genre-tag">${t.sk}</span> <b>${t.title}</b><div class="meta">🎯 ${t.obj}</div></div><button class="btn sm" onclick="go('ylExamTask','${t.id}')">Start →</button></div>`).join('')}</div>
@@ -16883,17 +17058,17 @@ ROUTES.ylExamTask=function(id){
 function ylExamCheck(id){
   const t=YL_EXAM.find(x=>x.id===id); const r=ylCheckSet('ylQuiz'); const pct=Math.round(r.s/r.m*100);
   document.getElementById('ylRes').innerHTML='<div class="scorebox"><div class="big">'+(pct>=80?'🌟':'👍')+'</div><div>'+r.s+'/'+r.m+' — '+t.rub+'</div></div>';
-  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Young Learners',activity:t.title,score:r.s,max:r.m,percent:pct,detail:t.obj}); }catch(e){} }
+  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:t.title,score:r.s,max:r.m,percent:pct,detail:t.obj}); }catch(e){} }
 }
 function ylExamWrite(id){
   const t=YL_EXAM.find(x=>x.id===id); const w=stemWordCount(val('ylEW'));
   const ok=w>=30; document.getElementById('ylRes').innerHTML='<div class="scorebox"><div class="big">'+(ok?'🌟':'💪')+'</div><div>'+w+' words — '+(ok?'target met! Now self-mark with the rubric above.':'aim for 30+ words; add one example.')+'</div></div>';
-  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Young Learners',activity:t.title,score:ok?3:1,max:3,percent:ok?100:33,words:w,detail:t.obj}); }catch(e){} }
+  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:t.title,score:ok?3:1,max:3,percent:ok?100:33,words:w,detail:t.obj}); }catch(e){} }
 }
 function ylExamSpeak(id){
   const t=YL_EXAM.find(x=>x.id===id);
   document.getElementById('ylRes').innerHTML='<div class="scorebox"><div class="big">🗣️</div><div>Practice recorded — speaking grows every time you say it aloud!</div></div>';
-  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Young Learners',activity:t.title,score:1,max:1,percent:100,detail:t.obj}); }catch(e){} }
+  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:t.title,score:1,max:1,percent:100,detail:t.obj}); }catch(e){} }
 }
 function ylPrintExam(id){
   const t=YL_EXAM.find(x=>x.id===id); let inner='<h2>'+t.icon+' '+t.title+'</h2><p class="meta">🎯 '+t.obj+'<br>📊 '+t.rub+'</p>';
@@ -16915,7 +17090,7 @@ ROUTES.ylArcade=function(){
   ['📚 Book Creator','Make real e-books with pages, audio and drawings — the grown-up cousin of our Flipbook Maker.','bookcreator.com']];
   app().innerHTML=`
   <div class="wrap screen">
-    <button class="back" onclick="go('ylhub')">← Young Learners</button>
+    <button class="back" onclick="go('ylhub')">← Foundational</button>
     <h1 style="font-size:1.9rem">🎮 Game Arcade</h1>
     <h3 class="sub">Built-in games — pick a reader, play its game</h3>
     <p style="color:var(--muted);font-size:.88rem;margin:2px 0 8px">Games open in their own big window: colours, movement, and a ⛶ full-screen button inside.</p>
@@ -17046,48 +17221,238 @@ function ylGamePop(r){
 
 /* ---------- Flipbook Maker & Drawing Pad (pop-up studios) ---------- */
 function ylStudioDoc(w,title,flip){
-  w.document.write('<html><head><title>'+title+'</title>'+
-  '<scr'+'ipt src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></scr'+'ipt>'+
-  '<style>body{margin:0;font-family:Lexend,Verdana,sans-serif;background:#2a2250;color:#fff;height:100vh;display:flex;flex-direction:column}'+
-  '#bar{display:flex;gap:8px;align-items:center;padding:10px 14px;background:rgba(0,0,0,.3);flex-wrap:wrap}'+
-  '#bar button,#bar select{border:none;border-radius:999px;padding:7px 14px;font-weight:700;cursor:pointer;background:#fff;color:#222}'+
-  '#bar .gold{background:#FFD23F}.pgwrap{flex:1;display:flex;align-items:center;justify-content:center;perspective:1200px}'+
-  '#page{background:#fff;color:#222;width:min(92vw,640px);border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.5);padding:14px;transition:transform .45s}'+
-  '#page.flip{transform:rotateY(88deg)}#pt{width:100%;border:none;font-size:1.15rem;font-weight:700;outline:none;font-family:inherit}'+
-  '#cv{border:2px dashed #ccc;border-radius:10px;touch-action:none;width:100%;display:block}#pn{color:#ffe39a;font-weight:800;padding:0 8px}</style></head><body>'+
-  '<div id="bar"><b>'+title+'</b>'+(flip?'<button onclick="P.prev()">◀</button><span id="pn">1/1</span><button onclick="P.next()">▶</button><button class="gold" onclick="P.add()">➕ Page</button>':'')+
-  '<select id="col"><option value="#15183A">navy</option><option value="#e6464b">red</option><option value="#0FA98B">teal</option><option value="#8B5CF6">purple</option><option value="#F5A301">orange</option></select>'+
-  '<select id="sz"><option value="3">thin</option><option value="6" selected>pen</option><option value="12">marker</option></select>'+
-  '<button onclick="P.clearPg()">🧽 Clear</button><button class="gold" onclick="P.pdf()">📄 Export PDF</button>'+(flip?'<button class="gold" onclick="P.submit()">✅ Submit</button>':'')+
-  '<button onclick="document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()">⛶</button><button onclick="window.close()">✖</button></div>'+
-  '<div class="pgwrap"><div id="page">'+(flip?'<input id="pt" placeholder="Page title / your sentence here…">':'')+'<canvas id="cv" width="600" height="'+(flip?360:430)+'"></canvas></div></div>'+
-  '<scr'+'ipt>var P=(function(){var cv=document.getElementById("cv"),cx=cv.getContext("2d"),pt=document.getElementById("pt");'+
-  'function blank(){var c=document.createElement("canvas");c.width=600;c.height='+(flip?360:430)+';c.getContext("2d").fillStyle="#fff";c.getContext("2d").fillRect(0,0,600,'+(flip?360:430)+');return c;}'+
-  'var pages=[{t:"",c:blank()}],cur=0;function load(){cx.drawImage(pages[cur].c,0,0);if(pt)pt.value=pages[cur].t;var pn=document.getElementById("pn");if(pn)pn.textContent=(cur+1)+"/"+pages.length;}'+
-  'function save(){var c=pages[cur].c;c.getContext("2d").clearRect(0,0,600,'+(flip?360:430)+');c.getContext("2d").drawImage(cv,0,0);if(pt)pages[cur].t=pt.value;}'+
-  'cx.fillStyle="#fff";cx.fillRect(0,0,600,'+(flip?360:430)+');var draw=false;'+
-  'function pos(e){var r=cv.getBoundingClientRect();var t=e.touches?e.touches[0]:e;return {x:(t.clientX-r.left)*600/r.width,y:(t.clientY-r.top)*'+(flip?360:430)+'/r.height};}'+
-  'function st(e){draw=true;var p=pos(e);cx.beginPath();cx.moveTo(p.x,p.y);e.preventDefault();}'+
-  'function mv(e){if(!draw)return;var p=pos(e);cx.lineCap="round";cx.lineWidth=+document.getElementById("sz").value;cx.strokeStyle=document.getElementById("col").value;cx.lineTo(p.x,p.y);cx.stroke();e.preventDefault();}'+
-  'function en(){draw=false;save();}cv.addEventListener("mousedown",st);cv.addEventListener("mousemove",mv);window.addEventListener("mouseup",en);'+
-  'cv.addEventListener("touchstart",st);cv.addEventListener("touchmove",mv);cv.addEventListener("touchend",en);'+
-  'function anim(fn){var pg=document.getElementById("page");pg.classList.add("flip");setTimeout(function(){fn();pg.classList.remove("flip");},450);}'+
-  'return {add:function(){save();anim(function(){pages.push({t:"",c:blank()});cur=pages.length-1;load();});},'+
-  'next:function(){if(cur>=pages.length-1)return;save();anim(function(){cur++;load();});},'+
-  'prev:function(){if(cur<=0)return;save();anim(function(){cur--;load();});},'+
-  'clearPg:function(){cx.fillStyle="#fff";cx.fillRect(0,0,600,'+(flip?360:430)+');save();},'+
-  'pdf:function(){save();if(!(window.jspdf&&window.jspdf.jsPDF)){alert("PDF library still loading — try again in a second.");return;}'+
-  'var d=new window.jspdf.jsPDF("l","pt",[640,'+(flip?'460':'470')+']);pages.forEach(function(p,i){if(i)d.addPage();d.setFillColor(255,255,255);d.rect(0,0,640,470,"F");'+
-  'd.setFontSize(16);d.setTextColor(21,24,58);d.text(p.t||" ",20,30);d.addImage(p.c.toDataURL("image/jpeg",0.9),"JPEG",20,44,600,'+(flip?'360':'414')+');'+
-  'd.setFontSize(9);d.setTextColor(150);d.text("iCAN Young Learners — page "+(i+1),20,'+(flip?'452':'466')+');});d.save("my_flipbook.pdf");},'+
-  'submit:function(){save();try{window.opener.ylFlipSubmit(pages.length);alert("Submitted! "+pages.length+" pages recorded. Now export the PDF to share it.");}catch(e){alert("Open this from iCAN to submit.");}},'+
-  'load:load};})();P.load();</scr'+'ipt></body></html>');
+  /* Creation studio for the Foundational Course.
+     Tools: pen / brush / marker / eraser, text (font, size, colour),
+     image upload, camera photo, voice recording, video recording, undo.
+     Everything visual is composited onto the canvas so it survives the PDF.
+     Voice and video cannot live inside a PDF, so they download as separate
+     files and are logged on the page as a caption \u2014 stated, not pretended. */
+  const W = 600, H = flip ? 360 : 430;
+  w.document.write(`<html><head><title>${title}</title><meta name="viewport" content="width=device-width,initial-scale=1">
+<scr`+`ipt src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></scr`+`ipt>
+<style>
+ body{margin:0;font-family:Lexend,Verdana,sans-serif;background:#2a2250;color:#fff;min-height:100vh;display:flex;flex-direction:column}
+ #bar{display:flex;gap:6px;align-items:center;padding:8px 12px;background:rgba(0,0,0,.32);flex-wrap:wrap}
+ #bar2{display:flex;gap:6px;align-items:center;padding:0 12px 8px;background:rgba(0,0,0,.32);flex-wrap:wrap}
+ button,select,input[type=number]{border:none;border-radius:999px;padding:7px 13px;font-weight:700;cursor:pointer;background:#fff;color:#222;font-size:.84rem;font-family:inherit}
+ .gold{background:#FFD23F}.tool.on{background:#0FA98B;color:#fff}
+ .rec{background:#e6464b;color:#fff}
+ .sep{width:1px;height:22px;background:rgba(255,255,255,.25);margin:0 3px}
+ .pgwrap{flex:1;display:flex;align-items:center;justify-content:center;perspective:1200px;padding:12px}
+ #page{background:#fff;color:#222;width:min(94vw,660px);border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.5);padding:12px;transition:transform .45s;position:relative}
+ #page.flip{transform:rotateY(88deg)}
+ #pt{width:100%;border:none;font-size:1.1rem;font-weight:700;outline:none;font-family:inherit;margin-bottom:6px}
+ #cv{border:2px dashed #ccc;border-radius:10px;touch-action:none;width:100%;display:block;cursor:crosshair}
+ #pn{color:#ffe39a;font-weight:800;padding:0 6px}
+ #tin{position:absolute;display:none;border:2px solid #0FA98B;border-radius:6px;padding:3px 6px;outline:none;background:#fff;color:#222;z-index:5;font-family:inherit}
+ #media{padding:6px 12px 10px;font-size:.76rem;color:#cfd0e8}
+ #media a{color:#FFD23F;font-weight:700;margin-right:10px}
+ #cam{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:20}
+ #camv{max-width:92vw;max-height:70vh;border-radius:12px;background:#000}
+ .hint{font-size:.72rem;color:#b9bbd8;padding:0 12px 6px}
+</style></head><body>
+<div id="bar"><b style="font-size:.9rem">${title}</b>
+ ${flip?'<button onclick="P.prev()">\u25c0</button><span id="pn">1/1</span><button onclick="P.next()">\u25b6</button><button class="gold" onclick="P.add()">\u2795 Page</button><span class="sep"></span>':''}
+ <button class="tool on" id="tPen"   onclick="P.tool('pen')">\u270f\ufe0f Pen</button>
+ <button class="tool"    id="tBrush" onclick="P.tool('brush')">\ud83d\udd8c\ufe0f Brush</button>
+ <button class="tool"    id="tMark"  onclick="P.tool('marker')">\ud83d\udd8a\ufe0f Marker</button>
+ <button class="tool"    id="tErase" onclick="P.tool('eraser')">\ud83e\uddfd Eraser</button>
+ <button class="tool"    id="tText"  onclick="P.tool('text')">\ud83d\udd24 Text</button>
+ <span class="sep"></span>
+ <button onclick="P.undo()">\u21b6 Undo</button>
+ <button onclick="P.clearPg()">\ud83d\uddd1\ufe0f Clear</button>
+</div>
+<div id="bar2">
+ <select id="col" title="colour">
+  <option value="#15183A">navy</option><option value="#e6464b">red</option><option value="#0FA98B">teal</option>
+  <option value="#8B5CF6">purple</option><option value="#F5A301">orange</option><option value="#2BA84F">green</option>
+  <option value="#000000">black</option><option value="#FFD23F">yellow</option>
+ </select>
+ <select id="sz" title="line thickness"><option value="3">thin</option><option value="6" selected>medium</option><option value="12">thick</option><option value="22">extra thick</option></select>
+ <span class="sep"></span>
+ <select id="ff" title="font"><option value="Lexend,Verdana,sans-serif">Lexend</option><option value="Georgia,serif">Georgia</option><option value="'Comic Sans MS',cursive">Comic Sans</option><option value="'Courier New',monospace">Courier</option><option value="Impact,sans-serif">Impact</option></select>
+ <select id="fs" title="text size"><option value="16">16</option><option value="22">22</option><option value="30" selected>30</option><option value="44">44</option><option value="64">64</option></select>
+ <span class="sep"></span>
+ <button onclick="document.getElementById('imgIn').click()">\ud83d\uddbc\ufe0f Image</button>
+ <input type="file" id="imgIn" accept="image/*" style="display:none" onchange="P.addImage(this)">
+ <button onclick="P.photo()">\ud83d\udcf7 Take a photo</button>
+ <button id="vBtn" onclick="P.voice()">\ud83c\udfa4 Record voice</button>
+ <button id="mBtn" onclick="P.video()">\ud83c\udfa5 Record video</button>
+ <span class="sep"></span>
+ <button class="gold" onclick="P.pdf()">\ud83d\udcc4 Export PDF</button>
+ ${flip?'<button class="gold" onclick="P.submit()">\u2705 Submit</button>':''}
+ <button onclick="document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen()">\u26f6</button>
+ <button onclick="window.close()">\u2716</button>
+</div>
+<p class="hint">Pick <b>Text</b> then click the page to type. Voice and video download as their own files \u2014 a picture cannot hold a sound.</p>
+<div class="pgwrap"><div id="page">
+ ${flip?'<input id="pt" placeholder="Page title / your sentence here\u2026">':''}
+ <canvas id="cv" width="${W}" height="${H}"></canvas>
+ <input id="tin" placeholder="type, then Enter">
+</div></div>
+<div id="media"></div>
+<div id="cam"><video id="camv" autoplay playsinline muted></video>
+ <div><button class="gold" onclick="P.snap()">\ud83d\udcf8 Capture</button> <button onclick="P.camOff()">Cancel</button></div>
+</div>
+<scr`+`ipt>
+var P=(function(){
+ var W=${W}, H=${H};
+ var cv=document.getElementById("cv"), cx=cv.getContext("2d"), pt=document.getElementById("pt");
+ var tin=document.getElementById("tin"), media=document.getElementById("media");
+ var TOOL="pen", undoStack=[], camStream=null, rec=null, recChunks=[], recKind="";
+
+ function blank(){ var c=document.createElement("canvas"); c.width=W; c.height=H;
+   var g=c.getContext("2d"); g.fillStyle="#fff"; g.fillRect(0,0,W,H); return c; }
+ var pages=[{t:"",c:blank()}], cur=0;
+ function load(){ cx.clearRect(0,0,W,H); cx.drawImage(pages[cur].c,0,0); if(pt)pt.value=pages[cur].t;
+   var pn=document.getElementById("pn"); if(pn)pn.textContent=(cur+1)+"/"+pages.length; }
+ function save(){ var c=pages[cur].c, g=c.getContext("2d"); g.clearRect(0,0,W,H); g.drawImage(cv,0,0); if(pt)pages[cur].t=pt.value; }
+ function push(){ try{ undoStack.push(cv.toDataURL()); if(undoStack.length>20)undoStack.shift(); }catch(e){} }
+ cx.fillStyle="#fff"; cx.fillRect(0,0,W,H);
+
+ function pos(e){ var r=cv.getBoundingClientRect(); var t=e.touches?e.touches[0]:e;
+   return {x:(t.clientX-r.left)*W/r.width, y:(t.clientY-r.top)*H/r.height}; }
+ var draw=false;
+ function st(e){
+   if(TOOL==="text"){ openText(e); return; }
+   push(); draw=true; var p=pos(e); cx.beginPath(); cx.moveTo(p.x,p.y); e.preventDefault();
+ }
+ function mv(e){
+   if(!draw)return; var p=pos(e);
+   var sz=+document.getElementById("sz").value, col=document.getElementById("col").value;
+   cx.lineCap="round"; cx.lineJoin="round"; cx.globalAlpha=1;
+   if(TOOL==="eraser"){ cx.strokeStyle="#fff"; cx.lineWidth=sz*2.2; }
+   else if(TOOL==="brush"){ cx.strokeStyle=col; cx.lineWidth=sz*1.8; cx.globalAlpha=0.45; }
+   else if(TOOL==="marker"){ cx.strokeStyle=col; cx.lineWidth=sz*2.4; cx.globalAlpha=0.30; cx.lineCap="square"; }
+   else { cx.strokeStyle=col; cx.lineWidth=sz; }
+   cx.lineTo(p.x,p.y); cx.stroke(); cx.globalAlpha=1; e.preventDefault();
+ }
+ function en(){ if(draw){ draw=false; save(); } }
+ cv.addEventListener("mousedown",st); cv.addEventListener("mousemove",mv); window.addEventListener("mouseup",en);
+ cv.addEventListener("touchstart",st); cv.addEventListener("touchmove",mv); cv.addEventListener("touchend",en);
+
+ /* ---- text ---- */
+ function openText(e){
+   var r=cv.getBoundingClientRect(), pr=document.getElementById("page").getBoundingClientRect();
+   var t=e.touches?e.touches[0]:e, p=pos(e);
+   tin.style.display="block";
+   tin.style.left=(t.clientX-pr.left)+"px"; tin.style.top=(t.clientY-pr.top-14)+"px";
+   tin.style.fontFamily=document.getElementById("ff").value;
+   tin.style.fontSize=Math.max(12,+document.getElementById("fs").value*(r.width/W))+"px";
+   tin.style.color=document.getElementById("col").value;
+   tin.value=""; tin.dataset.x=p.x; tin.dataset.y=p.y; setTimeout(function(){tin.focus();},10);
+   e.preventDefault();
+ }
+ function commitText(){
+   var v=tin.value.trim(); tin.style.display="none"; if(!v) return;
+   push();
+   cx.globalAlpha=1; cx.textBaseline="middle";
+   cx.fillStyle=document.getElementById("col").value;
+   cx.font="700 "+document.getElementById("fs").value+"px "+document.getElementById("ff").value;
+   cx.fillText(v, +tin.dataset.x, +tin.dataset.y);
+   save();
+ }
+ tin.addEventListener("keydown", function(e){ if(e.key==="Enter"){ commitText(); } if(e.key==="Escape"){ tin.style.display="none"; } });
+ tin.addEventListener("blur", commitText);
+
+ /* ---- images ---- */
+ function place(img){
+   push();
+   var s=Math.min((W*0.7)/img.width, (H*0.7)/img.height, 1);
+   var iw=img.width*s, ih=img.height*s;
+   cx.drawImage(img, (W-iw)/2, (H-ih)/2, iw, ih);
+   save();
+ }
+ function addImage(inp){
+   var f=inp.files&&inp.files[0]; if(!f)return;
+   var img=new Image(); img.onload=function(){ place(img); }; img.src=URL.createObjectURL(f); inp.value="";
+ }
+ /* ---- camera ---- */
+ function photo(){
+   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ alert("This device has no camera access."); return; }
+   navigator.mediaDevices.getUserMedia({video:true}).then(function(s){
+     camStream=s; var v=document.getElementById("camv"); v.srcObject=s;
+     document.getElementById("cam").style.display="flex";
+   }).catch(function(){ alert("Camera permission was refused."); });
+ }
+ function snap(){
+   var v=document.getElementById("camv"); push();
+   var s=Math.min((W*0.8)/v.videoWidth,(H*0.8)/v.videoHeight);
+   var iw=v.videoWidth*s, ih=v.videoHeight*s;
+   cx.drawImage(v,(W-iw)/2,(H-ih)/2,iw,ih); save(); camOff();
+ }
+ function camOff(){ if(camStream){ camStream.getTracks().forEach(function(t){t.stop()}); camStream=null; }
+   document.getElementById("cam").style.display="none"; }
+
+ /* ---- recording ---- */
+ function logMedia(url,name,label){
+   var a=document.createElement("a"); a.href=url; a.download=name; a.textContent="\u2b07 "+label;
+   media.appendChild(a);
+   push(); cx.fillStyle="#0FA98B"; cx.font="600 13px Lexend,Verdana,sans-serif"; cx.textBaseline="top";
+   cx.fillText("\ud83c\udfa7 "+label+" \u2014 saved as "+name, 12, H-22); save();
+ }
+ function stopRec(){ if(rec&&rec.state!=="inactive"){ rec.stop(); } }
+ function startRec(kind){
+   var want = kind==="video" ? {video:true,audio:true} : {audio:true};
+   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){ alert("Recording is not available on this device."); return; }
+   navigator.mediaDevices.getUserMedia(want).then(function(s){
+     recChunks=[]; recKind=kind;
+     try{ rec=new MediaRecorder(s); }catch(e){ alert("Recording is not supported in this browser."); s.getTracks().forEach(function(t){t.stop()}); return; }
+     rec.ondataavailable=function(e){ if(e.data.size)recChunks.push(e.data); };
+     rec.onstop=function(){
+       s.getTracks().forEach(function(t){t.stop()});
+       var b=new Blob(recChunks,{type:recKind==="video"?"video/webm":"audio/webm"});
+       var n="ican-"+recKind+"-"+Date.now()+".webm";
+       logMedia(URL.createObjectURL(b), n, recKind==="video"?"Video recording":"Voice recording");
+       var btn=document.getElementById(recKind==="video"?"mBtn":"vBtn");
+       btn.className=""; btn.textContent=recKind==="video"?"\ud83c\udfa5 Record video":"\ud83c\udfa4 Record voice";
+       rec=null;
+     };
+     rec.start();
+     var btn=document.getElementById(kind==="video"?"mBtn":"vBtn");
+     btn.className="rec"; btn.textContent="\u23f9 Stop recording";
+   }).catch(function(){ alert("Microphone or camera permission was refused."); });
+ }
+ function toggleRec(kind){ if(rec&&rec.state==="recording"){ stopRec(); } else { startRec(kind); } }
+
+ function anim(fn){ var pg=document.getElementById("page"); pg.classList.add("flip");
+   setTimeout(function(){ fn(); pg.classList.remove("flip"); },450); }
+
+ return {
+  tool:function(t){ TOOL=t;
+    ["tPen","tBrush","tMark","tErase","tText"].forEach(function(k){ var b=document.getElementById(k); if(b)b.classList.remove("on"); });
+    var map={pen:"tPen",brush:"tBrush",marker:"tMark",eraser:"tErase",text:"tText"};
+    var b=document.getElementById(map[t]); if(b)b.classList.add("on");
+    cv.style.cursor = (t==="text") ? "text" : "crosshair";
+  },
+  undo:function(){ var d=undoStack.pop(); if(!d){ return; }
+    var img=new Image(); img.onload=function(){ cx.clearRect(0,0,W,H); cx.drawImage(img,0,0); save(); }; img.src=d; },
+  addImage:addImage, photo:photo, snap:snap, camOff:camOff,
+  voice:function(){ toggleRec("audio"); }, video:function(){ toggleRec("video"); },
+  add:function(){ save(); anim(function(){ pages.push({t:"",c:blank()}); cur=pages.length-1; undoStack=[]; load(); }); },
+  next:function(){ if(cur>=pages.length-1)return; save(); anim(function(){ cur++; undoStack=[]; load(); }); },
+  prev:function(){ if(cur<=0)return; save(); anim(function(){ cur--; undoStack=[]; load(); }); },
+  clearPg:function(){ push(); cx.fillStyle="#fff"; cx.fillRect(0,0,W,H); save(); },
+  pdf:function(){ save();
+    if(!(window.jspdf&&window.jspdf.jsPDF)){ alert("PDF library still loading \u2014 try again in a second."); return; }
+    var d=new window.jspdf.jsPDF("l","pt",[640,${flip?460:470}]);
+    pages.forEach(function(p,i){ if(i)d.addPage(); d.setFillColor(255,255,255); d.rect(0,0,640,470,"F");
+      d.setFontSize(16); d.setTextColor(21,24,58); d.text(p.t||" ",20,30);
+      d.addImage(p.c.toDataURL("image/jpeg",0.9),"JPEG",20,44,600,${flip?360:414});
+      d.setFontSize(9); d.setTextColor(150); d.text("iCAN Foundational \u2014 page "+(i+1),20,${flip?452:466}); });
+    d.save("${flip?'my_flipbook':'ican_design'}.pdf"); },
+  submit:function(){ save(); try{ window.opener.ylFlipSubmit(pages.length);
+      alert("Submitted! "+pages.length+" pages recorded. Now export the PDF to share it."); }
+    catch(e){ alert("Open this from iCAN to submit."); } },
+  load:load };
+})();
+P.load();
+</scr`+`ipt></body></html>`);
   w.document.close();
 }
-function ylFlip(){ const w=window.open('','ylflip','width=1000,height=760'); if(!w){alert('Please allow pop-ups.');return;} ylStudioDoc(w,'📖 Flipbook Maker — write & draw your story',true); }
 function ylDrawPad(){ const w=window.open('','yldraw','width=980,height=740'); if(!w){alert('Please allow pop-ups.');return;} ylStudioDoc(w,'🎨 Drawing Pad',false); }
 function ylFlipSubmit(n){
-  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Young Learners',activity:'Flipbook story',score:Math.min(n,5),max:5,percent:Math.min(100,n*20),detail:n+' pages · comic/storyboard project'}); }catch(e){} }
+  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Flipbook story',score:Math.min(n,5),max:5,percent:Math.min(100,n*20),detail:n+' pages · comic/storyboard project'}); }catch(e){} }
 }
 
 /* ---------- YL teacher lesson plan (Word) ---------- */
@@ -17096,7 +17461,7 @@ function ylLessonPlanDoc(){
   const th='border:1px solid #444;padding:6pt 8pt;font-size:10pt;background:#15183A;color:#fff;text-align:left';
   const rd=YL_READERS.map((r,i)=>'<tr><td style="'+td+'">'+(i+1)+'</td><td style="'+td+'"><b>'+r.title+'</b> (Level '+r.lv+')</td><td style="'+td+'">'+r.obj+'</td><td style="'+td+'">Std + extended quiz score · game score · short answer (ext)</td></tr>').join('');
   const doc='<html><head><meta charset="utf-8"><title>YL Lesson Plan</title></head><body style="font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#222">'+
-  '<h1 style="color:#15183A">iCAN Young Learners World — Implementation Lesson Plan (Grades 1–8)</h1>'+
+  '<h1 style="color:#15183A">iCAN Foundational Course — Implementation Lesson Plan (Grades 1–8)</h1>'+
   '<p><i>Read it. Write it. Design it. — game-based, multimodal, affordance-rich literacy</i></p>'+
   '<h2 style="color:#15183A;font-size:13pt">1 · Objectives</h2><ul><li>Develop comprehension of print AND multimodal texts (infographics, tables, Venn diagrams, maps, comics).</li><li>Build vocabulary, grammar accuracy and exam-task familiarity across six skills.</li><li>Produce original written and designed artefacts (short answers, flipbooks, drawings) — the RWD cycle at YL scale.</li><li>Support struggling readers with affordances: read-to-me audio, tap-a-word pronunciation & meaning, text zoom, print mode.</li></ul>'+
   '<h2 style="color:#15183A;font-size:13pt">2 · Suggested lesson flow (45–60 min)</h2>'+
@@ -17110,7 +17475,7 @@ function ylLessonPlanDoc(){
   '<h2 style="color:#15183A;font-size:13pt">4 · Assessment</h2><p>Every activity is objective-tagged and auto-saved to the teacher dashboard. Quizzes: instant marks. Writing: word-target + rubric line. Speaking: practise-aloud confirmation. Final products: printable PDFs, exported flipbooks, drawings — portfolio evidence of the RWD cycle.</p>'+
   '<h2 style="color:#15183A;font-size:13pt">Appendix · Reader catalogue & outcomes</h2>'+
   '<table style="border-collapse:collapse;width:100%"><tr><th style="'+th+'">#</th><th style="'+th+'">Reader</th><th style="'+th+'">Objective</th><th style="'+th+'">Evidence</th></tr>'+rd+'</table>'+
-  '<p style="color:#666;font-size:9pt;text-align:center;margin-top:14pt">© iCAN Academy · Young Learners World</p></body></html>';
+  '<p style="color:#666;font-size:9pt;text-align:center;margin-top:14pt">© iCAN Academy · Foundational Course</p></body></html>';
   const blob=new Blob(['\ufeff'+doc],{type:'application/msword'});
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='YL_Lesson_Plan_iCAN.doc';
   document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},800);
