@@ -3829,6 +3829,11 @@ function updateWho(){
 function logout(){ SESSION=null; go('home'); }
 function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
+/* Remembers whether the Typing Tutor was opened from the main hub or from the
+   Foundational (young-learners) course, so the back button returns to the right
+   place and the intro copy can be tuned. */
+let TYPING_ORIGIN = '';
+
 const ROUTES = {
   /* ---------------- HOME ---------------- */
   home(){
@@ -4080,21 +4085,80 @@ const ROUTES = {
   examTest(i){ runExam(EXAMS[+i], {key:'exam_'+i, minutes:40, backRoute:'exams', skill:'Full exam', cert:true}); },
 
   /* ---------------- TYPING TUTOR ---------------- */
-  typing(){
-    const grp=(lvl,label,desc)=>{ const items=TYPING_TEXTS.filter(t=>t.level===lvl); return `
-      <h2 style="font-family:'Fraunces';font-size:1.4rem;margin:22px 0 2px;color:var(--ink)">${label}</h2>
-      <p style="color:var(--muted);font-size:.86rem;margin:0 0 10px">${desc}</p>
-      <div class="grid c2">${items.map(t=>`<button onclick="startTyping('${t.id}')" style="text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer">
-        <b style="color:var(--ink)">${t.title}</b><br><span style="font-size:.82rem;color:var(--muted)">${t.genre} · ${t.text.split(/\s+/).length} words</span></button>`).join('')}</div>`; };
+  typing(origin){
+    TYPING_ORIGIN = origin==='yl' ? 'yl' : '';
+    const yl = TYPING_ORIGIN==='yl';
+    const backRoute = yl ? 'ylhub' : 'dashboard';
+    const backLabel = yl ? '← Foundational' : '← Home';
+    const wc=t=>t.text.trim().split(/\s+/).length;
+
+    /* Section header with a coloured index chip. */
+    const head=(chip,accent,label,desc)=>`
+      <div style="display:flex;align-items:baseline;gap:10px;margin:28px 0 2px">
+        <span style="flex:none;font-family:'Fraunces';font-weight:800;font-size:1rem;color:#fff;background:${accent};border-radius:9px;padding:2px 12px">${chip}</span>
+        <h2 style="font-family:'Fraunces';font-size:1.45rem;margin:0;color:var(--ink)">${label}</h2>
+      </div>
+      <p style="color:var(--muted);font-size:.87rem;margin:0 0 10px;max-width:760px">${desc}</p>`;
+
+    /* --- Section 1: everything short, in one shelf (drills, short passages, poems). --- */
+    const shortItems = TYPING_TEXTS.filter(t=>t.level==='short'||t.level==='medium')
+      .concat(typeof LIT_SINGLES!=='undefined'?LIT_SINGLES:[])
+      .sort((a,b)=>wc(a)-wc(b));
+    const shortCard=t=>{ const sub=t.author?`${esc(t.author)}${t.kind?' · '+t.kind:''}`:`${esc(t.genre||'')}`; return `
+      <button onclick="startTyping('${t.id}')" style="text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:13px 16px;cursor:pointer">
+        <b style="color:var(--ink)">${esc(t.title)}</b><br><span style="font-size:.8rem;color:var(--muted)">${sub} · ${wc(t)} words</span></button>`; };
+
+    /* --- Section 2: long reads, banded by word count. --- */
+    const longPool = TYPING_TEXTS.filter(t=>t.level==='long')
+      .concat(typeof AAD_TYPING!=='undefined'?AAD_TYPING:[])
+      .sort((a,b)=>wc(a)-wc(b));
+    const longCard=t=>`<button onclick="startTyping('${t.id}')" style="text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:13px 15px;cursor:pointer">
+        <span style="font-size:.62rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#b45309">${esc(t.genre||'Passage')}</span><br>
+        <b style="color:var(--ink);line-height:1.25;display:inline-block;margin:2px 0">${esc(t.title)}</b><br>
+        <span style="font-size:.77rem;color:var(--muted)">${t.theme?esc(t.theme)+' · ':''}${wc(t)} words${t.lex?' · '+t.lex+'L':''}</span></button>`;
+    const longBand=(label,desc,items)=> items.length ? `
+      <h3 style="font-size:1rem;margin:16px 0 3px;color:#c2620e">${label} <span style="color:var(--muted);font-weight:500">· ${items.length} texts</span></h3>
+      <p style="color:var(--muted);font-size:.82rem;margin:0 0 8px">${desc}</p>
+      <div class="grid c2">${items.map(longCard).join('')}</div>` : '';
+
+    /* --- Section 3: multi-part literature journeys, grouped by kind. --- */
+    const works = (typeof LIT_WORKS!=='undefined') ? LIT_WORKS : [];
+    const journeyCard=w=>{ const total=w.parts.reduce((n,p)=>n+p.text.trim().split(/\s+/).length,0); return `
+      <button onclick="startWork('${w.id}', 0)" style="text-align:left;background:#fff;border:1.5px solid #e6dcff;border-radius:14px;padding:15px 17px;cursor:pointer">
+        <b style="font-family:'Fraunces';font-size:1.08rem;color:var(--ink)">${esc(w.title)}</b><br>
+        <span style="font-size:.8rem;color:#7c3aed;font-weight:600">${esc(w.author)} · ${w.year}</span>
+        <p style="font-size:.83rem;color:var(--muted);margin:6px 0 8px;line-height:1.45">${esc(w.blurb)}</p>
+        <span style="display:inline-block;font-size:.72rem;font-weight:700;color:#5b21b6;background:#f3ecff;border-radius:20px;padding:3px 11px">${w.parts.length} scenes · ${total} words</span></button>`; };
+    const journeyGroup=(kind,label,desc)=>{ const items=works.filter(w=>w.kind===kind); return items.length ? `
+      <h3 style="font-size:1rem;margin:16px 0 3px;color:#7c3aed">${label}</h3>
+      <p style="color:var(--muted);font-size:.82rem;margin:0 0 8px">${desc}</p>
+      <div class="grid c2">${items.map(journeyCard).join('')}</div>` : ''; };
+    const journeyTier = works.length ? `
+      ${head('III','#7c3aed','📖 Literature journeys','Type a whole work across several rounds — finish one scene and the next unlocks automatically, until you\'ve typed the entire piece. Real world literature, all in the public domain.')}
+      ${journeyGroup('Novel','Novels','Classic openings, scene by scene.')}
+      ${journeyGroup('Play','Shakespeare','The great soliloquies, typed line by line — press Enter at each line break.')}
+      ${journeyGroup('Poetry','Poetry','Longer poems, one stanza per round.')}` : '';
+
+    const intro = yl
+      ? `Practise typing on real writing. Start with the <b>short texts</b> to build speed and accuracy, then take on a <b>long read</b> or a <b>literature journey</b> when you're ready for a stretch. Type each text exactly — you'll see your <b>speed</b>, <b>accuracy</b> and <b>time</b> live, and earn a certificate.`
+      : `Choose by length: a quick <b>short text</b>, a single <b>long read</b>, or a multi-part <b>literature journey</b> where you type a whole work scene by scene. Type each text exactly; you'll see your <b>speed (WPM)</b>, <b>accuracy</b> and <b>time</b> live, and earn a certificate showing your band — from <i>Struggling</i> to <i>Fantastic</i>.`;
+
     app().innerHTML=`
     <div class="wrap screen">
-      <button class="back" onclick="go('dashboard')">← Home</button>
+      <button class="back" onclick="go('${backRoute}')">${backLabel}</button>
       <h1 style="font-size:2.2rem">⌨️ Typing Tutor</h1>
-      <p style="color:var(--muted);max-width:700px">Learn touch typing and race yourself. Type each text exactly; you'll see your <b>speed (WPM)</b>, <b>accuracy</b> and <b>time</b> live, and earn a certificate showing your level — from <i>Struggling</i> to <i>Fantastic</i>.</p>
-      ${grp('short','Short texts (warm-up)','About 30–60 words — quick bursts, including numbers and punctuation.')}
-      ${grp('medium','Medium texts','About 90–120 words across different genres.')}
-      ${grp('long','Long texts (challenge)','About 300 words — build stamina and a steady rhythm.')}
-      <p class="note" style="margin-top:16px">Levels: Struggling (under 10 WPM) · Emerging (10–30) · Proficient (31–49) · Pre-advanced (50–60) · Advanced (61–89) · Fantastic (90+).</p>
+      <p style="color:var(--muted);max-width:760px">${intro}</p>
+
+      ${head('I','#0FA98B','✏️ Warm-up & short texts','Everything short in one place — key and number drills, quick passages and complete short poems. A minute or two each.')}
+      <div class="grid c2">${shortItems.map(shortCard).join('')}</div>
+
+      ${head('II','#d98324','📰 Long reads','Longer single passages — authentic Article-A-Day texts for stamina and rhythm. Banded by length.')}
+      ${longBand('Long (≈250–300 words)','A solid sitting.', longPool.filter(t=>wc(t)<=300))}
+      ${longBand('Extended (300+ words)','Go the distance.', longPool.filter(t=>wc(t)>300))}
+
+      ${journeyTier}
+
+      <p class="note" style="margin-top:22px">Your result is banded by speed: Struggling (under 10 WPM) · Emerging (10–30) · Proficient (31–49) · Pre-advanced (50–60) · Advanced (61–89) · Fantastic (90+). Accuracy first — speed follows.</p>
     </div>`;
   },
   typingTest(id){ startTyping(id); },
@@ -8048,19 +8112,50 @@ let TYPING=null;
 function typingBand(wpm){ return wpm>=90?"Fantastic":wpm>=61?"Advanced":wpm>=50?"Pre-advanced":wpm>=31?"Proficient":wpm>=10?"Emerging":"Struggling"; }
 function typingSpans(text){ return text.split('').map((c,i)=>`<span id="tc${i}">${c===' '?' ':esc(c)}</span>`).join(''); }
 function startTyping(id){
-  const t=TYPING_TEXTS.find(x=>x.id===id)||TYPING_TEXTS[0];
-  TYPING={t, started:0, timer:null, done:false};
+  const pool=TYPING_TEXTS
+    .concat(typeof AAD_TYPING!=='undefined'?AAD_TYPING:[])
+    .concat(typeof LIT_SINGLES!=='undefined'?LIT_SINGLES:[]);
+  const t=pool.find(x=>x.id===id)||TYPING_TEXTS[0];
+  renderTypingScreen(t, null, 0);
+}
+function startWork(id, i){
+  if(typeof LIT_WORKS==='undefined') return;
+  const w=LIT_WORKS.find(x=>x.id===id); if(!w) return;
+  i=Math.max(0, Math.min(i|0, w.parts.length-1));
+  const p=w.parts[i];
+  const t={ id:w.id+'_'+i, title:w.title+' — '+p.label, genre:w.author, kind:w.kind, text:p.text };
+  renderTypingScreen(t, w, i);
+}
+function renderTypingScreen(t, work, partIndex){
+  TYPING={t, started:0, timer:null, done:false, work:work||null, partIndex:partIndex||0};
+  const words=t.text.trim().split(/\s+/).length;
+  const isVerse=/\n/.test(t.text);
+  let meta, restart, progress='';
+  if(work){
+    const n=work.parts.length, cur=(partIndex||0)+1;
+    progress=`<div style="margin:6px 0 2px"><div style="display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted)"><span>${esc(work.author)} · ${esc(work.kind)}</span><span>Scene ${cur} of ${n}</span></div>
+      <div style="height:7px;background:var(--line);border-radius:6px;overflow:hidden;margin-top:4px"><div style="height:100%;width:${Math.round(cur/n*100)}%;background:#7c3aed"></div></div></div>`;
+    meta=`${words} words. Part of a ${work.parts.length}-scene journey — finish this scene to unlock the next.`;
+    restart=`startWork('${work.id}', ${partIndex||0})`;
+  } else {
+    meta = (t.lex ? `${t.genre} · ${t.theme} · ${words} words · ${t.lex}L`
+                  : `${esc(t.genre||'')}${t.level?' · '+t.level:''} · ${words} words`);
+    meta += '. The timer starts on your first keystroke. Type the text exactly, including punctuation.';
+    restart=`startTyping('${t.id}')`;
+  }
+  const verseHint = isVerse ? ` <span style="color:var(--muted)">(press <b>Enter</b> at the end of each line)</span>` : '';
   app().innerHTML=`
    <div class="wrap screen">
-     <button class="back" onclick="go('typing')">← Typing Tutor</button>
+     <button class="back" onclick="go('typing', TYPING_ORIGIN)">← Typing Tutor</button>
      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
-       <h1 style="font-size:1.6rem;margin:0">⌨️ ${t.title}</h1>
+       <h1 style="font-size:1.6rem;margin:0">⌨️ ${esc(t.title)}</h1>
        <div class="type-stats"><span>⏱ <b id="tyTime">0s</b></span><span>WPM <b id="tyWpm">0</b></span><span>Acc <b id="tyAcc">100%</b></span></div>
      </div>
-     <p style="color:var(--muted);font-size:.85rem">${t.genre} · ${t.level} · ${t.text.split(/\s+/).length} words. The timer starts on your first keystroke. Type the text exactly, including punctuation.</p>
+     ${progress}
+     <p style="color:var(--muted);font-size:.85rem">${meta}${verseHint}</p>
      <div id="tyTarget" class="type-target">${typingSpans(t.text)}</div>
      <textarea id="tyInput" class="type-input" rows="4" oninput="typingInput()" placeholder="Click here and start typing…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
-     <div style="margin-top:10px"><button class="btn ghost sm" onclick="startTyping('${id}')">↻ Restart</button></div>
+     <div style="margin-top:10px"><button class="btn ghost sm" onclick="${restart}">↻ Restart</button></div>
      <div id="tyResult" style="margin-top:14px"></div>
    </div>`;
   setTimeout(()=>{ const i=document.getElementById('tyInput'); if(i)i.focus(); },60);
@@ -8088,12 +8183,27 @@ function typingFinish(){
   const wpm=Math.round((correct/5)/mins); const acc=typed.length?Math.round(correct/typed.length*100):100;
   const band=typingBand(wpm);
   const inp=document.getElementById('tyInput'); if(inp)inp.disabled=true;
+  let nav;
+  if(s.work){
+    const w=s.work, i=s.partIndex||0;
+    if(i < w.parts.length-1){
+      nav=`<div style="margin-top:10px">
+        <button class="btn sm" onclick="startWork('${w.id}', ${i+1})">Next scene → <span style="opacity:.85">${esc(w.parts[i+1].label)}</span></button>
+        <button class="btn ghost sm" onclick="startWork('${w.id}', ${i})">↻ Retype scene</button></div>`;
+    } else {
+      nav=`<div style="margin-top:12px;padding:12px 14px;background:#f3ecff;border:1.5px solid #d8c8ff;border-radius:12px;color:#5b21b6">
+        🎉 <b>You typed the whole of ${esc(w.title)}!</b> Every scene, start to finish.</div>
+        <div style="margin-top:10px"><button class="btn ghost sm" onclick="startWork('${w.id}', 0)">↻ Start over</button> <button class="btn ghost sm" onclick="go('typing', TYPING_ORIGIN)">More texts →</button></div>`;
+    }
+  } else {
+    nav=`<div style="margin-top:10px"><button class="btn ghost sm" onclick="startTyping('${s.t.id}')">↻ Try again</button> <button class="btn ghost sm" onclick="go('typing', TYPING_ORIGIN)">More texts →</button></div>`;
+  }
   if(SESSION&&SESSION.role==='student'){ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:"Typing",activity:s.t.title,score:wpm,max:100,percent:acc,detail:`${wpm} WPM · ${acc}% accuracy · ${Math.round(secs)}s · ${band}`}); }
   document.getElementById('tyResult').innerHTML=`<div class="card">
      <div class="statline"><div class="stat"><div class="n">${wpm}</div><div class="l">WPM</div></div><div class="stat"><div class="n">${acc}%</div><div class="l">accuracy</div></div><div class="stat"><div class="n">${Math.round(secs)}s</div><div class="l">time</div></div><div class="stat"><div class="n" style="font-size:1rem;font-family:inherit;font-weight:700">${band}</div><div class="l">level</div></div></div>
      <h3 style="font-size:1.15rem">🏆 Your typing certificate</h3>
      ${typingCertHTML({name:(SESSION&&SESSION.name)||'Student', wpm, acc, secs, band, date:new Date().toLocaleDateString()})}
-     <div style="margin-top:10px"><button class="btn ghost sm" onclick="startTyping('${s.t.id}')">↻ Try again</button> <button class="btn ghost sm" onclick="go('typing')">More texts →</button></div>
+     ${nav}
    </div>`;
   window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
 }
@@ -12405,6 +12515,100 @@ const AAD_PROG=[
  vocab:[["perspective","a point of view; a way of regarding things"],["profound","very great; felt or experienced intensely"],["fragile","easily damaged; delicate"],["boundary","a line marking a limit or division"],["transcend","to rise above or go beyond ordinary limits"]],
  text:`<p>Something strange and consistent happens to human beings who see the Earth from space. Astronaut after astronaut, from vastly different backgrounds and nations, returns describing not a scientific observation but a profound shift in consciousness — a sudden, overwhelming perception of the planet as a single, fragile, living whole. The writer Frank White gave this experience a name: the overview effect.</p><p>The reports are remarkably similar across decades. From orbit, the Earth hangs against absolute blackness as a blue-and-white sphere of startling beauty and, above all, delicacy. The atmosphere that sustains all known life, which from the ground feels limitless, is revealed as a whisper-thin skin, no thicker in proportion than the peel on an apple. And crucially, the political boundaries that dominate human affairs — the borders over which wars are fought and identities defined — are simply not there. They exist on maps and in minds, but not on the actual planet, which presents itself to the orbiting eye as one indivisible home.</p><p>Those who have felt the effect describe it as transcending ordinary perspective altogether. Nationalism, one astronaut reflected, looks absurd from orbit; the squabbles of nations shrink to their true scale against the sight of the whole world at once. Many return with an intensified sense of environmental urgency, having seen with their own eyes that the biosphere is a closed and finite system, and with a feeling of unity toward the entire human species, briefly visible as a single crew on a single vessel.</p><p>The overview effect matters even to those of us who will never leave the ground, because it offers, secondhand, a perspective our evolution never prepared us to hold. We are built to perceive our immediate surroundings, our tribe, our patch of land; we are not built to feel, in our bones, the reality of the whole planet as one. The astronauts' testimony is a gift of borrowed vision — a reminder that the divisions we treat as permanent are inventions of the mind, and that seen truly, from far enough away, there is only one Earth, and everyone we have ever known is on it.</p>`}
 ]}
+];
+
+/* ============ ARTICLE-A-DAY → LONG-READ TYPING PASSAGES ============
+   Derives one long-read typing passage per AAD article from its FULL text
+   (~250–375 words). Paragraphs are flowed into a single block, HTML stripped,
+   and typography normalised so every character is reachable on a standard
+   keyboard (em-dashes -> " - ", curly quotes -> straight, ellipses -> "...").
+   Generated live from AAD_PROG so they stay in sync with it. */
+function aadTypingText(html){
+  let t = String(html||'').replace(/<\/p>\s*<p[^>]*>/g,' ').replace(/<[^>]+>/g,'');
+  t = t.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>')
+       .replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&nbsp;/g,' ');
+  t = t.replace(/[\u2018\u2019]/g,"'").replace(/[\u201C\u201D]/g,'"')
+       .replace(/\u2014/g,' - ').replace(/\u2013/g,'-').replace(/\u2026/g,'...');
+  t = t.replace(/\s+/g,' ').trim();
+  return t;
+}
+const AAD_TYPING = (function(){
+  const out=[];
+  try{
+    AAD_PROG.forEach(wk=>{ (wk.arts||[]).forEach(a=>{
+      const text = aadTypingText(a.text||'');
+      if(text) out.push({ id:'aty_'+a.id, title:a.title, genre:a.genre, lex:a.lex||1400, theme:wk.theme, text, words:text.split(/\s+/).length });
+    }); });
+    out.sort((x,y)=> (x.words-y.words) || x.title.localeCompare(y.title));
+  }catch(e){}
+  return out;
+})();
+
+/* ============ WORLD LITERATURE — TYPING PASSAGES ============
+   All texts below are in the public domain (authors long deceased; works first
+   published before 1928): William Shakespeare (d.1616), Jane Austen (d.1817),
+   Charles Dickens (d.1870), Edgar Allan Poe (d.1849), William Blake (d.1827),
+   Percy Bysshe Shelley (d.1822), Emily Dickinson (d.1886) and Lewis Carroll
+   (d.1898). Reproducing them here for typing practice infringes no copyright.
+   Verse keeps its line breaks (type Enter at each line); prose flows.
+   Em-dashes are written as " - " so every character is keyboard-reachable.
+   Emad: sources are Project Gutenberg / Folger editions — worth a spot-check. */
+
+/* Multi-part "journeys": finishing one scene opens the next, so a learner can
+   type a whole chapter or soliloquy across several rounds. */
+const LIT_WORKS = [
+  { id:'lit_tale2', title:'A Tale of Two Cities', author:'Charles Dickens', kind:'Novel', year:1859,
+    blurb:'The most famous opening in English fiction - a world of opposites on the eve of revolution.',
+    parts:[
+      { label:'It was the best of times', text:`It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of Darkness, it was the spring of hope, it was the winter of despair, we had everything before us, we had nothing before us, we were all going direct to Heaven, we were all going direct the other way - in short, the period was so far like the present period, that some of its noisiest authorities insisted on its being received, for good or for evil, in the superlative degree of comparison only.` },
+      { label:'Two kingdoms', text:`There were a king with a large jaw and a queen with a plain face, on the throne of England; there were a king with a large jaw and a queen with a fair face, on the throne of France. In both countries it was clearer than crystal to the lords of the State preserves of loaves and fishes, that things in general were settled for ever.` }
+    ] },
+  { id:'lit_carol', title:'A Christmas Carol', author:'Charles Dickens', kind:'Novel', year:1843,
+    blurb:'Stave One. Dickens sets his ghost story in motion with one blunt fact.',
+    parts:[
+      { label:'Marley was dead', text:`Marley was dead: to begin with. There is no doubt whatever about that. The register of his burial was signed by the clergyman, the clerk, the undertaker, and the chief mourner. Scrooge signed it. And Scrooge's name was good upon 'Change, for anything he chose to put his hand to.` },
+      { label:'A tight-fisted hand', text:`Oh! But he was a tight-fisted hand at the grindstone, Scrooge! a squeezing, wrenching, grasping, scraping, clutching, covetous old sinner! Hard and sharp as flint, from which no steel had ever struck out generous fire; secret, and self-contained, and solitary as an oyster.` }
+    ] },
+  { id:'lit_pnp', title:'Pride and Prejudice', author:'Jane Austen', kind:'Novel', year:1813,
+    blurb:'Chapter One. A famous first line, then straight into the Bennets at the breakfast table.',
+    parts:[
+      { label:'A truth universally acknowledged', text:`It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife. However little known the feelings or views of such a man may be on his first entering a neighbourhood, this truth is so well fixed in the minds of the surrounding families, that he is considered as the rightful property of some one or other of their daughters.` },
+      { label:'Mr and Mrs Bennet', text:`"My dear Mr. Bennet," said his lady to him one day, "have you heard that Netherfield Park is let at last?" Mr. Bennet replied that he had not. "But it is," returned she; "for Mrs. Long has just been here, and she told me all about it." Mr. Bennet made no answer. "Do you not want to know who has taken it?" cried his wife impatiently. "You want to tell me, and I have no objection to hearing it."` }
+    ] },
+  { id:'lit_hamlet', title:'Hamlet: "To be, or not to be"', author:'William Shakespeare', kind:'Play', year:1601,
+    blurb:'Act III, Scene i. Hamlet weighs living against dying - type the soliloquy line by line.',
+    parts:[
+      { label:'The question', text:`To be, or not to be, that is the question:\nWhether 'tis nobler in the mind to suffer\nThe slings and arrows of outrageous fortune,\nOr to take arms against a sea of troubles\nAnd by opposing end them.` },
+      { label:'To die, to sleep', text:`To die - to sleep,\nNo more; and by a sleep to say we end\nThe heart-ache and the thousand natural shocks\nThat flesh is heir to: 'tis a consummation\nDevoutly to be wish'd.` },
+      { label:'The rub', text:`To die, to sleep;\nTo sleep, perchance to dream - ay, there's the rub:\nFor in that sleep of death what dreams may come,\nWhen we have shuffled off this mortal coil,\nMust give us pause.` }
+    ] },
+  { id:'lit_macbeth', title:'Macbeth: two soliloquies', author:'William Shakespeare', kind:'Play', year:1606,
+    blurb:'The dagger before the murder, and the despair after - two of the darkest speeches in Shakespeare.',
+    parts:[
+      { label:'Is this a dagger', text:`Is this a dagger which I see before me,\nThe handle toward my hand? Come, let me clutch thee.\nI have thee not, and yet I see thee still.\nArt thou not, fatal vision, sensible\nTo feeling as to sight? or art thou but\nA dagger of the mind, a false creation,\nProceeding from the heat-oppressed brain?` },
+      { label:'Tomorrow, and tomorrow', text:`Tomorrow, and tomorrow, and tomorrow,\nCreeps in this petty pace from day to day,\nTo the last syllable of recorded time;\nAnd all our yesterdays have lighted fools\nThe way to dusty death. Out, out, brief candle!\nLife's but a walking shadow, a poor player\nThat struts and frets his hour upon the stage\nAnd then is heard no more. It is a tale\nTold by an idiot, full of sound and fury,\nSignifying nothing.` }
+    ] },
+  { id:'lit_raven', title:'The Raven', author:'Edgar Allan Poe', kind:'Poetry', year:1845,
+    blurb:'Type Poe\'s midnight masterpiece one stanza at a time - watch the rhythm build.',
+    parts:[
+      { label:'Stanza 1', text:`Once upon a midnight dreary, while I pondered, weak and weary,\nOver many a quaint and curious volume of forgotten lore -\nWhile I nodded, nearly napping, suddenly there came a tapping,\nAs of some one gently rapping, rapping at my chamber door.\n"'Tis some visitor," I muttered, "tapping at my chamber door -\nOnly this and nothing more."` },
+      { label:'Stanza 2', text:`Ah, distinctly I remember it was in the bleak December;\nAnd each separate dying ember wrought its ghost upon the floor.\nEagerly I wished the morrow; - vainly I had sought to borrow\nFrom my books surcease of sorrow - sorrow for the lost Lenore -\nFor the rare and radiant maiden whom the angels name Lenore -\nNameless here for evermore.` },
+      { label:'Stanza 3', text:`And the silken, sad, uncertain rustling of each purple curtain\nThrilled me - filled me with fantastic terrors never felt before;\nSo that now, to still the beating of my heart, I stood repeating\n"'Tis some visitor entreating entrance at my chamber door -\nSome late visitor entreating entrance at my chamber door; -\nThis it is and nothing more."` }
+    ] }
+];
+
+/* Short complete poems - single-round texts for the warm-up shelf. */
+const LIT_SINGLES = [
+  { id:'poem_sonnet18', title:'Sonnet 18', author:'William Shakespeare', kind:'Poem',
+    text:`Shall I compare thee to a summer's day?\nThou art more lovely and more temperate:\nRough winds do shake the darling buds of May,\nAnd summer's lease hath all too short a date;\nSometime too hot the eye of heaven shines,\nAnd often is his gold complexion dimm'd;\nAnd every fair from fair sometime declines,\nBy chance or nature's changing course untrimm'd;\nBut thy eternal summer shall not fade,\nNor lose possession of that fair thou ow'st;\nNor shall death brag thou wander'st in his shade,\nWhen in eternal lines to time thou grow'st:\nSo long as men can breathe or eyes can see,\nSo long lives this, and this gives life to thee.` },
+  { id:'poem_ozymandias', title:'Ozymandias', author:'Percy Bysshe Shelley', kind:'Poem',
+    text:`I met a traveller from an antique land\nWho said: Two vast and trunkless legs of stone\nStand in the desert. Near them, on the sand,\nHalf sunk, a shattered visage lies, whose frown,\nAnd wrinkled lip, and sneer of cold command,\nTell that its sculptor well those passions read\nWhich yet survive, stamped on these lifeless things,\nThe hand that mocked them, and the heart that fed;\nAnd on the pedestal these words appear:\n"My name is Ozymandias, King of Kings;\nLook on my Works, ye Mighty, and despair!"\nNothing beside remains. Round the decay\nOf that colossal Wreck, boundless and bare\nThe lone and level sands stretch far away.` },
+  { id:'poem_tyger', title:'The Tyger', author:'William Blake', kind:'Poem',
+    text:`Tyger Tyger, burning bright,\nIn the forests of the night;\nWhat immortal hand or eye,\nCould frame thy fearful symmetry?\nIn what distant deeps or skies.\nBurnt the fire of thine eyes?\nOn what wings dare he aspire?\nWhat the hand, dare seize the fire?` },
+  { id:'poem_hope', title:'"Hope is the thing with feathers"', author:'Emily Dickinson', kind:'Poem',
+    text:`"Hope" is the thing with feathers -\nThat perches in the soul -\nAnd sings the tune without the words -\nAnd never stops - at all -\nAnd sweetest - in the Gale - is heard -\nAnd sore must be the storm -\nThat could abash the little Bird\nThat kept so many warm -` },
+  { id:'poem_jabber', title:'Jabberwocky (opening)', author:'Lewis Carroll', kind:'Poem',
+    text:`'Twas brillig, and the slithy toves\nDid gyre and gimble in the wabe:\nAll mimsy were the borogoves,\nAnd the mome raths outgrabe.\n"Beware the Jabberwock, my son!\nThe jaws that bite, the claws that catch!\nBeware the Jubjub bird, and shun\nThe frumious Bandersnatch!"` }
 ];
 
 /* ============ ARTICLE-A-DAY VOCABULARY ENRICHMENT ============
@@ -16979,7 +17183,7 @@ ROUTES.ylhub=function(){
       <input id="ylDict" class="yl-in" style="min-width:150px" placeholder="look up a word…" onkeydown="if(event.key==='Enter')ylDictGo()">
       <button class="btn sm ghost" onclick="ylDictGo()">📖 Dictionary ↗</button>
       <button class="btn sm ghost" onclick="ylDrawPad()">🎨 Drawing Pad</button>
-      <button class="btn sm ghost" onclick="go('typing')">⌨️ Typing lessons</button>
+      <button class="btn sm ghost" onclick="go('typing','yl')">⌨️ Typing lessons</button>
       <button class="btn sm teal" onclick="ylLessonPlanDoc()">📥 Teacher lesson plan (Word)</button>
       <span style="font-size:.78rem;color:var(--muted)">Affordances everywhere: 🔊 read-to-me · A± zoom · tap any word to hear it &amp; see its meaning</span>
     </div>
