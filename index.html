@@ -17871,6 +17871,10 @@ function ylStudioDoc(w,title,flip){
  .stk-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:8px}
  .stk-btn{background:#f2f2f7;border-radius:8px;font-size:1.3rem;padding:5px 0;line-height:1;cursor:pointer}
  .stk-btn:hover{background:#e2e2ee}
+ .shp-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:8px}
+ .shp-btn{background:#f2f2f7;border-radius:8px;padding:3px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+ .shp-btn:hover{background:#dfe0ec}
+ .shp-btn canvas{display:block;width:30px;height:30px}
  .fx-list{display:flex;flex-direction:column;gap:5px}
  .fx-btn{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;background:#f2f2f7;border-radius:9px;padding:7px 10px;cursor:pointer}
  .fx-btn b{font-size:.82rem}
@@ -17892,6 +17896,7 @@ function ylStudioDoc(w,title,flip){
 <div id="mid">
  <div class="rail" id="railL">
   <div class="rail-h">Tools</div>
+  <button class="tool" id="tPoint" onclick="P.tool('pointer')"><i>👆</i>Point</button>
   <button class="tool on" id="tMove"  onclick="P.tool('move')"><i>\u270b</i>Move</button>
   <button class="tool" id="tText"  onclick="P.tool('text')"><i>\ud83d\udd24</i>Text</button>
   <button id="bCol"  onclick="P.pop('popCol',this)"><i id="colDot">\ud83c\udfa8</i>Colour</button>
@@ -17933,6 +17938,8 @@ function ylStudioDoc(w,title,flip){
   <button onclick="P.photo()"><i>\ud83d\udcf7</i>Take a photo</button>
   <button id="vBtn" onclick="P.voice()"><i>\ud83c\udfa4</i>Record voice</button>
   <button id="mBtn" onclick="P.video()"><i>\ud83c\udfa5</i>Record video</button>
+  <div class="rail-h">Insert</div>
+  <button id="bShape" onclick="P.pop('popShape',this)"><i>⬢</i>Shapes</button>
   <div class="rail-h">Story magic</div>
   <button id="bSticker" onclick="P.pop('popSticker',this)"><i>\ud83d\ude0a</i>Stickers</button>
   <button id="bFx" onclick="P.pop('popFx',this)"><i>\u2728</i>Effects</button>
@@ -17948,8 +17955,17 @@ function ylStudioDoc(w,title,flip){
   <div id="fxList" class="fx-list"></div>
   <p class="fx-note">Plays here while you build. PDF export saves one still frame \u2014 a picture cannot hold motion, so the page will show the effect\u2019s resting position.</p>
 </div>
-<p id="hint">\u270b <b>Move</b>: drag a picture or word. Corner squares resize it. \u2702\ufe0f <b>Crop</b>: select a picture, then drag a box over the part you want to keep.</p>
+<div class="pop" id="popShape" style="right:6px;left:auto;max-height:74vh;overflow:auto">
+  <h5>Basic shapes</h5><div class="shp-grid" id="shpBasic"></div>
+  <h5>Arrows &amp; lines</h5><div class="shp-grid" id="shpArrow"></div>
+  <p class="fx-note">Tap a shape to drop it on the page, then Move, resize, recolour (🎨) or animate (✨) it like anything else.</p>
+</div>
+<p id="hint">\u270b <b>Move</b>: drag a picture or word. Corner squares resize it. \u2702\ufe0f <b>Crop</b>: select a picture, then drag a box over the part you want to keep. 👆 <b>Point</b>: tap a video to play it. ⬢ <b>Shapes</b> are in the right rail.</p>
 <div id="media"></div>
+<div id="vidPlay" style="position:fixed;inset:0;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;z-index:45">
+  <video id="vidPlayer" controls playsinline style="max-width:92vw;max-height:74vh;border-radius:12px;background:#000"></video>
+  <button class="gold" onclick="P.stopVideo()">✖ Close</button>
+</div>
 <div id="cam"><video id="camv" autoplay playsinline muted></video>
  <div><button class="gold" onclick="P.snap()">\ud83d\udcf8 Capture</button> <button onclick="P.camOff()">Cancel</button></div>
 </div>
@@ -17981,6 +17997,100 @@ var P=(function(){
     frame (t=0): a still image cannot hold motion, and pretending otherwise
     would be the same mistake as mislabelling a recording. The Effects panel
     says this in plain words rather than leaving it to be discovered. */
+ /* ---------- shapes (canvas-drawn objects, fully movable/resizable) ---------- */
+ var STROKE_SHAPES={line:1,lineArrow:1};
+ function rrPath(g,x,y,w,h,r){ r=Math.min(r,w/2,h/2);
+   g.moveTo(x+r,y); g.arcTo(x+w,y,x+w,y+h,r); g.arcTo(x+w,y+h,x,y+h,r);
+   g.arcTo(x,y+h,x,y,r); g.arcTo(x,y,x+w,y,r); g.closePath(); }
+ function polyPath(g,cx,cy,rx,ry,n,rot){ for(var i=0;i<n;i++){ var a=rot+i*2*Math.PI/n,
+   px=cx+Math.cos(a)*rx, py=cy+Math.sin(a)*ry; if(i)g.lineTo(px,py); else g.moveTo(px,py);} g.closePath(); }
+ function starPath(g,cx,cy,ro,ri,n,rot){ for(var i=0;i<n*2;i++){ var a=rot+i*Math.PI/n, r=(i%2)?ri:ro,
+   px=cx+Math.cos(a)*r, py=cy+Math.sin(a)*r; if(i)g.lineTo(px,py); else g.moveTo(px,py);} g.closePath(); }
+ function heartPath(g,x,y,w,h){ var t=y+h*0.30;
+   g.moveTo(x+w/2,y+h);
+   g.bezierCurveTo(x-w*0.06,y+h*0.55, x+w*0.16,y, x+w/2,t);
+   g.bezierCurveTo(x+w*0.84,y, x+w*1.06,y+h*0.55, x+w/2,y+h); g.closePath(); }
+ function plusPath(g,x,y,w,h){ var tx=w*0.33, ty=h*0.33;
+   g.moveTo(x+tx,y); g.lineTo(x+w-tx,y); g.lineTo(x+w-tx,y+ty); g.lineTo(x+w,y+ty);
+   g.lineTo(x+w,y+h-ty); g.lineTo(x+w-tx,y+h-ty); g.lineTo(x+w-tx,y+h); g.lineTo(x+tx,y+h);
+   g.lineTo(x+tx,y+h-ty); g.lineTo(x,y+h-ty); g.lineTo(x,y+ty); g.lineTo(x+tx,y+ty); g.closePath(); }
+ function cloudPath(g,x,y,w,h){ var r=h*0.5;
+   g.moveTo(x+w*0.22,y+h);
+   g.arc(x+w*0.22,y+h-r, r*0.92, Math.PI*0.5, Math.PI*1.5);
+   g.arc(x+w*0.46,y+r*0.95, r*0.98, Math.PI*1.02, Math.PI*1.98);
+   g.arc(x+w*0.78,y+h-r, r*0.92, Math.PI*1.5, Math.PI*0.5); g.closePath(); }
+ function bubblePath(g,x,y,w,h){ var bh=h*0.78, r=Math.min(w,bh)*0.18;
+   rrPath(g,x,y,w,bh,r);
+   g.moveTo(x+w*0.30,y+bh); g.lineTo(x+w*0.20,y+h); g.lineTo(x+w*0.46,y+bh); g.closePath(); }
+ function arrowPath(g,x,y,w,h,d){ var pts;
+   if(d==="R"){ var s=h*0.25, hw=w*0.6; pts=[[x,y+s],[x+hw,y+s],[x+hw,y],[x+w,y+h/2],[x+hw,y+h],[x+hw,y+h-s],[x,y+h-s]]; }
+   else if(d==="L"){ var s=h*0.25, hw=w*0.4; pts=[[x+w,y+s],[x+hw,y+s],[x+hw,y],[x,y+h/2],[x+hw,y+h],[x+hw,y+h-s],[x+w,y+h-s]]; }
+   else if(d==="U"){ var s=w*0.25, hh=h*0.4; pts=[[x+s,y+h],[x+s,y+hh],[x,y+hh],[x+w/2,y],[x+w,y+hh],[x+w-s,y+hh],[x+w-s,y+h]]; }
+   else { var s=w*0.25, hh=h*0.6; pts=[[x+s,y],[x+s,y+hh],[x,y+hh],[x+w/2,y+h],[x+w,y+hh],[x+w-s,y+hh],[x+w-s,y]]; }
+   pts.forEach(function(p,i){ if(i)g.lineTo(p[0],p[1]); else g.moveTo(p[0],p[1]); }); g.closePath(); }
+ function lineArrowPath(g,x,y,w,h){ var y0=y+h/2, ah=h*0.4;
+   g.moveTo(x,y0); g.lineTo(x+w,y0);
+   g.moveTo(x+w-ah,y0-ah*0.7); g.lineTo(x+w,y0); g.lineTo(x+w-ah,y0+ah*0.7); }
+ function shapePath(g,name,x,y,w,h){ g.beginPath();
+   var x2=x+w, y2=y+h, cx0=x+w/2, cy0=y+h/2;
+   if(name==="rect") g.rect(x,y,w,h);
+   else if(name==="rrect") rrPath(g,x,y,w,h,Math.min(w,h)*0.18);
+   else if(name==="ellipse") g.ellipse(cx0,cy0,w/2,h/2,0,0,Math.PI*2);
+   else if(name==="circle"){ var r=Math.min(w,h)/2; g.arc(cx0,cy0,r,0,Math.PI*2); }
+   else if(name==="triangle"){ g.moveTo(cx0,y); g.lineTo(x2,y2); g.lineTo(x,y2); g.closePath(); }
+   else if(name==="rtri"){ g.moveTo(x,y); g.lineTo(x,y2); g.lineTo(x2,y2); g.closePath(); }
+   else if(name==="diamond"){ g.moveTo(cx0,y); g.lineTo(x2,cy0); g.lineTo(cx0,y2); g.lineTo(x,cy0); g.closePath(); }
+   else if(name==="pentagon") polyPath(g,cx0,cy0,w/2,h/2,5,-Math.PI/2);
+   else if(name==="hexagon") polyPath(g,cx0,cy0,w/2,h/2,6,0);
+   else if(name==="star") starPath(g,cx0,cy0,Math.min(w,h)/2,Math.min(w,h)/4.2,5,-Math.PI/2);
+   else if(name==="heart") heartPath(g,x,y,w,h);
+   else if(name==="plus") plusPath(g,x,y,w,h);
+   else if(name==="cloud") cloudPath(g,x,y,w,h);
+   else if(name==="bubble") bubblePath(g,x,y,w,h);
+   else if(name==="arrowR") arrowPath(g,x,y,w,h,"R");
+   else if(name==="arrowL") arrowPath(g,x,y,w,h,"L");
+   else if(name==="arrowU") arrowPath(g,x,y,w,h,"U");
+   else if(name==="arrowD") arrowPath(g,x,y,w,h,"D");
+   else if(name==="line"){ g.moveTo(x,y2); g.lineTo(x2,y); }
+   else if(name==="lineArrow") lineArrowPath(g,x,y,w,h);
+   else g.rect(x,y,w,h);
+ }
+ function drawShape(g,o){ g.save(); g.lineJoin="round"; g.lineCap="round";
+   shapePath(g,o.shape,o.x,o.y,o.w,o.h);
+   if(STROKE_SHAPES[o.shape]){ g.strokeStyle=o.fill||"#15183A"; g.lineWidth=o.lw||6; g.stroke(); }
+   else { g.fillStyle=o.fill||"#8B5CF6"; g.fill();
+     if(o.line){ g.strokeStyle=o.line; g.lineWidth=o.lw||3; g.stroke(); } }
+   g.restore(); }
+ function addShape(name){ push();
+   var w=120,h=90; if(name==="line"||name==="lineArrow"){ h=64; } if(name==="circle"){ h=w=100; }
+   pg().o.push({type:"shape", shape:name, x:(W-w)/2, y:(H-h)/2, w:w, h:h,
+     fill:COL, line:"#15183A", lw:(name==="line"||name==="lineArrow")?6:3,
+     fx:"none", fxSeed:Math.random()*6.28});
+   sel=pg().o.length-1; TOOL="move"; paintTools(); render();
+   var e=document.getElementById("popShape"); if(e) e.style.display="none"; }
+ var SHAPE_BASIC=[["rect","Rectangle"],["rrect","Rounded"],["ellipse","Oval"],["circle","Circle"],
+   ["triangle","Triangle"],["rtri","Right triangle"],["diamond","Diamond"],["pentagon","Pentagon"],
+   ["hexagon","Hexagon"],["star","Star"],["heart","Heart"],["plus","Cross"],["cloud","Cloud"],["bubble","Speech bubble"]];
+ var SHAPE_ARROW=[["arrowR","Right arrow"],["arrowL","Left arrow"],["arrowU","Up arrow"],
+   ["arrowD","Down arrow"],["line","Line"],["lineArrow","Line arrow"]];
+ function paintShapes(){
+   [["shpBasic",SHAPE_BASIC],["shpArrow",SHAPE_ARROW]].forEach(function(pair){
+     var g=document.getElementById(pair[0]); if(!g) return; g.innerHTML="";
+     pair[1].forEach(function(sd){
+       var b=document.createElement("button"); b.type="button"; b.className="shp-btn"; b.title=sd[1];
+       var c=document.createElement("canvas"); c.width=30; c.height=30; var gg=c.getContext("2d");
+       var st=(sd[0]==="line"||sd[0]==="lineArrow");
+       drawShape(gg,{shape:sd[0],x:4,y:4,w:22,h:22,fill:st?"#333":"#8B5CF6",line:"#15183A",lw:st?3:1.4});
+       b.appendChild(c); b.onclick=function(){ addShape(sd[0]); }; g.appendChild(b);
+     });
+   });
+ }
+ /* ---------- video playback (Pointer tool) ---------- */
+ function playVideo(url){ var m=document.getElementById("vidPlay"), v=document.getElementById("vidPlayer");
+   if(!m||!v||!url) return; v.src=url; v.muted=false; v.currentTime=0; m.style.display="flex";
+   var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); }
+ function stopVideo(){ var m=document.getElementById("vidPlay"), v=document.getElementById("vidPlayer");
+   if(v){ v.pause(); v.removeAttribute("src"); v.load(); } if(m) m.style.display="none"; }
  function drawObj(g,o,animate){
    const cxp=o.x+o.w/2, cyp=o.y+o.h/2;
    let tx=0, ty=0, rot=0, scl=1, alpha=1;
@@ -18001,6 +18111,8 @@ var P=(function(){
        g.fillStyle="#fff"; g.beginPath();
        var r=Math.min(o.w,o.h)*0.08, cxp2=o.x+o.w/2+r*0.25, cyp2=o.y+o.h/2;
        g.moveTo(cxp2-r*0.6,cyp2-r); g.lineTo(cxp2+r,cyp2); g.lineTo(cxp2-r*0.6,cyp2+r); g.closePath(); g.fill(); }
+   } else if(o.type==="shape"){
+     drawShape(g,o);
    } else if(o.type==="text"){
      g.font="700 "+o.size+"px "+o.font; g.fillStyle=o.col; g.textBaseline="top";
      g.fillText(o.txt, o.x, o.y);
@@ -18056,9 +18168,14 @@ var P=(function(){
  var mode=null, start=null, orig=null, cropRect=null;
  function down(e){
    var p=pos(e); e.preventDefault();
+   if(TOOL==="pointer"){ var hp=hit(p);
+     if(hp!=null){ var ob=pg().o[hp];
+       if(ob.type==="video"&&ob.vurl){ playVideo(ob.vurl); }
+       else { sel=hp; render(); } }
+     return; }
    if(TOOL==="text"){ openText(e); return; }
    if(TOOL==="crop"){
-     if(sel==null||pg().o[sel].type==="text"){ alert("Select a picture first \u2014 press \u270b Move and click it."); return; }
+     if(sel==null||pg().o[sel].type!=="img"){ alert("Select a picture first \u2014 press \u270b Move and click it."); return; }
      mode="crop"; start=p; cropRect={x:p.x,y:p.y,w:0,h:0}; return;
    }
    if(TOOL==="move"){
@@ -18091,7 +18208,7 @@ var P=(function(){
    } else if(mode==="resize"){
      var o=pg().o[sel], dx=p.x-start.x, dy=p.y-start.y, h=orig.h_;
      var nw=orig.w+(h==="se"||h==="ne"?dx:-dx), nh=orig.h+(h==="se"||h==="sw"?dy:-dy);
-     var r=orig.w/orig.h; if(nw<16)nw=16; nh=nw/r;
+     if(nw<16)nw=16; if(orig.type==="shape"){ if(nh<16)nh=16; } else { nh=nw/(orig.w/orig.h); }
      o.w=nw; o.h=nh;
      o.x = (h==="nw"||h==="sw") ? orig.x+orig.w-nw : orig.x;
      o.y = (h==="nw"||h==="ne") ? orig.y+orig.h-nh : orig.y;
@@ -18189,7 +18306,7 @@ var P=(function(){
      v.onseeked=function(){
        var c=document.createElement("canvas"); c.width=v.videoWidth; c.height=v.videoHeight;
        c.getContext("2d").drawImage(v,0,0);
-       var img=new Image(); img.onload=function(){ addObj(img,"video"); }; img.src=c.toDataURL();
+       var img=new Image(); img.onload=function(){ addObj(img,"video"); pg().o[pg().o.length-1].vurl=url; render(); }; img.src=c.toDataURL();
        logMedia(url, f.name, "Video: "+f.name);
      };
    };
@@ -18249,12 +18366,12 @@ var P=(function(){
 
  /* ---------- chrome ---------- */
  function paintTools(){
-   var map={move:"tMove",text:"tText",pen:"tPen",brush:"tBrush",marker:"tMark",eraser:"tErase",crop:"tCrop"};
+   var map={move:"tMove",pointer:"tPoint",text:"tText",pen:"tPen",brush:"tBrush",marker:"tMark",eraser:"tErase",crop:"tCrop"};
    Object.keys(map).forEach(function(k){ var b=document.getElementById(map[k]); if(b) b.classList.toggle("on", k===TOOL); });
-   cv.style.cursor = TOOL==="move" ? "grab" : (TOOL==="text" ? "text" : (TOOL==="crop" ? "cell" : "crosshair"));
+   cv.style.cursor = TOOL==="move" ? "grab" : TOOL==="pointer" ? "pointer" : (TOOL==="text" ? "text" : (TOOL==="crop" ? "cell" : "crosshair"));
  }
  function pop(id,btn){
-   ["popCol","popFont","popSticker","popFx"].forEach(function(k){ var e=document.getElementById(k); if(e&&k!==id) e.style.display="none"; });
+   ["popCol","popFont","popSticker","popFx","popShape"].forEach(function(k){ var e=document.getElementById(k); if(e&&k!==id) e.style.display="none"; });
    var e=document.getElementById(id); if(!e) return;
    var open = e.style.display!=="block";
    e.style.display = open ? "block" : "none";
@@ -18296,6 +18413,7 @@ var STICKER_FEEL=["\ud83d\ude00","\ud83d\ude22","\ud83d\ude20","\ud83d\ude31","\
        if(tin.style.display==="block") tin.style.color=COL;
        /* recolour the selected word immediately \u2014 seeing the change is the point */
        if(sel!=null && pg().o[sel] && pg().o[sel].type==="text"){ push(); pg().o[sel].col=COL; render(); }
+       if(sel!=null && pg().o[sel] && pg().o[sel].type==="shape"){ push(); pg().o[sel].fill=COL; render(); }
      }; });
    });
  }
@@ -18335,6 +18453,7 @@ var STICKER_FEEL=["\ud83d\ude00","\ud83d\ude22","\ud83d\ude20","\ud83d\ude31","\
   addSticker:addSticker, setFx:setFx,
   undo:function(){ var st=undoStack.pop(); if(!st) return; pages[cur].s=st.s; pages[cur].o=st.o; sel=null; render(); },
   addImage:addImage, addVideo:addVideo, importFile:importFile,
+  stopVideo:stopVideo, playVideo:playVideo,
   photo:photo, snap:snap, camOff:camOff,
   voice:function(){ toggleRec("audio"); }, video:function(){ toggleRec("video"); },
   add:function(){ if(pt)pg().t=pt.value; anim(function(){ pages.push({t:"",s:blankStrokes(),o:[]}); cur=pages.length-1; sel=null; undoStack=[]; load(); }); },
@@ -18356,7 +18475,7 @@ var STICKER_FEEL=["\ud83d\ude00","\ud83d\ude22","\ud83d\ude20","\ud83d\ude31","\
 
  function load(){ if(pt)pt.value=pg().t; var pn=document.getElementById("pn");
    if(pn)pn.textContent=(cur+1)+"/"+pages.length; render(); }
- paintSwatches(); paintTools(); paintStickers();
+ paintSwatches(); paintTools(); paintStickers(); paintShapes();
  return api;
 })();
 P.load();
