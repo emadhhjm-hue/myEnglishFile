@@ -5399,7 +5399,7 @@ function renderQuiz(qs){
 }
 let CURRENT_Q=[];
 function markQuiz(id,skill,title){
-  const qs=CURRENT_Q; let auto=0, autoMax=0; const written=[];
+  const qs=CURRENT_Q; let auto=0, autoMax=0; const written=[]; const sheet=[];
   qs.forEach((q,i)=>{
     const qEl=document.querySelector(`.q[data-i="${i}"]`);
     const fb=qEl.querySelector('.feedback');
@@ -5414,6 +5414,7 @@ function markQuiz(id,skill,title){
       });
       if(chosen===q.answer){ auto++; fb.classList.add('good'); fb.textContent="✓ Correct. "+q.exp; }
       else { fb.textContent=(chosen===-1?"No answer chosen. ":"Not quite. ")+q.exp; }
+      sheet.push({q:q.q, your: chosen>=0?q.options[chosen]:"(blank)", correct:q.options[q.answer], ok:chosen===q.answer, exp:q.exp||""});
     } else if(q.type==="tfng"){
       autoMax++;
       const ans=ansIdx(q);
@@ -5422,12 +5423,14 @@ function markQuiz(id,skill,title){
       qEl.querySelectorAll('.opt').forEach((o,j)=>{ if(j===ans) o.classList.add('correct'); if(j===chosen && chosen!==ans) o.classList.add('wrong'); });
       if(chosen===ans){ auto++; fb.classList.add('good'); fb.textContent=`✓ Correct — ${TFNG[ans]}. ${q.exp}`; }
       else { fb.textContent=(chosen===-1?"No answer chosen. ":"Not quite. ")+`Answer: ${TFNG[ans]}. ${q.exp}`; }
+      sheet.push({q:q.q, your: chosen>=0?TFNG[chosen]:"(blank)", correct:TFNG[ans], ok:chosen===ans, exp:q.exp||""});
     } else if(q.type==="reflect"){
       const txt=(qEl.querySelector('textarea').value||"").trim();
       if(txt) written.push("Reflection: "+txt);
       fb.classList.add('good');
       fb.innerHTML = txt ? `✓ Thanks for sharing your thinking — your teacher will read this.`
         : `Try writing a sentence or two here. ${q.exp}`;
+      sheet.push({q:q.q, your: txt||"(blank)", correct:"(open reflection)", ok:null, exp:q.exp||""});
     } else if(q.type==="gap"){
       autoMax++;
       const inp=qEl.querySelector(`[name="q${i}"]`);
@@ -5437,10 +5440,12 @@ function markQuiz(id,skill,title){
       const ok=ans.some(a=>norm(a)===norm(got));
       if(ok){ auto++; inp.style.borderColor="var(--teal)"; fb.classList.add('good'); fb.textContent="✓ Correct. "+(q.exp||""); }
       else { inp.style.borderColor="var(--coral)"; fb.innerHTML=`Answer: <b>${ans[0]}</b>. ${q.exp||""}`; }
+      sheet.push({q:q.q, your: got||"(blank)", correct:ans[0], ok:ok, exp:q.exp||""});
     } else {
       const txt=(qEl.querySelector('textarea').value||"").trim();
       if(txt) written.push("Answer: "+txt);
       fb.innerHTML = `<b>Model answer / answer key:</b> ${q.answer}<br><span style="color:var(--muted)">Hint: ${q.exp}</span>`;
+      sheet.push({q:q.q, your: txt||"(blank)", correct:String(q.answer||""), ok:null, exp:q.exp||""});
     }
   });
   const pct = autoMax? Math.round(auto/autoMax*100) : null;
@@ -5451,6 +5456,7 @@ function markQuiz(id,skill,title){
   if(SESSION&&SESSION.role==="student"){
     saveResult({date:Date.now(), name:SESSION.name, class:SESSION.class, code:SESSION.code,
       id:SESSION.id, skill, activity:title+(skill==='Reading'?" ("+LEVEL+")":""), score:auto, max:autoMax, percent:pct,
+      sheet:sheet, essay: written.length?written.join("\n\n"):undefined,
       detail: written.join("  |  ").slice(0,800)});
   }
   window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'});
@@ -5470,7 +5476,7 @@ function submitWriting(id,title){
   if(SESSION&&SESSION.role==="student"){
     saveResult({date:Date.now(), name:SESSION.name, class:SESSION.class, code:SESSION.code, id:SESSION.id,
       skill:"Writing", activity:title, score:checks, max:total, percent:Math.round(checks/total*100),
-      detail:detail.slice(0,800)});
+      essay:text, detail:detail.slice(0,800)});
   }
   document.getElementById('wResult').innerHTML=`<div class="scorebox"><div class="big">${words}</div>
     <div>words saved · ${checks}/${total} criteria self-checked${vis?' · visual described':''}${file?`<br>📎 ${esc(file.name)}`:''}</div>
@@ -5736,6 +5742,7 @@ function finishSpell(){
   if(SESSION&&SESSION.role==="student"){
     saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,
       skill:(s.back==='spelldrill'?"Spelling":"Listening"),activity:s.label+" (spelling round)",score:(s.first+s.second),max:N,percent:pct,
+      spelling:{correct:s.log.filter(function(x){return x.ok;}).map(function(x){return x.t;}), wrong:s.log.filter(function(x){return !x.ok;}).map(function(x){return x.t;})},
       detail:`first-try ${s.first}, second-try ${s.second}, missed ${s.missed}`});
   }
 }
@@ -6174,27 +6181,66 @@ function reopenDesign(projId){
 }
 function downloadAnswerSheet(i){
   var r=_TRACK[i]; if(!r) return;
+  if(!(window.jspdf&&window.jspdf.jsPDF)){ alert("The PDF tool is still loading — please try again in a moment."); return; }
   var tNote=(getStudents()[myKeyNow()]||{}).feedback||'';
-  var when=new Date(r.date).toLocaleString();
+  var doc=new window.jspdf.jsPDF('p','pt','a4');
+  var PW=doc.internal.pageSize.getWidth(), PH=doc.internal.pageSize.getHeight();
+  var M=44, y=M, W=PW-M*2;
+  function need(h){ if(y+h>PH-M){ doc.addPage(); y=M; } }
+  function line(txt,o){ o=o||{};
+    doc.setFont('helvetica', o.bold?'bold':(o.italic?'italic':'normal'));
+    doc.setFontSize(o.size||11);
+    doc.setTextColor(o.color?o.color[0]:30, o.color?o.color[1]:30, o.color?o.color[2]:30);
+    var lh=o.lh||15, lines=doc.splitTextToSize(String(txt==null?'':txt), o.w||W);
+    for(var k=0;k<lines.length;k++){ need(lh); doc.text(lines[k], o.x!=null?o.x:M, y); y+=lh; }
+  }
+  function gap(h){ y+=(h||8); }
+  function rule(){ need(10); doc.setDrawColor(228,228,234); doc.line(M,y,M+W,y); y+=8; }
+  doc.setFillColor(21,24,58); doc.rect(0,0,PW,58,'F');
+  doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(18);
+  doc.text('iCAN - Answer sheet', M, 37);
+  y=80;
+  line(((SESSION&&SESSION.name)||'')+'   |   '+((SESSION&&SESSION.class)||'')+'   |   '+new Date(r.date).toLocaleString(), {size:10,color:[110,110,120]});
+  gap(6);
+  line('Skill: '+trackSkill(r), {bold:true, size:12, color:[12,138,114]});
+  line('Activity: '+(r.activity||''), {size:11});
   var scoreTxt = r.percent!=null ? (r.percent+'%'+(r.score!=null?' ('+r.score+'/'+r.max+')':'')) : 'saved';
-  var html='<!doctype html><meta charset="utf-8"><title>Answer sheet — '+esc(r.activity||'')+'</title>'+
-    '<style>body{font-family:Georgia,serif;max-width:720px;margin:28px auto;padding:0 18px;color:#222;line-height:1.55}'+
-    'h1{font-family:Arial,sans-serif;font-size:1.4rem;color:#15183A;margin-bottom:2px}'+
-    '.meta{color:#666;font-size:.85rem;margin-bottom:14px}.box{border:1px solid #ddd;border-radius:8px;padding:12px 14px;margin:10px 0}'+
-    '.k{font-weight:700;color:#0c8a72}</style>'+
-    '<h1>iCAN — Answer sheet</h1>'+
-    '<div class="meta">'+esc(SESSION.name||'')+' · '+esc(SESSION.class||'')+' · '+when+'</div>'+
-    '<div class="box"><span class="k">Skill:</span> '+esc(trackSkill(r))+'<br><span class="k">Activity:</span> '+esc(r.activity||'')+'<br><span class="k">Score:</span> '+scoreTxt+'</div>'+
-    (r.detail?('<div class="box"><span class="k">Details / your work:</span><br>'+esc(String(r.detail))+'</div>'):'')+
-    (r.answers?('<div class="box"><span class="k">Your answers:</span><br>'+esc(typeof r.answers==='string'?r.answers:JSON.stringify(r.answers))+'</div>'):'')+
-    '<div class="box"><span class="k">What to work on next (Needs):</span> '+esc(rowNeeds(r))+'</div>'+
-    ((r.feedback||tNote)?('<div class="box"><span class="k">Teacher feedback:</span><br>'+esc(r.feedback||tNote)+'</div>'):'')+
-    '<p style="color:#999;font-size:.8rem;margin-top:18px">Generated by iCAN Academy — keep this for your records.</p>';
-  var blob=new Blob([html],{type:'text/html'}), url=URL.createObjectURL(blob);
-  var a=document.createElement('a'); a.href=url;
-  a.download='answer-sheet-'+String(r.activity||'result').replace(/[^a-z0-9]+/gi,'-').slice(0,40)+'.html';
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+  line('Score: '+scoreTxt, {bold:true, size:13});
+  gap(8);
+  if(Array.isArray(r.sheet) && r.sheet.length){
+    line('Questions, your answers & the correct answers', {bold:true, size:12, color:[21,24,58]});
+    gap(2);
+    r.sheet.forEach(function(q,qi){
+      rule();
+      line((qi+1)+'.  '+String(q.q||''), {bold:true, size:11});
+      line('Your answer:  '+String(q.your==null?'':q.your), {size:11, color:[60,60,70]});
+      line('Correct:  '+String(q.correct==null?'':q.correct), {size:11, bold:true, color:[21,24,58]});
+      var verdict = q.ok===true?'RIGHT':(q.ok===false?'WRONG':'OPEN RESPONSE');
+      var vcol = q.ok===true?[15,138,114]:(q.ok===false?[214,57,61]:[120,120,120]);
+      line(verdict, {size:10, bold:true, color:vcol});
+      if(q.exp) line('Why: '+String(q.exp), {size:9.5, italic:true, color:[120,120,120]});
+    });
+    gap(6);
+  }
+  if(r.essay){ line('What you wrote', {bold:true,size:12,color:[21,24,58]}); gap(2); line(String(r.essay), {size:11,color:[45,45,55]}); gap(8); }
+  if(r.spelling){ var sp=r.spelling;
+    line('Spelt correctly ('+((sp.correct||[]).length)+')', {bold:true,size:11,color:[15,138,114]});
+    line(((sp.correct||[]).join(', '))||'-', {size:11});
+    gap(2);
+    line('Misspelt ('+((sp.wrong||[]).length)+')', {bold:true,size:11,color:[192,57,43]});
+    line(((sp.wrong||[]).join(', '))||'-', {size:11});
+    gap(8);
+  }
+  if(!(Array.isArray(r.sheet)&&r.sheet.length) && !r.essay && !r.spelling && r.detail){
+    line('Details / your work', {bold:true,size:12,color:[21,24,58]});
+    line(String(r.detail), {size:11}); gap(8);
+  }
+  line('What to work on next (Needs):  '+rowNeeds(r), {bold:true, size:11, color:[12,138,114]});
+  gap(6);
+  if(r.feedback||tNote){ line('Teacher feedback', {bold:true,size:12,color:[21,24,58]}); line(String(r.feedback||tNote), {size:11}); gap(6); }
+  gap(8);
+  line('Generated by iCAN Academy - keep this for your records.', {size:9, color:[150,150,150]});
+  doc.save('answer-sheet-'+String(r.activity||'result').replace(/[^a-z0-9]+/gi,'-').slice(0,40)+'.pdf');
 }
 function myResultsTable(){
   if(!SESSION) return "";
@@ -7709,8 +7755,10 @@ function gradeExam(){
   const rC=RA.c+RB.c, rM=RA.max+RB.max;
   const essay=(val('diagEssay')||"").trim(); const words=essay?essay.split(/\s+/).filter(Boolean).length:0;
   const tot=V.c+G.c+rC, max=V.max+G.max+rM, pct=Math.round(tot/max*100);
-  saveResult({skill:ctx.skill, activity:ex.label, score:tot, max, percent:pct,
-    detail:`Vocab ${V.c}/${V.max} · Grammar ${G.c}/${G.max} · Reading ${rC}/${rM} · Essay ${words}w: ${essay.slice(0,800)}`});
+  saveResult({date:Date.now(), name:(SESSION&&SESSION.name)||'', class:(SESSION&&SESSION.class)||'', code:(SESSION&&SESSION.code)||'', id:(SESSION&&SESSION.id)||'',
+    skill:ctx.skill, activity:ex.label, score:tot, max, percent:pct,
+    sheet:[].concat(V.rev,G.rev,RA.rev,RB.rev), essay:essay,
+    detail:`Vocab ${V.c}/${V.max} · Grammar ${G.c}/${G.max} · Reading ${rC}/${rM} · Essay ${words}w`});
   /* A start-of-year diagnostic places the student immediately — no waiting for a reload. */
   try{ if(ctx.skill==='Diagnostic' && typeof applyPlacement==='function') applyPlacement(); }catch(e){}
   showExamResults(ex,ctx,{V,G,RA,RB,rC,rM,tot,max,pct,essay,words});
@@ -8510,7 +8558,7 @@ function grcSubmit(){
   GRC.done=true; let correct=0;
   qs.forEach((q,i)=>{ const got=answers[i]===q.answer; if(got)correct++; const el=document.getElementById('grcq'+i); if(el){ el.classList.add(got?'grc-ok':'grc-bad'); el.insertAdjacentHTML('beforeend', `<div class="grc-key">${got?'✓ Correct.':'✗ Correct answer: <b>'+esc(q.options[q.answer])+'</b>.'} ${q.exp?esc(q.exp):''}</div>`); const inputs=el.querySelectorAll('input'); inputs.forEach(x=>x.disabled=true);} });
   const pct=Math.round(correct/qs.length*100); const band=certBand(pct);
-  if(SESSION&&SESSION.role==='student'){ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:"Grammar",activity:c.title,score:correct,max:qs.length,percent:pct,detail:`Grammar Challenge · ${correct}/${qs.length} (${pct}%)`}); }
+  if(SESSION&&SESSION.role==='student'){ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:"Grammar",activity:c.title,score:correct,max:qs.length,percent:pct,sheet:qs.map(function(q,i){return {q:q.q, your:(answers[i]!=null?q.options[answers[i]]:"(blank)"), correct:q.options[q.answer], ok:answers[i]===q.answer, exp:q.exp||""};}),detail:`Grammar Challenge · ${correct}/${qs.length} (${pct}%)`}); }
   const praise = pct>=80 ? "Outstanding work — your grammar is strong and consistent across many points."
               : pct>=50 ? "Well done — you have a solid grasp of the core grammar, with a few areas to sharpen."
               : "Good effort for taking on the full challenge — this is exactly how you find what to work on next.";
@@ -16853,14 +16901,14 @@ ROUTES.ylExamRun=function(id){
 };
 function ylExamSubmit(id){
   const ex=YL_EXAMS.find(x=>x.id===id); if(!ex) return;
-  const r=ylCheckSet('ylExamQ'); const s=r.s, m=r.m; const pct=m?Math.round(s/m*100):0;
+  YL_SHEET=[]; const r=ylCheckSet('ylExamQ'); const s=r.s, m=r.m; const pct=m?Math.round(s/m*100):0;
   const w=stemWordCount(val('ylExamWrite'));
   const face=pct>=80?'🌟':(pct>=50?'👍':'💪');
   const res=document.getElementById('ylExamRes');
   if(res) res.innerHTML='<div class="scorebox"><div class="big">'+face+'</div><div><b>'+s+' / '+m+'</b> on the multiple-choice sections ('+pct+'%). Green shows the answer key at each question.</div></div>'
     +(function(){var BG=['#e8f7f2','#f2edfe','#fdecec'],BD=['#0c8a72','#8B5CF6','#E6464B'];var mdl=Array.isArray(ex.writing.model)?ex.writing.model:[ex.writing.model];var leg='<div style="display:flex;flex-wrap:wrap;gap:12px;margin-bottom:8px;font-size:.78rem">'+ex.writing.points.map(function(p,k){return '<span style="display:inline-flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:3px;background:'+(BD[k]||'#999')+'"></span>'+esc(p)+'</span>';}).join('')+'</div>';var seg='<p style="line-height:2">'+mdl.map(function(t,k){return '<span style="background:'+(BG[k]||'#eef1f6')+';padding:2px 6px;border-radius:3px;box-shadow:inset 3px 0 '+(BD[k]||'#999')+'">'+esc(t)+'</span>';}).join(' ')+'</p>';return '<div class="card" style="margin-top:10px;background:#fbfcff;border:1px solid var(--line)"><b>✍️ Writing — model answer</b><p style="font-size:.82rem;color:var(--muted);margin:2px 0 8px">You wrote '+w+' words. This full-mark model covers all three points — each shown in its own colour:</p>'+leg+seg+'</div>';})();
   const btn=document.getElementById('ylExamSubmitBtn'); if(btn){btn.disabled=true;btn.textContent='✓ Submitted';}
-  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Exam — '+ex.title,score:s,max:m,percent:pct,detail:'Grade '+ex.grade+' · reading/grammar/vocab + writing'}); }catch(e){} }
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Exam — '+ex.title,score:s,max:m,percent:pct,sheet:YL_SHEET.slice(),essay:(val('ylExamWrite')||''),detail:'Grade '+ex.grade+' · reading/grammar/vocab + writing'}); }catch(e){} }
 }
 
 ROUTES.ylReading=function(){
@@ -17275,18 +17323,20 @@ ROUTES.ylMazeRun=function(id){
 };
 function mzSubmit(id){
   const mz=YL_MAZE.find(x=>x.id===id); if(!mz) return;
-  const gaps=document.querySelectorAll('#mzText .mz-gap'); let s=0; const m=gaps.length;
+  const gaps=document.querySelectorAll('#mzText .mz-gap'); let s=0; const m=gaps.length; const sheet=[]; let gi=0;
   gaps.forEach(gap=>{
     const a=+gap.dataset.a; const sel=(gap.dataset.sel!==undefined&&gap.dataset.sel!=='')?+gap.dataset.sel:-1;
     gap.querySelectorAll('.mz-opt').forEach((o,j)=>{ o.classList.remove('sel'); if(j===a)o.classList.add('correct'); if(j===sel&&sel!==a)o.classList.add('wrong'); o.disabled=true; });
     gap.dataset.locked='1'; if(sel===a) s++;
+    const opts=[].map.call(gap.querySelectorAll('.mz-opt'),function(o){return (o.textContent||'').trim();}); gi++;
+    sheet.push({q:'Gap '+gi, your: sel>=0?opts[sel]:'(blank)', correct:opts[a], ok:sel===a, exp:''});
   });
   const pct=m?Math.round(s/m*100):0;
   const face=pct>=80?'\ud83c\udf1f':(pct>=50?'\ud83d\udc4d':'\ud83d\udcaa');
   const res=document.getElementById('mzRes');
   if(res) res.innerHTML='<div class="scorebox"><div class="big">'+face+'</div><div><b>'+s+' / '+m+'</b> correct ('+pct+'%). Grammar focus: <b>'+esc(mz.focus)+'</b>. Green shows the key answer at each gap.</div></div>';
   const btn=document.getElementById('mzSubmitBtn'); if(btn){ btn.disabled=true; btn.textContent='\u2713 Submitted'; }
-  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Grammar Maze \u2014 '+mz.title,score:s,max:m,percent:pct,detail:mz.focus+' \u00b7 Grade '+mz.grade}); }catch(e){} }
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Grammar Maze \u2014 '+mz.title,score:s,max:m,percent:pct,sheet:sheet,detail:mz.focus+' \u00b7 Grade '+mz.grade}); }catch(e){} }
 }
 
 /* ================= YL ENGINE =================  */
@@ -17362,6 +17412,7 @@ function ylPrint(title,inner){
 }
 function ylMcqHTML(pref,items){ return items.map((m,i)=>'<div class="q" data-a="'+m.a+'"><b>'+(i+1)+'. '+m.q+'</b>'+m.o.map((o,j)=>'<label class="opt"><input type="radio" name="'+pref+i+'" value="'+j+'"><span>'+o+'</span></label>').join('')+'<div class="feedback hidden"></div></div>').join(''); }
 function ylGapHTML(pref,items){ return items.map((g,i)=>'<div class="q ylgap" data-a="'+esc(g.a.join('|'))+'"><b>'+g.s.replace('___','<input class="yl-in" id="'+pref+i+'" autocomplete="off">')+'</b><div class="feedback hidden"></div></div>').join(''); }
+let YL_SHEET=[];
 function ylCheckSet(rootId){
   const root=document.getElementById(rootId); if(!root) return {s:0,m:0};
   let s=0,m=0;
@@ -17371,10 +17422,15 @@ function ylCheckSet(rootId){
       m++; const inp=q.querySelector('input.yl-in'); const val=(inp.value||'').trim().toLowerCase();
       const ok=q.dataset.a.toLowerCase().split('|').some(a=>val===a.trim());
       if(ok){s++; fb.className='feedback good'; fb.textContent='✓ Correct!'; } else { fb.className='feedback'; fb.textContent='Answer: '+q.dataset.a.split('|')[0]; }
+      try{ var cl=q.cloneNode(true); var cf=cl.querySelector('.feedback'); if(cf)cf.remove(); var qt=(cl.textContent||'').replace(/\s+/g,' ').trim().slice(0,160);
+        YL_SHEET.push({q:qt, your:(inp.value||'').trim()||'(blank)', correct:q.dataset.a.split('|')[0], ok:ok, exp:''}); }catch(e){}
     } else {
       m++; const sel=q.querySelector('input:checked'); const ch=sel?+sel.value:-1; const a=+q.dataset.a;
       q.querySelectorAll('.opt').forEach((o,j)=>{o.classList.remove('correct','wrong'); if(j===a)o.classList.add('correct'); if(j===ch&&ch!==a)o.classList.add('wrong');});
       if(ch===a){s++; fb.className='feedback good'; fb.textContent='✓ Correct!';} else {fb.className='feedback'; fb.textContent=ch===-1?'Choose an answer.':'Not quite — see the green answer.';}
+      try{ var opts=[].map.call(q.querySelectorAll('.opt'),function(o){return (o.textContent||'').trim();});
+        var qb=q.querySelector('b'); var qq=(qb?qb.textContent:'').replace(/^\s*\d+\.\s*/,'');
+        YL_SHEET.push({q:qq, your: ch>=0?opts[ch]:'(blank)', correct:opts[a], ok:ch===a, exp:''}); }catch(e){}
     }
   });
   return {s:s,m:m};
@@ -17383,7 +17439,10 @@ function ylTFNG(pref,items){ return items.map((t,i)=>'<div class="q" data-tf="'+
 function ylCheckTF(rootId){
   const root=document.getElementById(rootId); let s=0,m=0; if(!root) return {s:0,m:0};
   root.querySelectorAll('.q[data-tf]').forEach(q=>{ m++; const sel=q.querySelector('input:checked'); const fb=q.querySelector('.feedback'); fb.classList.remove('hidden');
-    if(sel&&sel.value===q.dataset.tf){s++; fb.className='feedback good'; fb.textContent='✓ Correct!';} else {fb.className='feedback'; fb.textContent='Answer: '+(q.dataset.tf==='T'?'True':q.dataset.tf==='F'?'False':'Not Given');} });
+    const corr=(q.dataset.tf==='T'?'True':q.dataset.tf==='F'?'False':'Not Given');
+    const your=sel?(sel.value==='T'?'True':sel.value==='F'?'False':'Not Given'):'(blank)';
+    if(sel&&sel.value===q.dataset.tf){s++; fb.className='feedback good'; fb.textContent='✓ Correct!';} else {fb.className='feedback'; fb.textContent='Answer: '+corr;}
+    try{ var qb=q.querySelector('b'); var qq=(qb?qb.textContent:'').replace(/^\s*\d+\.\s*/,''); YL_SHEET.push({q:qq, your:your, correct:corr, ok:!!(sel&&sel.value===q.dataset.tf), exp:''}); }catch(e){} });
   return {s:s,m:m};
 }
 
@@ -17591,14 +17650,14 @@ function ylCReadSubmit(id){
   const x=YL_CREAD.find(r=>r.id===id); if(!x) return;
   let s=0,m=0;
   document.querySelectorAll('#creadMatch select').forEach(sel=>{ m++; if(sel.value&&sel.value===sel.dataset.a){s++; sel.style.borderColor='#0FA98B'; sel.style.background='#e8f7f2';} else { sel.style.borderColor='#E6464B'; sel.style.background='#fdecec'; } });
-  const q=ylCheckSet('creadQ'), su=ylCheckSet('creadSum'), ex=ylCheckSet('creadExt');
+  YL_SHEET=[]; const q=ylCheckSet('creadQ'), su=ylCheckSet('creadSum'), ex=ylCheckSet('creadExt');
   s+=q.s+su.s+ex.s; m+=q.m+su.m+ex.m;
   const k0=((document.getElementById('ck0')||{}).value||'').trim(), k1=((document.getElementById('ck1')||{}).value||'').trim();
   let kb=0; if(k0)kb++; if(k1)kb++; s+=kb; m+=2;
   const _el=Math.floor((Date.now()-(YL_CT0||Date.now()))/1000); const mmss=Math.floor(_el/60)+':'+String(_el%60).padStart(2,'0'); clearInterval(YL_CTIMER);
   const pct=m?Math.round(s/m*100):0; const face=pct>=80?'🌟':(pct>=50?'👍':'💪');
   const r=document.getElementById('creadRes'); if(r) r.innerHTML='<div class="scorebox"><div class="big">'+face+'</div><div><b>'+s+' / '+m+'</b> ('+pct+'%) · ⏱ you spent '+mmss+'. Green shows the answer key; both knowledge ideas count when filled. Your written answers are for discussion — compare them with a partner and the text.</div></div>';
-  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Reading — '+x.title,score:s,max:m,percent:pct,detail:'C-level · '+x.meta.genre}); }catch(e){} }
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Reading — '+x.title,score:s,max:m,percent:pct,sheet:YL_SHEET.slice(),detail:'C-level · '+x.meta.genre}); }catch(e){} }
 }
 function ylCReadBee(id){
   const x=YL_CREAD.find(r=>r.id===id); if(!x) return;
@@ -17649,12 +17708,12 @@ ROUTES.ylReader=function(compound){
 };
 function ylReaderSubmit(id,mode){
   const r=YL_READERS.find(x=>x.id===id); const ext=mode==='ext';
-  const a=ylCheckSet('ylQuiz'); const t=ext?ylCheckTF('ylQuiz'):{s:0,m:0};
+  YL_SHEET=[]; const a=ylCheckSet('ylQuiz'); const t=ext?ylCheckTF('ylQuiz'):{s:0,m:0};
   let s=a.s+t.s, m=a.m+t.m, extra='';
   if(ext){ const w=stemWordCount(val('ylShort')); m+=2; if(w>=30){s+=2; extra=' · short answer ✓ ('+w+' words)';} else if(w>0){s+=1; extra=' · short answer: aim for 30+ words (you have '+w+')';} else extra=' · short answer missing'; }
   const pct=Math.round(s/m*100);
   document.getElementById('ylRes').innerHTML='<div class="scorebox"><div class="big">'+(pct>=80?'🌟':pct>=50?'👍':'💪')+'</div><div>'+s+'/'+m+' ('+pct+'%)'+extra+'</div></div>';
-  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:r.title+(ext?' (extended)':''),score:s,max:m,percent:pct,detail:r.obj}); }catch(e){} }
+  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:r.title+(ext?' (extended)':''),score:s,max:m,percent:pct,sheet:YL_SHEET.slice(),detail:r.obj}); }catch(e){} }
 }
 function ylPrintReader(id,mode){
   const r=YL_READERS.find(x=>x.id===id); const ext=mode==='ext'; const v=ext?r.ext:r.std;
@@ -17682,9 +17741,9 @@ ROUTES.ylMM=function(id){
   </div>`;
 };
 function ylMMSubmit(id){
-  const m=YL_MM.find(x=>x.id===id); const r=ylCheckSet('ylQuiz'); const pct=Math.round(r.s/r.m*100);
+  const m=YL_MM.find(x=>x.id===id); YL_SHEET=[]; const r=ylCheckSet('ylQuiz'); const pct=Math.round(r.s/r.m*100);
   document.getElementById('ylRes').innerHTML='<div class="scorebox"><div class="big">'+(pct>=80?'🌟':'👍')+'</div><div>'+r.s+'/'+r.m+' — multimodal detective!</div></div>';
-  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Multimodal: '+m.title,score:r.s,max:r.m,percent:pct,detail:m.obj}); }catch(e){} }
+  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Multimodal: '+m.title,score:r.s,max:r.m,percent:pct,sheet:YL_SHEET.slice(),detail:m.obj}); }catch(e){} }
 }
 
 ROUTES.ylMini=function(){
@@ -17743,9 +17802,9 @@ ROUTES.ylExamTask=function(id){
   </div>`;
 };
 function ylExamCheck(id){
-  const t=YL_EXAM.find(x=>x.id===id); const r=ylCheckSet('ylQuiz'); const pct=Math.round(r.s/r.m*100);
+  const t=YL_EXAM.find(x=>x.id===id); YL_SHEET=[]; const r=ylCheckSet('ylQuiz'); const pct=Math.round(r.s/r.m*100);
   document.getElementById('ylRes').innerHTML='<div class="scorebox"><div class="big">'+(pct>=80?'🌟':'👍')+'</div><div>'+r.s+'/'+r.m+' — '+t.rub+'</div></div>';
-  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:t.title,score:r.s,max:r.m,percent:pct,detail:t.obj}); }catch(e){} }
+  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:t.title,score:r.s,max:r.m,percent:pct,sheet:YL_SHEET.slice(),detail:t.obj}); }catch(e){} }
 }
 function ylExamWrite(id){
   const t=YL_EXAM.find(x=>x.id===id); const w=stemWordCount(val('ylEW'));
