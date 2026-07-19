@@ -6154,13 +6154,14 @@ function exportExcel(){
    STUDENT result helpers
    ========================================================================= */
 function trackSkill(r){ var s=(r.skill||'').toLowerCase(), a=(r.activity||'').toLowerCase();
-  if(s.indexOf('read')>=0) return 'Reading';
-  if(s.indexOf('writ')>=0) return 'Writing';
+  if(s.indexOf('read')>=0||a.indexOf('read')>=0) return 'Reading';
+  if(s.indexOf('writ')>=0||a.indexOf('writing')>=0||a.indexOf('essay')>=0) return 'Writing';
   if(s.indexOf('design')>=0||a.indexOf('flipbook')>=0||a.indexOf('drawing')>=0) return 'Designing';
+  if(a.indexOf('grammar')>=0||a.indexOf('maze')>=0||s.indexOf('grammar')>=0) return 'Grammar';
   if(s.indexOf('spell')>=0||a.indexOf('spell')>=0) return 'Spelling';
   if(s.indexOf('typ')>=0||a.indexOf('typing')>=0) return 'Typing';
   if(s.indexOf('stem')>=0||s.indexOf('stream')>=0||a.indexOf('stem')>=0) return 'STEM·STREAM';
-  if(a.indexOf('game')>=0||a.indexOf('maze')>=0||s.indexOf('game')>=0) return 'Gaming';
+  if(s.indexOf('game')>=0||a.indexOf('game')>=0||a.indexOf('balloon')>=0) return 'Gaming';
   if(s.indexOf('exam')>=0||a.indexOf('exam')>=0||a.indexOf('quiz')>=0) return 'Exam';
   return r.skill||'Practice';
 }
@@ -17040,7 +17041,7 @@ ROUTES.ylDesign=function(){
    itself and moves on, because a learner who is punished for not yet knowing
    the rule learns only to stop guessing.
    ========================================================================== */
-let MZ_PHASE = 1, MZ_ID = null, MZ_DRAGPICK = null, MZ_CONN = [];
+let MZ_PHASE = 1, MZ_ID = null, MZ_DRAGPICK = null, MZ_CONN = [], MZ_CONN_LOG = {};
 
 function mzGoPhase(n){
   MZ_PHASE = n;
@@ -17058,7 +17059,7 @@ function mzConnectHTML(mz){
   (c.mcq||[]).forEach(q=>list.push(Object.assign({t:'mcq'},q)));
   (c.gap||[]).forEach(q=>list.push(Object.assign({t:'gap'},q)));
   (c.match||[]).forEach(q=>list.push(Object.assign({t:'drag'},q)));
-  MZ_CONN = list;
+  MZ_CONN = list; MZ_CONN_LOG = {};
 
   const item = (q,i)=>{
     let inner='';
@@ -17112,12 +17113,14 @@ function mzcMcq(btn, i, chosen, ans){
   box.querySelectorAll('.mzc-opt').forEach(b=>b.disabled=true);
   btn.classList.add(chosen===ans?'right':'wrong');
   if(chosen!==ans){ const opts=box.querySelectorAll('.mzc-opt'); if(opts[ans]) opts[ans].classList.add('right'); }
+  try{ MZ_CONN_LOG[i]={type:'mcq', chosen:chosen, ans:ans}; }catch(e){}
   mzcReveal(i, chosen===ans);
 }
 function mzcGap(i, ans){
   const el=document.getElementById('mzcIn'+i); if(!el) return;
   const ok = el.value.trim().toLowerCase().replace(/\s+/g,' ') === String(ans).trim().toLowerCase();
   el.classList.remove('right','wrong'); el.classList.add(ok?'right':'wrong');
+  try{ MZ_CONN_LOG[i]={type:'gap', value:el.value.trim(), ans:ans, ok:ok}; }catch(e){}
   if(!ok) el.value = ans;
   el.disabled = true;
   mzcReveal(i, ok);
@@ -17130,6 +17133,7 @@ function mzcPickChip(btn, val){
 }
 function mzcDrop(i, k, ans, val){
   if(!val) return;
+  try{ MZ_CONN_LOG[i]=MZ_CONN_LOG[i]||{type:'drag', slots:[]}; MZ_CONN_LOG[i].slots[k]={val:val, ans:ans}; }catch(e){}
   const slot=document.getElementById('mzcSlot'+i+'_'+k); if(!slot) return;
   const ok = String(val).trim().toLowerCase() === String(ans).trim().toLowerCase();
   slot.textContent = val;
@@ -17176,13 +17180,24 @@ function mzWriteHTML(mz){
     </div>
   </div>`;
 }
+function mzAttachWrite(id, text){
+  try{ if(!(SESSION&&SESSION.role==='student')) return false;
+    var a=getResults();
+    for(var i=a.length-1;i>=0;i--){ if(a[i].mazeId===id){
+      a[i].essay=text; a[i].sheet=a[i].sheet||[];
+      var found=false; for(var j=0;j<a[i].sheet.length;j++){ if(a[i].sheet[j].kind==='short'){ a[i].sheet[j].your=text; found=true; break; } }
+      if(!found) a[i].sheet.push({q:'Short written response', your:text, correct:'(open response)', ok:null, exp:'', kind:'short'});
+      Store.set('ican_results', a); return true;
+    } }
+  }catch(e){}
+  return false;
+}
 function mzwSubmit(id){
   const t = document.getElementById('mzwText'); if(!t) return;
   const words = t.value.trim().split(/\s+/).filter(Boolean).length;
   if(words < 15){ alert('Write a little more first \u2014 at least 15 words. The models unlock once you have had a real go.'); return; }
   const box = document.getElementById('mzwModels'); if(box) box.style.display='';
-  try{ saveResult({skill:'Foundational \u00b7 Grammar', activity:'Write \u00b7 '+id, score:words, max:words, percent:100,
-                   detail:'Writing response ('+words+' words): '+t.value.slice(0,600)}); }catch(e){}
+  try{ if(!mzAttachWrite(id, t.value)){ saveResult({date:Date.now(), name:(SESSION&&SESSION.name)||'', class:(SESSION&&SESSION.class)||'', code:(SESSION&&SESSION.code)||'', id:(SESSION&&SESSION.id)||'', skill:'Foundational', activity:'Grammar Maze \u2014 Write \u00b7 '+id, score:words, max:words, percent:100, essay:t.value, detail:'Writing response ('+words+' words)'}); } }catch(e){}
   if(box) box.scrollIntoView({behavior:'smooth', block:'start'});
 }
 
@@ -17276,7 +17291,7 @@ ROUTES.ylMazeRun=function(id){
     }
   });
   const labelOf={'5\u20136':'Grade 5\u20136','7':'Grade 7','8':'Grade 8'};
-  MZ_ID=id; MZ_PHASE=1; MZ_DRAGPICK=null;
+  MZ_ID=id; MZ_PHASE=1; MZ_DRAGPICK=null; MZ_CONN=[]; MZ_CONN_LOG={};
   const hasTeach = !!(mz.connect && mz.connect.length) || !!(mz.study && mz.study.length);
   app().innerHTML=MZ_STYLE+MZ_PHASE_CSS+`
   <div class="wrap screen">
@@ -17324,19 +17339,26 @@ ROUTES.ylMazeRun=function(id){
 function mzSubmit(id){
   const mz=YL_MAZE.find(x=>x.id===id); if(!mz) return;
   const gaps=document.querySelectorAll('#mzText .mz-gap'); let s=0; const m=gaps.length; const sheet=[]; let gi=0;
+  try{ (MZ_CONN||[]).forEach(function(cq,ci){ var log=(MZ_CONN_LOG||{})[ci];
+    if(cq.t==='mcq'){ sheet.push({q:'[Warm-up] '+cq.q, your:(log&&log.chosen!=null)?cq.o[log.chosen]:'(not answered)', correct:cq.o[cq.a], ok:log?(log.chosen===cq.a):null, exp:cq.why||''}); }
+    else if(cq.t==='gap'){ sheet.push({q:'[Warm-up] '+cq.q, your:(log&&log.value!=null&&log.value!=='')?log.value:'(not answered)', correct:String(cq.a), ok:log?!!log.ok:null, exp:cq.why||''}); }
+    else if(cq.t==='drag'){ sheet.push({q:'[Warm-up · match] '+cq.q, your:(log&&log.slots)?log.slots.filter(Boolean).map(function(x){return x.val;}).join(', '):'(not answered)', correct:(cq.slots||[]).map(function(x){return x.a;}).join(', '), ok:null, exp:cq.why||''}); }
+  }); }catch(e){}
   gaps.forEach(gap=>{
     const a=+gap.dataset.a; const sel=(gap.dataset.sel!==undefined&&gap.dataset.sel!=='')?+gap.dataset.sel:-1;
     gap.querySelectorAll('.mz-opt').forEach((o,j)=>{ o.classList.remove('sel'); if(j===a)o.classList.add('correct'); if(j===sel&&sel!==a)o.classList.add('wrong'); o.disabled=true; });
     gap.dataset.locked='1'; if(sel===a) s++;
-    const opts=[].map.call(gap.querySelectorAll('.mz-opt'),function(o){return (o.textContent||'').trim();}); gi++;
-    sheet.push({q:'Gap '+gi, your: sel>=0?opts[sel]:'(blank)', correct:opts[a], ok:sel===a, exp:''});
+    const opts=[].map.call(gap.querySelectorAll('.mz-opt'),function(o){ var c=o.cloneNode(true); var tg=c.querySelector('.mz-tag'); if(tg)tg.remove(); return (c.textContent||'').trim(); }); gi++;
+    sheet.push({q:'[Maze] Gap '+gi, your: sel>=0?opts[sel]:'(blank)', correct:opts[a], ok:sel===a, exp:''});
   });
   const pct=m?Math.round(s/m*100):0;
   const face=pct>=80?'\ud83c\udf1f':(pct>=50?'\ud83d\udc4d':'\ud83d\udcaa');
   const res=document.getElementById('mzRes');
   if(res) res.innerHTML='<div class="scorebox"><div class="big">'+face+'</div><div><b>'+s+' / '+m+'</b> correct ('+pct+'%). Grammar focus: <b>'+esc(mz.focus)+'</b>. Green shows the key answer at each gap.</div></div>';
   const btn=document.getElementById('mzSubmitBtn'); if(btn){ btn.disabled=true; btn.textContent='\u2713 Submitted'; }
-  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Grammar Maze \u2014 '+mz.title,score:s,max:m,percent:pct,sheet:sheet,detail:mz.focus+' \u00b7 Grade '+mz.grade}); }catch(e){} }
+  var _mzShort=((document.getElementById('mzwText')||{}).value)||'';
+  if(_mzShort.trim()){ sheet.push({q:'Short written response', your:_mzShort, correct:'(open response)', ok:null, exp:'', kind:'short'}); }
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Grammar Maze \u2014 '+mz.title,score:s,max:m,percent:pct,mazeId:id,sheet:sheet,essay:(_mzShort&&_mzShort.trim())?_mzShort:undefined,detail:mz.focus+' \u00b7 Grade '+mz.grade}); }catch(e){} }
 }
 
 /* ================= YL ENGINE =================  */
