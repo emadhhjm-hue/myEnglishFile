@@ -1078,6 +1078,22 @@ function saveResult(r){
 }
 function getStudents(){ return Store.get("ican_students")||{}; }
 function setStudent(id,o){ const s=getStudents(); s[id]=Object.assign(s[id]||{},o); Store.set("ican_students",s); }
+/* ---- Saved design projects (Flipbook / Drawing Pad) — interactive, re-openable ---- */
+function projKey(){ if(!SESSION) return "guest"; return SESSION.id || ((SESSION.code||"")+"::"+((SESSION.name||"").toLowerCase())); }
+function getProjects(){ return Store.get("ican_projects")||{}; }
+function icanSaveProject(p){
+  try{
+    var all=getProjects(), key=projKey(); all[key]=all[key]||[];
+    var id="pj"+Date.now()+Math.floor(Math.random()*1000);
+    all[key].unshift({id:id, name:(p&&p.name)||"Untitled", kind:(p&&p.kind)||"design", ts:Date.now(), data:p&&p.data});
+    if(all[key].length>25) all[key]=all[key].slice(0,25);
+    Store.set("ican_projects", all);
+    if(SESSION && SESSION.role==="student"){ try{ saveResult({date:Date.now(), name:SESSION.name, class:SESSION.class, code:SESSION.code, id:SESSION.id, skill:"Design", activity:((p.kind==="flipbook")?"Flipbook":"Drawing")+": "+((p&&p.name)||"Untitled"), detail:"Saved interactive design project (re-openable in the Design Studio).", projId:id, noCert:true}); }catch(e){} }
+    return {ok:true, id:id};
+  }catch(e){ return {ok:false, msg:"Storage is full — export a PDF, or delete older saved projects."}; }
+}
+function icanListProjects(){ var a=getProjects()[projKey()]||[]; return a.map(function(p){ return {id:p.id, name:p.name, kind:p.kind, ts:p.ts}; }); }
+function icanLoadProject(id){ var a=getProjects()[projKey()]||[]; for(var i=0;i<a.length;i++){ if(a[i].id===id) return a[i]; } return null; }
 
 /* ---- Online sync (Google Sheet web app). Local always works as a backup. ---- */
 function cloudUrl(){ return Store.get("ican_cloud_url") || CONFIG.cloudUrl || ""; }
@@ -4021,7 +4037,8 @@ const ROUTES = {
       <div style="margin-top:14px;font-size:.86rem;color:var(--muted)">Looking for your awarded certificates? Open <a onclick="go('mycerts')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">🏅 My Certificates</a>. &nbsp;·&nbsp; Looking for your saved words? Open your <a onclick="go('vocab')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">📚 Vocabulary bank</a>.</div>
 
       <div class="card" style="margin-top:24px">
-        <h3 style="font-size:1.2rem">My recent results</h3>
+        <h3 style="font-size:1.2rem">📌 My Achievements Track</h3>
+        <p style="color:var(--muted);font-size:.86rem;margin:2px 0 8px">Every practice you finish is saved here — download the answer sheet, read your teacher's feedback, and see what to work on next.</p>
         ${myResultsTable()}
       </div>
       </div>
@@ -6129,13 +6146,79 @@ function exportExcel(){
 /* =========================================================================
    STUDENT result helpers
    ========================================================================= */
+function trackSkill(r){ var s=(r.skill||'').toLowerCase(), a=(r.activity||'').toLowerCase();
+  if(s.indexOf('read')>=0) return 'Reading';
+  if(s.indexOf('writ')>=0) return 'Writing';
+  if(s.indexOf('design')>=0||a.indexOf('flipbook')>=0||a.indexOf('drawing')>=0) return 'Designing';
+  if(s.indexOf('spell')>=0||a.indexOf('spell')>=0) return 'Spelling';
+  if(s.indexOf('typ')>=0||a.indexOf('typing')>=0) return 'Typing';
+  if(s.indexOf('stem')>=0||s.indexOf('stream')>=0||a.indexOf('stem')>=0) return 'STEM·STREAM';
+  if(a.indexOf('game')>=0||a.indexOf('maze')>=0||s.indexOf('game')>=0) return 'Gaming';
+  if(s.indexOf('exam')>=0||a.indexOf('exam')>=0||a.indexOf('quiz')>=0) return 'Exam';
+  return r.skill||'Practice';
+}
+function rowNeeds(r){
+  if(r.percent==null) return (trackSkill(r)==='Designing')?'Keep creating — try a new tool':'Keep practising';
+  if(r.percent<50) return 'Revisit '+trackSkill(r)+' basics';
+  if(r.percent<75) return 'Practise '+trackSkill(r)+' more';
+  if(r.percent<90) return 'Almost there — polish '+trackSkill(r);
+  return 'On track — extend yourself';
+}
+var _TRACK=[];
+function myKeyNow(){ return SESSION ? (SESSION.id||((SESSION.code||'')+'::'+((SESSION.name||'').toLowerCase()))) : ''; }
+function reopenDesign(projId){
+  var p=icanLoadProject(projId);
+  if(!p){ alert('That saved design was made in another browser/device, so it can only be reopened there.'); return; }
+  if((p.kind||'')==='drawing'){ ylDrawPad(); } else { ylFlipbook(); }
+  setTimeout(function(){ alert('The Design Studio is opening — press 📂 Open inside it and choose "'+((p.name||'your project'))+'".'); }, 400);
+}
+function downloadAnswerSheet(i){
+  var r=_TRACK[i]; if(!r) return;
+  var tNote=(getStudents()[myKeyNow()]||{}).feedback||'';
+  var when=new Date(r.date).toLocaleString();
+  var scoreTxt = r.percent!=null ? (r.percent+'%'+(r.score!=null?' ('+r.score+'/'+r.max+')':'')) : 'saved';
+  var html='<!doctype html><meta charset="utf-8"><title>Answer sheet — '+esc(r.activity||'')+'</title>'+
+    '<style>body{font-family:Georgia,serif;max-width:720px;margin:28px auto;padding:0 18px;color:#222;line-height:1.55}'+
+    'h1{font-family:Arial,sans-serif;font-size:1.4rem;color:#15183A;margin-bottom:2px}'+
+    '.meta{color:#666;font-size:.85rem;margin-bottom:14px}.box{border:1px solid #ddd;border-radius:8px;padding:12px 14px;margin:10px 0}'+
+    '.k{font-weight:700;color:#0c8a72}</style>'+
+    '<h1>iCAN — Answer sheet</h1>'+
+    '<div class="meta">'+esc(SESSION.name||'')+' · '+esc(SESSION.class||'')+' · '+when+'</div>'+
+    '<div class="box"><span class="k">Skill:</span> '+esc(trackSkill(r))+'<br><span class="k">Activity:</span> '+esc(r.activity||'')+'<br><span class="k">Score:</span> '+scoreTxt+'</div>'+
+    (r.detail?('<div class="box"><span class="k">Details / your work:</span><br>'+esc(String(r.detail))+'</div>'):'')+
+    (r.answers?('<div class="box"><span class="k">Your answers:</span><br>'+esc(typeof r.answers==='string'?r.answers:JSON.stringify(r.answers))+'</div>'):'')+
+    '<div class="box"><span class="k">What to work on next (Needs):</span> '+esc(rowNeeds(r))+'</div>'+
+    ((r.feedback||tNote)?('<div class="box"><span class="k">Teacher feedback:</span><br>'+esc(r.feedback||tNote)+'</div>'):'')+
+    '<p style="color:#999;font-size:.8rem;margin-top:18px">Generated by iCAN Academy — keep this for your records.</p>';
+  var blob=new Blob([html],{type:'text/html'}), url=URL.createObjectURL(blob);
+  var a=document.createElement('a'); a.href=url;
+  a.download='answer-sheet-'+String(r.activity||'result').replace(/[^a-z0-9]+/gi,'-').slice(0,40)+'.html';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+}
 function myResultsTable(){
   if(!SESSION) return "";
   const mine=allResults().filter(r=>r.id===SESSION.id || (r.code===SESSION.code && (r.name||'').toLowerCase()===SESSION.name.toLowerCase()));
-  if(!mine.length) return `<p class="note">Nothing yet — complete an activity and your progress will show here.</p>`;
-  return `<div style="overflow:auto"><table class="data">
-    <tr><th>When</th><th>Skill</th><th>Activity</th><th>Score</th></tr>
-    ${mine.slice().reverse().slice(0,12).map(r=>`<tr><td style="font-size:.78rem">${new Date(r.date).toLocaleDateString()}</td><td>${r.skill}</td><td style="font-size:.82rem">${esc(r.activity)}</td><td>${r.percent!=null?r.percent+'%':(r.detail||'saved')}</td></tr>`).join('')}
+  if(!mine.length) return `<p class="note">Nothing yet — complete an activity and it will be saved here for you (and your teacher).</p>`;
+  const ordered=mine.slice().reverse(); _TRACK=ordered;
+  const tNote=(getStudents()[myKeyNow()]||{}).feedback||'';
+  const rows=ordered.slice(0,20).map((r,i)=>{
+    const fb = r.feedback ? esc(r.feedback) : ((i===0&&tNote) ? esc(tNote) : '<span style="color:var(--muted)">—</span>');
+    const openBtn = r.projId ? `<button class="btn sm ghost" style="margin-right:4px" onclick="reopenDesign('${r.projId}')">▶ Open</button>` : '';
+    return `<tr>
+      <td style="font-size:.78rem;white-space:nowrap">${new Date(r.date).toLocaleDateString()}</td>
+      <td><span style="background:#eceafe;color:#4b32c0;border-radius:999px;padding:2px 9px;font-size:.72rem;font-weight:700;white-space:nowrap">${trackSkill(r)}</span></td>
+      <td style="font-size:.82rem">${esc(r.activity||'')}</td>
+      <td style="font-weight:700;white-space:nowrap">${r.percent!=null?r.percent+'%':(r.detail?'saved':'—')}</td>
+      <td style="white-space:nowrap">${openBtn}<button class="btn sm ghost" onclick="downloadAnswerSheet(${i})">⬇ Sheet</button></td>
+      <td style="font-size:.78rem;max-width:210px">${fb}</td>
+      <td style="font-size:.78rem;color:var(--teal-dk)">${esc(rowNeeds(r))}</td>
+    </tr>`;
+  }).join('');
+  return `${tNote?`<div class="feedback good" style="margin-bottom:10px"><b>🧑‍🏫 Teacher feedback:</b> ${esc(tNote)}</div>`:''}
+  <div style="overflow:auto"><table class="data">
+    <tr><th>When</th><th>Skill</th><th>Activity</th><th>Score</th><th>Answer sheet</th><th>Teacher feedback</th><th>Needs</th></tr>
+    ${rows}
   </table></div>`;
 }
 function doneTag(skill,title){
@@ -17899,6 +17982,17 @@ function ylStudioDoc(w,title,flip){
  #pdfScroll{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;align-items:center;gap:14px}
  #pdfScroll canvas{max-width:96%;box-shadow:0 6px 22px rgba(0,0,0,.5);border-radius:4px;background:#fff}
  #pdfScroll .pdf-msg{color:#cfd0e8;font-size:.9rem;margin-top:34px}
+ #tinBig{width:100%;min-height:120px;border:1.5px solid #ccc;border-radius:8px;padding:8px;font-size:1rem;font-family:inherit;resize:vertical;color:#222;background:#fff;line-height:1.4}
+ .tx-tb{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;align-items:center}
+ .tx-tb button{padding:5px 8px;border-radius:8px;background:#f2f2f7;color:#333;font-size:.82rem}
+ .tx-tb button.on{background:#0FA98B;color:#fff}
+ .tx-tb select{width:auto;margin:0;padding:5px 6px;font-size:.75rem}
+ .tx-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+ #projOv{position:fixed;inset:0;background:rgba(10,10,25,.9);display:none;align-items:center;justify-content:center;z-index:62}
+ #projBox{background:#fff;color:#222;border-radius:14px;padding:16px;width:min(90vw,430px);max-height:80vh;overflow:auto}
+ #projBox h5{margin:0 0 10px;font-size:.95rem;color:#333}
+ .proj-row{display:flex;flex-direction:column;align-items:flex-start;gap:1px;width:100%;text-align:left;background:#f4f5fb;border-radius:10px;padding:9px 12px;margin-bottom:6px;cursor:pointer;color:#222}
+ .proj-row b{font-size:.9rem}.proj-row small{font-size:.72rem;color:#777}
  .fx-list{display:flex;flex-direction:column;gap:5px}
  .fx-btn{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;background:#f2f2f7;border-radius:9px;padding:7px 10px;cursor:pointer}
  .fx-btn b{font-size:.82rem}
@@ -17910,6 +18004,8 @@ function ylStudioDoc(w,title,flip){
 <div id="top"><b>${title}</b>
  <button id="addBtn" onclick="P.toggleAdd(this)" style="background:#1478ff;color:#fff">➕ Add</button>
  ${flip?'<button onclick="P.prev()">\u25c0</button><span id="pn">1/1</span><button onclick="P.next()">\u25b6</button><button class="gold" onclick="P.add()">\u2795 Page</button>':''}
+ <button onclick="P.save()">💾 Save</button>
+ <button onclick="P.openPicker()">📂 Open</button>
  <button onclick="P.undo()">\u21b6 Undo</button>
  <button onclick="document.getElementById('impIn').click()">\ud83d\udcc2 Import</button>
  <input type="file" id="impIn" accept="image/*,application/json" style="display:none" onchange="P.importFile(this)">
@@ -17926,9 +18022,8 @@ function ylStudioDoc(w,title,flip){
   <div class="add-body" id="addTools">
     <button onclick="P.pick('img')"><i>🖼️</i>Image</button>
     <button onclick="P.menuAct('photo')"><i>📷</i>Camera</button>
-    <button onclick="P.menuAct('pen')"><i>✏️</i>Pen</button>
-    <button onclick="P.menuAct('text')"><i>🔤</i>Text</button>
-    <button onclick="P.menuAct('voice')"><i>🎤</i>Record</button>
+    <button id="vBtn" onclick="P.menuAct('voice')"><i>🎤</i>Record voice</button>
+    <button id="mBtn" onclick="P.menuAct('vidrec')"><i>🎥</i>Record video</button>
   </div>
   <div class="add-body" id="addMedia" style="display:none">
     <button onclick="P.pop('popShape')"><i>⬢</i>Shapes</button>
@@ -17952,6 +18047,7 @@ function ylStudioDoc(w,title,flip){
   <button class="tool" id="tMark"  onclick="P.tool('marker')"><i>\ud83d\udd8a\ufe0f</i>Marker</button>
   <button class="tool" id="tErase" onclick="P.tool('eraser')"><i>\ud83e\uddfd</i>Eraser</button>
   <div class="rail-h">Selected</div>
+  <button id="bFx" onclick="P.pop('popFx',this)"><i>✨</i>Effects</button>
   <button class="tool" id="tCrop" onclick="P.tool('crop')"><i>\u2702\ufe0f</i>Crop</button>
   <button onclick="P.del()"><i>\ud83d\uddd1\ufe0f</i>Delete</button>
   <button onclick="P.clearPg()"><i>\u267b\ufe0f</i>Clear</button>
@@ -17975,26 +18071,25 @@ function ylStudioDoc(w,title,flip){
     <h5>Line thickness</h5>
     <select id="sz"><option value="3">thin</option><option value="6" selected>medium</option><option value="12">thick</option><option value="22">extra thick</option></select>
   </div>
+  <div class="pop" id="txtPanel" style="left:6px;top:6px;min-width:300px;max-width:340px">
+    <h5>Write text — a word, a sentence, or a whole paragraph</h5>
+    <div class="tx-tb">
+      <select id="ff2"><option value="Lexend,Verdana,sans-serif">Lexend</option><option value="Georgia,serif">Georgia</option><option value="'Comic Sans MS',cursive">Comic</option><option value="'Courier New',monospace">Courier</option><option value="Impact,sans-serif">Impact</option></select>
+      <select id="fs2"><option value="16">16</option><option value="22">22</option><option value="30" selected>30</option><option value="44">44</option><option value="64">64</option></select>
+      <button id="txB" type="button" onclick="P.txStyle('b')" title="Bold"><b>B</b></button>
+      <button id="txI" type="button" onclick="P.txStyle('i')" title="Italic"><i>I</i></button>
+      <button type="button" onclick="P.txMul(2)" title="Double the size">×2</button>
+      <button type="button" onclick="P.txMul(3)" title="Triple the size">×3</button>
+      <button type="button" onclick="P.pop('popFont')" title="Colour">🎨</button>
+      <button type="button" onclick="P.txSpeak()" title="Read it aloud">🔊</button>
+      <button id="txMic" type="button" onclick="P.txDictate()" title="Speak to type">🎤</button>
+    </div>
+    <textarea id="tinBig" placeholder="Type here… a word, a paragraph, or a whole essay. Or press 🎤 and speak your ideas."></textarea>
+    <div class="tx-actions"><button type="button" onclick="P.txCancel()">Cancel</button><button class="gold" type="button" onclick="P.txDone()">Done</button></div>
+  </div>
  </div></div>
 
- <div class="rail" id="railR">
-  <div class="rail-h">Media</div>
-  <button onclick="document.getElementById('imgIn').click()"><i>\ud83d\uddbc\ufe0f</i>Add image</button>
-  <input type="file" id="imgIn" accept="image/*" style="display:none" onchange="P.addImage(this)">
-  <button onclick="document.getElementById('vidIn').click()"><i>\ud83c\udfac</i>Add video</button>
-  <input type="file" id="vidIn" accept="video/*" style="display:none" onchange="P.addVideo(this)">
-  <input type="file" id="pdfIn" accept="application/pdf,.pdf" style="display:none" onchange="P.addPDF(this)">
-  <button onclick="P.photo()"><i>\ud83d\udcf7</i>Take a photo</button>
-  <button id="vBtn" onclick="P.voice()"><i>\ud83c\udfa4</i>Record voice</button>
-  <button id="mBtn" onclick="P.video()"><i>\ud83c\udfa5</i>Record video</button>
-  <div class="rail-h">Insert</div>
-  <button id="bShape" onclick="P.pop('popShape',this)"><i>⬢</i>Shapes</button>
-  <button id="bIcons" onclick="P.pop('popIcons',this)"><i>🌟</i>Icons</button>
-  <button onclick="document.getElementById('pdfIn').click()"><i>📄</i>Add PDF</button>
-  <div class="rail-h">Story magic</div>
-  <button id="bSticker" onclick="P.pop('popSticker',this)"><i>\ud83d\ude0a</i>Stickers</button>
-  <button id="bFx" onclick="P.pop('popFx',this)"><i>\u2728</i>Effects</button>
- </div>
+ <div style="display:none"><input type="file" id="imgIn" accept="image/*" onchange="P.addImage(this)"><input type="file" id="vidIn" accept="video/*" onchange="P.addVideo(this)"><input type="file" id="pdfIn" accept="application/pdf,.pdf" onchange="P.addPDF(this)"></div>
 </div>
 
 <div class="pop" id="popSticker" style="right:6px;left:auto">
@@ -18023,6 +18118,7 @@ function ylStudioDoc(w,title,flip){
   <video id="vidPlayer" controls playsinline style="max-width:92vw;max-height:74vh;border-radius:12px;background:#000"></video>
   <button class="gold" onclick="P.stopVideo()">✖ Close</button>
 </div>
+<div id="projOv"><div id="projBox"><h5>📂 Your saved projects</h5><div id="projList"></div><div style="text-align:right;margin-top:8px"><button onclick="document.getElementById('projOv').style.display='none'">Close</button></div></div></div>
 <div id="pdfView">
   <div id="pdfBar"><b id="pdfTitle">PDF</b>
     <button onclick="P.pdfZoom(-1)">➖</button><button onclick="P.pdfZoom(1)">➕</button>
@@ -18230,6 +18326,56 @@ var P=(function(){
  function pdfZoom(dir){ pdfScale=Math.min(2.6,Math.max(0.6, pdfScale+dir*0.2)); if(curPdfDoc) renderPdf(); }
  function closePdf(){ var v=document.getElementById("pdfView"); if(v) v.style.display="none";
    var scr=document.getElementById("pdfScroll"); if(scr) scr.innerHTML=""; curPdfDoc=null; }
+ /* ---------- Save / Open project (interactive, re-openable) ---------- */
+ var IS_FLIP = !!pt;
+ function serObj(o){
+   var b={type:o.type, x:o.x,y:o.y,w:o.w,h:o.h, fx:o.fx||"none", fxSeed:o.fxSeed||0};
+   if(o.type==="text"){ b.txt=o.txt; b.size=o.size; b.font=o.font; b.col=o.col; b.bold=!!o.bold; b.italic=!!o.italic; }
+   else if(o.type==="shape"){ b.shape=o.shape; b.fill=o.fill; b.line=o.line; b.lw=o.lw; }
+   else if(o.type==="pdf"){ b.pname=o.pname; }
+   else if(o.type==="img"||o.type==="video"){ b.sx=o.sx;b.sy=o.sy;b.sw=o.sw;b.sh=o.sh;
+     try{ var c=document.createElement("canvas"); c.width=o.img.naturalWidth||o.img.width||o.sw; c.height=o.img.naturalHeight||o.img.height||o.sh;
+       c.getContext("2d").drawImage(o.img,0,0); b.img=c.toDataURL("image/jpeg",0.82); }catch(e){ b.img=null; } }
+   return b;
+ }
+ function serialize(){ return { v:1, kind:(IS_FLIP?"flipbook":"drawing"), ts:Date.now(),
+   pages: pages.map(function(P){ return { t:P.t||"", s:P.s.toDataURL("image/png"), o:P.o.map(serObj) }; }) }; }
+ function deserialize(data){
+   pages = (data.pages||[]).map(function(P){
+     var s=blankStrokes(), page={t:P.t||"", s:s, o:[]};
+     if(P.s){ (function(sc){ var im=new Image(); im.onload=function(){ sc.getContext("2d").drawImage(im,0,0); render(); }; im.src=P.s; })(s); }
+     (P.o||[]).forEach(function(b){
+       if(b.type==="text"){ page.o.push({type:"text",txt:b.txt,x:b.x,y:b.y,size:b.size,font:b.font,col:b.col,bold:!!b.bold,italic:!!b.italic,fx:b.fx,fxSeed:b.fxSeed}); }
+       else if(b.type==="shape"){ page.o.push({type:"shape",shape:b.shape,x:b.x,y:b.y,w:b.w,h:b.h,fill:b.fill,line:b.line,lw:b.lw,fx:b.fx,fxSeed:b.fxSeed}); }
+       else if(b.type==="pdf"){ page.o.push({type:"pdf",pname:b.pname,x:b.x,y:b.y,w:b.w,h:b.h,fx:b.fx,fxSeed:b.fxSeed}); }
+       else if(b.type==="img"||b.type==="video"){ var o={type:b.type,x:b.x,y:b.y,w:b.w,h:b.h,sx:b.sx||0,sy:b.sy||0,sw:b.sw,sh:b.sh,fx:b.fx,fxSeed:b.fxSeed};
+         var im=new Image(); im.onload=function(){ render(); }; im.src=b.img||""; o.img=im; if(!b.sw){o.sw=im.width;o.sh=im.height;} page.o.push(o); }
+     });
+     return page;
+   });
+   if(!pages.length) pages=[{t:"",s:blankStrokes(),o:[]}];
+   cur=0; sel=null; undoStack=[]; load(); ensureAnimLoop();
+ }
+ function saveProject(){
+   var name=prompt("Name your project:", (pt&&pt.value)?pt.value:(IS_FLIP?"My flipbook":"My drawing")); if(name===null) return;
+   var data; try{ data=serialize(); }catch(e){ alert("Could not read the project."); return; }
+   try{
+     if(!(window.opener&&window.opener.icanSaveProject)){ alert("Open the studio from iCAN to save projects (your work stays here for now)."); return; }
+     var res=window.opener.icanSaveProject({name:name||"Untitled", kind:data.kind, data:data});
+     if(res&&res.ok) alert("Saved! Reopen it here with 📂 Open — and it now shows in your Achievements Track.");
+     else alert((res&&res.msg)||"Could not save (storage may be full). Try exporting a PDF.");
+   }catch(e){ alert("Could not save: "+e.message); }
+ }
+ function openProjectPicker(){
+   var list=null; try{ if(window.opener&&window.opener.icanListProjects) list=window.opener.icanListProjects(); }catch(e){}
+   if(list===null){ alert("Open the studio from iCAN to load saved projects."); return; }
+   if(!list.length){ alert("No saved projects yet — make something, then press 💾 Save."); return; }
+   var ov=document.getElementById("projOv"), body=document.getElementById("projList");
+   body.innerHTML=list.map(function(p){ return '<button type="button" class="proj-row" data-id="'+p.id+'"><b>'+String(p.name||"Untitled").replace(/</g,"&lt;")+'</b><small>'+p.kind+' · '+new Date(p.ts).toLocaleString()+'</small></button>'; }).join("");
+   [].forEach.call(body.children,function(btn){ btn.onclick=function(){ loadProjectById(btn.getAttribute("data-id")); }; });
+   ov.style.display="flex";
+ }
+ function loadProjectById(id){ try{ var p=window.opener.icanLoadProject(id); if(p&&p.data){ deserialize(p.data); document.getElementById("projOv").style.display="none"; } }catch(e){ alert("Could not open that project."); } }
  function drawObj(g,o,animate){
    const cxp=o.x+o.w/2, cyp=o.y+o.h/2;
    let tx=0, ty=0, rot=0, scl=1, alpha=1;
@@ -18255,8 +18401,11 @@ var P=(function(){
    } else if(o.type==="pdf"){
      drawPdfCard(g,o);
    } else if(o.type==="text"){
-     g.font="700 "+o.size+"px "+o.font; g.fillStyle=resolvePaint(g,o.col,o.x,o.y,o.w||o.size,o.h||o.size); g.textBaseline="top";
-     g.fillText(o.txt, o.x, o.y);
+     var _w=(o.bold?"800":"700"), _st=(o.italic?"italic ":"");
+     g.font=_st+_w+" "+o.size+"px "+o.font; g.textBaseline="top";
+     g.fillStyle=resolvePaint(g,o.col,o.x,o.y,o.w||o.size,o.h||o.size);
+     var _ln=String(o.txt).split("\\n"), _lh=o.size*1.25;
+     for(var _i=0;_i<_ln.length;_i++){ g.fillText(_ln[_i], o.x, o.y+_i*_lh); }
    }
    g.restore();
    if(animate && o.fx==='sparkle'){
@@ -18270,8 +18419,11 @@ var P=(function(){
    }
  }
  function measure(o){
-   if(o.type==="text"){ cx.font="700 "+o.size+"px "+o.font;
-     o.w=cx.measureText(o.txt).width; o.h=o.size*1.2; }
+   if(o.type==="text"){ var _w=(o.bold?"800":"700"), _st=(o.italic?"italic ":"");
+     cx.font=_st+_w+" "+o.size+"px "+o.font;
+     var _ln=String(o.txt).split("\\n"), mw=0;
+     for(var _i=0;_i<_ln.length;_i++){ mw=Math.max(mw, cx.measureText(_ln[_i]).width); }
+     o.w=mw||o.size; o.h=_ln.length*o.size*1.25; }
    return o;
  }
  function render(handles){
@@ -18385,35 +18537,61 @@ var P=(function(){
  cv.addEventListener("mousedown",down); cv.addEventListener("mousemove",move); window.addEventListener("mouseup",up);
  cv.addEventListener("touchstart",down); cv.addEventListener("touchmove",move); cv.addEventListener("touchend",up);
 
- /* ---------- text ---------- */
+ /* ---------- text: rich editor (multi-line, bold/italic, size, colour, TTS, STT) ---------- */
+ var txEdit=null, txSize=30, recog=null;
+ function sizeSel(){ var e=document.getElementById("fs2"); return e?+e.value:30; }
  function openText(e){
-   var r=cv.getBoundingClientRect(), pr=document.getElementById("page").getBoundingClientRect();
-   var t=e.touches?e.touches[0]:e, p=pos(e);
-   tin.style.display="block";
-   tin.style.left=(t.clientX-pr.left)+"px"; tin.style.top=(t.clientY-pr.top-10)+"px";
-   tin.style.fontFamily=document.getElementById("ff").value;
-   tin.style.fontSize=Math.max(12,+document.getElementById("fs").value*(r.width/W))+"px";
-   tin.style.color=COL; tin.value=""; tin.dataset.x=p.x; tin.dataset.y=p.y;
-   setTimeout(function(){tin.focus();},10);
+   var p=pos(e); var idx=hit(p); var pnl=document.getElementById("txtPanel");
+   if(idx!=null && pg().o[idx] && pg().o[idx].type==="text"){
+     var o=pg().o[idx]; txEdit={x:o.x,y:o.y,editIdx:idx,bold:!!o.bold,italic:!!o.italic};
+     document.getElementById("tinBig").value=o.txt; document.getElementById("ff2").value=o.font;
+     document.getElementById("fs2").value=o.size; txSize=o.size; COL=o.col; sel=idx;
+   } else {
+     txEdit={x:p.x,y:p.y,editIdx:null,bold:false,italic:false};
+     document.getElementById("tinBig").value=""; txSize=sizeSel();
+   }
+   paintTxTb(); pnl.style.display="block";
+   setTimeout(function(){ var ta=document.getElementById("tinBig"); if(ta) ta.focus(); },20);
  }
- function commitText(){
-   var v=tin.value.trim(); tin.style.display="none"; if(!v) return;
+ function paintTxTb(){ var b=document.getElementById("txB"), i=document.getElementById("txI");
+   if(b) b.classList.toggle("on", !!(txEdit&&txEdit.bold)); if(i) i.classList.toggle("on", !!(txEdit&&txEdit.italic)); }
+ function txStyle(k){ if(!txEdit) return; if(k==="b")txEdit.bold=!txEdit.bold; else txEdit.italic=!txEdit.italic; paintTxTb(); }
+ function txMul(n){ txSize=Math.min(200, Math.round(sizeSel()*n)); var e=document.getElementById("fs2");
+   if(e){ var found=false; for(var i=0;i<e.options.length;i++){ if(+e.options[i].value===txSize) found=true; }
+     if(!found){ var no=document.createElement("option"); no.value=txSize; no.textContent=txSize; e.appendChild(no); } e.value=txSize; } }
+ function txSpeak(){ var t=(document.getElementById("tinBig").value||"").trim(); if(!t) return;
+   try{ window.speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(t); u.lang="en-GB"; u.rate=0.95; window.speechSynthesis.speak(u); }catch(e){} }
+ function txDictate(){ var SR=window.SpeechRecognition||window.webkitSpeechRecognition; var mic=document.getElementById("txMic");
+   if(!SR){ alert("Speak-to-type needs Chrome or Edge."); return; }
+   if(recog){ try{recog.stop();}catch(e){} recog=null; if(mic)mic.classList.remove("on"); return; }
+   recog=new SR(); recog.lang="en-GB"; recog.interimResults=false; recog.continuous=true;
+   var ta=document.getElementById("tinBig");
+   recog.onresult=function(ev){ var s=""; for(var i=ev.resultIndex;i<ev.results.length;i++){ if(ev.results[i].isFinal) s+=ev.results[i][0].transcript; }
+     if(s){ ta.value=(ta.value?ta.value.replace(/\\s*$/,"")+" ":"")+s.trim(); } };
+   recog.onerror=function(){ if(mic)mic.classList.remove("on"); recog=null; };
+   recog.onend=function(){ if(mic)mic.classList.remove("on"); recog=null; };
+   try{ recog.start(); if(mic)mic.classList.add("on"); }catch(e){}
+ }
+ function txStop(){ if(recog){ try{recog.stop();}catch(e){} recog=null; } var mic=document.getElementById("txMic"); if(mic)mic.classList.remove("on"); }
+ function txCancel(){ txStop(); var p=document.getElementById("txtPanel"); if(p)p.style.display="none"; txEdit=null; }
+ function txDone(){
+   var v=(document.getElementById("tinBig").value||"").replace(/\\s+$/,""); txStop();
+   var p=document.getElementById("txtPanel"); if(p)p.style.display="none";
+   if(!txEdit){ return; }
+   if(!v){ txEdit=null; return; }
+   var font=document.getElementById("ff2").value, size=txSize||sizeSel();
    push();
-   pg().o.push(measure({type:"text", txt:v, x:+tin.dataset.x, y:+tin.dataset.y,
-     size:+document.getElementById("fs").value, font:document.getElementById("ff").value, col:COL,
-     fx:'none', fxSeed:Math.random()*6.28}));
-   sel=pg().o.length-1; TOOL="move"; paintTools(); render();
+   if(txEdit.editIdx!=null && pg().o[txEdit.editIdx]){
+     var o=pg().o[txEdit.editIdx]; o.txt=v; o.font=font; o.size=size; o.col=COL; o.bold=txEdit.bold; o.italic=txEdit.italic; measure(o); sel=txEdit.editIdx;
+   } else {
+     pg().o.push(measure({type:"text", txt:v, x:txEdit.x, y:txEdit.y, size:size, font:font, col:COL, bold:txEdit.bold, italic:txEdit.italic, fx:"none", fxSeed:Math.random()*6.28}));
+     sel=pg().o.length-1;
+   }
+   txEdit=null; TOOL="move"; paintTools(); render();
  }
- tin.addEventListener("keydown",function(e){ if(e.key==="Enter"){commitText();} if(e.key==="Escape"){tin.style.display="none";} });
  ["ff","fs"].forEach(function(id){ var el=document.getElementById(id); if(el) el.onchange=function(){
-   if(tin.style.display==="block"){ var r=cv.getBoundingClientRect();
-     tin.style.fontFamily=document.getElementById("ff").value;
-     tin.style.fontSize=Math.max(12,+document.getElementById("fs").value*(r.width/W))+"px"; }
    if(sel!=null && pg().o[sel] && pg().o[sel].type==="text"){ push();
-     pg().o[sel].font=document.getElementById("ff").value;
-     pg().o[sel].size=+document.getElementById("fs").value; render(); }
- }; });
- tin.addEventListener("blur",commitText);
+     pg().o[sel].font=document.getElementById("ff").value; pg().o[sel].size=+document.getElementById("fs").value; measure(pg().o[sel]); render(); } }; });
 
  /* ---------- objects in ---------- */
  function addObj(img,type){
@@ -18607,7 +18785,7 @@ var STICKER_FEEL=["\ud83d\ude00","\ud83d\ude22","\ud83d\ude20","\ud83d\ude31","\
    return c;
  }
  document.addEventListener("keydown",function(e){
-   if(e.key==="Delete"||e.key==="Backspace"){ if(sel!=null && document.activeElement!==tin && (!pt||document.activeElement!==pt)){ e.preventDefault(); api.del(); } }
+   if(e.key==="Delete"||e.key==="Backspace"){ if(sel!=null && document.activeElement!==tin && (document.activeElement&&document.activeElement.id!=="tinBig") && (!pt||document.activeElement!==pt)){ e.preventDefault(); api.del(); } }
  });
 
  function toggleAdd(){ var m=document.getElementById("addMenu"); if(m) m.style.display = (m.style.display==="block") ? "none" : "block"; }
@@ -18619,10 +18797,11 @@ var STICKER_FEEL=["\ud83d\ude00","\ud83d\ude22","\ud83d\ude20","\ud83d\ude31","\
    if(bt) bt.classList.toggle("on",tools); if(bm) bm.classList.toggle("on",!tools); }
  function pick(kind){ closeAdd(); var id=kind==="pdf"?"pdfIn":kind==="vid"?"vidIn":"imgIn";
    var el=document.getElementById(id); if(el) el.click(); }
- function menuAct(a){ closeAdd(); if(a==="photo") photo(); else if(a==="voice") toggleRec("audio"); else api.tool(a); }
+ function menuAct(a){ if(a==="voice"){ toggleRec("audio"); return; } if(a==="vidrec"){ toggleRec("video"); return; } closeAdd(); if(a==="photo") photo(); else api.tool(a); }
  var api = {
   tool:function(t){ TOOL=t; if(t!=="move"&&t!=="crop") sel=null;
     ["popCol","popFont"].forEach(function(k){ var e=document.getElementById(k); if(e) e.style.display="none"; });
+    if(t!=="text"){ var _tp=document.getElementById("txtPanel"); if(_tp) _tp.style.display="none"; if(typeof txStop==="function") txStop(); }
     /* Choosing Text opens its options straight away \u2014 font, size and colour \u2014
        so the choice is made BEFORE typing rather than discovered after. */
     if(t==="text"){ var e=document.getElementById("popFont"); if(e){ e.style.display="block"; e.style.left="6px"; e.style.top="6px"; } }
@@ -18635,6 +18814,8 @@ var STICKER_FEEL=["\ud83d\ude00","\ud83d\ude22","\ud83d\ude20","\ud83d\ude31","\
   stopVideo:stopVideo, playVideo:playVideo,
   addPDF:addPDF, openPdf:openPdf, closePdf:closePdf, pdfZoom:pdfZoom,
   toggleAdd:toggleAdd, addTab:addTab, pick:pick, menuAct:menuAct,
+  save:saveProject, openPicker:openProjectPicker,
+  txStyle:txStyle, txMul:txMul, txSpeak:txSpeak, txDictate:txDictate, txDone:txDone, txCancel:txCancel,
   photo:photo, snap:snap, camOff:camOff,
   voice:function(){ toggleRec("audio"); }, video:function(){ toggleRec("video"); },
   add:function(){ if(pt)pg().t=pt.value; anim(function(){ pages.push({t:"",s:blankStrokes(),o:[]}); cur=pages.length-1; sel=null; undoStack=[]; load(); }); },
