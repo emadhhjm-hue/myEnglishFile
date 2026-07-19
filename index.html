@@ -4034,7 +4034,7 @@ const ROUTES = {
           <span class="btn sm ghost" style="white-space:nowrap">Open →</span></button>
       </div>
 
-      <div style="margin-top:14px;font-size:.86rem;color:var(--muted)">Looking for your awarded certificates? Open <a onclick="go('mycerts')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">🏅 My Certificates</a>. &nbsp;·&nbsp; Looking for your saved words? Open your <a onclick="go('vocab')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">📚 Vocabulary bank</a>.</div>
+      <div style="margin-top:14px;font-size:.86rem;color:var(--muted)">Looking for your awarded certificates? Open <a onclick="go('mycerts')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">🏅 My Certificates</a>. &nbsp;·&nbsp; Looking for your saved words? Open your <a onclick="go('vocab')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">📚 Vocabulary bank</a>. &nbsp;·&nbsp; Review everything you create in <a onclick="go('myDesigns')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">🎨 My Designs</a>.</div>
 
       <div class="card" style="margin-top:24px">
         <h3 style="font-size:1.2rem">📌 My Achievements Track</h3>
@@ -5223,6 +5223,30 @@ const ROUTES = {
       </div>`).join('')}</div>` : `<p class="note">No certificates yet — finish an activity to earn your first one!</p>`}
     </div>`;
   },
+  myDesigns(){
+    const projects = (typeof icanListProjects==='function') ? icanListProjects() : [];
+    const allDecks = Store.get("ican_decks")||{};
+    const pref = sid()+"::";
+    const decks = Object.keys(allDecks).filter(k=>k.indexOf(pref)===0 && allDecks[k] && allDecks[k].file)
+      .map(k=>({lesson:k.slice(pref.length), file:allDecks[k].file}))
+      .sort((a,b)=>(b.file.date||0)-(a.file.date||0));
+    app().innerHTML=`
+    <div class="wrap screen">
+      <button class="back" onclick="go('dashboard')">← Home</button>
+      <h1 style="font-size:2.1rem">🎨 My Designs</h1>
+      <p style="color:var(--muted);max-width:730px">Everything you make and save lives here. Open a <b>flipbook</b> or <b>drawing</b> to review it in full — your videos play, audio plays, links open, and animations run. Uploaded slide decks and files can be downloaded any time, and your teacher can see them in your track.</p>
+      <h3 class="sub" style="margin-top:16px">📖 Saved flipbooks &amp; drawings</h3>
+      ${projects.length ? `<div class="grid c2" style="margin-top:8px">${projects.map(p=>`<div class="card" style="padding:14px;display:flex;justify-content:space-between;gap:10px;align-items:center">
+        <div><div style="font-weight:700">${esc(p.name||'Untitled')}</div><div style="font-size:.78rem;color:var(--muted)">${p.kind==='drawing'?'✏️ Drawing':'📖 Flipbook'} · ${new Date(p.ts).toLocaleString('en')}</div></div>
+        <button class="btn sm" onclick="reopenDesign('${String(p.id).replace(/'/g,"")}')">▶ Open &amp; review</button></div>`).join('')}</div>`
+        : `<p class="note">No saved flipbooks or drawings yet. Inside the Drawing Pad / Flipbook Maker, press 💾 <b>Save</b> and it will appear here to review any time.</p>`}
+      <h3 class="sub" style="margin-top:20px">📎 Uploaded decks &amp; files</h3>
+      ${decks.length ? `<div class="grid c2" style="margin-top:8px">${decks.map(d=>`<div class="card" style="padding:14px;display:flex;justify-content:space-between;gap:10px;align-items:center">
+        <div><div style="font-weight:700">📄 ${esc(d.file.name)}</div><div style="font-size:.78rem;color:var(--muted)">${d.file.date?new Date(d.file.date).toLocaleString('en'):''}</div></div>
+        ${d.file.data ? `<button class="btn sm ghost" onclick="deckDownloadUpload('${String(d.lesson).replace(/'/g,"")}')">⬇ Download</button>` : `<span style="font-size:.74rem;color:var(--muted)">stored on original device</span>`}</div>`).join('')}</div>`
+        : `<p class="note">No uploaded files yet. Finish a design task, upload your slides/artefact, and they will be saved here for you and your teacher.</p>`}
+    </div>`;
+  },
   apprcert(){ if(!requireTeacher())return;
     app().innerHTML=`
     <div class="wrap screen">
@@ -6177,8 +6201,8 @@ function myKeyNow(){ return SESSION ? (SESSION.id||((SESSION.code||'')+'::'+((SE
 function reopenDesign(projId){
   var p=icanLoadProject(projId);
   if(!p){ alert('That saved design was made in another browser/device, so it can only be reopened there.'); return; }
+  try{ window.__icanOpenProject=projId; }catch(e){}
   if((p.kind||'')==='drawing'){ ylDrawPad(); } else { ylFlipbook(); }
-  setTimeout(function(){ alert('The Design Studio is opening — press 📂 Open inside it and choose "'+((p.name||'your project'))+'".'); }, 400);
 }
 function downloadAnswerSheet(i){
   var r=_TRACK[i]; if(!r) return;
@@ -18068,6 +18092,9 @@ function ylStudioDoc(w,title,flip){
  .tx-tb button{padding:5px 8px;border-radius:8px;background:#f2f2f7;color:#333;font-size:.82rem}
  .tx-tb button.on{background:#0FA98B;color:#fff}
  .tx-tb select{width:auto;margin:0;padding:5px 6px;font-size:.75rem}
+ .tx-pal{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 8px}
+ .tx-pal i{width:22px;height:22px;border-radius:6px;cursor:pointer;border:2px solid #ddd;display:block}
+ .tx-pal i:hover{border-color:#111}
  .tx-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
  #projOv{position:fixed;inset:0;background:rgba(10,10,25,.9);display:none;align-items:center;justify-content:center;z-index:62}
  #projBox{background:#fff;color:#222;border-radius:14px;padding:16px;width:min(90vw,430px);max-height:80vh;overflow:auto}
@@ -18156,16 +18183,17 @@ function ylStudioDoc(w,title,flip){
     <h5>Write text — a word, a sentence, or a whole paragraph</h5>
     <div class="tx-tb">
       <select id="ff2"><option value="Lexend,Verdana,sans-serif">Lexend</option><option value="Georgia,serif">Georgia</option><option value="'Comic Sans MS',cursive">Comic</option><option value="'Courier New',monospace">Courier</option><option value="Impact,sans-serif">Impact</option></select>
-      <select id="fs2"><option value="16">16</option><option value="22">22</option><option value="30" selected>30</option><option value="44">44</option><option value="64">64</option></select>
+      <select id="fs2"><option value="8">8</option><option value="10">10</option><option value="12" selected>12</option><option value="14">14</option><option value="16">16</option><option value="20">20</option><option value="28">28</option><option value="40">40</option><option value="64">64</option></select>
       <button id="txB" type="button" onclick="P.txStyle('b')" title="Bold"><b>B</b></button>
       <button id="txI" type="button" onclick="P.txStyle('i')" title="Italic"><i>I</i></button>
       <button type="button" onclick="P.txMul(2)" title="Double the size">×2</button>
       <button type="button" onclick="P.txMul(3)" title="Triple the size">×3</button>
-      <button type="button" onclick="P.pop('popFont')" title="Colour">🎨</button>
+      <button type="button" onclick="P.txPalette()" title="Colour">🎨</button>
       <button type="button" onclick="P.txSpeak()" title="Read it aloud">🔊</button>
       <button id="txMic" type="button" onclick="P.txDictate()" title="Speak to type">🎤</button>
     </div>
-    <textarea id="tinBig" placeholder="Type here… a word, a paragraph, or a whole essay. Or press 🎤 and speak your ideas."></textarea>
+    <div id="txPal" class="tx-pal" style="display:none"></div>
+    <textarea id="tinBig" placeholder=""></textarea>
     <div class="tx-actions"><button type="button" onclick="P.txCancel()">Cancel</button><button class="gold" type="button" onclick="P.txDone()">Done</button></div>
   </div>
  </div></div>
@@ -18617,10 +18645,11 @@ var P=(function(){
  }
  cv.addEventListener("mousedown",down); cv.addEventListener("mousemove",move); window.addEventListener("mouseup",up);
  cv.addEventListener("touchstart",down); cv.addEventListener("touchmove",move); cv.addEventListener("touchend",up);
+ cv.addEventListener("dblclick",function(e){ var p=pos(e); var idx=hit(p); if(idx!=null && pg().o[idx] && pg().o[idx].type==="text"){ e.preventDefault(); openText(e); } });
 
  /* ---------- text: rich editor (multi-line, bold/italic, size, colour, TTS, STT) ---------- */
- var txEdit=null, txSize=30, recog=null;
- function sizeSel(){ var e=document.getElementById("fs2"); return e?+e.value:30; }
+ var txEdit=null, txSize=12, recog=null;
+ function sizeSel(){ var e=document.getElementById("fs2"); return e?+e.value:12; }
  function openText(e){
    var p=pos(e); var idx=hit(p); var pnl=document.getElementById("txtPanel");
    if(idx!=null && pg().o[idx] && pg().o[idx].type==="text"){
@@ -18637,6 +18666,21 @@ var P=(function(){
  function paintTxTb(){ var b=document.getElementById("txB"), i=document.getElementById("txI");
    if(b) b.classList.toggle("on", !!(txEdit&&txEdit.bold)); if(i) i.classList.toggle("on", !!(txEdit&&txEdit.italic)); }
  function txStyle(k){ if(!txEdit) return; if(k==="b")txEdit.bold=!txEdit.bold; else txEdit.italic=!txEdit.italic; paintTxTb(); }
+ function txPalette(){ var pal=document.getElementById("txPal"); if(!pal) return;
+   if(pal.style.display!=="none"){ pal.style.display="none"; return; }
+   if(!pal.dataset.built){
+     var cols=["#15183A","#e6464b","#F5A301","#FFD23F","#2BA84F","#0FA98B","#00b3ff","#2563eb","#8B5CF6","#d63384","#7a4a1e","#6b7280","#ffffff","#000000"];
+     var html=cols.map(function(c){ return '<i data-c="'+c+'" title="'+c+'" style="background:'+c+'"></i>'; }).join("");
+     try{ html+=MAGIC_ORDER.slice(0,6).map(function(k){ return '<i data-c="magic:'+k+'" title="'+k+'" style="background:linear-gradient(135deg,'+MAGIC[k].join(",")+')"></i>'; }).join(""); }catch(e){}
+     pal.innerHTML=html; pal.dataset.built="1";
+     [].forEach.call(pal.children,function(el){ el.onclick=function(){ pickTxColour(el.getAttribute("data-c")); }; });
+   }
+   pal.style.display="flex";
+ }
+ function pickTxColour(c){ COL=c;
+   if(txEdit&&txEdit.editIdx!=null&&pg().o[txEdit.editIdx]){ pg().o[txEdit.editIdx].col=c; render(); }
+   var pal=document.getElementById("txPal"); if(pal) pal.style.display="none";
+ }
  function txMul(n){ txSize=Math.min(200, Math.round(sizeSel()*n)); var e=document.getElementById("fs2");
    if(e){ var found=false; for(var i=0;i<e.options.length;i++){ if(+e.options[i].value===txSize) found=true; }
      if(!found){ var no=document.createElement("option"); no.value=txSize; no.textContent=txSize; e.appendChild(no); } e.value=txSize; } }
@@ -18897,6 +18941,7 @@ var STICKER_FEEL=["\ud83d\ude00","\ud83d\ude22","\ud83d\ude20","\ud83d\ude31","\
   toggleAdd:toggleAdd, addTab:addTab, pick:pick, menuAct:menuAct,
   save:saveProject, openPicker:openProjectPicker,
   txStyle:txStyle, txMul:txMul, txSpeak:txSpeak, txDictate:txDictate, txDone:txDone, txCancel:txCancel,
+  txPalette:txPalette, openSaved:function(id){ loadProjectById(id); },
   photo:photo, snap:snap, camOff:camOff,
   voice:function(){ toggleRec("audio"); }, video:function(){ toggleRec("video"); },
   add:function(){ if(pt)pg().t=pt.value; anim(function(){ pages.push({t:"",s:blankStrokes(),o:[]}); cur=pages.length-1; sel=null; undoStack=[]; load(); }); },
@@ -18922,6 +18967,7 @@ var STICKER_FEEL=["\ud83d\ude00","\ud83d\ude22","\ud83d\ude20","\ud83d\ude31","\
  return api;
 })();
 P.load();
+try{ if(window.opener && window.opener.__icanOpenProject){ var _pid=window.opener.__icanOpenProject; window.opener.__icanOpenProject=null; setTimeout(function(){ try{ P.openSaved(_pid); }catch(e){} }, 350); } }catch(e){}
 </scr`+`ipt></body></html>`);
   w.document.close();
 }
