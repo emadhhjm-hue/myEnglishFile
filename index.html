@@ -18555,9 +18555,9 @@ var P=(function(){
      var o=measure(pg().o[sel]);
      cx.save(); cx.strokeStyle="#0FA98B"; cx.lineWidth=1.5; cx.setLineDash([5,4]);
      cx.strokeRect(o.x-2,o.y-2,o.w+4,o.h+4); cx.setLineDash([]);
-     if(o.type!=="text"){ [[o.x,o.y],[o.x+o.w,o.y],[o.x,o.y+o.h],[o.x+o.w,o.y+o.h]].forEach(function(p){
+     [[o.x,o.y],[o.x+o.w,o.y],[o.x,o.y+o.h],[o.x+o.w,o.y+o.h]].forEach(function(p){
        cx.fillStyle="#fff"; cx.strokeStyle="#0FA98B";
-       cx.fillRect(p[0]-5,p[1]-5,10,10); cx.strokeRect(p[0]-5,p[1]-5,10,10); }); }
+       cx.fillRect(p[0]-5,p[1]-5,10,10); cx.strokeRect(p[0]-5,p[1]-5,10,10); });
      cx.restore();
    }
    if(cropRect){ cx.save(); cx.strokeStyle="#e6464b"; cx.lineWidth=1.5; cx.setLineDash([6,4]);
@@ -18595,7 +18595,7 @@ var P=(function(){
    }
    if(TOOL==="move"){
      var s = sel!=null ? corner(p, measure(pg().o[sel])) : null;
-     if(s && pg().o[sel].type!=="text"){ push(); mode="resize"; start=p; orig=Object.assign({},pg().o[sel]); orig.h_=s; render(); return; }
+     if(s){ push(); mode="resize"; start=p; orig=Object.assign({},pg().o[sel]); orig.h_=s; render(); return; }
      var h=hit(p);
      sel=h;
      if(h!=null){ push(); mode="drag"; start=p; orig=Object.assign({},pg().o[h]); }
@@ -18950,7 +18950,7 @@ var STICKER_FEEL=["\ud83d\ude00","\ud83d\ude22","\ud83d\ude20","\ud83d\ude31","\
     if(t!=="text"){ var _tp=document.getElementById("txtPanel"); if(_tp) _tp.style.display="none"; if(typeof txStop==="function") txStop(); }
     /* Choosing Text opens its options straight away \u2014 font, size and colour \u2014
        so the choice is made BEFORE typing rather than discovered after. */
-    if(t==="text"){ var e=document.getElementById("popFont"); if(e){ e.style.display="block"; e.style.left="6px"; e.style.top="6px"; } }
+    /* text options now live in the inline write panel — no separate colour window */
     paintTools(); render(); },
   pop:pop,
   del:function(){ if(sel==null) return; push(); pg().o.splice(sel,1); sel=null; render(); },
