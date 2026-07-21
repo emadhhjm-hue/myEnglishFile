@@ -611,6 +611,10 @@ table.data tr:nth-child(even){background:#fff}
 .hub-foot{text-align:center; color:#fff3e2; font-size:.82rem; margin-top:6px; font-weight:500}
 .hub-bee{ filter: drop-shadow(0 0 9px rgba(255,210,63,.7)); transform-box: fill-box; transform-origin: center; animation: beePulse 2.6s ease-in-out infinite}
 @keyframes beePulse{ 0%,100%{ transform: scale(1) } 50%{ transform: scale(1.06) } }
+.hub-ray{ pointer-events:none }
+.hub-core-glow{ transform-box: view-box; transform-origin: 450px 260px; animation: corePulse 3.6s ease-in-out infinite }
+@keyframes corePulse{ 0%,100%{ transform: scale(1); opacity:.86 } 50%{ transform: scale(1.075); opacity:1 } }
+@media (prefers-reduced-motion: reduce){ .hub-core-glow{ animation:none } }
 
 /* ===================== ARTICLE-A-DAY ===================== */
 .aad-week-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:16px; margin-top:6px}
@@ -3977,6 +3981,9 @@ const ROUTES = {
             <linearGradient id="ribbonGrad" x1="0" y1="0" x2="1" y2="0">
               <stop offset="0%" stop-color="#12a585"/><stop offset="50%" stop-color="#e6464b"/><stop offset="100%" stop-color="#8B5CF6"/>
             </linearGradient>
+            <filter id="rayGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="2.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            <radialGradient id="sunFlare" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#eaffff" stop-opacity="0.92"/><stop offset="38%" stop-color="#38e6ff" stop-opacity="0.30"/><stop offset="100%" stop-color="#38e6ff" stop-opacity="0"/></radialGradient>
+            <radialGradient id="satShine" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#d6fbff" stop-opacity="0.9"/><stop offset="42%" stop-color="#22e6ff" stop-opacity="0.42"/><stop offset="100%" stop-color="#22e6ff" stop-opacity="0"/></radialGradient>
           </defs>
           <path d="M110 235 C 260 175, 640 175, 790 235" fill="none" stroke="url(#ribbonGrad)" stroke-width="34" stroke-linecap="round" opacity="0.5"/>
           <g stroke="rgba(255,255,255,.22)" stroke-width="1.4" fill="none">
@@ -3986,35 +3993,50 @@ const ROUTES = {
             <line x1="450" y1="260" x2="450" y2="525"/>
             <path d="M450 60 L770 118 L770 455 L450 525 L130 455 L130 118 Z"/>
           </g>
+          <g class="hub-ray">
+          ${[[372,208,26],[528,208,30],[450,356,34]].map(([cx,cy,dur],li)=>{
+            let rays='';
+            for(let k=0;k<16;k++){ const a=k*22.5*Math.PI/180, ci=Math.cos(a), si=Math.sin(a);
+              rays+=`<line x1="${(cx+ci*118).toFixed(1)}" y1="${(cy+si*118).toFixed(1)}" x2="${(cx+ci*178).toFixed(1)}" y2="${(cy+si*178).toFixed(1)}"/>`; }
+            return `<circle cx="${cx}" cy="${cy}" r="152" fill="url(#sunFlare)" opacity="0.45"><animate attributeName="opacity" values="0.3;0.82;0.3" dur="${(3.2+li*0.6).toFixed(1)}s" repeatCount="indefinite"/></circle>
+              <g stroke="#3fe9ff" stroke-width="3.4" stroke-linecap="round" filter="url(#rayGlow)" opacity="0.7">
+              <animate attributeName="opacity" values="0.42;1;0.42" dur="${(2.6+li*0.5).toFixed(1)}s" repeatCount="indefinite"/>
+              <animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="-360 ${cx} ${cy}" dur="${dur}s" repeatCount="indefinite"/>
+              ${rays}</g>`;
+          }).join('')}
+          </g>
           <g class="hub-c" onclick="go('readingCourse')">
-            <circle cx="372" cy="208" r="120" fill="rgba(18,165,133,.82)"/>
-            <text x="318" y="170" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-weight="700" font-size="30">Read</text>
-            <text x="318" y="190" text-anchor="middle" fill="#eafff7" font-size="13">to think</text></g>
+            <circle cx="372" cy="208" r="136" fill="rgba(18,165,133,.82)"/>
+            <text x="312" y="168" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-weight="700" font-size="33">Read</text>
+            <text x="312" y="189" text-anchor="middle" fill="#eafff7" font-size="13">to think</text></g>
           <g class="hub-c" onclick="go('writingCourse')">
-            <circle cx="528" cy="208" r="120" fill="rgba(230,70,75,.82)"/>
-            <text x="582" y="170" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-weight="700" font-size="30">Write</text>
-            <text x="582" y="190" text-anchor="middle" fill="#ffeceb" font-size="13">to say it</text></g>
+            <circle cx="528" cy="208" r="136" fill="rgba(230,70,75,.82)"/>
+            <text x="588" y="168" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-weight="700" font-size="33">Write</text>
+            <text x="588" y="189" text-anchor="middle" fill="#ffeceb" font-size="13">to say it</text></g>
           <g class="hub-c" onclick="go('dstudio')">
-            <circle cx="450" cy="356" r="120" fill="rgba(139,92,246,.82)"/>
-            <text x="450" y="408" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-weight="700" font-size="30">Design</text>
-            <text x="450" y="428" text-anchor="middle" fill="#f1eaff" font-size="13">to share it</text></g>
-          <circle cx="450" cy="260" r="120" fill="url(#coreGlow)"/>
+            <circle cx="450" cy="356" r="136" fill="rgba(139,92,246,.82)"/>
+            <text x="450" y="416" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-weight="700" font-size="33">Design</text>
+            <text x="450" y="437" text-anchor="middle" fill="#f1eaff" font-size="13">to share it</text></g>
+          <circle class="hub-core-glow" cx="450" cy="260" r="120" fill="url(#coreGlow)"/>
           <circle cx="450" cy="260" r="68" fill="#0e1130" stroke="rgba(255,255,255,.9)" stroke-width="2.5"/>
           <text x="450" y="270" text-anchor="middle" font-family="Fraunces,serif" font-weight="800" font-size="34">
             <tspan fill="#ffffff">i</tspan><tspan fill="#ff5a5f">C</tspan><tspan fill="#34d39a">A</tspan><tspan fill="#5b8def">N</tspan></text>
-          ${[["spellType","🐝","Spelling & Typing",450,60,"Say it · Spell it · Type it"],["grammar","🧩","Grammar",130,118,""],["articleaday","📰","Article-A-Day",770,118,"Read · 20 min"],["stemlab","🚀","STEM·STREAM",130,455,"Read · Write · Design"],["diagnostic","🧭","Diagnostic",770,455,""],["exams","🎓","Exams & Quizzes",450,525,""]].map(([r,ic,lab,cx,cy,sub])=>{
+          ${[["spellType","🐝","Spelling & Typing",450,60,"Say it · Spell it · Type it"],["grammar","🧩","Grammar",130,118,""],["articleaday","📰","Article-A-Day",770,118,"Read · 20 min"],["stemlab","🚀","STEM·STREAM",130,455,"Read · Write · Design"],["diagnostic","🧭","Diagnostic",770,455,""],["exams","🎓","Exams & Quizzes",450,525,""]].map(([r,ic,lab,cx,cy,sub],idx)=>{
             const bee = r==='spellType', stem = r==='stemlab';
             const rad = (bee||stem)?60:55;
             const fill = bee?'#3a2a06':(stem?'#1a1440':'#13322c');
             const strk = bee?'#ffd23f':(stem?'#c9b1ff':'rgba(255,255,255,.8)');
             const labSize = bee?13.5:(stem?15:(r==='articleaday'?15:18));
+            const shine = !bee;
+            const sdur = (2.8+idx*0.35).toFixed(1);
+            const halo = shine?`<circle cx="${cx}" cy="${cy}" r="${rad}" fill="url(#satShine)" opacity="0.5"><animate attributeName="r" values="${rad};${rad+20};${rad}" dur="${sdur}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0.08;0.7" dur="${sdur}s" repeatCount="indefinite"/></circle>`:'';
             return `<g class="hub-s${bee?' hub-bee':''}${stem?' hub-stem':''}" onclick="go('${r}')">
-            <circle cx="${cx}" cy="${cy}" r="${rad}" fill="${fill}" stroke="${strk}" stroke-width="${(bee||stem)?'4':'2.5'}"/>
+            ${halo}<circle cx="${cx}" cy="${cy}" r="${rad}" fill="${fill}" stroke="${strk}" stroke-width="${(bee||stem)?'4':'2.5'}"/>
             <text x="${cx}" y="${cy-((bee||stem)?9:7)}" text-anchor="middle" font-size="${(bee||stem)?32:(r==='articleaday'?24:27)}">${ic}</text>
             <text x="${cx}" y="${cy+((bee||stem)?18:22)}" text-anchor="middle" fill="#ffffff" font-size="${labSize}" font-weight="700">${lab}</text>
             ${sub?`<text x="${cx}" y="${cy+((bee||stem)?34:38)}" text-anchor="middle" fill="#ffe39a" font-size="10.5" font-weight="700" letter-spacing="0.02em">${sub}</text>`:''}</g>`; }).join('')}
         </svg>
-        <button class="yl-banner" onclick="go('ylhub')"><span style="font-size:2rem">🧒</span><span><b>Foundational Course</b> — Grades 1–8 · picture readers with read-to-me & tap-a-word, games after every read, printable quizzes.<br><span style="font-size:.8rem;opacity:.9">Read it · Write it · Design it — fun-sized ⭐</span></span><span class="sb-go" style="background:#fff;color:#15183A;border-radius:999px;padding:8px 16px;font-weight:700;white-space:nowrap">Play & learn →</span></button>
+        <button class="yl-banner" onclick="go('ylhub')"><span style="font-size:2rem">🧒</span><span><b>Foundational Course</b> — Grades 1–8 · picture readers with read-to-me & tap-a-word, games after every read, printable quizzes.<br><span style="font-size:.8rem;opacity:.9">Read it · Write it · Design it — fun-sized ⭐</span></span><span class="sb-go" style="background:#fff;color:#15183A;border-radius:999px;padding:8px 16px;font-weight:700;white-space:nowrap">Learn and have fun!</span></button>
         <div class="hub-foot">Tap any circle to begin.</div>
         <div class="hub-copyright">© 2026 Emad Ali Mohamed · <i>Developer of iCAN my English File — a multiliteracy hub for EFL learners</i></div>
       </div>
