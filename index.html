@@ -6,7 +6,7 @@
 <title>iCAN Academy · English Practice</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Great+Vibes&family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
@@ -4225,7 +4225,7 @@ const ROUTES = {
       ${_secs}
 
       <h2 style="font-family:'Fraunces';font-size:1.5rem;margin:30px 0 4px;color:var(--ink)">🏁 Grammar Challenge</h2>
-      <p style="color:var(--muted);max-width:700px;margin:0 0 12px">Three long practices that pull together grammar points from across all levels, from explicit to implicit and easy to hard. Answers stay hidden until you submit; then you get your score, a certificate, and feedback on where to focus.</p>
+      <p style="color:var(--muted);max-width:740px;margin:0 0 12px">Ten challenges in all. <b>Challenges 1–8</b> are themed, 20-question mixes — multiple choice, spot-the-error, punctuation, gap-fill, matching halves, compound adjectives, and a 10-gap mini-maze as the final question. <b>Challenges 9 and 10</b> are two long <b>100-question, all-multiple-choice exams</b> (Papers A and B) drawn from the whole grammar bank, easy to very challenging, each covering almost every point. Answers stay hidden until you submit; then you get your score, a certificate, and feedback on where to focus.</p>
       <div class="grid c2">
         ${GR_CHALLENGES.map(c=>`<button onclick="startGrChallenge(${c.id})" style="text-align:left;background:linear-gradient(135deg,#15183A,#8B5CF6);color:#fff;border:none;border-radius:12px;padding:16px 18px;cursor:pointer">
            <b>${c.title.split(' · ')[0]}</b><br><span style="font-size:.85rem;opacity:.9">${c.title.split(' · ')[1]||''} · ${c.n} questions</span></button>`).join('')}
@@ -8092,18 +8092,65 @@ function drawCertMotif(x, W, H, label, alpha){
   return kind;
 }
 
+function certStarPath(x, cx, cy, r){ x.beginPath(); for(let i=0;i<10;i++){ const a=-Math.PI/2 + i*Math.PI/5; const rr=(i%2)?r*0.42:r; const px=cx+Math.cos(a)*rr, py=cy+Math.sin(a)*rr; i?x.lineTo(px,py):x.moveTo(px,py); } x.closePath(); }
+function drawTrophyWatermark(x, cx, cy, s, color, alpha){
+  x.save(); x.translate(cx, cy); x.lineJoin='round'; x.lineCap='round';
+  x.globalAlpha=alpha; x.fillStyle=color; x.strokeStyle=color;
+  const H=s;
+  // handles
+  x.lineWidth=s*0.05;
+  x.beginPath(); x.moveTo(-0.15*H,-0.40*H); x.bezierCurveTo(-0.34*H,-0.41*H,-0.34*H,-0.19*H,-0.14*H,-0.23*H); x.stroke();
+  x.beginPath(); x.moveTo( 0.15*H,-0.40*H); x.bezierCurveTo( 0.34*H,-0.41*H, 0.34*H,-0.19*H, 0.14*H,-0.23*H); x.stroke();
+  // cup bowl
+  x.beginPath();
+  x.moveTo(-0.19*H,-0.45*H); x.lineTo(0.19*H,-0.45*H);
+  x.bezierCurveTo(0.19*H,-0.17*H, 0.11*H,-0.06*H, 0.06*H,-0.05*H);
+  x.lineTo(-0.06*H,-0.05*H);
+  x.bezierCurveTo(-0.11*H,-0.06*H,-0.19*H,-0.17*H,-0.19*H,-0.45*H);
+  x.closePath(); x.fill();
+  // stem
+  x.fillRect(-0.037*H,-0.05*H,0.074*H,0.12*H);
+  // base tier (trapezoid)
+  x.beginPath(); x.moveTo(-0.10*H,0.07*H); x.lineTo(0.10*H,0.07*H); x.lineTo(0.14*H,0.14*H); x.lineTo(-0.14*H,0.14*H); x.closePath(); x.fill();
+  // plinth
+  x.fillRect(-0.18*H,0.14*H,0.36*H,0.085*H);
+  // star emblem on the cup (a touch stronger so it reads)
+  x.globalAlpha=Math.min(alpha*2.6, 0.3); certStarPath(x, 0, -0.27*H, 0.085*H); x.fill();
+  x.restore(); x.globalAlpha=1;
+}
+function drawIcanTileWatermark(x, W, H, color){
+  x.save();
+  x.beginPath(); x.rect(74,74,W-148,H-148); x.clip();
+  x.globalAlpha=0.035; x.fillStyle=color;
+  x.font="700 30px 'Fraunces',Georgia,serif"; x.textAlign="center"; x.textBaseline="middle";
+  const stepX=152, stepY=80; let row=0;
+  for(let yy=92; yy<H-70; yy+=stepY){
+    const off=(row%2)*(stepX/2);
+    for(let xx=48; xx<W-10; xx+=stepX){ x.save(); x.translate(xx+off, yy); x.rotate(-Math.PI/9); x.fillText("iCAN", 0, 0); x.restore(); }
+    row++;
+  }
+  x.restore(); x.globalAlpha=1;
+}
 function drawCert(o){
   const t=o.theme; const W=1240,H=950; const c=document.createElement('canvas'); c.width=W;c.height=H; const x=c.getContext('2d');
   x.fillStyle="#fffef9"; x.fillRect(0,0,W,H);
   x.fillStyle=t.soft; x.fillRect(60,60,W-120,H-120);
   x.fillStyle="#fffef9"; x.fillRect(74,74,W-148,H-148);
-  // activity-specific typographic background — the words the activity is made of
-  if(!o.noCloud) drawWordCloud(x, W, H, (o.motif||o.titleText||o.subtitle||''), 0.11);
-  // ---- faint embedded iCAN logo watermark (behind all text) ----
-  x.save();
-  x.textAlign="center"; x.fillStyle="rgba(21,24,58,0.05)"; x.font="800 250px Georgia";
-  x.fillText("iCAN", W/2, H/2+88);
-  x.restore();
+  // ---- background watermark ----
+  if(o.variant==='exam'){
+    // faint tiled "iCAN" across the whole panel, with a bold trophy floating above it
+    drawIcanTileWatermark(x, W, H, t.ink);
+    drawTrophyWatermark(x, W/2, H*0.52, 470, t.a, 0.11);
+  } else {
+    // single large faint watermark of the section/skill the student was examined in
+    x.save();
+    x.translate(W/2, H/2+40); x.rotate(-Math.PI/10);
+    x.textAlign="center"; x.textBaseline="middle";
+    let _wm=(o.watermark||"iCAN"), _wf=150; x.font="800 "+_wf+"px Georgia";
+    while(x.measureText(_wm).width>(W-170) && _wf>34){ _wf-=4; x.font="800 "+_wf+"px Georgia"; }
+    x.globalAlpha=0.07; x.fillStyle=t.a; x.fillText(_wm, 0, 0);
+    x.globalAlpha=1; x.restore();
+  }
   // vertical brand lockup down the left edge
   x.save();
   x.translate(108, H/2); x.rotate(-Math.PI/2); x.textAlign="center";
@@ -8125,8 +8172,14 @@ function drawCert(o){
   x.fillStyle=t.a; roundRect(x, W/2-bw/2, 278, bw, 46, 23); x.fill();
   x.fillStyle="#fff"; x.fillText(o.band, W/2, 310);
   x.fillStyle="#666"; x.font="22px Georgia"; x.fillText("This is proudly presented to", W/2, 386);
-  let nf=72; x.font="bold "+nf+"px Georgia"; while(x.measureText(o.name).width>W-280 && nf>30){ nf-=2; x.font="bold "+nf+"px Georgia"; }
-  x.fillStyle=t.ink; x.fillText(o.name, W/2, 470);
+  if(o.variant==='exam'){
+    let nf=98; const cf=n=>"italic "+n+"px 'Great Vibes','Snell Roundhand','Brush Script MT','Segoe Script',cursive";
+    x.font=cf(nf); while(x.measureText(o.name).width>W-300 && nf>46){ nf-=3; x.font=cf(nf); }
+    x.fillStyle=t.ink; x.fillText(o.name, W/2, 478);
+  } else {
+    let nf=72; x.font="bold "+nf+"px Georgia"; while(x.measureText(o.name).width>W-280 && nf>30){ nf-=2; x.font="bold "+nf+"px Georgia"; }
+    x.fillStyle=t.ink; x.fillText(o.name, W/2, 470);
+  }
   x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(W/2-300,492); x.lineTo(W/2+300,492); x.stroke();
   x.fillStyle="#555"; x.font="22px Georgia"; x.fillText(o.line1, W/2, 538);
   let tf=30; x.font="bold "+tf+"px Georgia"; while(x.measureText(o.titleText).width>W-340 && tf>17){ tf-=2; x.font="bold "+tf+"px Georgia"; }
@@ -8151,11 +8204,14 @@ function drawCert(o){
   if(o.serial){ x.fillStyle="#8f8a7e"; x.font="12px 'Lexend',monospace"; x.fillText("Serial  "+o.serial, W/2, H-56); }
   return c.toDataURL("image/png");
 }
+try{ if(typeof document!=='undefined'&&document.fonts&&document.fonts.load){ document.fonts.load("400 90px 'Great Vibes'"); } }catch(e){}
 function makeCertificate(o){
   const theme = o.band==="Outstanding" ? {a:"#b8860b",b:"#e7c766",ink:"#5a4500",seal:"#caa12e",soft:"#fbf3da"}
               : o.band==="At-level"   ? {a:"#0c8a72",b:"#7ec9b6",ink:"#073d33",seal:"#0c8a72",soft:"#e6f4f0"}
               :                          {a:"#2b5fa6",b:"#9bbdee",ink:"#10294d",seal:"#2b5fa6",soft:"#e8f0fb"};
-  return drawCert({motif:(o.skill||o.title||''), serial:certSerial({name:o.name, skill:(o.skill||o.title), activity:o.title, percent:o.percent, dateMs:Date.now()}), band:o.band.toUpperCase(), subtitle:"Certificate of Achievement", name:o.name||"Student",
+  let _wmSrc=(o.skill||o.title||'').toString();
+  let _wm=_wmSrc.split(/\s[·—–:|-]\s/)[0].replace(/\s+\d+$/,'').replace(/\s+[IVXLC]+$/,'').trim()||'iCAN';
+  return drawCert({motif:(o.skill||o.title||''), watermark:_wm, variant:o.variant||'', serial:certSerial({name:o.name, skill:(o.skill||o.title), activity:o.title, percent:o.percent, dateMs:Date.now()}), band:o.band.toUpperCase(), subtitle:"Certificate of Achievement", name:o.name||"Student",
     line1:"has successfully completed", titleText:o.title||"an iCAN activity",
     statText:`Score  ${o.percent}%   ·   ${o.score}/${o.max}`, date:o.date||new Date().toLocaleDateString(), theme});
 }
@@ -8579,14 +8635,24 @@ function gSeededShuffle(arr,seed){ const a=arr.slice(); let s=seed||1; for(let i
 const GR_MIXED={ beginner:[101,113,127,139,151,163], intermediate:[211,223,235,247,259,271], advanced:[307,319,331,343,355,367] };
 function grMixedQs(levelKey,seed){ const tag=levelKey[0]; let pool=gPoolByLevel(tag); if(pool.length<12) pool=allGrammarMCQ(); return gSeededShuffle(pool,seed).slice(0,12); }
 const GR_CHALLENGES=[
-  {id:1, title:"Grammar Challenge 1 · Foundations to fluency", seed:7, n:85},
-  {id:2, title:"Grammar Challenge 2 · Mixed mastery", seed:29, n:90},
-  {id:3, title:"Grammar Challenge 3 · The full gauntlet", seed:53, n:95}
+  {id:1, kind:'rich', title:"Grammar Challenge 1 · Tenses & Time", n:20},
+  {id:2, kind:'rich', title:"Grammar Challenge 2 · Articles, Nouns & Pronouns", n:20},
+  {id:3, kind:'rich', title:"Grammar Challenge 3 · Verbs & Patterns", n:20},
+  {id:4, kind:'rich', title:"Grammar Challenge 4 · Clauses & Connectors", n:20},
+  {id:5, kind:'rich', title:"Grammar Challenge 5 · Modals & Voice", n:20},
+  {id:6, kind:'rich', title:"Grammar Challenge 6 · Adjectives, Adverbs & Order", n:20},
+  {id:7, kind:'rich', title:"Grammar Challenge 7 · Advanced Structures", n:20},
+  {id:8, kind:'rich', title:"Grammar Challenge 8 · The Full Gauntlet", n:20},
+  {id:9, title:"Grammar Challenge 9 · 100-Question Grammar Exam · Paper A", seed:101, n:100},
+  {id:10, title:"Grammar Challenge 10 · 100-Question Grammar Exam · Paper B", seed:211, n:100}
 ];
-function grChallengeQs(c){ const pool=allGrammarMCQ(); return gSeededShuffle(pool,c.seed).slice(0, Math.min(c.n, pool.length)); }
+function grRichMCQ(){ const out=[]; try{ Object.keys(GR_RICH_ITEMS).forEach(function(k){ GR_RICH_ITEMS[k].forEach(function(it){ if(it.t==='mcq'||it.t==='correct'||it.t==='punct'||it.t==='compound'){ out.push({q: it.q||(it.t==='correct'?'Choose the correct sentence.':(it.t==='punct'?'Which sentence is punctuated correctly?':'')), options: it.o, answer: it.a, exp: it.exp||''}); } }); }); }catch(e){} return out; }
+function grExamPool(){ let p=[]; try{ p=allGrammarMCQ(); }catch(e){} return p.concat(grRichMCQ()); }
+function grChallengeQs(c){ const pool=grExamPool(); return gSeededShuffle(pool,c.seed).slice(0, Math.min(c.n, pool.length)); }
 let GRC=null;
 function startGrChallenge(id){
   const c=GR_CHALLENGES.find(x=>x.id===id); if(!c){ go('grammar'); return; }
+  if(c.kind==='rich'){ startGrRichChallenge(c); return; }
   const qs=grChallengeQs(c); GRC={c, qs, answers:new Array(qs.length).fill(null), done:false};
   app().innerHTML=`
    <div class="wrap screen">
@@ -8625,12 +8691,274 @@ function grcSubmit(){
        <p style="margin:4px 0"><b>Where to study weak points:</b> Use <a href="https://test-english.com/grammar-points/contents/" target="_blank" rel="noopener">Test-English grammar points</a> for clear explanations and graded exercises, and the iCAN <a onclick="go('grammar')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">Grammar Lab</a> lessons. More resources are on the <a onclick="go('resources')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">Resources</a> page.</p>
      </div>
      <h3 style="font-size:1.15rem;margin-top:16px">🏆 Your certificate</h3>
-     ${certificateHTML({name:(SESSION&&SESSION.name)||'Student', title:c.title, score:correct, max:qs.length, percent:pct, band, date:new Date().toLocaleDateString()})}
+     ${certificateHTML({name:(SESSION&&SESSION.name)||'Student', title:c.title, score:correct, max:qs.length, percent:pct, band, date:new Date().toLocaleDateString(), variant:(c.n>=100?'exam':'')})}
      <div style="margin-top:10px"><button class="btn ghost sm" onclick="go('grammar')">← Back to Grammar Lab</button></div>
    </div>`;
   document.getElementById('grcResult').scrollIntoView({behavior:'smooth'});
 }
 
+/* ===== RICH GRAMMAR CHALLENGES — mixed item types + mini-mazes ===== */
+let GRCX=null;
+function grcxGaps(it){ return it.parts.filter(p=>typeof p==='object'); }
+function grcxMax(items){ let m=0; items.forEach(it=>{ if(it.t==='match') m+=it.pairs.length; else if(it.t==='maze') m+=grcxGaps(it).length; else m+=1; }); return m; }
+function grcxItemHTML(it,i){
+  const head=(txt)=>`<p style="font-weight:600;color:var(--ink)"><span style="color:var(--coral)">${i+1}.</span> ${txt}</p>`;
+  if(it.t==='mcq'||it.t==='correct'||it.t==='punct'||it.t==='compound'){
+    const q = it.q || (it.t==='correct'?'Choose the correct sentence.':(it.t==='punct'?'Which sentence is punctuated correctly?':''));
+    return `<div class="grc-q" id="grcx${i}">${head(q)}
+      <div class="grc-opts">${it.o.map((o,j)=>`<label class="grc-opt"><input type="radio" name="grcx${i}" value="${j}" onchange="GRCX.answers[${i}]=${j}"> <span>${esc(o)}</span></label>`).join('')}</div></div>`;
+  }
+  if(it.t==='gap'){
+    return `<div class="grc-q" id="grcx${i}">${head(it.q)}
+      <input type="text" oninput="GRCX.answers[${i}]=this.value" autocomplete="off" style="width:200px;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;font:inherit"> <span style="font-size:.8rem;color:var(--muted)">type one or two words</span></div>`;
+  }
+  if(it.t==='match'){
+    const rights=it.pairs.map(p=>p[1]);
+    const order=gSeededShuffle(rights.map((r,k)=>k), (it.seed||(i*7+3)));
+    return `<div class="grc-q" id="grcx${i}">${head(it.q||'Match each half to make a correct sentence.')}
+      ${it.pairs.map((p,k)=>`<div style="display:flex;gap:8px;align-items:center;margin:6px 0;flex-wrap:wrap"><span style="flex:1;min-width:170px">${esc(p[0])} …</span>
+        <select onchange="GRCX.answers[${i}][${k}]=(this.value===''?null:+this.value)" style="padding:7px 8px;border:1.5px solid var(--line);border-radius:8px;font:inherit;max-width:100%"><option value="">— choose —</option>${order.map(oi=>`<option value="${oi}">${esc(rights[oi])}</option>`).join('')}</select></div>`).join('')}</div>`;
+  }
+  if(it.t==='maze'){
+    let gi=0, body='';
+    it.parts.forEach(p=>{ if(typeof p==='string'){ body+=esc(p); } else { const g=gi; body+=`<select onchange="GRCX.answers[${i}][${g}]=(this.value===''?null:+this.value)" style="padding:3px 5px;border:1.5px solid #e7e2fb;border-radius:6px;font:inherit;background:#f7f5ff"><option value="">?</option>${p.o.map((o,j)=>`<option value="${j}">${'abc'[j]}) ${esc(o)}</option>`).join('')}</select>`; gi++; } });
+    return `<div class="grc-q" id="grcx${i}">${head('<b>Mini-maze — '+esc(it.focus||'grammar in context')+'.</b> Choose the right word at every gap.')}
+      <div style="line-height:2.5;font-size:1.02rem;color:#1f2340">${body}</div></div>`;
+  }
+  return '';
+}
+function startGrRichChallenge(c){
+  const items=(typeof GR_RICH_ITEMS!=='undefined'&&GR_RICH_ITEMS[c.id])||[];
+  GRCX={c, items, answers:new Array(items.length).fill(null), done:false};
+  items.forEach((it,i)=>{ if(it.t==='match') GRCX.answers[i]=new Array(it.pairs.length).fill(null); if(it.t==='maze') GRCX.answers[i]=new Array(grcxGaps(it).length).fill(null); });
+  const maxPts=grcxMax(items);
+  app().innerHTML=`
+   <div class="wrap screen">
+     <button class="back" onclick="go('grammar')">← Grammar Lab</button>
+     <h1 style="font-size:1.7rem">🏁 ${esc(c.title)}</h1>
+     <p style="color:var(--muted);max-width:760px">${c.intro||''} A mix of question types — multiple choice, spot-the-error, punctuation, gap-fill, matching halves, compound adjectives and mini-mazes. <b>Answers stay hidden until you submit.</b> Worth <b>${maxPts} points</b> in total; when you finish you'll get a score, a certificate and feedback.</p>
+     <div class="grc-bar"><span id="grcxProg">0 answered</span> <button class="btn" onclick="grcxSubmit()">Submit &amp; see results →</button></div>
+     <div id="grcxList">${items.map((it,i)=>grcxItemHTML(it,i)).join('')}</div>
+     <div class="grc-bar"><button class="btn" onclick="grcxSubmit()">Submit &amp; see results →</button></div>
+     <div id="grcxResult"></div>
+   </div>`;
+  window.scrollTo({top:0});
+}
+function grcxSubmit(){
+  if(!GRCX||GRCX.done) return; GRCX.done=true;
+  const {c,items,answers}=GRCX; let score=0, max=0; const sheet=[];
+  const norm=s=>String(s==null?'':s).trim().toLowerCase().replace(/[\u2019]/g,"'").replace(/\s+/g,' ');
+  items.forEach((it,i)=>{
+    const el=document.getElementById('grcx'+i); let ok=false, ptsMax=1, got=0;
+    if(it.t==='mcq'||it.t==='correct'||it.t==='punct'||it.t==='compound'){
+      ok=(answers[i]===it.a); got=ok?1:0;
+      if(el){ el.classList.add(ok?'grc-ok':'grc-bad'); el.querySelectorAll('input').forEach(x=>x.disabled=true); el.insertAdjacentHTML('beforeend',`<div class="grc-key">${ok?'\u2713 Correct.':'\u2717 Answer: <b>'+esc(it.o[it.a])+'</b>.'} ${it.exp?esc(it.exp):''}</div>`); }
+      sheet.push({q:it.q||it.t, your:(answers[i]!=null?it.o[answers[i]]:'(blank)'), correct:it.o[it.a], ok:ok, exp:it.exp||''});
+    } else if(it.t==='gap'){
+      const alts=[it.a].concat(it.alt||[]).map(norm); ok=(alts.indexOf(norm(answers[i]))>=0); got=ok?1:0;
+      if(el){ el.classList.add(ok?'grc-ok':'grc-bad'); const inp=el.querySelector('input'); if(inp)inp.disabled=true; el.insertAdjacentHTML('beforeend',`<div class="grc-key">${ok?'\u2713 Correct.':'\u2717 Answer: <b>'+esc(it.a)+'</b>.'} ${it.exp?esc(it.exp):''}</div>`); }
+      sheet.push({q:it.q, your:answers[i]||'(blank)', correct:it.a, ok:ok, exp:it.exp||''});
+    } else if(it.t==='match'){
+      ptsMax=it.pairs.length; const arr=answers[i]||[]; let c2=0; it.pairs.forEach((p,k)=>{ if(arr[k]===k) c2++; }); got=c2; ok=(c2===ptsMax);
+      if(el){ el.classList.add(ok?'grc-ok':'grc-bad'); el.querySelectorAll('select').forEach(x=>x.disabled=true); el.insertAdjacentHTML('beforeend',`<div class="grc-key">${c2}/${ptsMax} matched. Correct: ${it.pairs.map(p=>esc(p[0])+' \u2192 '+esc(p[1])).join('; ')}. ${it.exp?esc(it.exp):''}</div>`); }
+      sheet.push({q:it.q||'Match halves', your:(arr.map((v)=>v!=null?it.pairs[v][1]:'\u2014').join(' | ')), correct:it.pairs.map(p=>p[1]).join(' | '), ok:ok, exp:it.exp||''});
+    } else if(it.t==='maze'){
+      const gaps=grcxGaps(it); ptsMax=gaps.length; const arr=answers[i]||[]; let c2=0; gaps.forEach((g,k)=>{ if(arr[k]===g.a) c2++; }); got=c2; ok=(c2===ptsMax);
+      if(el){ el.classList.add(ok?'grc-ok':'grc-bad'); el.querySelectorAll('select').forEach(x=>x.disabled=true); el.insertAdjacentHTML('beforeend',`<div class="grc-key">${c2}/${ptsMax} correct. Key: ${gaps.map((g,k)=>(k+1)+') '+esc(g.o[g.a])).join(' \u00b7 ')}. ${it.exp?esc(it.exp):''}</div>`); }
+      sheet.push({q:('Mini-maze: '+(it.focus||'')), your:(arr.map((v,k)=>v!=null?gaps[k].o[v]:'\u2014').join(' / ')), correct:gaps.map(g=>g.o[g.a]).join(' / '), ok:ok, exp:it.exp||''});
+    }
+    score+=got; max+=ptsMax;
+  });
+  const pct=Math.round(score/max*100); const band=certBand(pct);
+  if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:"Grammar",activity:c.title,score:score,max:max,percent:pct,sheet:sheet,detail:'Grammar Challenge \u00b7 '+score+'/'+max+' ('+pct+'%)'}); }catch(e){} }
+  const praise = pct>=80?"Outstanding \u2014 strong, consistent control across many different structures.":(pct>=50?"Well done \u2014 a solid grasp, with a few areas to sharpen.":"Good effort taking on the full challenge \u2014 now you know exactly what to work on.");
+  document.getElementById('grcxResult').innerHTML=`<div class="card" style="margin-top:18px">
+     <div class="statline"><div class="stat"><div class="n">${pct}%</div><div class="l">overall</div></div><div class="stat"><div class="n">${score}/${max}</div><div class="l">points</div></div><div class="stat"><div class="n" style="font-size:1rem;font-family:inherit;font-weight:700">${band}</div><div class="l">band</div></div></div>
+     <div class="feedbk"><h3 style="margin:0 0 8px;font-size:1.1rem">\ud83d\udccb Your feedback</h3><p style="margin:4px 0"><b>What went well:</b> ${praise}</p><p style="margin:4px 0"><b>What to improve:</b> Review the items marked in red above, then practise those exact points in the <a onclick="go('grammar')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">Grammar Lab</a> mazes for your grade and level.</p></div>
+     <h3 style="font-size:1.15rem;margin-top:16px">\ud83c\udfc6 Your certificate</h3>
+     ${certificateHTML({name:(SESSION&&SESSION.name)||'Student', title:c.title, score:score, max:max, percent:pct, band, date:new Date().toLocaleDateString()})}
+     <div style="margin-top:10px"><button class="btn ghost sm" onclick="go('grammar')">\u2190 Back to Grammar Lab</button></div>
+   </div>`;
+  document.getElementById('grcxResult').scrollIntoView({behavior:'smooth'});
+}
+const GR_RICH_ITEMS = {
+1:[
+  {t:'mcq', q:"Every morning she ___ a cup of tea.", o:["is drinking","drinks","drink"], a:1, exp:"A daily habit \u2192 present simple."},
+  {t:'mcq', q:"Be quiet! The baby ___.", o:["sleeps","is sleeping","slept"], a:1, exp:"Happening now \u2192 present continuous."},
+  {t:'correct', q:"Choose the correct sentence.", o:["I have seen him yesterday.","I saw him yesterday.","I have saw him yesterday."], a:1, exp:"A finished time (yesterday) takes the past simple."},
+  {t:'gap', q:"She ___ here since 2010.  (live)", a:"has lived", exp:"since + now \u2192 present perfect."},
+  {t:'mcq', q:"The train ___ at nine, according to the timetable.", o:["leaves","is leaving","will leave"], a:0, exp:"A timetable \u2192 present simple."},
+  {t:'mcq', q:"I ___ Sara tomorrow; we arranged it yesterday.", o:["meet","'m meeting","will meet"], a:1, exp:"A fixed arrangement \u2192 present continuous."},
+  {t:'mcq', q:"Look at those clouds! It ___.", o:["is going to rain","will rain","rains"], a:0, exp:"A prediction from present evidence \u2192 going to."},
+  {t:'mcq', q:"The phone's ringing. I ___ it.", o:["'ll get","'m getting","get"], a:0, exp:"An instant decision \u2192 will."},
+  {t:'correct', q:"Choose the correct sentence.", o:["By the time we arrived, the film started.","By the time we arrived, the film had started.","By the time we arrived, the film has started."], a:1, exp:"The earlier past action \u2192 past perfect."},
+  {t:'mcq', q:"While I ___ home, it started to rain.", o:["walked","was walking","had walked"], a:1, exp:"A background action \u2192 past continuous."},
+  {t:'mcq', q:"Which is correct?  (stative verb)", o:["I'm knowing the answer.","I know the answer.","I am know the answer."], a:1, exp:"know is stative \u2192 simple, not continuous."},
+  {t:'mcq', q:"This soup ___ delicious.  (verb of the senses)", o:["tastes","is tasting","taste"], a:0, exp:"Perception \u2192 simple form + adjective."},
+  {t:'correct', q:"Choose the correct sentence.", o:["I'm thinking it's true.","I think it's true.","I thinking it's true."], a:1, exp:"think = opinion (a state) \u2192 simple."},
+  {t:'mcq', q:"We'll meet ___ Monday morning.", o:["in","on","at"], a:1, exp:"on + a day (and part of that day)."},
+  {t:'mcq', q:"The film starts ___ eight o'clock.", o:["in","on","at"], a:2, exp:"at + a clock time."},
+  {t:'mcq', q:"Hurry, or we won't be ___ to catch it.", o:["on time","in time","at time"], a:1, exp:"in time = early enough."},
+  {t:'gap', q:"___ you ever been to Oman?  (Have / Did)", a:"Have", exp:"ever + experience \u2192 present perfect."},
+  {t:'correct', q:"Choose the correct sentence.", o:["Each of the boys have a bike.","Each of the boys has a bike.","Each of the boys are having a bike."], a:1, exp:"each = singular \u2192 has."},
+  {t:'match', q:"Match each half to make a correct sentence (time & tense).", pairs:[["I have lived here","for ten years."],["I lived there","in 2019."],["I'm living here","at the moment."]], exp:"present perfect (for), past simple (in 2019), present continuous (at the moment)."},
+  {t:'maze', focus:"tenses & time \u2014 a short story", parts:["Last year I ",{o:["move","moved","have moved"],a:1}," to a new city. I ",{o:["have never lived","never lived","was never living"],a:0}," alone before, so at first everything ",{o:["was","is","were"],a:0}," strange. While I ",{o:["unpacked","was unpacking","had unpacked"],a:1}," my books, a neighbour ",{o:["knocked","was knocking","had knocked"],a:0}," on the door. By the time she left, we ",{o:["became","had become","have become"],a:1}," friends. I ",{o:["live","have lived","am living"],a:1}," here since then, and right now I ",{o:["study","am studying","studies"],a:1}," for exams. Next week I ",{o:["am seeing","see","will see"],a:0}," my family \u2014 the train ",{o:["leaves","is leaving","will leave"],a:0}," at six."], exp:"Past simple narrative, present perfect (experience/since), past continuous background, past perfect for the earlier action, present continuous for now/arrangements, present simple for a timetable."}
+],
+2:[
+  {t:'mcq', q:"I saw ___ elephant at the zoo.", o:["a","an","the"], a:1, exp:"A vowel sound \u2192 an."},
+  {t:'mcq', q:"Can you pass me ___ salt, please?", o:["a","an","the"], a:2, exp:"Specific \u2192 the."},
+  {t:'mcq', q:"___ honesty is important.", o:["A","The","\u2014"], a:2, exp:"A general uncountable noun \u2192 no article."},
+  {t:'gap', q:"She plays ___ piano beautifully.  (article)", a:"the", exp:"Musical instruments take 'the'."},
+  {t:'correct', q:"Choose the correct sentence.", o:["There isn't many milk.","There isn't much milk.","There isn't a milk."], a:1, exp:"'milk' is uncountable \u2192 much."},
+  {t:'mcq', q:"I have ___ friends here.  (a small number)", o:["a little","a few","much"], a:1, exp:"a few + countable nouns."},
+  {t:'gap', q:"We need ___ sugar.  (a small amount \u2014 2 words)", a:"a little", exp:"a little + uncountable nouns."},
+  {t:'mcq', q:"___ student passed.  (each one, individually)", o:["All","Every","Most"], a:1, exp:"every + singular noun."},
+  {t:'mcq', q:"___ the people were friendly.", o:["Most","Most of","The most"], a:1, exp:"most of + the + noun."},
+  {t:'correct', q:"Choose the correct reflexive pronoun.", o:["They enjoyed theirselves.","They enjoyed themselves.","They enjoyed themself."], a:1, exp:"The standard plural reflexive is themselves."},
+  {t:'gap', q:"I cut ___ while cooking.  (reflexive, I)", a:"myself", exp:"First-person singular reflexive."},
+  {t:'correct', q:"Choose the correct possessive (two parents).", o:["My parent's house is big.","My parents' house is big.","My parents's house is big."], a:1, exp:"A plural noun in -s takes just an apostrophe: parents'."},
+  {t:'mcq', q:"I waited at the ___.  (compound noun)", o:["bus stop","bus's stop","buses stop"], a:0, exp:"A compound noun \u2014 no apostrophe."},
+  {t:'mcq', q:"Which is natural?  (possession of a thing)", o:["the house's roof","the roof of the house","the roof's house"], a:1, exp:"Things usually take 'of': the roof of the house."},
+  {t:'mcq', q:"Today is ___ than yesterday.", o:["hot","hotter","more hot"], a:1, exp:"A short adjective \u2192 -er."},
+  {t:'mcq', q:"It's ___ day of the year.", o:["the longer","the longest","most long"], a:1, exp:"Superlative with 'the'."},
+  {t:'correct', q:"Choose the correct comparative.", o:["This is more easier than that.","This is easier than that.","This is most easy than that."], a:1, exp:"Never double the comparative; short adjective \u2192 -er."},
+  {t:'gap', q:"There weren't ___ tomatoes left.  (some / any)", a:"any", exp:"A negative \u2192 any."},
+  {t:'match', q:"Match each half to make a correct sentence (quantifiers).", pairs:[["I have a few","apples."],["I have a little","honey."],["I don't have much","time."]], exp:"a few + countable; a little / much + uncountable."},
+  {t:'maze', focus:"articles, quantifiers & possessives", parts:["I went to ",{o:["the","a","\u2014"],a:0}," market to buy ",{o:["some","a","many"],a:0}," vegetables. There weren't ",{o:["some","any","much"],a:1}," tomatoes, and there wasn't ",{o:["many","much","few"],a:1}," bread. I bought ",{o:["a few","a little","much"],a:0}," apples and ",{o:["a little","a few","many"],a:0}," honey. ",{o:["Most","Most of","The most"],a:1}," the stalls were busy. My ",{o:["mothers","mother's","mothers'"],a:1}," favourite is dates \u2014 she chooses them ",{o:["herself","hersef","she"],a:0},". ",{o:["The","A","\u2014"],a:0}," honey I bought is from Oman."], exp:"Articles (the/some/zero), quantifiers (any/much/a few/a little), most of, singular possessive (mother's), reflexive (herself)."}
+],
+3:[
+  {t:'gap', q:"I enjoy ___ in the evening.  (read)", a:"reading", exp:"enjoy + -ing."},
+  {t:'gap', q:"She decided ___ early.  (leave)", a:"to leave", exp:"decide + to + infinitive."},
+  {t:'gap', q:"I'm looking forward to ___ you.  (see)", a:"seeing", exp:"Here 'to' is a preposition \u2192 -ing."},
+  {t:'mcq', q:"I can't help ___ at his jokes.", o:["to laugh","laughing","laugh"], a:1, exp:"can't help + -ing."},
+  {t:'mcq', q:"They agreed ___ the contract.", o:["signing","to sign","sign"], a:1, exp:"agree + to + infinitive."},
+  {t:'correct', q:"Which means 'quit smoking'?", o:["He stopped to smoke.","He stopped smoking.","He stopped smoke."], a:1, exp:"stop + -ing = quit; stop + to = pause in order to."},
+  {t:'gap', q:"He admitted ___ the window.  (break)", a:"breaking", exp:"admit + -ing."},
+  {t:'mcq', q:"She refused ___ at first.", o:["paying","to pay","pay"], a:1, exp:"refuse + to + infinitive."},
+  {t:'mcq', q:"They accused him ___ lying.", o:["of","for","to"], a:0, exp:"accuse someone of + -ing."},
+  {t:'mcq', q:"I'd rather ___ at home tonight.", o:["to stay","stay","staying"], a:1, exp:"would rather + bare infinitive."},
+  {t:'mcq', q:"I'd prefer ___ tea, thanks.", o:["to have","having","have"], a:0, exp:"would prefer + to + infinitive."},
+  {t:'mcq', q:"You'd better ___ now, or you'll be late.", o:["to leave","leave","leaving"], a:1, exp:"had better + bare infinitive."},
+  {t:'mcq', q:"'It's getting dark' \u2014 here 'get' means…", o:["become","receive","arrive"], a:0, exp:"get + adjective = become."},
+  {t:'mcq', q:"'We got home very late' \u2014 here 'get' means…", o:["became","arrived","received"], a:1, exp:"get + place = arrive."},
+  {t:'mcq', q:"The meeting was ___ until next week.  (phrasal verb)", o:["put off","put on","put up"], a:0, exp:"put off = postpone."},
+  {t:'mcq', q:"Which is correct?  (phrasal-verb word order)", o:["Turn off it.","Turn it off.","Off turn it."], a:1, exp:"A pronoun object goes in the middle: turn it off."},
+  {t:'mcq', q:"'I love this song.' '___!'  (substitution)", o:["So do I","So I do","So am I"], a:0, exp:"So + auxiliary + subject."},
+  {t:'gap', q:"You should ___ an effort.  (do / make)", a:"make", exp:"make an effort."},
+  {t:'match', q:"Match each half to make a correct sentence (reporting patterns).", pairs:[["He apologised","for being late."],["She insisted","on paying."],["They promised","to help."]], exp:"apologise for + -ing, insist on + -ing, promise + to-infinitive."},
+  {t:'maze', focus:"verb patterns: gerund, infinitive & phrasal verbs", parts:["I've decided ",{o:["to learn","learning","learn"],a:0}," the guitar. I enjoy ",{o:["playing","to play","play"],a:0}," music, but I keep ",{o:["putting","to put","put"],a:0}," it off. My teacher suggested ",{o:["practising","to practise","practise"],a:0}," daily, and I promised ",{o:["to try","trying","try"],a:0},". I couldn't help ",{o:["feeling","to feel","feel"],a:0}," nervous, so I nearly gave ",{o:["up","in","off"],a:0},". But I'm good ",{o:["at","in","on"],a:0}," learning and look forward to ",{o:["playing","play","to play"],a:0}," every day. I've stopped ",{o:["making","to make","make"],a:0}," excuses."], exp:"decide/promise + to-infinitive; enjoy/keep/suggest/can't help/stop + -ing; give up; good at + -ing; look forward to + -ing."}
+],
+4:[
+  {t:'correct', q:"Choose the correct relative pronoun.", o:["The man which called is my uncle.","The man who called is my uncle.","The man what called is my uncle."], a:1, exp:"People take who (or that)."},
+  {t:'mcq', q:"The house ___ I grew up is small.", o:["which","where","who"], a:1, exp:"A place \u2192 where."},
+  {t:'gap', q:"The woman ___ car was stolen called the police.  (possession)", a:"whose", exp:"'whose' = belonging to."},
+  {t:'mcq', q:"Which adds extra, non-essential information?", o:["My brother who lives in Dubai is a doctor.","My brother, who lives in Dubai, is a doctor."], a:1, exp:"Commas mark a non-defining clause."},
+  {t:'correct', q:"Choose the correct sentence.", o:["Cairo, that is huge, is the capital.","Cairo, which is huge, is the capital."], a:1, exp:"A non-defining clause takes which, never that."},
+  {t:'mcq', q:"We stayed in ___ the rain.", o:["because","because of","although"], a:1, exp:"because of + noun."},
+  {t:'mcq', q:"___ it was raining, we went out.", o:["Because","Although","So"], a:1, exp:"Contrast \u2192 although."},
+  {t:'mcq', q:"She spoke slowly ___ we could follow.", o:["so that","in order to","because"], a:0, exp:"so that + clause of purpose."},
+  {t:'gap', q:"___ the rain, we went out.  (contrast + noun)", a:"Despite", exp:"Despite / In spite of + noun."},
+  {t:'correct', q:"Which is correctly punctuated with 'however'?", o:["It was late however we stayed.","It was late; however, we stayed.","It was late, however we stayed."], a:1, exp:"however joins sentences with a semicolon and a comma."},
+  {t:'mcq', q:"If it rains, we ___ inside.", o:["stay","will stay","would stay"], a:1, exp:"First conditional \u2192 will."},
+  {t:'correct', q:"Choose the correct sentence.", o:["If we will act now, it will help.","If we act now, it will help."], a:1, exp:"Never put 'will' in the if-part."},
+  {t:'mcq', q:"If I ___ rich, I'd travel the world.", o:["am","was","were"], a:2, exp:"Second conditional \u2192 were."},
+  {t:'mcq', q:"We'll go hiking ___ it rains.", o:["unless","if","even if"], a:0, exp:"unless = if not."},
+  {t:'mcq', q:"___ it's cold, I still want to go.", o:["Unless","Even if","Provided"], a:1, exp:"even if = it makes no difference."},
+  {t:'mcq', q:"You can borrow it ___ you return it.", o:["unless","as long as","even if"], a:1, exp:"A condition \u2192 as long as."},
+  {t:'gap', q:"Take a map ___ we get lost.  (precaution \u2014 2 words)", a:"in case", exp:"in case = as a precaution."},
+  {t:'correct', q:"Choose the correct third conditional.", o:["If we had left earlier, we would catch it.","If we had left earlier, we would have caught it."], a:1, exp:"Third conditional \u2192 would have + past participle."},
+  {t:'match', q:"Match each half to make a correct sentence.", pairs:[["Although it was late,","we kept working."],["I was tired,","so I went to bed."],["I studied hard","because I wanted to pass."]], exp:"Contrast (although), result (so), reason (because)."},
+  {t:'maze', focus:"relative clauses, conjunctions & conditionals", parts:["My friend, ",{o:["who","which","where"],a:0}," loves books, works in a library ",{o:["where","which","who"],a:0}," she can read all day. The novel ",{o:["that","who","where"],a:0}," she recommended was brilliant. ",{o:["Although","Because","So"],a:0}," it was long, I finished it in a week ",{o:["because","although","so that"],a:0}," I couldn't stop. If you ",{o:["like","will like","liked"],a:0}," mysteries, you ",{o:["will","would","are"],a:0}," love it. If I ",{o:["were","was","am"],a:0}," you, I'd read it. ",{o:["Unless","If","Even if"],a:0}," you're very busy, give it a try \u2014 and take notes ",{o:["in case","if","unless"],a:0}," you forget the plot."], exp:"Relative who/where/that; although/because/so that; first conditional (like\u2192will); second conditional (were); unless; in case."}
+],
+5:[
+  {t:'mcq', q:"You ___ wear a seatbelt \u2014 it's the law.", o:["must","might","can"], a:0, exp:"A rule \u2192 must."},
+  {t:'correct', q:"Choose the correct prohibition.", o:["You mustn't to smoke here.","You mustn't smoke here.","You don't must smoke here."], a:1, exp:"mustn't + bare infinitive = forbidden."},
+  {t:'mcq', q:"It's Sunday; you ___ get up early.", o:["mustn't","don't have to","can't"], a:1, exp:"No obligation \u2192 don't have to."},
+  {t:'mcq', q:"He's not answering \u2014 he ___ be busy.", o:["must","can't","mustn't"], a:0, exp:"A likely explanation \u2192 must."},
+  {t:'mcq', q:"That ___ be true \u2014 I saw it myself.", o:["mustn't","can't","needn't"], a:1, exp:"Sure it's false \u2192 can't."},
+  {t:'gap', q:"We ___ wear a uniform at my old school.  (must \u2192 past)", a:"had to", exp:"The past of 'must' is 'had to'."},
+  {t:'correct', q:"Choose the correct negative imperative.", o:["Not forget your passport.","Don't forget your passport.","No forget your passport."], a:1, exp:"Negative imperative \u2192 Don't + base verb."},
+  {t:'gap', q:"The bridge ___ in 1932.  (build \u2014 passive)", a:"was built", exp:"Past passive: was + past participle."},
+  {t:'mcq', q:"The results ___ tomorrow.  (passive)", o:["are announced","will be announced","announce"], a:1, exp:"Future passive \u2192 will be + past participle."},
+  {t:'mcq', q:"The room ___ right now.  (passive)", o:["is cleaning","is being cleaned","cleans"], a:1, exp:"Continuous passive \u2192 is being + past participle."},
+  {t:'correct', q:"Which means a salon did it?", o:["I cut my hair yesterday.","I had my hair cut yesterday.","I had cut my hair yesterday."], a:1, exp:"Causative: have + object + past participle."},
+  {t:'gap', q:"I need to get this document ___.  (translate)", a:"translated", exp:"get + object + past participle."},
+  {t:'correct', q:"Choose the correct reported speech.", o:["She said she is tired.","She said she was tired."], a:1, exp:"Backshift: is \u2192 was."},
+  {t:'mcq', q:"'I will help.' \u2192 He said he ___ help.", o:["will","would","can"], a:1, exp:"will \u2192 would."},
+  {t:'gap', q:"'I have finished.' \u2192 She said she ___ finished.", a:"had", exp:"have \u2192 had."},
+  {t:'correct', q:"Choose the correct reported question.", o:["He asked where was the station.","He asked where the station was."], a:1, exp:"Reported questions use statement word order."},
+  {t:'mcq', q:"'People say it's safe.' \u2192 It ___ to be safe.", o:["is said","says","said"], a:0, exp:"Reporting passive: it is said to be."},
+  {t:'mcq', q:"You ___ rest \u2014 you look exhausted.", o:["must","should","can't"], a:1, exp:"Advice \u2192 should."},
+  {t:'match', q:"Match each half to make a correct sentence (modals).", pairs:[["You must","stop at a red light."],["You mustn't","use your phone while driving."],["You don't have to","pay \u2014 it's free."]], exp:"Obligation, prohibition, no obligation."},
+  {t:'maze', focus:"the passive, modals & reported speech", parts:["The new museum ",{o:["was opened","opened","is opening"],a:0}," last year. It ",{o:["is said","says","said"],a:0}," to be the finest in the region. Visitors ",{o:["must","can","might"],a:0}," book online; they ",{o:["mustn't","don't have to","needn't"],a:0}," touch the exhibits. Yesterday a painting ",{o:["was stolen","stole","is stealing"],a:0},", and the police ",{o:["are investigating","investigate","is investigated"],a:0}," it now. A guard said he ",{o:["had","has","have"],a:0}," seen nothing. It ",{o:["is believed","believes","believed"],a:0}," to have been an inside job. You ",{o:["don't have to","mustn't","can't"],a:0}," pay to enter, but you ",{o:["should","must to","ought"],a:0}," arrive early."], exp:"Past & reporting passives, must/mustn't/don't have to/should, reported backshift (had), present continuous for 'now'."}
+],
+6:[
+  {t:'correct', q:"You feel no interest. Which is right?", o:["I am boring.","I am bored."], a:1, exp:"-ed adjectives describe the feeling you have."},
+  {t:'mcq', q:"The lesson makes me sleep. The lesson is ___.", o:["tired","tiring"], a:1, exp:"The cause takes -ing."},
+  {t:'gap', q:"We were ___ about the trip.  (excite)", a:"excited", exp:"-ed = the feeling."},
+  {t:'mcq', q:"the ___ window  (a window someone broke)", o:["breaking","broken"], a:1, exp:"A past participle as an adjective \u2192 broken."},
+  {t:'compound', q:"Complete: 'It's a ___-known fact.'  (well / good)", o:["well","good"], a:0, exp:"well-known (adverb + participle)."},
+  {t:'compound', q:"Complete: 'a five-___-old child'.  (year / years)", o:["year","years"], a:0, exp:"The noun stays singular in a compound adjective."},
+  {t:'compound', q:"Complete: 'an ___-made suit'.  (hand / handed)", o:["hand","handed"], a:0, exp:"hand-made (noun + past participle)."},
+  {t:'compound', q:"Complete: 'a ___-saving device'.  (time / timing)", o:["time","timing"], a:0, exp:"time-saving (noun + present participle)."},
+  {t:'compound', q:"Complete: 'a two-___ film'.  (hour / hours)", o:["hour","hours"], a:0, exp:"Singular in a compound: two-hour."},
+  {t:'mcq', q:"She works ___ than him.  (careful)", o:["more carefully","carefuller","carefulier"], a:0, exp:"Most -ly adverbs take more/most."},
+  {t:'correct', q:"Choose the correct sentence.", o:["She sings more well than me.","She sings better than me."], a:1, exp:"good/well \u2192 better (irregular)."},
+  {t:'mcq', q:"He isn't ___ tall as his brother.", o:["as","so","more"], a:0, exp:"as \u2026 as (equal); not as \u2026 as (less)."},
+  {t:'correct', q:"Choose the correct adjective order.", o:["a wooden round small table","a small round wooden table"], a:1, exp:"Order: size \u2013 shape \u2013 material."},
+  {t:'gap', q:"a ___ painting  (French / old / lovely \u2014 3 words in order)", a:"lovely old French", exp:"Order: opinion \u2013 age \u2013 origin."},
+  {t:'correct', q:"Choose the correct adverb position.", o:["I always am late.","I am always late."], a:1, exp:"A frequency adverb goes after 'be'."},
+  {t:'mcq', q:"We ___ at seven.  (usually / eat)", o:["usually eat","eat usually","usually are eating"], a:0, exp:"A frequency adverb goes before the main verb."},
+  {t:'mcq', q:"I'm good ___ maths.  (preposition)", o:["in","at","on"], a:1, exp:"good at (a skill)."},
+  {t:'gap', q:"She's interested ___ history.  (preposition)", a:"in", exp:"interested in."},
+  {t:'match', q:"Match each half (adjective + preposition).", pairs:[["She's afraid","of the dark."],["He's proud","of his work."],["They're keen","on football."]], exp:"afraid of, proud of, keen on."},
+  {t:'maze', focus:"adjectives, adverbs, word order & prepositions", parts:["It was a ",{o:["boring","bored","bore"],a:0}," film, so we were all ",{o:["boring","bored","bore"],a:1},". The ending was ",{o:["surprised","surprising","surprise"],a:1},"; everyone looked ",{o:["surprising","surprised","surprise"],a:1},". It's a ",{o:["well-made","well made","good-made"],a:0}," two-hour story. She lives in a ",{o:["lovely old stone","old lovely stone","stone old lovely"],a:0}," house and ",{o:["always","is always","always is"],a:0}," keeps the door open. She's very good ",{o:["at","in","on"],a:0}," painting and keen ",{o:["on","at","in"],a:0}," music, and she paints ",{o:["beautifully","beautiful","in beautiful"],a:0},"."], exp:"-ing (cause) vs -ed (feeling), compound adjectives, adjective order, frequency-adverb position, good at / keen on, a manner adverb."}
+],
+7:[
+  {t:'correct', q:"Choose the correct inversion.", o:["Never I have seen such a thing.","Never have I seen such a thing."], a:1, exp:"After a negative adverbial, the verb comes before the subject."},
+  {t:'mcq', q:"Not only ___ the audience, but it changed them.", o:["it moved","did it move","moved it"], a:1, exp:"No auxiliary \u2192 add did, then invert."},
+  {t:'mcq', q:"No sooner had I sat down ___ the phone rang.", o:["when","than","then"], a:1, exp:"No sooner \u2026 than."},
+  {t:'gap', q:"Rarely ___ a debut win the prize.  (do / does)", a:"does", exp:"No auxiliary \u2192 add does, then invert."},
+  {t:'mcq', q:"Spotlight the person: '___ won the prize.'", o:["It was Sara who","It was Sara which","There was Sara who"], a:0, exp:"A person \u2192 who in an it-cleft."},
+  {t:'mcq', q:"Spotlight the idea: '___ everyone was her reason.'", o:["What surprised","Who surprised","That surprised"], a:0, exp:"What = the thing that."},
+  {t:'correct', q:"Choose the correct cleft.", o:["All what it needed was a word.","All it needed was a word."], a:1, exp:"After 'all', do not add 'what'."},
+  {t:'mcq', q:"If I had studied medicine, I ___ a doctor now.  (mixed)", o:["would be","would have been","will be"], a:0, exp:"Past cause \u2192 present result: would + base verb."},
+  {t:'correct', q:"Choose the correct mixed conditional.", o:["If she were taller, she would have been picked.","If she were taller, she would be picked."], a:0, exp:"Present cause \u2192 past result: would have + past participle."},
+  {t:'mcq', q:"I wish I ___ taller.", o:["am","was","were"], a:2, exp:"wish + were for an unreal present."},
+  {t:'mcq', q:"If only I ___ that yesterday.", o:["didn't say","hadn't said","don't say"], a:1, exp:"A past regret \u2192 past perfect."},
+  {t:'mcq', q:"I wish you ___ interrupt me so often.  (annoying habit)", o:["wouldn't","didn't","hadn't"], a:0, exp:"wish + would for another person's habit."},
+  {t:'mcq', q:"It's time we ___.", o:["leave","left","to leave"], a:1, exp:"It's time + past tense."},
+  {t:'correct', q:"Choose the correct indirect question.", o:["Do you know where is the station?","Do you know where the station is?"], a:1, exp:"Indirect questions use statement word order."},
+  {t:'gap', q:"I wonder ___ it will rain.  (if / whether)", a:"whether", exp:"A yes/no embedded question \u2192 if / whether."},
+  {t:'correct', q:"Choose the correct question form.", o:["Where you are going?","Where are you going?"], a:1, exp:"Invert the subject and the auxiliary."},
+  {t:'mcq', q:"You live nearby, ___?  (question tag)", o:["don't you","do you","isn't it"], a:0, exp:"A positive statement takes a negative tag."},
+  {t:'mcq', q:"I'd rather you ___ tell anyone.", o:["didn't","don't","won't"], a:0, exp:"would rather + subject + past tense."},
+  {t:'match', q:"Match each half (advanced openers).", pairs:[["Never have I","been so surprised."],["Not only did she win,","she broke the record."],["Had I known,","I would have come."]], exp:"Inversion after Never / Not only, and an inverted third conditional (Had I known)."},
+  {t:'maze', focus:"inversion, cleft, wish & conditionals", parts:["Never ",{o:["have I","I have","did I"],a:0}," seen such a storm. No sooner had it started ",{o:["than","when","then"],a:0}," the lights went out. It was the wind ",{o:["that","who","which"],a:0}," frightened us most. What we needed ",{o:["was","were","is"],a:0}," a torch. If only we ",{o:["had checked","checked","would check"],a:0}," the forecast! If I ",{o:["were","was","had been"],a:0}," more careful, I would have charged the lamp. Rarely ",{o:["does","do","a"],a:0}," a night feel so long. Had we ",{o:["known","know","knew"],a:0},", we would have stayed with friends. I wish it ",{o:["would","will","had"],a:0}," stop. It's time we ",{o:["left","leave","had left"],a:0},"."], exp:"Inversion (Never / No sooner\u2026than / Rarely / Had we), it-cleft (that) & wh-cleft (was), if only + past perfect, mixed conditional, wish + would, it's time + past."}
+],
+8:[
+  {t:'punct', q:"Which sentence is punctuated correctly?", o:["Its raining, so the dog wagged it's tail.","It's raining, so the dog wagged its tail.","Its raining, so the dog wagged its' tail."], a:1, exp:"it's = it is; its = belonging to it."},
+  {t:'punct', q:"Which uses speech punctuation correctly?", o:["\u201cWhere are you going\u201d? she asked.","\u201cWhere are you going?\u201d she asked.","\u201cWhere are you going?\u201d She asked."], a:1, exp:"The ? goes inside the quotes; 'asked' is not capitalised."},
+  {t:'punct', q:"Which avoids a comma splice?", o:["It was late, we went home.","It was late, so we went home.","It was late so, we went home."], a:1, exp:"Two clauses need a conjunction (so)."},
+  {t:'punct', q:"Which possessive is correct (many girls)?", o:["The girls bags are here.","The girls' bags are here.","The girl's bags are here."], a:1, exp:"A plural possessive \u2192 girls'."},
+  {t:'punct', q:"Which list is correctly punctuated?", o:["I bought apples oranges and pears.","I bought apples, oranges and pears.","I bought, apples oranges and pears."], a:1, exp:"Commas separate items in a list."},
+  {t:'correct', q:"Choose the correct sentence.", o:["Each of the students have a book.","Each of the students has a book."], a:1, exp:"each = singular \u2192 has."},
+  {t:'mcq', q:"We drove ___ a long tunnel.  (movement)", o:["through","across","along"], a:0, exp:"through = an enclosed space."},
+  {t:'mcq', q:"We drove ___ a high bridge.", o:["over","above","on"], a:0, exp:"over = across the top of."},
+  {t:'mcq', q:"Be ___ for the meeting.  (punctual)", o:["on time","in time","at time"], a:0, exp:"on time = punctual."},
+  {t:'mcq', q:"'Did you ___ my message?'  (get)", o:["get","become","arrive"], a:0, exp:"get = receive."},
+  {t:'mcq', q:"Which is correct?  (separable phrasal verb)", o:["I looked the word up.","I looked up it.","Up I looked it."], a:0, exp:"A noun object can go in the middle or after; a pronoun must go in the middle."},
+  {t:'mcq', q:"The plane took ___ on time.  (intransitive phrasal verb)", o:["off","off it","up it"], a:0, exp:"take off has no object here."},
+  {t:'gap', q:"She ___ her best.  (do / make \u2014 past)", a:"did", exp:"do one's best."},
+  {t:'correct', q:"Choose the correct sentence.  (stative verb)", o:["I'm knowing the answer.","I know the answer."], a:1, exp:"know is stative \u2014 not continuous."},
+  {t:'mcq', q:"You ___ tired today.  (verb of the senses)", o:["look","are looking","looks"], a:0, exp:"look = appear \u2192 simple + adjective."},
+  {t:'mcq', q:"I did it ___.  (alone)", o:["by myself","by me","myself by"], a:0, exp:"by + reflexive = alone."},
+  {t:'correct', q:"Choose the correct comparative.", o:["This is more easier than that.","This is easier than that."], a:1, exp:"Never double the comparative."},
+  {t:'gap', q:"She is one of ___ best students in the school.  (article)", a:"the", exp:"Superlatives take 'the'."},
+  {t:'match', q:"Match the homophone to its meaning.", pairs:[["it's","means 'it is'."],["its","shows belonging."],["they're","means 'they are'."]], exp:"it's = it is; its = possessive; they're = they are."},
+  {t:'maze', focus:"a mixed review \u2014 spot the right form", parts:["Yesterday I ",{o:["went","have gone","go"],a:0}," to the shops, where I ",{o:["bought","have bought","buy"],a:0}," some bread. There wasn't ",{o:["much","many","a few"],a:0}," milk left. ",{o:["It's","Its","Its'"],a:0}," a shame the caf\u00e9 was shut. I ",{o:["had","have","has"],a:0}," hoped to meet a friend ",{o:["who","which","where"],a:0}," works there. If I ",{o:["had","have","would"],a:0}," known, I would have called. On the way home I ran ",{o:["into","in","at"],a:0}," an old teacher, and we ",{o:["caught","catch","have caught"],a:0}," up for ten minutes. Never ",{o:["have I","I have","did I"],a:0}," talked so long in the street."], exp:"Past simple, quantifier (much), it's, past perfect, relative who, third conditional (had known), phrasal 'run into', inversion (Never have I)."}
+]
+};
 function startGrMixed(levelKey,seed,label){
   const qs=grMixedQs(levelKey,seed); const id='mix_'+levelKey+'_'+seed;
   app().innerHTML=`
