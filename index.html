@@ -5092,6 +5092,8 @@ const ROUTES = {
 
       <div class="deck-brief"><p style="margin:0"><b>🎨 The brief, taken from this text.</b> ${l.design}</p></div>
 
+      <div style="margin:10px 0 0;display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm teal" onclick="openTools()">🧰 Digital Content Creation Tools</button><button class="btn sm ghost" onclick="ylFlipbook()">🎬 Flipbook Maker</button></div>
+
       ${deckToolbar(lessonId)}
 
       <h3 class="sub" style="margin-top:24px">What each slide has to show</h3>
@@ -6497,6 +6499,47 @@ function dictBank(word, def, btn){
     if(btn){ btn.textContent='✓ Banked 🐝'; btn.disabled=true; btn.classList.remove('teal'); btn.classList.add('ghost'); }
   }catch(e){}
 }
+/* ---- Student-built Spelling Bee: pick your OWN words from any reading ----
+   Clicking a word opens the dictionary pop-up; "+ Spelling Bee" adds it to a
+   personal list. A floating pill then lets the student spell just those words,
+   in addition to (not instead of) the text's key-vocabulary Spelling Bee.     */
+function beePickGet(){ try{ const all=Store.get('ican_bee_pick')||{}; return all[sid()]||[]; }catch(e){ return []; } }
+function beePickSet(arr){ try{ const all=Store.get('ican_bee_pick')||{}; all[sid()]=arr; Store.set('ican_bee_pick',all); }catch(e){} }
+function dictAddToBee(word, def, btn){
+  try{
+    word=(word||'').toLowerCase().trim().replace(/[^a-z\u2019'\-]/g,'');
+    if(!word) return;
+    if(word.length<3){ if(btn){ btn.textContent='too short for the bee'; btn.disabled=true; } return; }
+    const list=beePickGet();
+    if(list.some(x=>x.word===word)){
+      if(btn){ btn.textContent='✓ In my bee'; btn.disabled=true; btn.classList.remove('teal'); btn.classList.add('ghost'); }
+      beePickBadge(); return;
+    }
+    list.push({word:word, def:def||''});
+    beePickSet(list);
+    if(btn){ btn.textContent='✓ Added 🐝'; btn.disabled=true; btn.classList.remove('teal'); btn.classList.add('ghost'); }
+    beePickBadge();
+  }catch(e){}
+}
+function beePickBadge(){
+  const list=beePickGet();
+  let pill=document.getElementById('beePickPill');
+  if(!list.length){ if(pill) pill.remove(); return; }
+  if(!pill){
+    pill=document.createElement('div'); pill.id='beePickPill';
+    pill.style.cssText='position:fixed;right:16px;bottom:16px;z-index:400;display:flex;align-items:center;gap:8px;background:#F5A301;color:#3a2a00;border-radius:999px;box-shadow:0 8px 24px rgba(10,15,40,.22);padding:8px 10px 8px 14px;font-weight:700;font-size:.9rem';
+    document.body.appendChild(pill);
+  }
+  const n=list.length;
+  pill.innerHTML=`<span onclick="beePickLaunch()" style="cursor:pointer;white-space:nowrap" title="Spell the words you picked">🐝 Spell my words (${n})</span>
+    <button onclick="beePickClear()" title="Clear my chosen words" aria-label="Clear my chosen words" style="border:none;background:rgba(0,0,0,.14);color:#3a2a00;border-radius:50%;width:22px;height:22px;cursor:pointer;font-weight:800;line-height:1;padding:0">✕</button>`;
+}
+function beePickClear(){ beePickSet([]); const pill=document.getElementById('beePickPill'); if(pill) pill.remove(); }
+function beePickLaunch(){
+  const list=beePickGet();
+  if(list.length<3){ alert('Pick at least 3 words first. Click a word in the text, then press “+ Spelling Bee” in the dictionary pop-up.'); return; }
+  beeStart('My chosen words', 'My selection', list.map(x=>({word:x.word, def:x.def||('“'+x.word+'” — a word I chose from the text')})));
+}
 function dictPopEl(){
   let p=document.getElementById('dictPop');
   if(!p){ p=document.createElement('div'); p.id='dictPop'; p.className='aad-vocab-pop'; document.body.appendChild(p); }
@@ -6539,8 +6582,10 @@ async function showDictPop(word, anchorEl){
       <button class="btn ghost sm" onclick="dictSpeakWord('${escq(d.word)}')">🔊 Hear it</button>
       <a class="btn sm teal" href="https://www.vocabulary.com/dictionary/${encodeURIComponent(d.word.toLowerCase())}" target="_blank" rel="noopener">Full entry ↗</a>
       <button class="btn sm" onclick="dictBank('${escq(d.word)}','${escq(d.def||'')}',this)">+ Bank</button>
+      <button class="btn sm" style="background:#F5A301;color:#3a2a00" onclick="dictAddToBee('${escq(d.word)}','${escq(d.def||'')}',this)" title="Test this word in a Spelling Bee of your own choice">+ Spelling Bee</button>
     </div>`;
   dictPosition(p, anchorEl);
+  beePickBadge();
   return d;
 }
 /* find the word under a click, and wrap it so the reader can see what they tapped */
@@ -14455,9 +14500,11 @@ function aadShowVocabPop(key, anchorEl){
       <button class="btn ghost sm" onclick="aadSpeakWord('${escq(key)}')">🔊 Hear it</button>
       <a class="btn sm teal" href="https://www.vocabulary.com/dictionary/${encodeURIComponent(key)}" target="_blank" rel="noopener">Full entry ↗</a>
       <button class="btn sm" onclick="aadBankWord('${escq(key)}','${escq(def)}',this)">+ Bank</button>
+      <button class="btn sm" style="background:#F5A301;color:#3a2a00" onclick="dictAddToBee('${escq(key)}','${escq(def)}',this)" title="Test this word in a Spelling Bee of your own choice">+ Spelling Bee</button>
     </div>`;
   // position near the tapped word
   pop.style.display='block';
+  beePickBadge();
   try{
     const r=anchorEl.getBoundingClientRect();
     const pw=Math.min(320, window.innerWidth-24);
@@ -18069,10 +18116,12 @@ function ylDesignFinish(rid){
   const plan=(ylDesignGet(rid).plan||"").trim();
   const res=document.getElementById('yldResult');
   if(plan.length<20){ if(res) res.innerHTML='<div class="feedback">Write a few sentences about your plan first (about 20 words), then finish your design.</div>'; return; }
+  const crit=[...document.querySelectorAll('#yldCrit input')]; const checks=crit.filter(c=>c.checked).length;
+  let file=null; try{ file=getDeck('yl_'+rid).file; }catch(e){}
   if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){
-    try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Design — '+r.title,detail:'Read → Write → Design · built from “'+r.title+'” (Level '+r.lv+')',essay:plan,noCert:true}); }catch(e){}
+    try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Design — '+r.title,detail:'Read → Write → Design · built from “'+r.title+'” (Level '+r.lv+')'+(crit.length?(' · '+checks+'/'+crit.length+' checks'):'')+(file?(' · file: '+file.name):''),essay:plan,noCert:true}); }catch(e){}
   }
-  if(res) res.innerHTML='<div class="feedback" style="border-color:#0FA98B">🎉 Great! Your design from “'+esc(r.title)+'” is recorded. Show it to your class and tell them what you made.</div>';
+  if(res) res.innerHTML='<div class="feedback" style="border-color:#0FA98B">🎉 Great! Your design from “'+esc(r.title)+'” is recorded'+(checks?(' · '+checks+'/'+crit.length+' criteria met'):'')+(file?('<br>📎 '+esc(file.name)):'')+'. Show it to your class and tell them what you made.</div>';
 }
 ROUTES.ylDesign=function(){
   try{speechSynthesis.cancel();}catch(e){}
@@ -18105,20 +18154,32 @@ ROUTES.ylDesignFrom=function(rid){
     <button class="back" onclick="go('ylDesign')">← Designing</button>
     <div class="stem-kicker" style="color:#8B5CF6"><span class="yl-lv yl-lv${r.lv}">${r.lv}</span> Design from a reading</div>
     <h1 style="font-size:1.8rem">${r.icon} Design from “${esc(r.title)}”</h1>
-    <div class="deck-brief" style="background:#f3eefe;border-color:#c9b6f2"><p style="margin:0"><b>🎨 Your brief, taken from this story.</b> ${brief}</p></div>
-    <p style="margin:8px 0 0"><button class="btn sm ghost" onclick="go('ylReader','${r.id}')">📖 Read “${esc(r.title)}” again</button></p>
+    <div class="deck-brief" style="background:#f3eefe;border-color:#c9b6f2"><p style="margin:0"><b>🎨 The brief, taken from this story.</b> ${brief}</p></div>
 
-    <h3 class="sub" style="margin-top:20px">1 · Plan it in writing</h3>
-    <p style="color:var(--muted);font-size:.9rem;margin-top:0">Before you build, write your plan: what will you make, which idea from the story it comes from, and what a reader should notice.</p>
-    <div class="field"><label>My plan</label>
-      <textarea id="yldPlan" style="min-height:110px" oninput="ylDesignSavePlan('${r.id}')" placeholder="1. What I will make…&#10;2. The idea from the story that gave me the idea…&#10;3. The one thing to notice…">${esc(d.plan||'')}</textarea></div>
+    <div style="margin:10px 0 0;display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm ghost" onclick="go('ylReader','${r.id}')">📖 Read “${esc(r.title)}” again</button><button class="btn sm teal" onclick="openTools()">🧰 Digital Content Creation Tools</button><button class="btn sm ghost" onclick="ylFlipbook()">🎬 Flipbook Maker</button><button class="btn sm ghost" onclick="ylDrawPad()">🎨 Drawing Pad</button></div>
 
-    <h3 class="sub" style="margin-top:16px">2 · Build it</h3>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"><button class="btn sm teal" onclick="openTools()">🧰 Digital Content Creation Tools</button><button class="btn sm" onclick="ylFlipbook()">🎬 Flipbook Maker</button><button class="btn sm ghost" onclick="ylDrawPad()">🎨 Drawing Pad</button></div>
-    <p style="font-size:.82rem;color:var(--muted);margin-top:6px">Inside the Flipbook Maker or Drawing Pad, press 💾 <b>Save</b> — your work will appear in 🎨 My Designs to review any time.</p>
+    ${deckToolbar('yl_'+r.id)}
 
-    <h3 class="sub" style="margin-top:16px">3 · Finish</h3>
-    <button class="btn" onclick="ylDesignFinish('${r.id}')">✅ I finished my design</button>
+    <h3 class="sub" style="margin-top:24px">What each page has to show</h3>
+    <div class="ribbon">
+      ${DECK_SLIDES.map(sl=>`<div class="rib">
+        <div class="rn">${sl.icon} ${sl.n}</div>
+        <div class="rr">${sl.role}</div>
+        <div class="rt">${sl.title}</div>
+        <div class="rs">${sl.shows}</div>
+      </div>`).join('')}
+    </div>
+    <p style="font-size:.82rem;color:var(--muted);margin-top:6px">Build your pages in the <b>Flipbook Maker</b> or <b>Drawing Pad</b> — or use the .pptx template above. The last page is your artefact, and you show it to the class.</p>
+
+    <h3 class="sub" style="margin-top:24px">🎤 Your 60-second show-and-tell</h3>
+    <p style="color:var(--muted);font-size:.9rem;margin-top:0">Notes only. You will speak from these, not read them.</p>
+    <div class="field"><label>What did you make, what in the story gave you the idea, and what should we notice?</label>
+      <textarea id="yldPlan" style="min-height:110px" oninput="ylDesignSavePlan('${r.id}')" placeholder="1. What I made…&#10;2. The idea from the story that gave me the idea…&#10;3. The one thing to notice…">${esc(d.plan||'')}</textarea></div>
+
+    <h3 class="sub">Before you present</h3>
+    <ul class="rubric" id="yldCrit">${DESIGN_CRITERIA.map((c,i)=>`<li><input type="checkbox" id="yldc${i}"><label for="yldc${i}">${c}</label></li>`).join('')}</ul>
+
+    <button class="btn teal" onclick="ylDesignFinish('${r.id}')">✅ I finished my design</button>
     <div id="yldResult" style="margin-top:10px"></div>
   </div>`;
 };
@@ -18485,8 +18546,10 @@ function ylWord(el){
       +'<button class="btn ghost sm" onclick="dictSpeakWord(\''+escq(raw)+'\')">\ud83d\udd0a Hear it</button>'
       +'<a class="btn sm teal" href="https://www.vocabulary.com/dictionary/'+encodeURIComponent(raw)+'" target="_blank" rel="noopener">Full entry \u2197</a>'
       +'<button class="btn sm" onclick="dictBank(\''+escq(raw)+'\',\''+escq((d&&d.def)||'')+'\',this)">+ Bank</button>'
+      +'<button class="btn sm" style="background:#F5A301;color:#3a2a00" onclick="dictAddToBee(\''+escq(raw)+'\',\''+escq((d&&d.def)||'')+'\',this)" title="Test this word in a Spelling Bee of your own choice">+ Spelling Bee</button>'
       +'</div>';
     ylPositionCard(pop, el);
+    beePickBadge();
   });
   const close=function(ev){ if(!pop.contains(ev.target)&&ev.target!==el&&!(ev.target.closest&&ev.target.closest('.ylw'))){ ylCloseCard(); document.removeEventListener('click',close,true);} };
   setTimeout(function(){ document.addEventListener('click',close,true); },50);
