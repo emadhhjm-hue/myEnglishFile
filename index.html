@@ -5049,7 +5049,7 @@ const ROUTES = {
     <div class="wrap screen">
       <button class="back" onclick="go('dashboard')">← Pathways</button>
       <h1 style="font-size:2.2rem">🎨 Design Studio</h1>
-      <div style="margin:4px 0 10px"><button class="btn sm teal" onclick="openTools()">🧰 Digital Content Creation Tools</button></div>
+      <div style="margin:4px 0 10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm teal" onclick="openTools()">🧰 Digital Content Creation Tools</button><button class="btn sm ghost" onclick="ylFlipbook()">🎬 Flipbook Maker</button></div>
       <p style="color:var(--muted);max-width:720px"><b>Design is the bridge.</b> Every design here begins in a text you have read. You take <i>one</i> idea out of the reading, compose a claim about it in your own words, and turn both into something a reader can look at. Four slides. No more.</p>
 
       <h2 style="font-size:1.3rem;margin-top:22px">One template, any text</h2>
@@ -12408,7 +12408,7 @@ function gateKeyOf(screen){
        ylExamTask was mapped, so the whole course stayed open when locked. */
     ylhub:'yl', ylReader:'yl', ylReading:'yl', ylCReadRun:'yl',
     ylGrammar:'yl', ylMaze:'yl', ylMazeRun:'yl',
-    ylWriting:'yl', ylWriteRun:'yl', ylDesign:'yl',
+    ylWriting:'yl', ylWriteRun:'yl', ylDesign:'yl', ylDesignFrom:'yl',
     ylMM:'yl', ylMini:'yl', ylArcade:'yl',
     ylExam:'yl', ylExams:'yl', ylExamRun:'yl', ylExamTask:'yl'
   })[screen]||null;
@@ -18039,18 +18039,87 @@ function ylwFinalSubmit(id){
   if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Writing (final) \u2014 '+x.title,score:ticks,max:YLW_PEER.length,percent:Math.round(ticks/YLW_PEER.length*100),detail:wc+' words'}); }catch(e){} }
 }
 
+/* ---------------------------------------------------------------------------
+   FOUNDATIONAL DESIGN — the RWD bridge, one design per reading.
+   Mirrors the Design Studio: every design begins in a text the child has read.
+   Each reader carries a short, fun-sized brief taken from THAT text; the child
+   reads it again, plans in writing, then builds the artefact in the Flipbook
+   Maker or Drawing Pad. Grouped by level, exactly like the Reading section.
+   --------------------------------------------------------------------------- */
+const YL_DESIGN_BRIEFS={
+  r1:"Make a 4-page <b>“A Day With My Pet”</b> flipbook — morning, afternoon, evening, night. Pick one thing Ziko does and show your own pet (real or made-up) doing something like it. Use present simple, just like the story.",
+  r2:"Design a <b>matchday poster</b> or a <b>team badge</b> for your class team. Make one action word from the story big (run · pass · score · cheer) and add one sentence: why teamwork matters more than winning.",
+  r3:"Draw a <b>“My Morning Routine”</b> strip — four boxes in time order (first · then · next · last). Follow the order in the text, and add one healthy breakfast of your own.",
+  r4:"Make a <b>flipbook postcard from the desert</b>: page 1 a picture of the setting, page 2 a few past-tense sentences saying what you saw and how it felt.",
+  r5:"Design a <b>recycling poster</b> for your school. Show the problem on one side and the solution on the other, and add one “We should…” rule taken from the text.",
+  r6:"Make a <b>falcon fact-file card</b>. Use three facts or numbers from the text, and write one superlative sentence — the fastest…, the strongest…",
+  r7:"Draw the water’s journey as a <b>labelled flow diagram</b> in the Drawing Pad. Show each stage in order and join them with First, Then, Next, Finally.",
+  r8:"Design a <b>good-sleep advice poster</b>. Put the writer’s claim in your own words, add one piece of evidence, and one “You should…” tip.",
+  r9:"Make a <b>“How to Grow a Plant”</b> flipbook — one page per step, in order, joined with and/then, ending with the plant fully grown.",
+  r10:"Design a <b>kindness poster</b> or a short flipbook that shows the story’s message in action — one kind thing you could do this week, and why it matters."
+};
+function ylDesignKey(rid){ return sid()+"::yld::"+rid; }
+function ylDesignGet(rid){ return (Store.get("ican_yl_design")||{})[ylDesignKey(rid)] || {plan:""}; }
+function ylDesignSet(rid,d){ const all=Store.get("ican_yl_design")||{}; all[ylDesignKey(rid)]=d; try{ Store.set("ican_yl_design",all); }catch(e){} }
+function ylDesignStarted(rid){ return !!((ylDesignGet(rid).plan||"").trim()); }
+function ylDesignSavePlan(rid){ const el=document.getElementById('yldPlan'); if(el){ const d=ylDesignGet(rid); d.plan=el.value; ylDesignSet(rid,d); } }
+function ylDesignFinish(rid){
+  const r=YL_READERS.find(x=>x.id===rid); if(!r) return;
+  ylDesignSavePlan(rid);
+  const plan=(ylDesignGet(rid).plan||"").trim();
+  const res=document.getElementById('yldResult');
+  if(plan.length<20){ if(res) res.innerHTML='<div class="feedback">Write a few sentences about your plan first (about 20 words), then finish your design.</div>'; return; }
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){
+    try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Design — '+r.title,detail:'Read → Write → Design · built from “'+r.title+'” (Level '+r.lv+')',essay:plan,noCert:true}); }catch(e){}
+  }
+  if(res) res.innerHTML='<div class="feedback" style="border-color:#0FA98B">🎉 Great! Your design from “'+esc(r.title)+'” is recorded. Show it to your class and tell them what you made.</div>';
+}
 ROUTES.ylDesign=function(){
   try{speechSynthesis.cancel();}catch(e){}
-  const tasks=YL_EXAM.filter(t=>t.sk==='Design' || t.id==='e9');
-  const rows=tasks.map(t=>`<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">${t.icon}</div><div style="flex:1"><span class="genre-tag">${t.sk}</span> <b>${t.title}</b><div class="meta">🎯 ${t.obj} ${typeof doneTag==='function'?doneTag('Foundational',t.title):''}</div></div><button class="btn sm" onclick="go('ylExamTask','${t.id}')">Start →</button></div>`).join('');
+  const groups=[['A','Level A \u00b7 A1\u2013A2','emerging readers'],['B','Level B \u00b7 B1\u2013B2','developing readers'],['C','Level C \u00b7 C1\u2013C2','confident readers']];
+  const rowOf=r=>{ const brief=YL_DESIGN_BRIEFS[r.id]||('Design an artefact from “'+esc(r.title)+'”.'); const plain=brief.replace(/<[^>]+>/g,'');
+    return '<div class="item-row" style="align-items:center"><div style="font-size:1.9rem">'+r.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+r.lv+'">'+r.lv+'</span> <b>'+esc(r.title)+'</b> '+(typeof doneTag==='function'?doneTag('Foundational','Design — '+r.title):'')+'<div class="meta">🎨 '+esc(plain.slice(0,120))+(plain.length>120?'…':'')+'</div></div><button class="btn sm" onclick="go(\'ylDesignFrom\',\''+r.id+'\')">'+(ylDesignStarted(r.id)?'Continue':'Design')+' →</button></div>'; };
+  const secs=groups.map(gr=>{ const lv=gr[0]; const rows=YL_READERS.filter(r=>r.lv===lv).map(rowOf).join('');
+    return rows?('<h2 class="stem-h2" style="margin-top:18px">'+gr[1]+' <span style="font-weight:400;color:var(--muted);font-size:.95rem">\u2014 '+gr[2]+'</span></h2><div class="grid c2">'+rows+'</div>'):''; }).join('');
+  const extra=YL_EXAM.filter(t=>t.sk==='Design' || t.id==='e9')
+    .map(t=>`<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">${t.icon}</div><div style="flex:1"><span class="genre-tag">${t.sk}</span> <b>${t.title}</b><div class="meta">🎯 ${t.obj} ${typeof doneTag==='function'?doneTag('Foundational',t.title):''}</div></div><button class="btn sm ghost" onclick="go('ylExamTask','${t.id}')">Start →</button></div>`).join('');
   app().innerHTML=`
   <div class="wrap screen">
     <button class="back" onclick="go('ylhub')">← Foundational</button>
     <div class="stem-kicker" style="color:#8B5CF6">Designing · design to build</div>
     <h1 style="font-size:1.9rem">🔧 Designing</h1>
-    <p style="color:var(--muted);max-width:680px">Read a brief, then design and build something from it. Plan it in writing, draw it in the Drawing Pad, and upload your artefact — a real Read → Write → Design loop.</p>
-    <div class="grid c2" style="margin-top:10px">${rows}</div>
-    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn ghost" onclick="ylDrawPad()">🎨 Open Drawing Pad</button><button class="btn ghost" onclick="ylFlipbook()">🎬 Open Flipbook Maker</button></div>
+    <div style="margin:4px 0 10px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm teal" onclick="openTools()">🧰 Digital Content Creation Tools</button><button class="btn sm ghost" onclick="ylFlipbook()">🎬 Flipbook Maker</button><button class="btn sm ghost" onclick="ylDrawPad()">🎨 Drawing Pad</button></div>
+    <p style="color:var(--muted);max-width:700px"><b>Design is the bridge.</b> Every design here begins in a story you have <b>read</b>. Pick a reader, take <i>one</i> idea out of it, plan it in your own words, then build it in the <b>Flipbook Maker</b> or <b>Drawing Pad</b> — a real Read → Write → Design loop.</p>
+    <h2 style="font-size:1.2rem;margin-top:20px">Choose a story to design from</h2>
+    ${secs}
+    ${extra?('<h2 class="stem-h2" style="margin-top:22px">Extra design missions <span style="font-weight:400;color:var(--muted);font-size:.95rem">\u2014 read a brief, plan, and build</span></h2><div class="grid c2">'+extra+'</div>'):''}
+  </div>`;
+};
+ROUTES.ylDesignFrom=function(rid){
+  try{speechSynthesis.cancel();}catch(e){}
+  const r=YL_READERS.find(x=>x.id===rid); if(!r){ go('ylDesign'); return; }
+  const brief=YL_DESIGN_BRIEFS[r.id]||('Design an artefact from “'+esc(r.title)+'”.');
+  const d=ylDesignGet(r.id);
+  app().innerHTML=`
+  <div class="wrap screen">
+    <button class="back" onclick="go('ylDesign')">← Designing</button>
+    <div class="stem-kicker" style="color:#8B5CF6"><span class="yl-lv yl-lv${r.lv}">${r.lv}</span> Design from a reading</div>
+    <h1 style="font-size:1.8rem">${r.icon} Design from “${esc(r.title)}”</h1>
+    <div class="deck-brief" style="background:#f3eefe;border-color:#c9b6f2"><p style="margin:0"><b>🎨 Your brief, taken from this story.</b> ${brief}</p></div>
+    <p style="margin:8px 0 0"><button class="btn sm ghost" onclick="go('ylReader','${r.id}')">📖 Read “${esc(r.title)}” again</button></p>
+
+    <h3 class="sub" style="margin-top:20px">1 · Plan it in writing</h3>
+    <p style="color:var(--muted);font-size:.9rem;margin-top:0">Before you build, write your plan: what will you make, which idea from the story it comes from, and what a reader should notice.</p>
+    <div class="field"><label>My plan</label>
+      <textarea id="yldPlan" style="min-height:110px" oninput="ylDesignSavePlan('${r.id}')" placeholder="1. What I will make…&#10;2. The idea from the story that gave me the idea…&#10;3. The one thing to notice…">${esc(d.plan||'')}</textarea></div>
+
+    <h3 class="sub" style="margin-top:16px">2 · Build it</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"><button class="btn sm teal" onclick="openTools()">🧰 Digital Content Creation Tools</button><button class="btn sm" onclick="ylFlipbook()">🎬 Flipbook Maker</button><button class="btn sm ghost" onclick="ylDrawPad()">🎨 Drawing Pad</button></div>
+    <p style="font-size:.82rem;color:var(--muted);margin-top:6px">Inside the Flipbook Maker or Drawing Pad, press 💾 <b>Save</b> — your work will appear in 🎨 My Designs to review any time.</p>
+
+    <h3 class="sub" style="margin-top:16px">3 · Finish</h3>
+    <button class="btn" onclick="ylDesignFinish('${r.id}')">✅ I finished my design</button>
+    <div id="yldResult" style="margin-top:10px"></div>
   </div>`;
 };
 
