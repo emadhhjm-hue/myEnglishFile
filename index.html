@@ -1092,6 +1092,20 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wa-help>summary span{font-weight:500;color:var(--muted);font-size:.82rem}
 .wa-help>summary::-webkit-details-marker{display:none}
 .wa-help .wa-chips{margin-top:10px}
+/* gap-fill talk builder */
+.wa-gapwrap{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px}
+.wa-gaptext{margin:0 0 10px;line-height:2.15;font-size:.98rem;color:var(--ink)}
+.wa-gap{display:inline-block;min-width:60px;text-align:center;border-bottom:2px solid var(--coral);border-radius:6px 6px 0 0;padding:1px 8px;margin:0 2px;color:var(--muted);background:#fff5f8;cursor:pointer;font-weight:600;transition:.12s;vertical-align:baseline}
+.wa-gap.has{color:var(--ink);background:#eafaf5;border-bottom-color:var(--teal)}
+.wa-gap.act{background:var(--amber);border-bottom-color:var(--ink);color:var(--ink);box-shadow:0 0 0 2px rgba(255,210,63,.55)}
+.wa-gap:hover{filter:brightness(.98)}
+.wa-wordbank{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.wa-word{border:1px solid var(--line);background:#fbfaf6;border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer;color:var(--ink);transition:.12s}
+.wa-word:hover{border-color:var(--teal);background:#f2fbf8;color:var(--teal-dk)}
+.wa-word:active{transform:translateY(1px)}
+.wa-gaptools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+.wa-gapnote{font-size:.8rem;color:var(--muted);margin-top:8px;line-height:1.5}
+.wa-gapnote b{color:var(--teal-dk)}
 
 .wa-starters{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 .wa-starter{border:1.5px dashed var(--line);background:#fbfaf6;border-radius:999px;padding:7px 13px;font-size:.85rem;color:var(--slate);cursor:pointer;transition:.12s}
@@ -4323,7 +4337,7 @@ const ROUTES = {
           <button class="path write" onclick="go('writing')"><div><div class="ic">✍️</div><h3>Writing</h3></div><span>${WRITING.length} multimodal tasks</span></button>
           <button class="path listen" onclick="go('listening')"><div><div class="ic">🎧</div><h3>Listening</h3></div><span>Comprehension + spelling</span></button>
         </div>
-        <p style="font-size:.8rem;color:var(--muted);margin:8px 0 0">🎤 Speaking now lives in the <b>Talkabout</b> course — its topics are in the Prompt Library under <b>🔥 Hot Issues</b>.</p>
+        <p style="font-size:.8rem;color:var(--muted);margin:8px 0 0">🎤 Speaking now lives in the <b>Talkabout</b> course — its topics are in the Prompt Library under <b>🗣️ Talking Points</b>.</p>
       </div>
       <h2 style="font-family:'Fraunces';font-size:1.4rem;margin:8px 0 6px;color:var(--ink)">📝 Full-length exams</h2>
       <p style="color:var(--muted);max-width:700px">Complete, timed exams covering all four skills — <b>Vocabulary, Grammar, Reading</b> and <b>Writing</b> — with a wide range of grammar and topics. Each question has <b>three options (a / b / c)</b> in the MoE style, and on submit you see the correct answer with a short <b>“Why”</b> hint. Each exam is <b>40 minutes</b> and auto-submits when time runs out. Finish to earn a <b>certificate</b> (Emerging · At-level · Outstanding).</p>
@@ -4849,7 +4863,7 @@ const ROUTES = {
     setTimeout(playComp, 350);
   },
 
-  /* ---------------- SPEAKING → merged into Talkabout (Hot Issues) ---------- */
+  /* ---------------- SPEAKING → merged into Talkabout (Talking Points) ---------- */
   speaking(){ go('waspkCats'); },
 
   /* ---------------- WRITING COURSE (skill-first, five units) ---------------- */
@@ -21886,31 +21900,46 @@ const WASPK_PUZZLE_CAT = { key:'p_puz', name:'Puzzles to ponder', emoji:'🧩', 
     ]};
 
 const WASPK_DEBATE_CAT = { key:'p_hot', name:'Debate starters', emoji:'🔥', grad:['#e6464b','#992b2f'], scene:'imagine', prompts:[
-      {id:'db1', kind:'debate', emoji:'📱', title:'Phones in School', statement:'Mobile phones should be banned in schools. Do you agree?', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db2', kind:'debate', emoji:'🌍', title:'Planet vs Economy', statement:'Protecting the environment matters more than growing the economy. Agree or disagree?', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db3', kind:'debate', emoji:'🤖', title:'Robots & Jobs', statement:'One day, robots and AI will do most human jobs. Is that a good thing?', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db4', kind:'debate', emoji:'📚', title:'No More Homework', statement:'Homework should be abolished. Do you agree?', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db5', kind:'debate', emoji:'📵', title:'Social Media', statement:'Social media does more harm than good for teenagers.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db6', kind:'debate', emoji:'🗓️', title:'Four-Day Week', statement:'A four-day school week would improve learning.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db7', kind:'debate', emoji:'🤝', title:'Give Back', statement:'Every teenager should have to volunteer in their community.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db8', kind:'debate', emoji:'🧑‍🏫', title:'Grade the Teacher', statement:'Students should be allowed to give their teachers a grade.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db9', kind:'debate', emoji:'👕', title:'Fast Fashion', statement:'Fast fashion should be banned.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db10', kind:'debate', emoji:'🗣️', title:'Second Language', statement:'Learning a second language should be compulsory for everyone.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db11', kind:'debate', emoji:'🍔', title:'Junk-Food Ads', statement:'Advertising junk food to children should be illegal.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db12', kind:'debate', emoji:'📝', title:'Exams & Memory', statement:'Exams measure memory, not real intelligence.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db13', kind:'debate', emoji:'💧', title:'Wasting Water', statement:'People who waste water should be fined.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db14', kind:'debate', emoji:'🦁', title:'Zoos', statement:'Zoos do more good than harm.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db15', kind:'debate', emoji:'🎭', title:'Honest or Liked', statement:'It is better to be honest and unpopular than liked and fake.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'}
+      {id:'db1', kind:'debate', emoji:'📱', title:'Phones in School', statement:'Mobile phones should be banned in schools. Do you agree?', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db2', kind:'debate', emoji:'🌍', title:'Planet vs Economy', statement:'Protecting the environment matters more than growing the economy. Agree or disagree?', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db3', kind:'debate', emoji:'🤖', title:'Robots & Jobs', statement:'One day, robots and AI will do most human jobs. Is that a good thing?', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db4', kind:'debate', emoji:'📚', title:'No More Homework', statement:'Homework should be abolished. Do you agree?', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db5', kind:'debate', emoji:'📵', title:'Social Media', statement:'Social media does more harm than good for teenagers.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db6', kind:'debate', emoji:'🗓️', title:'Four-Day Week', statement:'A four-day school week would improve learning.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db7', kind:'debate', emoji:'🤝', title:'Give Back', statement:'Every teenager should have to volunteer in their community.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db8', kind:'debate', emoji:'🧑‍🏫', title:'Grade the Teacher', statement:'Students should be allowed to give their teachers a grade.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db9', kind:'debate', emoji:'👕', title:'Fast Fashion', statement:'Fast fashion should be banned.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db10', kind:'debate', emoji:'🗣️', title:'Second Language', statement:'Learning a second language should be compulsory for everyone.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db11', kind:'debate', emoji:'🍔', title:'Junk-Food Ads', statement:'Advertising junk food to children should be illegal.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db12', kind:'debate', emoji:'📝', title:'Exams & Memory', statement:'Exams measure memory, not real intelligence.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db13', kind:'debate', emoji:'💧', title:'Wasting Water', statement:'People who waste water should be fined.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db14', kind:'debate', emoji:'🦁', title:'Zoos', statement:'Zoos do more good than harm.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db15', kind:'debate', emoji:'🎭', title:'Honest or Liked', statement:'It is better to be honest and unpopular than liked and fake.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'}
     ]};
 
 const WASPK_SPK_CATS = (function(){
-  var grads=[['#e6464b','#992b2f'],['#c0392b','#7d2b20'],['#8B5CF6','#5B8DEF'],['#2b5fa6','#173a6b'],['#0FA98B','#0b6e5c'],['#e08a2b','#b5561a'],['#6a6f9c','#3a3f66'],['#e6608a','#b23c78']];
-  var emo=['💬','🤔','🚀','🌍','💭','🔄','⚖️','🎤'];
   var W='Think before you speak. Jot your answer and two or three reasons or details that back it up. If it is a debate, note what the other side might say.';
   var S='Speak your answer aloud: say what you think, give your best reason first, and add an example. Aim for a clear minute.';
   function shortT(t){ var s=String(t).replace(/["“”]/g,'').trim(); var a=s.split(/\s+/); return a.slice(0,6).join(' ')+(a.length>6?'…':''); }
-  return SPEAKING.map(function(c,i){ return { key:'spk'+i, name:c.cat, emoji:emo[i%emo.length], grad:grads[i%grads.length], scene:'imagine',
-    prompts:c.prompts.map(function(txt,j){ return { id:'spk'+i+'_'+j, kind:'debate', emoji:emo[i%emo.length], title:shortT(txt), statement:txt, caption:(c.note||'A talking point from the Speaking studio.'), write:W, speak:S }; }) }; });
+  function src(i){ return (SPEAKING[i]&&SPEAKING[i].prompts)||[]; }
+  /* Reorganised for Talkabout only: renamed, and the three "What if" sets merged into one.
+     Prompt TEXT is still pulled from SPEAKING by index, so everything else that reads
+     SPEAKING (the Speaking-course tabs, the PDF export, worksheet links) is untouched.
+     SPEAKING order → 0 Icebreakers · 1 What-if everyday · 2 What-if fantasy ·
+     3 What-if life · 4 Imagine · 5 What happens when · 6 Opinion · 7 Presentation. */
+  var groups=[
+    {key:'spk_ice',     name:'Icebreakers',             emoji:'🧊', grad:['#2b5fa6','#173a6b'], from:[0],     note:'Warm-ups — speak for 30–60 seconds. A perfect lesson opener.'},
+    {key:'spk_whatif',  name:'What if…?',               emoji:'🤔', grad:['#8B5CF6','#5B8DEF'], from:[1,2,3], note:'From everyday dilemmas to fantasy and the big questions — say what you would do, and why.'},
+    {key:'spk_imagine', name:'Imagine',                 emoji:'🌈', grad:['#e08a2b','#b5561a'], from:[4],     note:'Picture it clearly, then talk us through the whole scene.'},
+    {key:'spk_when',    name:'What happens when…',      emoji:'🔄', grad:['#0FA98B','#0b6e5c'], from:[5],     note:'Follow the cause and effect — talk through what happens next, and why.'},
+    {key:'spk_opinion', name:'Opinion & Debate',        emoji:'⚖️', grad:['#e6464b','#992b2f'], from:[6],     note:'Argue FOR, then flip and argue AGAINST — or split the class into two teams.'},
+    {key:'spk_present', name:'Talk to Present (Oracy)', emoji:'🎤', grad:['#e6608a','#b23c78'], from:[7],     note:'Prepare your slides first, then record your talk — it links reading, writing and speaking.'}
+  ];
+  return groups.map(function(g){
+    var txts=g.from.reduce(function(acc,idx){ return acc.concat(src(idx)); },[]);
+    return { key:g.key, name:g.name, emoji:g.emoji, grad:g.grad, scene:'imagine',
+      prompts:txts.map(function(txt,j){ return { id:g.key+'_'+j, kind:'debate', emoji:g.emoji, title:shortT(txt), statement:txt, caption:g.note, write:W, speak:S }; }) };
+  });
 })();
 
 const WASPK_CATS = WASPK_VID_CATS.concat([WASPK_PIC_CAT, WASPK_PUZZLE_CAT, WASPK_DEBATE_CAT]).concat(WASPK_SPK_CATS);
@@ -21983,12 +22012,12 @@ function waspkVO(o){
 
 /* The prompt "visual" — picture, video, puzzle or debate — with caption. */
 function waspkVisual(vo, showTitle){
-  const kindLabel={pic:'Picture',video:'Short video',puzzle:'Puzzle',debate:'Hot issue'}[vo.kind]||'Prompt';
+  const kindLabel={pic:'Picture',video:'Short video',puzzle:'Puzzle',debate:'Talking point'}[vo.kind]||'Prompt';
   let media;
   if(vo.kind==='puzzle' || vo.kind==='debate'){
     const cls=vo.kind==='debate'?'debate':'puzzle';
     const g=vo.grad||(vo.kind==='debate'?['#e6464b','#992b2f']:['#0FA98B','#0b6e5c']);
-    const tag=vo.kind==='debate'?'🔥 Hot issue':'🧩 Puzzle';
+    const tag=vo.kind==='debate'?'🗣️ Talking point':'🧩 Puzzle';
     media=`<div class="wa-statement ${cls}" style="background:linear-gradient(135deg,${g[0]},${g[1]})">
       <span class="tag">${tag}</span>
       <div class="qmark">${vo.kind==='debate'?'“”':'?'}</div>
@@ -22012,7 +22041,7 @@ function waspkVisual(vo, showTitle){
 function waspkTileVisual(vo){
   if(vo.kind==='puzzle'||vo.kind==='debate'){
     const cls=vo.kind==='debate'?'debate':'puzzle'; const g=vo.grad||(vo.kind==='debate'?['#e6464b','#992b2f']:['#0FA98B','#0b6e5c']);
-    return `<div class="wa-statement ${cls}" style="background:linear-gradient(135deg,${g[0]},${g[1]})"><span class="tag">${vo.kind==='debate'?'🔥 Hot issue':'🧩 Puzzle'}</span><div class="st" style="font-size:1.15rem">${esc(vo.statement||vo.title)}</div></div>`;
+    return `<div class="wa-statement ${cls}" style="background:linear-gradient(135deg,${g[0]},${g[1]})"><span class="tag">${vo.kind==='debate'?'🗣️ Talking point':'🧩 Puzzle'}</span><div class="st" style="font-size:1.15rem">${esc(vo.statement||vo.title)}</div></div>`;
   }
   const thumb = (vo.kind==='video' && vo.youtube) ? waspkYTThumb(vo.youtube) : null;
   const inner = thumb ? `<img src="${thumb}" alt="${esc(vo.title)}" loading="lazy">`
@@ -22081,7 +22110,7 @@ ROUTES.waspkCats = function(){
   const TYPES=[
     {kind:'video', ic:'🎬', label:'Video prompts', sub:'Watch a short film, then retell &amp; react'},
     {kind:'pic',   ic:'🖼️', label:'Picture prompts', sub:'Study a real photo — describe &amp; interpret'},
-    {kind:'debate',ic:'🔥', label:'Hot Issues', sub:'Take a view and defend it — includes the Speaking topics'},
+    {kind:'debate',ic:'🗣️', label:'Talking Points', sub:'Debate, discuss, imagine and present — pick a card and talk'},
     {kind:'puzzle',ic:'🧩', label:'Puzzles', sub:'Think sideways — there is no single right answer'}
   ];
   const sections = TYPES.map(t=>{
@@ -22099,7 +22128,7 @@ ROUTES.waspkCats = function(){
   <div class="wrap screen">
     <button class="back" onclick="go('waspk')">← Talkabout</button>
     <h1 style="font-size:2rem">🗂️ Prompt Library</h1>
-    <p style="color:var(--muted);max-width:680px">Every prompt lives here, sorted by type: <b>🎬 Video</b>, <b>🖼️ Picture</b>, <b>🔥 Hot Issues</b> and <b>🧩 Puzzles</b>. Tap any one to write about it, then speak about it.</p>
+    <p style="color:var(--muted);max-width:680px">Every prompt lives here, sorted by type: <b>🎬 Video</b>, <b>🖼️ Picture</b>, <b>🗣️ Talking Points</b> and <b>🧩 Puzzles</b>. Tap any one to write about it, then speak about it.</p>
     ${teacherBlock}
     ${sections}
   </div>`;
@@ -22407,9 +22436,146 @@ function waspkSupportHTML(vo){
     <div class="sec"><h4>🧭 A writing plan to follow</h4><ol class="wa-strat">${d.strategy.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></div>
     <div class="sec"><h4>🔑 Useful words <span style="font-weight:500;color:var(--muted)">— tap to add</span></h4>${chips(d.vocab)}</div>
     <div class="sec"><h4>💬 Sentence starters <span style="font-weight:500;color:var(--muted)">— tap to add</span></h4>${chips(d.phrases)}</div>
-    <div class="sec"><h4>✏️ Finish the sentence <span style="font-weight:500;color:var(--muted)">— tap one, then fill the blank</span></h4>
-      <ul class="wa-gaplist">${d.gaps.map(x=>`<li onclick="waspkInsert('${escq(x)}')">${esc(x)}</li>`).join('')}</ul></div>`;
+    ${waspkGapHTML(vo)}`;
 }
+
+/* ---- Gap-fill talk builder (fill blanks from the word list to build a ~2-min talk) ---- */
+let WASPK_GAP=null;
+function waspkCountGaps(parts){ let n=0; parts.forEach(p=>{ if(typeof p!=='string') n++; }); return n; }
+function waspkGapFill(vo){
+  const k=vo.kind||'pic';
+  const m=waspkLexMatch(vo);
+  const B={_gap:1};
+  const topicW = m ? m.w.slice(0,5) : [];
+  /* natural gap-fillers used in real, informal talk */
+  const FILL=['well','you know','I mean','honestly','to be honest','actually','basically','sort of'];
+
+  if(k==='pic'){
+    const about = m ? m.topic : 'the moment it captures';
+    const parts=[
+      'Okay — ',B,', let me talk you through this picture for a minute. ',
+      'When I first look at it, ',B,', there is quite a lot going on. ',
+      'In the foreground I can see the main thing, ',B,' in the background there are smaller details as well. ',
+      'I think this picture is ',B,' about ',about,'. ',
+      'The part that stands out the most is easy to spot, ',B,' I keep coming back to it. ',
+      'Looking at the mood, it feels ',B,' to me, and ',B,' it makes me feel ',B,' too. ',
+      'I feel that way ',B,' it shows something real. ',
+      B,', it reminds me of my own life, ',B,' when I stop and think about it. ',
+      'If I had to give this picture one clear message, I would say it is ',B,'. ',
+      'So ',B,', that is how I read it — what do you see when you look?'
+    ];
+    const bank=[...FILL,'really','but','because','interesting','powerful','surprising','important',...topicW];
+    return {parts,bank};
+  }
+  if(k==='video'){
+    const about = m ? m.topic : 'the choice at its heart';
+    const parts=[
+      'So — ',B,', this short clip is all about ',about,'. ',
+      'At the very start, ',B,', not much seems to happen, ',B,' then things change quite fast. ',
+      'The turning point, ',B,', is the moment when everything shifts. ',
+      'You can really tell the main character feels ',B,', ',B,' because of what happens to them. ',
+      'For me, the part that stood out was near the end, and ',B,' it made me feel ',B,'. ',
+      B,', it made me think about ',about,' in a new way. ',
+      'If I put myself in that character\'s shoes, ',B,' I think I would feel ',B,' as well. ',
+      'If someone asked me for the message, I would ',B,' say it is ',B,'. ',
+      'So ',B,', that is my take on this clip — I would love to hear yours.'
+    ];
+    const bank=[...FILL,'suddenly','at first','because','surprised','moved','hopeful','important','maybe',...topicW];
+    return {parts,bank};
+  }
+  if(k==='debate' && waspkIsClaim(vo)){
+    const cl = waspkLc1(waspkClaim(vo));
+    const parts=[
+      'Right — ',B,', the claim here is that ',cl,'. ',
+      B,', I have thought about it, and I can honestly see both sides. ',
+      'On balance though, my own view is fairly clear, ',B,' let me explain why. ',
+      'My main reason is that this really matters, ',B,' it affects real people. ',
+      'For example, ',B,' you can see it in everyday life. ',
+      B,', some people would strongly disagree, ',B,' that is fair enough. ',
+      'They might argue the opposite, ',B,' I would still say my reason is the stronger one. ',
+      'A second reason worth adding is a simple one, ',B,' and ',B,' it backs up my whole point. ',
+      'So, ',B,', to sum up, that is where I stand — ',B,' what would you say?'
+    ];
+    const bank=[...FILL,'and','because','however','for example','though','of course','right','maybe',...topicW];
+    return {parts,bank};
+  }
+  /* puzzle / open question */
+  const about2 = m ? m.topic : (k==='puzzle' ? 'this puzzle' : 'this question');
+  const parts=[
+    'Okay — ',B,', let me think about ',about2,' out loud for a moment. ',
+    'At first, ',B,', the tricky part is working out where to even start. ',
+    B,', my answer would be this, ',B,' I will say why. ',
+    'I think this ',B,' it makes sense when you look at it closely. ',
+    'For example, ',B,' there is an easy way to picture it. ',
+    B,', someone might see it a different way, ',B,' that is okay with me. ',
+    'On balance though, ',B,' I would still stick with my answer. ',
+    'And if it turns out I am wrong, ',B,' I am happy to change my mind later, ',B,' that is how thinking works. ',
+    'So ',B,', that is my thinking on ',about2,' — how would you explain it?'
+  ];
+  const bank=[...FILL,'because','and','so','for example','however','maybe','of course','right',...topicW];
+  return {parts,bank};
+}
+function waspkGapHTML(vo){
+  const g=waspkGapFill(vo);
+  g.bank=[...new Set(g.bank)];
+  WASPK_GAP={ parts:g.parts, bank:g.bank, fills:new Array(waspkCountGaps(g.parts)).fill(null), active:null };
+  return `<div class="sec"><h4>📝 Fill the gaps to build your talk <span style="font-weight:500;color:var(--muted)">— tap a blank, then tap a word</span></h4>
+    <div class="wa-gapwrap">
+      <p class="wa-gaptext" id="waspkGapText">${waspkGapTextHTML()}</p>
+      <div class="wa-wordbank" id="waspkGapBank">${waspkGapBankHTML()}</div>
+      <div class="wa-gaptools">
+        <button type="button" class="btn ghost sm" onclick="waspkGapHear()">🔊 Hear my talk</button>
+        <button type="button" class="btn teal sm" onclick="waspkGapUse()">📋 Put this in my writing</button>
+        <button type="button" class="btn ghost sm" onclick="waspkGapReset()">↺ Clear gaps</button>
+        <span class="wa-count" id="waspkGapCount">${WASPK_GAP.fills.length} gaps to fill</span>
+      </div>
+      <div class="wa-gapnote" id="waspkGapMsg">This is your <b>~2-minute talk</b>. Fill every blank using the words above, then read it aloud in your own voice — and add your own ideas as you go. You can reuse a word as many times as you like.</div>
+    </div></div>`;
+}
+function waspkGapTextHTML(){
+  const G=WASPK_GAP; if(!G) return ''; let gi=-1;
+  return G.parts.map(pt=>{
+    if(typeof pt==='string') return esc(pt);
+    gi++; const idx=gi; const val=G.fills[idx];
+    const cls='wa-gap'+(val?' has':'')+(G.active===idx?' act':'');
+    return `<span class="${cls}" onclick="waspkGapBlank(${idx})">${val?esc(val):'&nbsp;____&nbsp;'}</span>`;
+  }).join('');
+}
+function waspkGapBankHTML(){
+  const G=WASPK_GAP; if(!G) return '';
+  return G.bank.map((w,i)=>`<button type="button" class="wa-word" onclick="waspkGapWord(${i})">${esc(w)}</button>`).join('');
+}
+function waspkGapBlank(i){
+  const G=WASPK_GAP; if(!G) return;
+  if(G.fills[i]){ G.fills[i]=null; G.active=i; }        /* tap a filled gap to clear it */
+  else { G.active = (G.active===i ? null : i); }        /* tap an empty gap to select it */
+  waspkGapPaint();
+}
+function waspkGapWord(wi){
+  const G=WASPK_GAP; if(!G) return; const w=G.bank[wi]; if(w==null) return;
+  let i=G.active;
+  if(i===null || i===undefined){ i=G.fills.findIndex(x=>!x); }
+  if(i<0 || i===undefined) return;                      /* all gaps already full */
+  G.fills[i]=w;
+  const nxt=G.fills.findIndex(x=>!x); G.active = nxt<0 ? null : nxt;
+  waspkGapPaint();
+}
+function waspkGapPaint(){
+  const t=document.getElementById('waspkGapText'); if(t) t.innerHTML=waspkGapTextHTML();
+  const c=document.getElementById('waspkGapCount');
+  if(c && WASPK_GAP){ const left=WASPK_GAP.fills.filter(x=>!x).length;
+    c.textContent = left===0 ? 'All gaps filled ✓ — now read it aloud!' : (left+' gap'+(left===1?'':'s')+' left'); }
+}
+function waspkGapReset(){ if(!WASPK_GAP) return; WASPK_GAP.fills=WASPK_GAP.fills.map(()=>null); WASPK_GAP.active=null; waspkGapPaint(); }
+function waspkGapAssemble(){
+  const G=WASPK_GAP; if(!G) return ''; let gi=-1;
+  return G.parts.map(pt=>{ if(typeof pt==='string') return pt; gi++; return G.fills[gi] || '…'; }).join('').replace(/\s+/g,' ').trim();
+}
+function waspkGapUse(){
+  const txt=waspkGapAssemble(); if(!txt) return; waspkInsert(txt);
+  const m=document.getElementById('waspkGapMsg'); if(m){ m.innerHTML='Added to your writing below ✓ — read it aloud when you slide across to <b>Speak</b>.'; m.style.color='var(--teal-dk)'; }
+}
+function waspkGapHear(){ waspkSay(waspkGapAssemble().replace(/…/g,'')); }
 function waspkSetWriteMode(m){
   WASPK_WMODE=m;
   const sup=document.getElementById('waspkSupport'); if(sup) sup.style.display=(m==='support')?'':'none';
@@ -22719,7 +22885,7 @@ function waspkBuilderHTML(pfx, d, opt){
         ${type('pic','🖼️','Picture','a photo or image')}
         ${type('video','▶️','Short video','a clip / short')}
         ${type('puzzle','🧩','Puzzle','a thinking statement')}
-        ${type('debate','🔥','Hot issue','an arguable claim')}
+        ${type('debate','🗣️','Talking point','an opinion or claim')}
       </div>
 
       <div id="${pfx}picWrap">
