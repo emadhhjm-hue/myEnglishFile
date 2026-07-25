@@ -1060,6 +1060,39 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wa-hint{color:var(--muted);font-size:.9rem;margin:0 0 12px}
 .wa-textarea{width:100%;min-height:158px;padding:14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:1.05rem;line-height:1.65;color:var(--ink);background:#fff;resize:vertical}
 .wa-textarea:focus{outline:none;border-color:var(--coral)}
+/* ---- Talkabout scaffolding & library-by-type ---- */
+.wa-typehead{display:flex;align-items:center;gap:12px;margin:30px 0 12px;padding:10px 14px;border-radius:14px;background:linear-gradient(120deg,#ffffff,#f5f2ff);border:1px solid var(--line)}
+.wa-typehead .ti{font-size:1.8rem}
+.wa-typehead h2{margin:0;font-size:1.3rem}
+.wa-typehead .ct{font-size:.75rem;color:#fff;background:var(--coral);border-radius:999px;padding:1px 9px;vertical-align:middle;margin-left:6px}
+.wa-typehead p{margin:2px 0 0;font-size:.82rem;color:var(--muted)}
+.wa-subhead{font-weight:700;color:var(--ink);margin:16px 0 8px;font-size:.98rem}
+.wa-subhead span{color:var(--muted);font-weight:500;font-size:.85rem}
+.wa-modebar{display:flex;gap:8px;margin:2px 0 12px}
+.wa-modebar button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px 8px;font-weight:700;cursor:pointer;color:var(--slate);display:flex;flex-direction:column;gap:2px;align-items:center;font-size:.92rem}
+.wa-modebar button small{font-weight:500;color:var(--muted);font-size:.72rem}
+.wa-modebar button.on{border-color:var(--coral);background:#fff5f8;color:var(--ink);box-shadow:0 0 0 3px rgba(230,96,138,.12)}
+.wa-support{border:1.5px dashed #b7c8e6;background:#f5f9ff;border-radius:14px;padding:14px;margin:0 0 12px}
+.wa-support .sec{margin:0 0 12px}.wa-support .sec:last-child{margin:0}
+.wa-support h4{margin:0 0 6px;font-size:.9rem;color:#2b5fa6}
+.wa-chips{display:flex;flex-wrap:wrap;gap:6px}
+.wa-chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer;color:var(--ink)}
+.wa-chip:hover{border-color:var(--coral);background:#fff5f8}
+.wa-gaplist{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.wa-gaplist li{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:.9rem;cursor:pointer;color:var(--slate)}
+.wa-gaplist li:hover{border-color:var(--coral)}
+.wa-strat{margin:6px 0 0;padding-left:18px;color:var(--slate);font-size:.88rem}
+.wa-strat li{margin:2px 0}
+.wa-saverow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px}
+.wa-save{background:linear-gradient(135deg,#0c8a72,#0FA98B);color:#fff;border:none;border-radius:12px;padding:12px 18px;font-weight:800;cursor:pointer;font-size:1rem}
+.wa-save:hover{filter:brightness(1.05)}
+.wa-slide.locked{opacity:.4;filter:grayscale(.5);pointer-events:none}
+.wa-help{border:1.5px solid #cdeee4;background:#f2fbf8;border-radius:14px;padding:10px 14px;margin:0 0 12px}
+.wa-help>summary{cursor:pointer;font-weight:700;color:var(--teal-dk);font-size:.92rem;list-style:none}
+.wa-help>summary span{font-weight:500;color:var(--muted);font-size:.82rem}
+.wa-help>summary::-webkit-details-marker{display:none}
+.wa-help .wa-chips{margin-top:10px}
+
 .wa-starters{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 .wa-starter{border:1.5px dashed var(--line);background:#fbfaf6;border-radius:999px;padding:7px 13px;font-size:.85rem;color:var(--slate);cursor:pointer;transition:.12s}
 .wa-starter:hover{border-color:var(--teal);color:var(--teal-dk);background:#f2fbf8}
@@ -4285,12 +4318,12 @@ const ROUTES = {
       <div class="card" style="background:#fbfcff;border:1.5px dashed var(--line);padding:14px 16px;margin:8px 0 18px">
         <h3 style="font-size:1.05rem;margin:0 0 4px">Quizzes — differentiated practice</h3>
         <p style="color:var(--muted);margin:0 0 10px;font-size:.88rem">Stand-alone practice with the <b>Standard ⇄ Supported</b> slider. Every activity has an <b>online</b> version and a printable <b>📄 PDF worksheet</b>.</p>
-        <div class="grid c4">
+        <div class="grid c3">
           <button class="path read" onclick="go('reading')"><div><div class="ic">📖</div><h3>Reading</h3></div><span>${READING.length} texts</span></button>
           <button class="path write" onclick="go('writing')"><div><div class="ic">✍️</div><h3>Writing</h3></div><span>${WRITING.length} multimodal tasks</span></button>
           <button class="path listen" onclick="go('listening')"><div><div class="ic">🎧</div><h3>Listening</h3></div><span>Comprehension + spelling</span></button>
-          <button class="path speak" onclick="go('speaking')"><div><div class="ic">🎤</div><h3>Speaking</h3></div><span>Prompts & debates</span></button>
         </div>
+        <p style="font-size:.8rem;color:var(--muted);margin:8px 0 0">🎤 Speaking now lives in the <b>Talkabout</b> course — its topics are in the Prompt Library under <b>🔥 Hot Issues</b>.</p>
       </div>
       <h2 style="font-family:'Fraunces';font-size:1.4rem;margin:8px 0 6px;color:var(--ink)">📝 Full-length exams</h2>
       <p style="color:var(--muted);max-width:700px">Complete, timed exams covering all four skills — <b>Vocabulary, Grammar, Reading</b> and <b>Writing</b> — with a wide range of grammar and topics. Each question has <b>three options (a / b / c)</b> in the MoE style, and on submit you see the correct answer with a short <b>“Why”</b> hint. Each exam is <b>40 minutes</b> and auto-submits when time runs out. Finish to earn a <b>certificate</b> (Emerging · At-level · Outstanding).</p>
@@ -4816,28 +4849,8 @@ const ROUTES = {
     setTimeout(playComp, 350);
   },
 
-  /* ---------------- SPEAKING ---------------- */
-  speaking(){
-    app().innerHTML = `
-    <div class="wrap screen">
-      <button class="back" onclick="go('dashboard')">← Pathways</button>
-      <h1 style="font-size:2.2rem">🎤 Speaking &amp; Oracy</h1>
-      <p style="color:var(--muted);max-width:660px">Pick a prompt and speak. Use the recorder to capture a live transcript of what you say (so you can review your fluency), then self-assess. Presentation tasks connect reading, writing and speaking — prepare slides first, then present.</p>
-      <button class="wa-dash-banner" onclick="go('waspk')" style="margin:6px 0 18px">
-        <span class="wab-ic">🖼️</span>
-        <span style="flex:1">
-          <h3>New to speaking? Warm up in Talkabout</h3>
-          <p>Start from a short film or picture: <b>write about it</b> first to gather your ideas (your Writeabout), then <b>speak about it</b> with the words already yours. A gentle on-ramp before the prompts below.</p>
-        </span>
-        <span class="wab-go">Open →</span>
-      </button>
-      <div class="tabs" id="spkTabs">
-        ${allSpeaking().map((s,i)=>`<button class="${i===0?'on':''}" onclick="showSpeakCat(${i})">${s.cat}</button>`).join('')}
-      </div>
-      <div id="spkBody"></div>
-    </div>`;
-    showSpeakCat(0);
-  },
+  /* ---------------- SPEAKING → merged into Talkabout (Hot Issues) ---------- */
+  speaking(){ go('waspkCats'); },
 
   /* ---------------- WRITING COURSE (skill-first, five units) ---------------- */
   writingCourse(){
@@ -21834,63 +21847,73 @@ const WASPK_VID_CATS = (function(){
   ];
 })();
 
-const WASPK_CATS = WASPK_VID_CATS.concat([
-  { key:'animals', name:'Animals', emoji:'🐾', grad:['#3a9d8a','#2c6e63'], scene:'savanna', prompts:[
-      {id:'an1', kind:'pic', emoji:'🦁', title:'King of the Savanna', caption:'A lion rests on the open grassland at dawn.', write:'Look closely at this animal. Where does it live, and what is it doing right now? Describe what you see — and imagine one moment of its day.', speak:'Be a wildlife guide. Show a group of visitors this animal and tell them all about it.'},
-      {id:'an2', kind:'pic', emoji:'🐘', title:'The Gentle Giant', caption:'An elephant moves slowly across the plain.', write:'What would it feel like to stand next to this animal? Describe its size, the way it moves, and the sounds it might make.', speak:'You met this animal today. Tell a friend the story of exactly what happened.'},
-      {id:'an3', kind:'pic', emoji:'🦉', title:'The Night Watcher', caption:'An owl watches from a branch after dark.', write:'This creature is awake while we sleep. What does it see and hear in the dark? Write about its secret night-time world.', speak:'Describe one night in the life of this animal, from sunset to sunrise.'}
-    ]},
-  { key:'nature', name:'Nature', emoji:'🌿', grad:['#57a86b','#2f7d52'], scene:'forest', prompts:[
-      {id:'na1', kind:'pic', emoji:'🌳', title:'The Oldest Tree', caption:'A great tree that has stood for a hundred years.', write:'This tree has stood here for a hundred years. What has it seen change around it? Write as if the tree could remember.', speak:'If this tree could talk, what advice would it give you? Say it out loud in the tree’s voice.'},
-      {id:'na2', kind:'pic', emoji:'🏞️', title:'The Hidden Waterfall', caption:'A waterfall few people have ever found.', write:'You have just discovered this place. Describe the sound, the air, the colours. How does it make you feel to be here?', speak:'Persuade a friend to walk two hours to reach this waterfall with you. Why is it worth it?'},
-      {id:'na3', kind:'pic', emoji:'⛈️', title:'When the Storm Came', caption:'The sky darkens as a storm rolls in.', write:'The sky turned dark and the wind began. Write about the moment the storm arrived and what everyone did.', speak:'Tell the story of the storm as an exciting news report, live from the scene.'}
-    ]},
-  { key:'ocean', name:'Ocean', emoji:'🌊', grad:['#2a86c9','#124e86'], scene:'ocean', prompts:[
-      {id:'oc1', kind:'pic', emoji:'🐋', title:'The Deep Blue', caption:'A whale glides through the cold, dark deep.', write:'This giant glides through cold, dark water far below the waves. Describe its world and how it might feel to be so huge.', speak:'Explain to a young child what lives at the bottom of the ocean — make it wonderful, not scary.'},
-      {id:'oc2', kind:'pic', emoji:'🐠', title:'The Coral City', caption:'A busy reef, full of colour and life.', write:'A reef is a busy city under the sea. Describe the colours, the creatures, and the daily life on this reef.', speak:'You are a reporter visiting the reef. Interview one of the fish about life in the coral city.'},
-      {id:'oc3', kind:'pic', emoji:'🚢', title:'The Sunken Ship', caption:'An old wreck resting on the seabed.', write:'Divers found this old wreck on the seabed. What is its story? Write about the day it sank — or the treasure it hides.', speak:'Tell the ship’s last voyage as a mystery. Leave your listener wanting to know more.'}
-    ]},
-  { key:'space', name:'Space', emoji:'🚀', grad:['#3b2f8f','#141042'], scene:'space', prompts:[
-      {id:'sp1', kind:'pic', emoji:'👩‍🚀', title:'Far From Home', caption:'An astronaut looks back at planet Earth.', write:'You are an astronaut looking back at Earth from space. Describe what you see and the strange, quiet feeling of floating.', speak:'Record a message home from space. What do you miss most, and what do you want everyone to know?'},
-      {id:'sp2', kind:'pic', emoji:'🪐', title:'A New Planet', caption:'A world no human has ever visited.', write:'Your ship has landed on a planet no human has visited. Describe the ground, the sky, and the first surprise.', speak:'You have five minutes of radio contact. Describe this new planet to mission control on Earth.'},
-      {id:'sp3', kind:'pic', emoji:'🛰️', title:'Countdown', caption:'Three… two… one… lift-off.', write:'Describe the moment of a rocket launch — the sound, the shaking, the fire, and the people watching.', speak:'Commentate the launch live, second by second, as millions listen.'}
-    ]},
-  { key:'food', name:'Food', emoji:'🍲', grad:['#e08a2b','#b5561a'], scene:'kitchen', prompts:[
-      {id:'fo1', kind:'pic', emoji:'🥘', title:'The Family Meal', caption:'A dish that took all afternoon to cook.', write:'This dish took all afternoon to cook. Describe how it looks and smells, and who is gathering to eat it.', speak:'Teach us how to make your favourite dish — step by step — as if you had your own cooking show.'},
-      {id:'fo2', kind:'pic', emoji:'🏪', title:'The Busy Market', caption:'A market full of colour, spice and noise.', write:'Fruit, spices, voices, colours. Describe walking through this market. What do you want to buy, and why?', speak:'You are a market seller. Convince a shopper that yours is the best stall on the street.'},
-      {id:'fo3', kind:'pic', emoji:'🍽️', title:'The Strange Dish', caption:'A plate you have never seen before.', write:'A waiter sets down a plate you have never seen before. Describe it. Will you be brave and try it?', speak:'Describe a food from your culture to someone who has never tasted it. Make them curious.'}
-    ]},
-  { key:'people', name:'People & Places', emoji:'🏙️', grad:['#6a6f9c','#3a3f66'], scene:'city', prompts:[
-      {id:'pe1', kind:'pic', emoji:'🚶', title:'The Busy Street', caption:'A crowded street — everyone going somewhere.', write:'So many people, each going somewhere. Choose one person and imagine their story. Where are they going?', speak:'Pick one stranger in this street. Introduce them to us and tell us the secret they are carrying.'},
-      {id:'pe2', kind:'pic', emoji:'🖼️', title:'The Old Photograph', caption:'A picture taken long, long ago.', write:'This picture was taken long ago. Describe the people in it and the world they lived in. What has changed?', speak:'You found this photo in your grandparent’s house. Tell us who they are and why it matters.'},
-      {id:'pe3', kind:'pic', emoji:'🌉', title:'The View From Here', caption:'A city at sunset, seen from above.', write:'You are standing at this spot at sunset. Describe what you can see, hear and smell all around you.', speak:'Give a two-minute tour of your own city or town to a visitor. What must they not miss?'}
-    ]},
-  { key:'adventure', name:'Adventure', emoji:'🧗', grad:['#c86a3c','#7d3a1f'], scene:'mountains', prompts:[
-      {id:'ad1', kind:'pic', emoji:'🏔️', title:'The Long Climb', caption:'The summit is still far above.', write:'The top is still far above. Describe the climb so far — the cold, the effort, and why you keep going.', speak:'You are almost at the summit. Speak your thoughts out loud, breath by breath, on the final steps.'},
-      {id:'ad2', kind:'pic', emoji:'🗺️', title:'The Lost Map', caption:'An old map with a red X.', write:'You found this old map with a red X on it. Write about where it leads and how you decide to follow it.', speak:'Plan the expedition out loud with your team. Where do we start, and what could go wrong?'},
-      {id:'ad3', kind:'pic', emoji:'🚪', title:'The Hidden Door', caption:'A door no one had noticed before.', write:'Behind the bookshelf, a door no one noticed before. Describe opening it. What is on the other side?', speak:'Tell the story of what happened after you stepped through the door. Keep us on the edge of our seats.'}
-    ]},
-  { key:'feelings', name:'Feelings', emoji:'💛', grad:['#e6608a','#b23c78'], scene:'feelings', prompts:[
-      {id:'fe1', kind:'pic', emoji:'😊', title:'A Happy Memory', caption:'A moment of pure happiness.', write:'Think of a moment that made you truly happy. Describe where you were, who you were with, and how it felt.', speak:'Share your happy memory with us as if it happened yesterday. Help us feel the joy you felt.'},
-      {id:'fe2', kind:'pic', emoji:'🦋', title:'Something New', caption:'The first day of something new.', write:'The first day of something new can feel scary and exciting at once. Write about a first day you remember.', speak:'Give advice to someone nervous about their first day somewhere new. Speak to them kindly.'},
-      {id:'fe3', kind:'pic', emoji:'🦁', title:'Being Brave', caption:'Courage — even when you are afraid.', write:'Being brave does not mean you are not afraid. Write about a time you did something even though you were scared.', speak:'Tell the story of your brave moment — and what you learned about yourself.'}
-    ]},
-  { key:'culture', name:'UAE & Culture', emoji:'🕌', grad:['#d99a3a','#9c5a1e'], scene:'desert', prompts:[
-      {id:'cu1', kind:'pic', emoji:'🐪', title:'The Desert at Night', caption:'Cool sand, a fire, and a sky full of stars.', write:'The sand is cool and the sky is full of stars. Describe a night in the desert — the silence, the fire, the stories.', speak:'You are sitting by the fire in the desert. Tell the others a story passed down in your family.'},
-      {id:'cu2', kind:'pic', emoji:'🦅', title:'The Falcon', caption:'A proud symbol of the UAE.', write:'The falcon is a proud symbol of the UAE. Describe this bird — its eyes, its flight, and why people admire it.', speak:'Explain to a visitor why the falcon matters so much to your country and its history.'},
-      {id:'cu3', kind:'pic', emoji:'🎉', title:'The Festival', caption:'Lights, music, colour and food.', write:'Lights, music, colour and food fill the streets. Describe a celebration in your community and what it means.', speak:'Invite the world to your favourite festival. Describe it so well that everyone wants to come.'}
-    ]},
-  { key:'puzzles', name:'Puzzles to Ponder', emoji:'🧩', grad:['#0FA98B','#0b6e5c'], scene:'puzzle', prompts:[
-      {id:'pz1', kind:'puzzle', emoji:'🧩', title:'Uninvent One Thing', statement:'If you could uninvent one thing in the world, what would it be — and why?', caption:'A puzzle to think about — there is no single right answer.', write:'Think it through on paper first. What would you uninvent, and how would life change without it? Weigh the good and the bad.', speak:'Argue your choice out loud. Convince us that the world would truly be better without it.'},
-      {id:'pz2', kind:'puzzle', emoji:'⏳', title:'One Extra Hour', statement:'You are given one extra hour every day that no one else has. What do you do with it?', caption:'A puzzle to think about — dream, then decide.', write:'Plan your secret hour. What would you do, learn or fix? Explain why you would spend it that way.', speak:'Persuade us that your way of spending the hour is the best possible use of it.'},
-      {id:'pz3', kind:'puzzle', emoji:'🔑', title:'The Locked Room', statement:'You are in a room with only a mirror and a table. How do you escape?', caption:'A lateral-thinking puzzle — think sideways!', write:'Write your escape plan step by step. Be creative — the answer may not be obvious.', speak:'Explain your escape to us out loud, as if you are teaching someone how to solve it.'}
-    ]},
-  { key:'debate', name:'Hot Issues · Debate', emoji:'🔥', grad:['#e6464b','#992b2f'], scene:'debate', prompts:[
-      {id:'db1', kind:'debate', emoji:'📱', title:'Phones in School', statement:'Mobile phones should be banned in schools. Do you agree?', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and answer them.', speak:'Give a one-minute argument for your side. Speak with conviction and use your best reason first.'},
-      {id:'db2', kind:'debate', emoji:'🌍', title:'Saving the Planet', statement:'Protecting the environment is more important than growing the economy. Agree or disagree?', caption:'Hot issue — a real-world dilemma.', write:'Take a position and defend it with reasons and examples. Be fair to the other view too.', speak:'Debate your view out loud. Imagine a listener who disagrees — win them over.'},
-      {id:'db3', kind:'debate', emoji:'🤖', title:'Robots & Jobs', statement:'One day, robots and AI will do most human jobs. Is that a good thing?', caption:'Hot issue — the future is arguable!', write:'Argue your case. What jobs might change? Who wins, who loses, and what should we do about it?', speak:'Persuade us of your view of the future. Make us feel hopeful — or worried — on purpose.'}
-    ]}
-]);
+/* ---- Prompt Library data: real photos, puzzles, hot issues, migrated speaking ---- */
+const WASPK_PIC_CAT = { key:'p_pic', name:'Thought-provoking photos', emoji:'🖼️', grad:['#2a86c9','#124e86'], scene:'imagine', prompts:[
+      {id:'pc1', kind:'pic', emoji:'🧭', title:'Which Way?', img:'https://images.unsplash.com/photo-1727302788554-ae905ac91651?w=1200&q=80&auto=format&fit=crop', caption:'A pole crowded with street signs pointing every way.', write:'Look at all the directions this sign points. Write about a time you had to make a hard choice — how did you decide which way to go?', speak:'Describe the picture, then tell us about a choice you are facing now and which way you are leaning.'},
+      {id:'pc2', kind:'pic', emoji:'🥚', title:'One of Many', img:'https://images.unsplash.com/photo-1686299596388-d3433279ec64?w=1200&q=80&auto=format&fit=crop', caption:'Row upon row of eggs — almost, but not quite, identical.', write:'Every egg looks nearly the same. Write about what makes YOU different from everyone around you — and why that matters.', speak:'Describe what you see, then speak about one way you are proud to stand out from the crowd.'},
+      {id:'pc3', kind:'pic', emoji:'🕰️', title:'Time on the Wall', img:'https://images.unsplash.com/photo-1766425500195-bf9b51f34f54?w=1200&q=80&auto=format&fit=crop', caption:'An old clock set into a weathered, painted wall.', write:'This old clock keeps ticking on a worn wall. Write about how you spend your time — and one thing you wish you had more time for.', speak:'Describe the scene, then talk about whether you use your time well, and what you would change.'},
+      {id:'pc4', kind:'pic', emoji:'🌲', title:'From Above', img:'https://images.unsplash.com/photo-1549279873-30c053a630bc?w=1200&q=80&auto=format&fit=crop', caption:'A forest seen from high in the sky.', write:'Seen from the sky, the forest looks endless. Write about why forests matter — and what we lose when they disappear.', speak:'Describe the view, then give one reason we should protect places like this.'},
+      {id:'pc5', kind:'pic', emoji:'💡', title:'What Is Your Story?', img:'https://images.unsplash.com/photo-1779017581773-498ab0766f97?w=1200&q=80&auto=format&fit=crop', caption:'A glowing sign asks a simple, huge question.', write:'The sign asks: what is your story? Write the opening of your own story — where it begins and what shaped you.', speak:'Answer the sign out loud: tell us your story in two minutes, from where it began.'},
+      {id:'pc6', kind:'pic', emoji:'🎲', title:'Is the Game Rigged?', img:'https://images.unsplash.com/photo-1758923530325-00b4ff765e9e?w=1200&q=80&auto=format&fit=crop', caption:'A street poster makes a bold claim about fairness.', write:'The poster claims the game is rigged. Write about whether you think life is fair — and what could make it fairer.', speak:'Describe the poster, then argue whether you agree that the game is rigged.'},
+      {id:'pc7', kind:'pic', emoji:'🗑️', title:'What We Throw Away', img:'https://images.unsplash.com/photo-1606920031092-c14461fc4db6?w=1200&q=80&auto=format&fit=crop', caption:'Bags of rubbish piled on a city street.', write:'Look at the pile of rubbish. Write about where our waste goes — and one habit that could cut it down.', speak:'Describe the scene, then persuade us to change one everyday habit to make less waste.'},
+      {id:'pc8', kind:'pic', emoji:'🕊️', title:'Hold or Release?', img:'https://images.unsplash.com/photo-1766899920729-07f014702ce8?w=1200&q=80&auto=format&fit=crop', caption:'A bird held in cupped hands beside a cage.', write:'A bird rests in open hands beside a cage. Write about what freedom means to you — and whether it is always safe.', speak:'Describe the picture, then argue: should the bird be kept safe in the cage, or set free?'},
+      {id:'pc9', kind:'pic', emoji:'🌅', title:'Alone with the View', img:'https://images.unsplash.com/photo-1509030441537-8af1c02726f7?w=1200&q=80&auto=format&fit=crop', caption:'A person stands alone on a rock at golden hour.', write:'A person stands alone facing the water at sunset. Write about a place where you feel calm and can think clearly.', speak:'Describe the scene, then tell us where you go — really or in your mind — when you need peace.'},
+      {id:'pc10', kind:'pic', emoji:'🐦', title:'The Lone Bird', img:'https://images.unsplash.com/photo-1776061427060-3e882d360fb4?w=1200&q=80&auto=format&fit=crop', caption:'One small bird sits high on cold concrete.', write:'One small bird sits high on cold concrete. Write about a time you felt alone in a big place — and what helped.', speak:'Describe the picture, then speak about how we can notice and include someone who feels alone.'},
+      {id:'pc11', kind:'pic', emoji:'☂️', title:'Walking Home in the Rain', img:'https://images.unsplash.com/photo-1758941808079-fa54b03519de?w=1200&q=80&auto=format&fit=crop', caption:'A child walks alone under an umbrella at night.', write:'A child walks home alone under an umbrella at night. Write what might be going through their mind.', speak:'Describe the scene, then tell the story of this walk — where are they going, and how do they feel?'},
+      {id:'pc12', kind:'pic', emoji:'🦋', title:'Small and Alive', img:'https://images.unsplash.com/photo-1664073204901-e2d9c84d558f?w=1200&q=80&auto=format&fit=crop', caption:'A butterfly rests on a plant.', write:'A butterfly begins life as something completely different. Write about a change in yourself you are proud of.', speak:'Describe the butterfly, then talk about a way you have grown or changed for the better.'},
+      {id:'pc13', kind:'pic', emoji:'🪟', title:'Reflections', img:'https://images.unsplash.com/photo-1781520422637-1dee7f6576a8?w=1200&q=80&auto=format&fit=crop', caption:'A person is reflected in a window above the city.', write:'A reflection floats over the whole city. Write about who you are on the inside versus who people see.', speak:'Describe the image, then speak about the difference between how you feel and how you appear to others.'},
+      {id:'pc14', kind:'pic', emoji:'🌆', title:'Looking Out', img:'https://images.unsplash.com/photo-1772026251139-10b856e62955?w=1200&q=80&auto=format&fit=crop', caption:'A person looks out over a wide city skyline.', write:'She looks out over the whole city. Write about a big dream you have for your future.', speak:'Describe the scene, then share one dream for your life and the first step toward it.'},
+      {id:'pc15', kind:'pic', emoji:'🌉', title:'Crossing Over', img:'https://images.unsplash.com/photo-1778537374212-d3f013dcf146?w=1200&q=80&auto=format&fit=crop', caption:'A single figure crosses a bright urban bridge.', write:'A single figure crosses a bright bridge. Write about a bridge moment in your life — leaving one thing for another.', speak:'Describe the picture, then tell us about a change you crossed into, and how it felt.'},
+      {id:'pc16', kind:'pic', emoji:'🤳', title:'The Selfie', img:'https://images.unsplash.com/photo-1774298752297-b0c095f5e1dd?w=1200&q=80&auto=format&fit=crop', caption:'A man turns from the view to take a selfie.', write:'He turns from the view to take a selfie. Write about why we photograph everything — do we miss the real moment?', speak:'Describe the scene, then argue: do phones help us enjoy life, or pull us away from it?'}
+    ]};
+
+const WASPK_PUZZLE_CAT = { key:'p_puz', name:'Puzzles to ponder', emoji:'🧩', grad:['#0FA98B','#0b6e5c'], scene:'imagine', prompts:[
+      {id:'pz1', kind:'puzzle', emoji:'🧩', title:'Uninvent One Thing', statement:'If you could uninvent one thing in the world, what would it be — and why?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz2', kind:'puzzle', emoji:'⏳', title:'One Extra Hour', statement:'You are given one extra hour every day that no one else has. What do you do with it?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz3', kind:'puzzle', emoji:'🔑', title:'The Locked Room', statement:'You are in a room with only a mirror and a table. How could you escape?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz4', kind:'puzzle', emoji:'⏸️', title:'Freeze One Age', statement:'If you could freeze yourself at one age forever, which age would you pick — and why?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz5', kind:'puzzle', emoji:'💭', title:'One Memory', statement:'You may keep only one memory and lose all the rest. Which memory do you keep?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz6', kind:'puzzle', emoji:'🔵', title:'The Button', statement:'A button gives you a million, but a stranger somewhere loses the same amount. Do you press it?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz7', kind:'puzzle', emoji:'🪶', title:'Fly or Vanish', statement:'Would you rather be able to fly or turn invisible? What does your choice reveal about you?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz8', kind:'puzzle', emoji:'🧠', title:'Open Minds', statement:'If everyone could read your mind for one minute a day, what would you change about yourself?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz9', kind:'puzzle', emoji:'🚪', title:'The Future Door', statement:'A door leads exactly one year into your future. Do you walk through it? Why?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz10', kind:'puzzle', emoji:'🤝', title:'Old Promise', statement:'Is a promise made by a much younger you still binding on you now?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz11', kind:'puzzle', emoji:'🎮', title:'The Happiness Machine', statement:'A machine offers perfect happiness — but none of it is real. Do you plug in?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz12', kind:'puzzle', emoji:'🔤', title:'A New Word', statement:'You can add one brand-new word to every language on Earth. What does it mean?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz13', kind:'puzzle', emoji:'🗣️', title:'Always True', statement:'Would you press a button that forced you to always tell the truth?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz14', kind:'puzzle', emoji:'🎯', title:'Trade a Talent', statement:'If you could trade one talent you have for one you wish you had, would you?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz15', kind:'puzzle', emoji:'📣', title:'One Message', statement:'You may send one 20-word message to the whole world, once. What do you say?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'}
+    ]};
+
+const WASPK_DEBATE_CAT = { key:'p_hot', name:'Debate starters', emoji:'🔥', grad:['#e6464b','#992b2f'], scene:'imagine', prompts:[
+      {id:'db1', kind:'debate', emoji:'📱', title:'Phones in School', statement:'Mobile phones should be banned in schools. Do you agree?', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db2', kind:'debate', emoji:'🌍', title:'Planet vs Economy', statement:'Protecting the environment matters more than growing the economy. Agree or disagree?', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db3', kind:'debate', emoji:'🤖', title:'Robots & Jobs', statement:'One day, robots and AI will do most human jobs. Is that a good thing?', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db4', kind:'debate', emoji:'📚', title:'No More Homework', statement:'Homework should be abolished. Do you agree?', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db5', kind:'debate', emoji:'📵', title:'Social Media', statement:'Social media does more harm than good for teenagers.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db6', kind:'debate', emoji:'🗓️', title:'Four-Day Week', statement:'A four-day school week would improve learning.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db7', kind:'debate', emoji:'🤝', title:'Give Back', statement:'Every teenager should have to volunteer in their community.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db8', kind:'debate', emoji:'🧑‍🏫', title:'Grade the Teacher', statement:'Students should be allowed to give their teachers a grade.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db9', kind:'debate', emoji:'👕', title:'Fast Fashion', statement:'Fast fashion should be banned.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db10', kind:'debate', emoji:'🗣️', title:'Second Language', statement:'Learning a second language should be compulsory for everyone.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db11', kind:'debate', emoji:'🍔', title:'Junk-Food Ads', statement:'Advertising junk food to children should be illegal.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db12', kind:'debate', emoji:'📝', title:'Exams & Memory', statement:'Exams measure memory, not real intelligence.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db13', kind:'debate', emoji:'💧', title:'Wasting Water', statement:'People who waste water should be fined.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db14', kind:'debate', emoji:'🦁', title:'Zoos', statement:'Zoos do more good than harm.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db15', kind:'debate', emoji:'🎭', title:'Honest or Liked', statement:'It is better to be honest and unpopular than liked and fake.', caption:'Hot issue — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'}
+    ]};
+
+const WASPK_SPK_CATS = (function(){
+  var grads=[['#e6464b','#992b2f'],['#c0392b','#7d2b20'],['#8B5CF6','#5B8DEF'],['#2b5fa6','#173a6b'],['#0FA98B','#0b6e5c'],['#e08a2b','#b5561a'],['#6a6f9c','#3a3f66'],['#e6608a','#b23c78']];
+  var emo=['💬','🤔','🚀','🌍','💭','🔄','⚖️','🎤'];
+  var W='Think before you speak. Jot your answer and two or three reasons or details that back it up. If it is a debate, note what the other side might say.';
+  var S='Speak your answer aloud: say what you think, give your best reason first, and add an example. Aim for a clear minute.';
+  function shortT(t){ var s=String(t).replace(/["“”]/g,'').trim(); var a=s.split(/\s+/); return a.slice(0,6).join(' ')+(a.length>6?'…':''); }
+  return SPEAKING.map(function(c,i){ return { key:'spk'+i, name:c.cat, emoji:emo[i%emo.length], grad:grads[i%grads.length], scene:'imagine',
+    prompts:c.prompts.map(function(txt,j){ return { id:'spk'+i+'_'+j, kind:'debate', emoji:emo[i%emo.length], title:shortT(txt), statement:txt, caption:(c.note||'A talking point from the Speaking studio.'), write:W, speak:S }; }) }; });
+})();
+
+const WASPK_CATS = WASPK_VID_CATS.concat([WASPK_PIC_CAT, WASPK_PUZZLE_CAT, WASPK_DEBATE_CAT]).concat(WASPK_SPK_CATS);
 
 const WASPK_STARTERS = ['I can see / I notice…','It looks like…','I think this is because…','If I were there, I would…','This reminds me of…','One question I have is…'];
 
@@ -22055,17 +22078,30 @@ ROUTES.waspkCats = function(){
     <div class="wa-grid">
       ${tp.map(p=>`<div class="wa-tile" onclick="go('waspkDo','${p.id}')">${waspkTileVisual(waspkVO({p, c:{name:'From my teacher',key:'teacher',grad:['#15183A','#26308a'],scene:'imagine'}}))}</div>`).join('')}
     </div>` : '';
+  const TYPES=[
+    {kind:'video', ic:'🎬', label:'Video prompts', sub:'Watch a short film, then retell &amp; react'},
+    {kind:'pic',   ic:'🖼️', label:'Picture prompts', sub:'Study a real photo — describe &amp; interpret'},
+    {kind:'debate',ic:'🔥', label:'Hot Issues', sub:'Take a view and defend it — includes the Speaking topics'},
+    {kind:'puzzle',ic:'🧩', label:'Puzzles', sub:'Think sideways — there is no single right answer'}
+  ];
+  const sections = TYPES.map(t=>{
+    const cats = WASPK_CATS.filter(c=> c.prompts.length && (c.prompts[0].kind||'pic')===t.kind);
+    if(!cats.length) return '';
+    const total = cats.reduce((n,c)=>n+c.prompts.length,0);
+    const multi = cats.length>1;
+    const body = cats.map(c=>{
+      const grid = `<div class="wa-grid">${c.prompts.map(p=>`<div class="wa-tile" onclick="go('waspkDo','${p.id}')">${waspkTileVisual(waspkVO({p,c}))}</div>`).join('')}</div>`;
+      return multi ? `<div class="wa-subhead">${esc(c.name)} <span>· ${c.prompts.length}</span></div>${grid}` : grid;
+    }).join('');
+    return `<div class="wa-typehead"><span class="ti">${t.ic}</span><div><h2>${t.label} <span class="ct">${total}</span></h2><p>${t.sub}</p></div></div>${body}`;
+  }).join('');
   app().innerHTML = `
   <div class="wrap screen">
     <button class="back" onclick="go('waspk')">← Talkabout</button>
     <h1 style="font-size:2rem">🗂️ Prompt Library</h1>
-    <p style="color:var(--muted);max-width:660px">Every prompt is a spark: a <b>picture</b>, a <b>short video</b>, a <b>puzzle</b> or a <b>hot-issue debate</b> — each with a caption. Tap one to write about it, then speak about it.</p>
+    <p style="color:var(--muted);max-width:680px">Every prompt lives here, sorted by type: <b>🎬 Video</b>, <b>🖼️ Picture</b>, <b>🔥 Hot Issues</b> and <b>🧩 Puzzles</b>. Tap any one to write about it, then speak about it.</p>
     ${teacherBlock}
-    ${WASPK_CATS.map(c=>`
-      <div class="wa-cathead"><span class="ce">${c.emoji}</span><h2>${esc(c.name)}</h2></div>
-      <div class="wa-grid">
-        ${c.prompts.map(p=>`<div class="wa-tile" onclick="go('waspkDo','${p.id}')">${waspkTileVisual(waspkVO({p,c}))}</div>`).join('')}
-      </div>`).join('')}
+    ${sections}
   </div>`;
 };
 
@@ -22092,7 +22128,7 @@ ROUTES.waspkDo = function(id){
   if(id==='random'){ const ids=Object.keys(WASPK_INDEX); id=ids[Math.floor(Math.random()*ids.length)]; }
   if(id==='custom'){ if(!WASPK_CUSTOM){ go('waspkCreate'); return; } vo=waspkVO(WASPK_CUSTOM); prompt=WASPK_CUSTOM; custom=true; source='custom'; }
   else { const r=waspkPromptById(id); if(!r){ go('waspk'); return; } vo=waspkVO({p:r.p,c:r.c}); prompt=r.p; source=r.source; }
-  WASPK_CUR={ promptId:id, vo, prompt, kind:vo.kind, custom, source, write:'', spoke:false, pieceId:null, deckKey:null, deckName:'' };
+  WASPK_CUR={ promptId:id, vo, prompt, kind:vo.kind, custom, source, write:'', spoke:false, saved:false, pieceId:null, deckKey:null, deckName:'' }; WASPK_WMODE='free';
   WASPK_STEP=1;
   waspkRenderStep();
 };
@@ -22114,7 +22150,8 @@ function waspkProgress(active){
 /* --- WINDOW 1: Write About This (10-min countdown) --- */
 function waspkStepWrite(){
   const vo=WASPK_CUR.vo, p=WASPK_CUR.prompt;
-  const back = WASPK_CUR.custom ? `go('waspkCreate')` : (WASPK_CUR.source==='teacher' ? `go('waspkCats')` : `go('waspkCats')`);
+  const back = WASPK_CUR.custom ? `go('waspkCreate')` : `go('waspkCats')`;
+  const saved = !!WASPK_CUR.saved;
   app().innerHTML=`
   <div class="wrap screen">
     <button class="back" onclick="${back}">← Prompts</button>
@@ -22124,22 +22161,28 @@ function waspkStepWrite(){
       <div class="wa-step" id="waspkWriteCard">
         <div class="wa-step-h"><span class="wa-badge" style="background:#e6608a">1</span><h3>✍️ Writeabout</h3></div>
         <p class="wa-hint">${esc(p.write||'Look at the prompt. Write freely about what you see, think and imagine.')}</p>
+        <div class="wa-modebar">
+          <button type="button" data-m="free" onclick="waspkSetWriteMode('free')">✍️ Write My Own<small>A blank page — just write</small></button>
+          <button type="button" data-m="support" onclick="waspkSetWriteMode('support')">🧩 Need Support<small>Words, phrases &amp; a plan</small></button>
+        </div>
+        <div class="wa-support" id="waspkSupport" style="display:none">${waspkSupportHTML(vo)}</div>
         <div class="wa-timer" id="waspkWTimerWrap">
           <div class="clock" id="waspkWClock">10:00</div>
           <div class="track"><div class="bar" id="waspkWBar" style="background:linear-gradient(90deg,#e6608a,#F5A301)"></div></div>
           <button class="ctrl" id="waspkWPause" onclick="waspkToggleWrite()">⏸ Pause</button>
         </div>
-        <textarea id="waspkText" class="wa-textarea" placeholder="Start writing here… there is no wrong answer." oninput="waspkCount()">${esc(WASPK_CUR.write||'')}</textarea>
-        <div class="wa-starters">
-          ${WASPK_STARTERS.map(x=>`<button type="button" class="wa-starter" onclick="waspkInsert('${escq(x)}')">${esc(x)}</button>`).join('')}
-        </div>
+        <textarea id="waspkText" class="wa-textarea" placeholder="Start writing here… there is no wrong answer." oninput="waspkCount();waspkDirty()">${esc(WASPK_CUR.write||'')}</textarea>
         <div class="wa-tools">
           <button class="btn ghost sm" onclick="waspkReadWriting()">🔊 Read my writing</button>
           <button class="btn ghost sm" onclick="waspkClearText()">↺ Clear</button>
           <span class="wa-count" id="waspkCount">0 words</span>
         </div>
+        <div class="wa-saverow">
+          <button class="wa-save" onclick="waspkSaveWork()">💾 Save my work</button>
+          <span class="wa-status" id="waspkSaveMsg">${saved?'Saved ✓ — slide across to Speak.':'Save your work to unlock the next step.'}</span>
+        </div>
       </div>
-      <div class="wa-slide" id="waspkSlide" data-next="speak">
+      <div class="wa-slide ${saved?'':'locked'}" id="waspkSlide" data-next="speak">
         <div class="fill"></div><div class="lab">Slide to Speak About It  →</div><div class="knob">🎤</div>
       </div>
       <div style="text-align:center"><button class="wa-backlink" onclick="waspkCancelUnit()">Cancel and leave</button></div>
@@ -22148,7 +22191,8 @@ function waspkStepWrite(){
   waspkCount();
   waspkHydrateVideo(vo);
   waspkStartWriteTimer();
-  waspkWireSlider('waspkSlide', ()=>{ waspkCaptureWrite(); WASPK_STEP=2; waspkRenderStep(); });
+  waspkSetWriteMode(WASPK_WMODE||'free');
+  if(saved) waspkWireSlider('waspkSlide', ()=>{ waspkCaptureWrite(); WASPK_STEP=2; waspkRenderStep(); });
 }
 /* --- WINDOW 2: Speak About It (2-min countdown) --- */
 function waspkStepSpeak(){
@@ -22163,6 +22207,10 @@ function waspkStepSpeak(){
         <div class="wa-step-h"><span class="wa-badge" style="background:#0FA98B">2</span><h3>🎤 Speak About It</h3></div>
         <p class="wa-hint">${esc(p.speak||'Say your ideas out loud in your own words.')}</p>
         ${WASPK_CUR.write?`<details style="margin-bottom:10px"><summary style="cursor:pointer;color:var(--teal-dk);font-weight:600">📄 Peek at what I wrote</summary><div style="white-space:pre-wrap;background:#fbfaf6;border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:8px;line-height:1.6">${esc(WASPK_CUR.write)}</div></details>`:''}
+        <details class="wa-help" open>
+          <summary>🗣️ Sentence helpers <span>— stuck for words? tap a line to hear it, then say it your way</span></summary>
+          ${waspkSpeakHelpHTML(vo)}
+        </details>
         <div class="wa-timer" id="waspkSTimerWrap">
           <div class="clock" id="waspkSClock">2:00</div>
           <div class="track"><div class="bar" id="waspkSBar" style="background:linear-gradient(90deg,#0FA98B,#5B8DEF)"></div></div>
@@ -22188,7 +22236,6 @@ function waspkStepSpeak(){
   </div>`;
   waspkHydrateVideo(vo);
   waspkWireSlider('waspkSlide', ()=>{ WASPK_STEP=3; waspkRenderStep(); });
-  // speak timer starts when recording begins (waspkStartSpeakTimer called from record)
   waspkPaintSpeakClock(120);
 }
 /* --- WINDOW 3: Publish & Share --- */
@@ -22256,6 +22303,63 @@ function waspkCount(){ const t=(document.getElementById('waspkText')||{}).value|
 function waspkInsert(s){ const ta=document.getElementById('waspkText'); if(!ta) return; const cur=ta.value; const sep=(cur&&!/\s$/.test(cur))?' ':''; ta.value=cur+sep+s+' '; ta.focus(); waspkCount(); }
 function waspkClearText(){ const ta=document.getElementById('waspkText'); if(ta){ ta.value=''; ta.focus(); } waspkCount(); }
 function waspkReadWriting(){ const t=((document.getElementById('waspkText')||{}).value||WASPK_CUR&&WASPK_CUR.write||'').trim(); if(!t){ if(typeof speak==='function') speak('There is nothing written yet. Write a little first, then I will read it back to you.'); return; } try{ speechSynthesis.cancel(); }catch(e){} if(typeof speak==='function') speak(t); }
+
+/* ---- Scaffolding for struggling writers & speakers ---- */
+let WASPK_WMODE='free';
+function waspkScaffold(vo){
+  const k=vo.kind;
+  if(k==='video') return {
+    strategy:['Retell what happens in order: beginning → middle → end.','Name the turning point — the moment things change.','Say how the character feels, and why.','React: what does it make YOU think or feel?','Finish with the message or lesson.'],
+    vocab:['at the start','then','after that','suddenly','in the end','the main character','felt','realised','decided','because'],
+    phrases:['At the start of the film, …','The turning point is when …','The character feels … because …','This part made me think about …','In the end, …','It reminds me of a time when …'],
+    gaps:['At first, the character ______ , but then ______.','The most important moment is when ______.','This made me feel ______ because ______.','If I were in this situation, I would ______.','The message of this short is that ______.']
+  };
+  if(k==='pic') return {
+    strategy:['Describe what you see first — big things, then small details.','Guess the story: what is happening, and what happened just before?','Interpret: what idea or feeling does the photo show?','Connect it to yourself, your community, or the world.','End with your own opinion or a question.'],
+    vocab:['in the foreground','in the background','on the left','on the right','it looks like','maybe','I wonder','this shows','it reminds me of','because'],
+    phrases:['In this photo I can see …','In the background there is …','It looks as if …','I think the photographer wanted to show …','This makes me wonder …','It reminds me of …'],
+    gaps:['In this picture I can see ______.','The most interesting part is ______ because ______.','I think this photo is about ______.','It makes me feel ______.','This connects to my life because ______.']
+  };
+  return { /* puzzle & debate */
+    strategy:['State your view in one clear sentence.','Give your best reason first, with an example.','Add a second reason.','Admit what the other side says — then answer it.','End by repeating your view in new words.'],
+    vocab:['I believe','in my opinion','firstly','secondly','for example','on the other hand','however','therefore','some people say','I disagree'],
+    phrases:['In my opinion, …','My first reason is that …','For example, …','Some people argue that … , but …','On the other hand, …','Therefore, I believe …'],
+    gaps:['I believe that ______ because ______.','My strongest reason is ______.','For example, ______.','Some people think ______ , however ______.','Overall, my view is ______.']
+  };
+}
+function waspkSupportHTML(vo){
+  const d=waspkScaffold(vo);
+  const chips=(arr)=>`<div class="wa-chips">${arr.map(x=>`<button type="button" class="wa-chip" onclick="waspkInsert('${escq(x)}')">${esc(x)}</button>`).join('')}</div>`;
+  return `
+    <div class="sec"><h4>🧭 A writing plan to follow</h4><ol class="wa-strat">${d.strategy.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></div>
+    <div class="sec"><h4>🔑 Useful words <span style="font-weight:500;color:var(--muted)">— tap to add</span></h4>${chips(d.vocab)}</div>
+    <div class="sec"><h4>💬 Sentence starters <span style="font-weight:500;color:var(--muted)">— tap to add</span></h4>${chips(d.phrases)}</div>
+    <div class="sec"><h4>✏️ Finish the sentence <span style="font-weight:500;color:var(--muted)">— tap one, then fill the blank</span></h4>
+      <ul class="wa-gaplist">${d.gaps.map(x=>`<li onclick="waspkInsert('${escq(x)}')">${esc(x)}</li>`).join('')}</ul></div>`;
+}
+function waspkSetWriteMode(m){
+  WASPK_WMODE=m;
+  const sup=document.getElementById('waspkSupport'); if(sup) sup.style.display=(m==='support')?'':'none';
+  document.querySelectorAll('.wa-modebar button').forEach(b=>b.classList.toggle('on', b.dataset.m===m));
+}
+function waspkDirty(){ if(WASPK_CUR&&WASPK_CUR.saved){ WASPK_CUR.saved=false; const sl=document.getElementById('waspkSlide'); if(sl) sl.classList.add('locked'); const m=document.getElementById('waspkSaveMsg'); if(m){ m.textContent='You have new changes — save again to continue.'; m.style.color='var(--muted)'; } } }
+function waspkSaveWork(){
+  waspkCaptureWrite();
+  if(WASPK_CUR){ WASPK_CUR.saved=true; try{ Store.set('waspk_draft_'+(WASPK_CUR.promptId||'x'), WASPK_CUR.write||''); }catch(e){} }
+  const sl=document.getElementById('waspkSlide'); if(sl){ sl.classList.remove('locked'); waspkWireSlider('waspkSlide', ()=>{ waspkCaptureWrite(); WASPK_STEP=2; waspkRenderStep(); }); }
+  const m=document.getElementById('waspkSaveMsg'); if(m){ const n=(WASPK_CUR.write||'').trim(); const w=n?n.split(/\s+/).filter(Boolean).length:0; m.textContent='Saved ✓ ('+w+' word'+(w===1?'':'s')+') — now slide across to Speak.'; m.style.color='var(--teal-dk)'; }
+}
+function waspkSpeakBank(vo){
+  const k=vo.kind;
+  if(k==='video') return ['This short film is about …','It begins with …','Then …','The part that surprised me was …','It made me feel …','I think the message is …','What I learned is …'];
+  if(k==='pic') return ['In this picture I can see …','It looks like …','I think it shows …','It makes me feel …','It reminds me of …','In my opinion …','So my view is …'];
+  return ['My answer is …','I think this because …','For example …','Some people would say … , but I believe …','Another reason is …','To sum up, …'];
+}
+function waspkSpeakHelpHTML(vo){
+  const arr=waspkSpeakBank(vo);
+  return `<div class="wa-chips">${arr.map(x=>`<button type="button" class="wa-chip" onclick="waspkSay('${escq(x)}')">🔊 ${esc(x)}</button>`).join('')}</div>`;
+}
+function waspkSay(t){ try{ speechSynthesis.cancel(); }catch(e){} if(typeof speak==='function') speak(String(t).replace(/…/g,'')); }
 
 /* ---- Countdown timers ---- */
 let WASPK_WLEFT=600, WASPK_WPAUSED=false;
