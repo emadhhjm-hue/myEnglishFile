@@ -1068,6 +1068,27 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wa-typehead p{margin:2px 0 0;font-size:.82rem;color:var(--muted)}
 .wa-subhead{font-weight:700;color:var(--ink);margin:16px 0 8px;font-size:.98rem}
 .wa-subhead span{color:var(--muted);font-weight:500;font-size:.85rem}
+/* Talking Points — compact colour-coded bars (tap a title to reveal the task) */
+.wa-barlist{display:flex;flex-direction:column;gap:8px;margin:0 0 8px}
+.wa-baritem{border-radius:12px}
+.wa-bar{width:100%;display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;font-family:inherit;
+  border:1px solid var(--line);border-left:6px solid var(--bar,#e6464b);border-radius:12px;padding:10px 14px;
+  transition:box-shadow .12s,transform .06s}
+.wa-bar:hover{box-shadow:0 8px 18px -12px rgba(21,24,58,.4)}
+.wa-bar:active{transform:translateY(1px)}
+.wa-bar-ic{flex:none;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:1.05rem;background:var(--bar,#e6464b);color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
+.wa-bar-t{flex:1;font-weight:700;color:var(--ink);font-size:.97rem;line-height:1.3}
+.wa-bar-x{flex:none;color:var(--bar,#e6464b);font-size:1.3rem;font-weight:800;line-height:1;transition:transform .2s}
+.wa-baritem.open .wa-bar-x{transform:rotate(90deg)}
+.wa-baritem.open .wa-bar{border-bottom-left-radius:0;border-bottom-right-radius:0}
+.wa-bar-panel{max-height:0;overflow:hidden;background:#fff;border:1px solid var(--line);border-top:none;
+  border-left:6px solid var(--bar,#e6464b);border-radius:0 0 12px 12px;transition:max-height .22s ease}
+.wa-baritem.open .wa-bar-panel{max-height:360px}
+.wa-bar-pad{padding:14px 16px 16px}
+.wa-bar-st{margin:0 0 12px;font-family:'Fraunces',Georgia,serif;font-size:1.18rem;line-height:1.35;color:var(--ink)}
+.wa-bar-go{background:var(--bar,#e6464b);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer;font-size:.92rem}
+.wa-bar-go:hover{filter:brightness(1.06)}
 .wa-modebar{display:flex;gap:8px;margin:2px 0 12px}
 .wa-modebar button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px 8px;font-weight:700;cursor:pointer;color:var(--slate);display:flex;flex-direction:column;gap:2px;align-items:center;font-size:.92rem}
 .wa-modebar button small{font-weight:500;color:var(--muted);font-size:.72rem}
@@ -22099,6 +22120,18 @@ ROUTES.waspk = function(){
 };
 
 /* ===== PROMPT LIBRARY (categories) ====================================== */
+/* Rotating palette for the Talking Points bars (colour + soft tinted background) */
+const WASPK_BAR_PALETTE=[
+  {c:'#E6464B', bg:'rgba(230,70,75,.06)'},
+  {c:'#E08A2B', bg:'rgba(224,138,43,.07)'},
+  {c:'#0FA98B', bg:'rgba(15,169,139,.07)'},
+  {c:'#2B5FA6', bg:'rgba(43,95,166,.07)'},
+  {c:'#8B5CF6', bg:'rgba(139,92,246,.07)'},
+  {c:'#E6608A', bg:'rgba(230,96,138,.07)'},
+  {c:'#0C8A72', bg:'rgba(12,138,114,.07)'},
+  {c:'#C0392B', bg:'rgba(192,57,43,.06)'}
+];
+function waspkBarToggle(btn){ const item=btn.closest('.wa-baritem'); if(item) item.classList.toggle('open'); }
 ROUTES.waspkCats = function(){
   waspkStopRec();
   const tp = waspkTeacherPrompts();
@@ -22113,12 +22146,31 @@ ROUTES.waspkCats = function(){
     {kind:'debate',ic:'🗣️', label:'Talking Points', sub:'Debate, discuss, imagine and present — pick a card and talk'},
     {kind:'puzzle',ic:'🧩', label:'Puzzles', sub:'Think sideways — there is no single right answer'}
   ];
+  let barI=0;
   const sections = TYPES.map(t=>{
     const cats = WASPK_CATS.filter(c=> c.prompts.length && (c.prompts[0].kind||'pic')===t.kind);
     if(!cats.length) return '';
     const total = cats.reduce((n,c)=>n+c.prompts.length,0);
     const multi = cats.length>1;
     const body = cats.map(c=>{
+      if(t.kind==='debate' || t.kind==='puzzle'){
+        const bars = c.prompts.map(p=>{
+          const col = WASPK_BAR_PALETTE[barI++ % WASPK_BAR_PALETTE.length];
+          return `<div class="wa-baritem">
+            <button type="button" class="wa-bar" style="--bar:${col.c};background:${col.bg}" onclick="waspkBarToggle(this)">
+              <span class="wa-bar-ic">${p.emoji||'🗣️'}</span>
+              <span class="wa-bar-t">${esc(p.title)}</span>
+              <span class="wa-bar-x">›</span>
+            </button>
+            <div class="wa-bar-panel"><div class="wa-bar-pad">
+              <p class="wa-bar-st">${esc(p.statement||p.title)}</p>
+              <button type="button" class="wa-bar-go" style="--bar:${col.c}" onclick="event.stopPropagation();go('waspkDo','${p.id}')">✍️ Start this task</button>
+            </div></div>
+          </div>`;
+        }).join('');
+        const list = `<div class="wa-barlist">${bars}</div>`;
+        return multi ? `<div class="wa-subhead">${esc(c.name)} <span>· ${c.prompts.length}</span></div>${list}` : list;
+      }
       const grid = `<div class="wa-grid">${c.prompts.map(p=>`<div class="wa-tile" onclick="go('waspkDo','${p.id}')">${waspkTileVisual(waspkVO({p,c}))}</div>`).join('')}</div>`;
       return multi ? `<div class="wa-subhead">${esc(c.name)} <span>· ${c.prompts.length}</span></div>${grid}` : grid;
     }).join('');
