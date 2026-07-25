@@ -22306,26 +22306,99 @@ function waspkReadWriting(){ const t=((document.getElementById('waspkText')||{})
 
 /* ---- Scaffolding for struggling writers & speakers ---- */
 let WASPK_WMODE='free';
+/* prompt-relevant scaffolding: topic lexicon + subject/claim helpers */
+const WASPK_LEX=[
+ {k:['market','spice','grocery','shopping','shop','store','stall'], topic:'the market', w:['stall','vendor','bustling','aroma','bargain','crowded','trade','fresh produce']},
+ {k:['food','eat','meal','cook','hungry','diet','snack'], topic:'food and choices', w:['flavour','nutritious','tasty','portion','craving','variety','fresh','favourite']},
+ {k:['phone','screen','social media','online','internet','selfie','app','device','post','scroll'], topic:'screens and social media', w:['notification','scrolling','distraction','screen time','online','addictive','post','offline']},
+ {k:['environment','waste','rubbish','garbage','plastic','pollution','recycle','litter','trash'], topic:'waste and the environment', w:['pollution','litter','recycle','sustainable','landfill','habitat','conserve','single-use']},
+ {k:['water','drought'], topic:'saving water', w:['conserve','scarce','waste','drought','precious','supply','resource','leak']},
+ {k:['forest','tree','nature','wildlife','ocean','sea','climate','planet','earth'], topic:'nature and the planet', w:['habitat','ecosystem','protect','wildlife','deforestation','fragile','balance','future']},
+ {k:['freedom','cage','bird','trapped','escape','prison','free'], topic:'freedom', w:['freedom','captivity','release','liberty','safe','wild','choice','responsibility']},
+ {k:['time','clock','hour','minute','deadline'], topic:'how we use time', w:['fleeting','precious','routine','waste','moment','deadline','patience','opportunity']},
+ {k:['future','2050','tomorrow','one year','forever','immortal'], topic:'the future', w:['prediction','uncertain','progress','hope','change','plan','technology','possibility']},
+ {k:['choice','decision','sign','crossroads','path'], topic:'making choices', w:['decision','direction','option','consequence','regret','commit','uncertain','turning point']},
+ {k:['alone','lonely','loneliness','solitude','isolated','crowd'], topic:'loneliness and belonging', w:['loneliness','belonging','isolation','company','included','reach out','support','connection']},
+ {k:['dream','ambition','goal','skyline','career'], topic:'dreams and ambitions', w:['ambition','goal','achieve','determination','opportunity','plan','hope','vision']},
+ {k:['change','grow','butterfly','transform'], topic:'change and growth', w:['transformation','growth','develop','courage','progress','overcome','confidence','proud']},
+ {k:['fair','rigged','justice','equal','unfair'], topic:'fairness', w:['fairness','justice','equality','unfair','advantage','deserve','biased','opportunity']},
+ {k:['identity','story','reflection','myself','self-image','mirror'], topic:'identity', w:['identity','individual','unique','confidence','appearance','inner','honest','value']},
+ {k:['kind','kindness','help','bully','bullying','volunteer','community'], topic:'kindness and community', w:['kindness','empathy','support','respect','community','generous','include','considerate']},
+ {k:['job','work','robot','ai','machine','automation','employ','invention'], topic:'work and technology', w:['automation','employment','skills','replace','efficient','retrain','opportunity','future']},
+ {k:['school','homework','exam','study','teacher','learn','grade','lesson','subject'], topic:'school and learning', w:['revision','pressure','grades','effort','understand','memorise','fair','motivation']},
+ {k:['language','languages'], topic:'learning languages', w:['fluent','communicate','culture','translate','vocabulary','confident','opportunity','global']},
+ {k:['tradition','heritage','culture','custom'], topic:'tradition and change', w:['heritage','custom','identity','preserve','modern','generation','value','change']},
+ {k:['fashion','clothes','clothing','tattoo'], topic:'style and identity', w:['trend','waste','cheap','quality','style','throwaway','sustainable','identity']},
+ {k:['money','lottery','million','cash','rich','wealth','spend','$'], topic:'money and values', w:['generous','priority','spend','save','value','responsibility','share','need']},
+ {k:['honest','honesty','truth','lie','fake'], topic:'honesty', w:['honest','truthful','trust','integrity','pretend','sincere','reputation','courage']},
+ {k:['animal','zoo','pet'], topic:'animals', w:['welfare','captivity','habitat','protect','wild','care','respect','freedom']},
+ {k:['travel','visit','country','journey','trip','teleport'], topic:'travel and the world', w:['culture','explore','adventure','experience','unfamiliar','open-minded','discover','memories']},
+ {k:['leader','leadership','president','lead your country'], topic:'leadership', w:['responsibility','decision','fair','vision','listen','courage','consequence','serve']},
+ {k:['history','historical','past'], topic:'history and the past', w:['legacy','lesson','era','influence','remember','change','perspective','wisdom']},
+ {k:['happiness','happy','wellbeing'], topic:'happiness', w:['contentment','fulfilment','joy','meaning','balance','grateful','real','lasting']},
+ {k:['memory','memories','remember'], topic:'memory', w:['memory','moment','cherish','forget','nostalgia','precious','remember','experience']},
+ {k:['laugh','funny','humour','joke'], topic:'humour', w:['laughter','joke','light-hearted','cheerful','witty','mood','share','smile']},
+];
+function waspkLexMatch(vo){
+  const txt=((vo.title||'')+' '+(vo.caption||'')+' '+(vo.statement||'')+' '+(vo.write||'')).toLowerCase();
+  function has(key){
+    if(/[^a-z ]/.test(key)) return txt.indexOf(key)>=0; // symbols like '$', hyphens
+    return new RegExp('(^|[^a-z])'+key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'([^a-z]|$)').test(txt);
+  }
+  for(let i=0;i<WASPK_LEX.length;i++){ const m=WASPK_LEX[i]; for(let j=0;j<m.k.length;j++){ if(has(m.k[j])) return m; } }
+  return null;
+}
+function waspkClaim(vo){
+  let c=(vo.statement||vo.title||'').trim();
+  c=c.split(/(?<=[.?!])\s+/)[0]||c;
+  c=c.replace(/^["\u201C\u2018']+/,'').replace(/["\u201D\u2019'.?!]+$/,'').trim();
+  return c;
+}
+function waspkIsClaim(vo){
+  const s=(vo.statement||'');
+  const first=s.split(/(?<=[.?!])\s+/)[0]||s;
+  if(/\?\s*$/.test(first)) return false;
+  return /\b(should|must|ought|is better|are better|does more harm|do more harm|matters more|will do|should be|deserve|is wrong|is right)\b/i.test(s);
+}
+function waspkLc1(x){ return x? x.charAt(0).toLowerCase()+x.slice(1) : x; }
+
 function waspkScaffold(vo){
-  const k=vo.kind;
-  if(k==='video') return {
-    strategy:['Retell what happens in order: beginning → middle → end.','Name the turning point — the moment things change.','Say how the character feels, and why.','React: what does it make YOU think or feel?','Finish with the message or lesson.'],
-    vocab:['at the start','then','after that','suddenly','in the end','the main character','felt','realised','decided','because'],
-    phrases:['At the start of the film, …','The turning point is when …','The character feels … because …','This part made me think about …','In the end, …','It reminds me of a time when …'],
-    gaps:['At first, the character ______ , but then ______.','The most important moment is when ______.','This made me feel ______ because ______.','If I were in this situation, I would ______.','The message of this short is that ______.']
+  const k=vo.kind||'pic';
+  const m=waspkLexMatch(vo);
+  const STRAT={
+    pic:['Describe what you see first — big things, then small details.','Guess the story: what is happening, and what happened just before?','Interpret: what idea or feeling does the photo show?','Connect it to yourself, your community, or the world.','End with your own opinion or a question.'],
+    video:['Retell what happens in order: beginning → middle → end.','Name the turning point — the moment things change.','Say how the character feels, and why.','React: what does it make YOU think or feel?','Finish with the message or lesson.'],
+    argue:['State your view in one clear sentence.','Give your best reason first, with an example.','Add a second reason.','Admit what the other side says — then answer it.','End by repeating your view in new words.']
   };
-  if(k==='pic') return {
-    strategy:['Describe what you see first — big things, then small details.','Guess the story: what is happening, and what happened just before?','Interpret: what idea or feeling does the photo show?','Connect it to yourself, your community, or the world.','End with your own opinion or a question.'],
-    vocab:['in the foreground','in the background','on the left','on the right','it looks like','maybe','I wonder','this shows','it reminds me of','because'],
-    phrases:['In this photo I can see …','In the background there is …','It looks as if …','I think the photographer wanted to show …','This makes me wonder …','It reminds me of …'],
-    gaps:['In this picture I can see ______.','The most interesting part is ______ because ______.','I think this photo is about ______.','It makes me feel ______.','This connects to my life because ______.']
+  const FALL={
+    pic:['in the foreground','in the background','it looks like','I notice','it seems','maybe','because','I wonder'],
+    video:['at the start','then','suddenly','in the end','feels','realises','because','the message'],
+    argue:['I believe','because','for example','however','on the other hand','therefore','some people','I disagree']
   };
-  return { /* puzzle & debate */
-    strategy:['State your view in one clear sentence.','Give your best reason first, with an example.','Add a second reason.','Admit what the other side says — then answer it.','End by repeating your view in new words.'],
-    vocab:['I believe','in my opinion','firstly','secondly','for example','on the other hand','however','therefore','some people say','I disagree'],
-    phrases:['In my opinion, …','My first reason is that …','For example, …','Some people argue that … , but …','On the other hand, …','Therefore, I believe …'],
-    gaps:['I believe that ______ because ______.','My strongest reason is ______.','For example, ______.','Some people think ______ , however ______.','Overall, my view is ______.']
-  };
+  if(k==='pic'){
+    const label=m?m.topic:'this photo';
+    return { strategy:STRAT.pic, vocab:(m?m.w:FALL.pic),
+      phrases:['In this photo I can see …','In the foreground there is …','It looks as if …','I think this image is really about '+label+' …','This makes me wonder …','It reminds me of …'],
+      gaps:['In this picture I can see ______.','The most striking part of '+label+' is ______.','I think the message about '+label+' is ______.','It makes me feel ______ because ______.','This connects to my life because ______.'] };
+  }
+  if(k==='video'){
+    const label=m?m.topic:'this story';
+    return { strategy:STRAT.video, vocab:(m?m.w:FALL.video),
+      phrases:['This short film is about …','It begins with …','The turning point is when …','The character feels … because …','It made me think about '+label+' …','The message is …'],
+      gaps:['At first ______ , but then ______.','The most important moment is when ______.','It made me feel ______ because ______.','This reminds me of a time when ______.','What I learned about '+label+' is ______.'] };
+  }
+  const vocab=(m?m.w:FALL.argue);
+  if(k==='debate' && waspkIsClaim(vo)){
+    const cl=waspkLc1(waspkClaim(vo));
+    return { strategy:STRAT.argue, vocab:vocab,
+      phrases:['I believe '+cl+' …','My first reason is that …','For example, …','Some people disagree and say …','On the other hand, …','Therefore, …'],
+      gaps:['I agree that '+cl+' because ______.','I disagree that '+cl+' because ______.','My strongest reason is ______.','For example, ______.','Although some people think ______ , I still believe ______.'] };
+  }
+  const label=m?m.topic:(k==='puzzle'?'this puzzle':'this question');
+  const lead=(k==='puzzle')?('The tricky part of '+label+' is …'):('My answer is …');
+  return { strategy:STRAT.argue, vocab:vocab,
+    phrases:[lead,'I think this because …','For example, …','One thing to consider is …','On the other hand, …','So, overall, …'],
+    gaps:['My answer to '+label+' is ______.','I think this because ______.','For example, ______.','On the other hand, someone might say ______.','Overall, my view on '+label+' is ______.'] };
 }
 function waspkSupportHTML(vo){
   const d=waspkScaffold(vo);
