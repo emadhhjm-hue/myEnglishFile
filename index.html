@@ -1058,6 +1058,10 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wa-step-h h3{margin:0;font-size:1.25rem}
 .wa-badge{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex:0 0 36px;font-size:1.05rem}
 .wa-hint{color:var(--muted);font-size:.9rem;margin:0 0 12px}
+.wa-scenario{color:var(--slate);font-size:.96rem;line-height:1.6;margin:0 0 10px}
+.wa-qlead{font-weight:600;color:var(--ink);font-size:.9rem;margin:0 0 6px}
+.wa-qs{margin:0 0 12px;padding-left:1.25em}
+.wa-qs li{margin:0 0 7px;color:var(--slate);font-size:.93rem;line-height:1.55}
 .wa-textarea{width:100%;min-height:158px;padding:14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:1.05rem;line-height:1.65;color:var(--ink);background:#fff;resize:vertical}
 .wa-textarea:focus{outline:none;border-color:var(--coral)}
 /* ---- Talkabout scaffolding & library-by-type ---- */
@@ -8514,10 +8518,11 @@ function drawRwdLogo(x, cx, cy, size){
 /* Logo + name, top-left inside the frame.
    No credit line here — it already sits under the teacher's signature, and the long
    version overflowed the left border on narrower certificates. */
-function drawCertBrand(x, left, top, size){
+function drawCertBrand(x, left, top, size, showCaption){
   drawRwdLogo(x, left + size/2, top + size/2, size);
+  if(showCaption===false) return;   // masthead already carries the wordmark
   x.textAlign = 'center';
-  x.fillStyle = '#15183A'; x.font = '800 15px Georgia, serif';
+  x.fillStyle = '#15183A'; x.font = '800 16px Georgia, serif';
   x.fillText('iCAN Academy', left + size/2, top + size + 18);
 }
 
@@ -8764,6 +8769,22 @@ function drawIcanTileWatermark(x, W, H, color){
   for(let yy=92; yy<H-70; yy+=stepY){
     const off=(row%2)*(stepX/2);
     for(let xx=48; xx<W-10; xx+=stepX){ x.save(); x.translate(xx+off, yy); x.rotate(-Math.PI/9); x.fillText("iCAN", 0, 0); x.restore(); }
+    row++;
+  }
+  x.restore(); x.globalAlpha=1;
+}
+/* Talkabout watermark — the word repeated on a diagonal grid, small/medium,
+   covering the whole panel. Used on Speaking / Talkabout certificates in place
+   of a pictorial motif. */
+function drawTalkaboutWatermark(x, W, H, color){
+  x.save();
+  x.beginPath(); x.rect(74,74,W-148,H-148); x.clip();
+  x.globalAlpha=0.05; x.fillStyle=color;
+  x.font="italic 700 30px 'Fraunces',Georgia,serif"; x.textAlign="center"; x.textBaseline="middle";
+  const stepX=250, stepY=78; let row=0;
+  for(let yy=96; yy<H-70; yy+=stepY){
+    const off=(row%2)*(stepX/2);
+    for(let xx=40; xx<W+120; xx+=stepX){ x.save(); x.translate(xx+off, yy); x.rotate(-Math.PI/9); x.fillText("Talkabout", 0, 0); x.restore(); }
     row++;
   }
   x.restore(); x.globalAlpha=1;
@@ -12954,11 +12975,15 @@ function drawEarnedCert(cert){
   x.fillStyle=pal.bg; x.fillRect(0,0,W,H);
   // watermark
   const _isSpeak = /speak|talkabout|shadow/i.test((cert.skill||'')+' '+(cert.activity||''));
-  x.save(); x.translate(W/2,H/2); x.rotate(-Math.PI/9); x.textAlign='center';
-  x.fillStyle=pal.primary; x.globalAlpha=0.05; x.font='900 200px Georgia';
-  if(_isSpeak){ x.fillText('SPEAK',0,-40); x.fillText('UP!',0,150); }
-  else { x.fillText((cert.skill||'READING').toUpperCase(),0,-40); x.fillText('EXCELLENCE',0,150); }
-  x.restore();
+  if(_isSpeak){
+    // Talkabout certificates: a small/medium diagonal "Talkabout" watermark across the whole panel
+    drawTalkaboutWatermark(x, W, H, pal.primary);
+  } else {
+    x.save(); x.translate(W/2,H/2); x.rotate(-Math.PI/9); x.textAlign='center';
+    x.fillStyle=pal.primary; x.globalAlpha=0.05; x.font='900 200px Georgia';
+    x.fillText((cert.skill||'READING').toUpperCase(),0,-40); x.fillText('EXCELLENCE',0,150);
+    x.restore();
+  }
   // activity-specific background art — reading certificates use the faded
   // "story book" illustration; every other skill keeps its drawn motif.
   const _certLabel=(cert.skill||'')+' '+(cert.activity||'');
@@ -12971,7 +12996,9 @@ function drawEarnedCert(cert){
     const dw=iw*sc, dh=ih*sc;
     x.drawImage(IMG_READING_BG, (W-dw)/2, (H-dh)/2, dw, dh);
     x.restore(); x.globalAlpha=1;
-  } else {
+  } else if(!_isSpeak){
+    // every non-speaking skill keeps its drawn motif; Talkabout uses the tiled
+    // "Talkabout" watermark above instead of the microphone motif.
     drawCertMotif(x, W, H, _certLabel, 0.16);
   }
   // double border + corner circles
@@ -12981,18 +13008,20 @@ function drawEarnedCert(cert){
     x.fillStyle=pal.primary; x.beginPath(); x.arc(cx,cy,12,0,7); x.fill();
     x.strokeStyle=pal.gold; x.lineWidth=2; x.beginPath(); x.arc(cx,cy,12,0,7); x.stroke();
   });
-  // iCAN Academy logo + credit, top-left inside the frame
-  drawCertBrand(x, 86, 78, 104);
-  // Header text
-  x.textAlign='center'; x.fillStyle=pal.primary;
-  x.font='600 22px Georgia'; x.fillText('UAE MINISTRY OF EDUCATION', W/2, 110);
-  x.font='800 30px Georgia'; x.fillText((cert.school||'AL-DHANNAH SCHOOL').toUpperCase(), W/2, 152);
+  // iCAN Academy logo — top-left glyph only; the wordmark now leads the masthead
+  drawCertBrand(x, 86, 78, 104, false);
+  // Masthead — iCAN Academy brand, RWD motto, then the school
+  x.textAlign='center';
+  x.fillStyle=pal.primary; x.font='800 38px Georgia'; x.fillText('iCAN Academy', W/2, 112);
+  x.fillStyle=pal.dark; x.font='italic 600 16px Georgia';
+  x.fillText('Multiliteracies RWD Framework \u00b7 where learners belong, where learners grow', W/2, 140);
+  x.fillStyle=pal.primary; x.font='700 22px Georgia'; x.fillText((cert.school||'AL-DHANNAH SCHOOL').toUpperCase(), W/2, 168);
   // gold dot divider
   x.strokeStyle=pal.gold; x.lineWidth=2;
-  x.beginPath(); x.moveTo(W/2-60,168); x.lineTo(W/2-8,168); x.moveTo(W/2+8,168); x.lineTo(W/2+60,168); x.stroke();
-  x.fillStyle=pal.gold; x.beginPath(); x.arc(W/2,168,4,0,7); x.fill();
+  x.beginPath(); x.moveTo(W/2-60,184); x.lineTo(W/2-8,184); x.moveTo(W/2+8,184); x.lineTo(W/2+60,184); x.stroke();
+  x.fillStyle=pal.gold; x.beginPath(); x.arc(W/2,184,4,0,7); x.fill();
   // Circular seal
-  const sX=W/2, sY=248, sR=54;
+  const sX=W/2, sY=258, sR=54;
   x.fillStyle=pal.primary; x.beginPath(); x.arc(sX,sY,sR,0,7); x.fill();
   x.strokeStyle=pal.gold; x.lineWidth=3; x.beginPath(); x.arc(sX,sY,sR+3,0,7); x.stroke();
   x.strokeStyle=pal.gold; x.lineWidth=2; x.beginPath(); x.arc(sX,sY,sR-6,0,7); x.stroke();
@@ -13048,7 +13077,7 @@ function drawEarnedCert(cert){
   // motivational quote
   x.textAlign='center';   /* the work table above draws left-aligned rows */
   x.fillStyle=pal.primary; x.font='italic 500 18px Georgia';
-  x.fillText('A reader today is a leader tomorrow.', W/2, H-258);
+  x.fillText('A reader and writer today, a designer of knowledge tomorrow.', W/2, H-258);
   // awarded on
   x.fillStyle='#666'; x.font='italic 500 14px Georgia'; x.fillText('Awarded on', W/2, H-210);
   x.fillStyle=pal.primary; x.font='700 18px Georgia';
@@ -21960,24 +21989,28 @@ const WASPK_VID_CATS = (function(){
 
 /* ---- Prompt Library data: real photos, puzzles, hot issues, migrated speaking ---- */
 const WASPK_PIC_CAT = { key:'p_pic', name:'Thought-provoking photos', emoji:'🖼️', grad:['#2a86c9','#124e86'], scene:'imagine', prompts:[
-      {id:'pc1', kind:'pic', emoji:'🧭', title:'Which Way?', img:'https://images.unsplash.com/photo-1727302788554-ae905ac91651?w=1200&q=80&auto=format&fit=crop', caption:'A pole crowded with street signs pointing every way.', write:'So many signs point in different directions. Some people say we should follow the well-worn path most others take; others say the right path is the one that feels true to you, even if you walk it alone. Which do you believe, and why? Give reasons and an example.', speak:'Take a side: is it wiser to follow the crowd\u2019s direction, or to choose your own? Argue your view, then answer the strongest objection to it.'},
-      {id:'pc2', kind:'pic', emoji:'🥚', title:'One of Many', img:'https://images.unsplash.com/photo-1686299596388-d3433279ec64?w=1200&q=80&auto=format&fit=crop', caption:'Row upon row of eggs — almost, but not quite, identical.', write:'We are told to \u201cstand out\u201d and \u201cbe different\u201d. But is being different always good? Sometimes fitting in keeps a group strong. Write your view: is standing out overrated, or essential? Support it with reasons and an example.', speak:'Argue one side: is it better to stand out or to fit in? Give your best reason, then admit one point the other side gets right.'},
-      {id:'pc3', kind:'pic', emoji:'🕰️', title:'Time on the Wall', img:'https://images.unsplash.com/photo-1766425500195-bf9b51f34f54?w=1200&q=80&auto=format&fit=crop', caption:'An old clock set into a weathered, painted wall.', write:'We praise people who are \u201cproductive\u201d with every hour. But is a day spent resting, playing or doing nothing wasted \u2014 or is it exactly what a person needs? Write your view, with reasons.', speak:'Take a side: is \u201cwasting time\u201d always bad, or sometimes valuable? Defend your position and answer one objection.'},
-      {id:'pc4', kind:'pic', emoji:'🌲', title:'Forest or Growth?', img:'https://images.unsplash.com/photo-1549279873-30c053a630bc?w=1200&q=80&auto=format&fit=crop', caption:'A vast forest seen from high in the sky.', write:'Imagine this forest sits where a country wants to build homes, roads and jobs. Should the trees be protected, or should people\u2019s need to grow come first? Write your view, weighing both sides honestly.', speak:'Argue one side of the dilemma: protect the forest, or allow development? Give your strongest reason, then the best point against you.'},
-      {id:'pc5', kind:'pic', emoji:'💡', title:'What Is Your Story?', img:'https://images.unsplash.com/photo-1779017581773-498ab0766f97?w=1200&q=80&auto=format&fit=crop', caption:'A glowing sign asks a simple, huge question.', write:'The sign asks: what is your story? Some say we are shaped mostly by where we come from; others say we can rewrite our story by our own choices. Which shapes a person more \u2014 their past, or their choices? Argue your view.', speak:'Take a side: are we made more by our background or by our own decisions? Defend it, then answer the other view fairly.'},
-      {id:'pc6', kind:'pic', emoji:'🎲', title:'Is the Game Rigged?', img:'https://images.unsplash.com/photo-1758923530325-00b4ff765e9e?w=1200&q=80&auto=format&fit=crop', caption:'A street poster makes a bold claim about fairness.', write:'The poster claims the game is rigged. Is success mostly about hard work, or mostly about the luck of where and to whom you were born? Write your view, with reasons and an example.', speak:'Argue one side: does effort or luck matter more for success? Give your best reason, then admit what the other side gets right.'},
-      {id:'pc7', kind:'pic', emoji:'🗑️', title:'Whose Mess Is It?', img:'https://images.unsplash.com/photo-1606920031092-c14461fc4db6?w=1200&q=80&auto=format&fit=crop', caption:'Bags of rubbish piled on a city street.', write:'When you see waste like this, who is really responsible \u2014 ordinary people making small choices, or the big companies and governments that shape those choices? Write your view, with reasons.', speak:'Take a side: should individuals or companies carry most of the blame (and the fix) for waste? Defend it and answer one objection.'},
-      {id:'pc8', kind:'pic', emoji:'🕊️', title:'Hold or Release?', img:'https://images.unsplash.com/photo-1766899920729-07f014702ce8?w=1200&q=80&auto=format&fit=crop', caption:'A bird held in cupped hands beside a cage.', write:'The bird could be kept safe in the cage, or set free to face danger. Is it better to be safe and protected, or free and at risk? Write your view, using the picture as your example.', speak:'Argue one side: safety in the cage, or risky freedom? Give your strongest reason, then the best point against you.'},
-      {id:'pc9', kind:'pic', emoji:'🌅', title:'Better Alone?', img:'https://images.unsplash.com/photo-1509030441537-8af1c02726f7?w=1200&q=80&auto=format&fit=crop', caption:'A person stands alone on a rock at golden hour.', write:'This person is completely alone \u2014 and looks at peace. Some say people do their best thinking and healing in solitude; others say we are made for company and too much time alone harms us. Which is closer to the truth? Argue your view.', speak:'Take a side: is solitude mostly good for us, or mostly lonely? Defend your position and answer one objection.'},
-      {id:'pc10', kind:'pic', emoji:'🏙️', title:'Crowded, Yet Alone', img:'https://images.unsplash.com/photo-1776061427060-3e882d360fb4?w=1200&q=80&auto=format&fit=crop', caption:'One small bird sits high on cold concrete above the city.', write:'A person can be surrounded by millions in a city and still feel completely alone. Do modern cities and phones bring people together, or push them apart? Write your view, with reasons and an example.', speak:'Argue one side: does modern life connect us or isolate us? Give your best reason, then admit what the other side gets right.'},
-      {id:'pc11', kind:'pic', emoji:'☂️', title:'How Much Freedom?', img:'https://images.unsplash.com/photo-1758941808079-fa54b03519de?w=1200&q=80&auto=format&fit=crop', caption:'A child walks alone under an umbrella at night.', write:'A young person walks home alone in the dark. How much freedom should children and teenagers have before an adult should step in? Where is the line between protecting someone and controlling them? Write your view.', speak:'Take a side: do young people today have too much freedom, or too little? Defend it and answer the strongest objection.'},
-      {id:'pc12', kind:'pic', emoji:'🦋', title:'Is All Change Good?', img:'https://images.unsplash.com/photo-1664073204901-e2d9c84d558f?w=1200&q=80&auto=format&fit=crop', caption:'A butterfly rests on a plant, transformed from what it was.', write:'The caterpillar had to give up what it was to become this. We often say \u201cchange is good\u201d \u2014 but is it always? When is it braver to change, and when is it braver to stay the same? Write your view, with an example.', speak:'Argue one side: is change always worth it, or is there value in staying the same? Give your best reason, then the strongest point against you.'},
-      {id:'pc13', kind:'pic', emoji:'🪟', title:'The Self You Show', img:'https://images.unsplash.com/photo-1781520422637-1dee7f6576a8?w=1200&q=80&auto=format&fit=crop', caption:'A person is reflected in a window above the city.', write:'Online, people show a chosen, polished version of themselves. Is presenting a \u201cbest self\u201d to the world simply normal \u2014 or is it a kind of dishonesty? Write your view, with reasons.', speak:'Take a side: is a curated online self harmless self-presentation, or dishonest? Defend it and answer one objection.'},
-      {id:'pc14', kind:'pic', emoji:'🌆', title:'Dream Big or Aim Real?', img:'https://images.unsplash.com/photo-1772026251139-10b856e62955?w=1200&q=80&auto=format&fit=crop', caption:'A person looks out over a wide city skyline.', write:'Looking at a whole city of possibilities, should a young person chase a huge, risky dream \u2014 or set smaller, realistic goals they are likely to reach? Which serves a person better in the long run? Argue your view.', speak:'Take a side: is it wiser to dream big and risk failing, or to aim realistically? Give your best reason, then admit what the other side gets right.'},
-      {id:'pc15', kind:'pic', emoji:'🌉', title:'Leave or Stay?', img:'https://images.unsplash.com/photo-1778537374212-d3f013dcf146?w=1200&q=80&auto=format&fit=crop', caption:'A single figure crosses a bright urban bridge.', write:'To cross the bridge is to leave one side behind. When life offers a big change \u2014 a new city, school or path \u2014 is it braver to leave and start again, or to stay and build where you are? Write your view.', speak:'Argue one side: is it braver to leave or to stay? Give your strongest reason, then the best point against you.'},
-      {id:'pc16', kind:'pic', emoji:'🤳', title:'The Selfie', img:'https://images.unsplash.com/photo-1774298752297-b0c095f5e1dd?w=1200&q=80&auto=format&fit=crop', caption:'A man turns from the view to take a selfie.', write:'He turns away from the real view to capture it on a screen. Do phones and photos help us enjoy and remember life \u2014 or do they steal us from the moment we are trying to keep? Write your view, with an example.', speak:'Take a side: do phones enrich the moment or rob us of it? Defend your position and answer one objection.'}
+      {id:'pc1', kind:'pic', emoji:'🧭', title:'Which Way?', img:'https://images.unsplash.com/photo-1727302788554-ae905ac91651?w=1200&q=80&auto=format&fit=crop', caption:'A pole crowded with street signs pointing every way.', scenario:'High above a busy street, a single metal pole is crowded with dozens of signs, each pointing a different way \u2014 some up, some down, some off into the distance. There is no map and no label to say which one is right. A traveller standing beneath it has to choose a direction with almost nothing to go on.', questions:['Look closely at the signs. What clues in the picture might help someone decide which way to go \u2014 and which signs would you ignore?','The pole gives no \u201ccorrect\u201d answer. When you have many choices and no clear guide, how do you usually decide?','Is it braver to follow the direction most people take, or to choose your own way even if you walk it alone? Use the picture to explain.']},
+      {id:'pc2', kind:'pic', emoji:'🥚', title:'One of Many', img:'https://images.unsplash.com/photo-1686299596388-d3433279ec64?w=1200&q=80&auto=format&fit=crop', caption:'Row upon row of eggs \u2014 almost, but not quite, identical.', scenario:'Row upon row of eggs sit in a tray, almost \u2014 but not quite \u2014 identical. From a distance they look the same; up close, each shell has its own tiny marks, tones and cracks. One egg near the edge sits slightly apart from the rest.', questions:['Look carefully: what small differences can you spot between the eggs that seem \u201call the same\u201d at first glance?','Why do you think the photographer arranged so many similar things together? What feeling does the pattern give you?','In a group \u2014 a class, a team, a family \u2014 when is it better to blend in, and when is it better to stand a little apart, like that one egg?']},
+      {id:'pc3', kind:'pic', emoji:'🕰️', title:'Time on the Wall', img:'https://images.unsplash.com/photo-1766425500195-bf9b51f34f54?w=1200&q=80&auto=format&fit=crop', caption:'An old clock set into a weathered, painted wall.', scenario:'An old clock is set into a cracked, sun-faded wall. The paint has peeled and the surface is worn, yet the hands still move, quietly marking the hours as they have for years. Nothing else in the frame is moving.', questions:['Describe what the worn wall and the still-working clock tell you about how much time has passed here.','The clock keeps going while everything around it ages. What do you think the photographer wants us to feel about time?','We often praise people for using every hour \u201cproductively.\u201d Looking at this quiet scene, can a slow, restful hour ever be time well spent? Why?']},
+      {id:'pc4', kind:'pic', emoji:'🌲', title:'A Forest From Above', img:'https://images.unsplash.com/photo-1549279873-30c053a630bc?w=1200&q=80&auto=format&fit=crop', caption:'A vast forest seen from high in the sky.', scenario:'Seen from high in the sky, a forest stretches to the horizon as an unbroken sea of green, broken only by the thin silver line of a river. From this height you cannot pick out a single tree \u2014 only the whole living system at once.', questions:['What can you notice from this height that you would miss standing among the trees?','Imagine a city wants to build homes and roads where this forest grows. Point to what would be lost \u2014 and what might be gained.','Does seeing something from far above change how much you care about it? Explain using the picture.']},
+      {id:'pc5', kind:'pic', emoji:'💡', title:'What Is Your Story?', img:'https://images.unsplash.com/photo-1779017581773-498ab0766f97?w=1200&q=80&auto=format&fit=crop', caption:'A glowing sign asks a simple, huge question.', scenario:'On a dark street, a bright sign glows with a single question: \u201cWhat is your story?\u201d The light spills onto the pavement below, while the rest of the scene fades into shadow, so the words are almost impossible to ignore.', questions:['Why do you think the artist made these exact words glow so brightly while everything else stays dark?','If you had ten seconds to answer the sign out loud, what would the first sentence of your story be?','Are we shaped more by where we come from, or by the choices we make next? Use the sign to explain your view.']},
+      {id:'pc6', kind:'pic', emoji:'🎲', title:'Is the Game Fair?', img:'https://images.unsplash.com/photo-1758923530325-00b4ff765e9e?w=1200&q=80&auto=format&fit=crop', caption:'A street poster makes a bold claim about fairness.', scenario:'A bold poster is pasted onto a city wall, making a blunt claim about fairness. Torn edges and layers of older posters underneath show it has been fought over. A passer-by has stopped to read it.', questions:['Read the mood of the picture. Who do you imagine put this poster up, and who is meant to see it?','The poster states an opinion as if it were fact. How can you tell the difference between the two when you read something in public?','Is success mostly the result of effort, or of luck \u2014 where and to whom you were born? Argue your view and name the strongest point against it.']},
+      {id:'pc7', kind:'pic', emoji:'🗑️', title:'Whose Mess Is It?', img:'https://images.unsplash.com/photo-1606920031092-c14461fc4db6?w=1200&q=80&auto=format&fit=crop', caption:'Bags of rubbish piled on a city street.', scenario:'Bags of rubbish are piled high on a city pavement, spilling toward the road. People walk past without stopping. It is not clear who left it, who owns it, or who is meant to clear it away.', questions:['Describe the scene. What does the way people walk past tell you about how the mess is being treated?','When you see waste like this, who is really responsible \u2014 the individuals who dropped it, or the systems that let it build up?','What is one small, realistic action that could stop the pile from growing? Point to the picture.']},
+      {id:'pc8', kind:'pic', emoji:'🕊️', title:'Hold or Release?', img:'https://images.unsplash.com/photo-1766899920729-07f014702ce8?w=1200&q=80&auto=format&fit=crop', caption:'A bird held in cupped hands beside a cage.', scenario:'A small bird sits in a pair of cupped hands. Just beside them stands an open cage. In one direction lies safety behind bars; in the other, the risk and freedom of open sky. The hands have not yet decided.', questions:['Look at how the bird is held. Does it seem calm or ready to fly? What in the picture makes you think so?','The cage is safe but closed; the sky is free but dangerous. Which would you choose for the bird, and why?','When is it kinder to protect someone by holding them close, and when is it kinder to let them take a risk? Use the image.']},
+      {id:'pc9', kind:'pic', emoji:'🌅', title:'Better Alone?', img:'https://images.unsplash.com/photo-1509030441537-8af1c02726f7?w=1200&q=80&auto=format&fit=crop', caption:'A person stands alone on a rock at golden hour.', scenario:'A single person stands on a rock at golden hour, facing an empty landscape lit by warm evening light. There is no one else in the frame. Their posture looks calm rather than lonely.', questions:['What in the picture \u2014 the light, the pose, the emptiness \u2014 makes this solitude feel peaceful rather than sad?','When do you do your best thinking: with others, or when you are alone like this person? Explain.','How much time by yourself is healthy, and when does being alone start to cost too much?']},
+      {id:'pc10', kind:'pic', emoji:'🏙️', title:'Crowded, Yet Alone', img:'https://images.unsplash.com/photo-1776061427060-3e882d360fb4?w=1200&q=80&auto=format&fit=crop', caption:'One small bird sits high on cold concrete above the city.', scenario:'A single small bird perches high on a slab of cold grey concrete, far above a huge, busy city stretching out below. Millions of people move somewhere beneath it, yet up here the bird is completely alone.', questions:['Contrast the top and bottom of the picture. How does the photographer make one small bird feel so alone above such a crowded place?','Have you ever felt like that bird \u2014 surrounded by people but still alone? What causes that feeling?','Do phones and big cities bring people closer together, or push them apart? Point to the picture to support your answer.']},
+      {id:'pc11', kind:'pic', emoji:'☂️', title:'How Much Freedom?', img:'https://images.unsplash.com/photo-1758941808079-fa54b03519de?w=1200&q=80&auto=format&fit=crop', caption:'A child walks alone under an umbrella at night.', scenario:'A young child walks alone under an umbrella on a wet street at night. Streetlights blur in the rain and no adult is in sight. The child looks small against the dark road ahead.', questions:['What details \u2014 the dark, the rain, the size of the child \u2014 make this picture feel tense or safe to you? Explain.','How much freedom should young people have to be out on their own, and what should decide the limit?','Where is the line between protecting someone and controlling them? Use the child in the picture as your example.']},
+      {id:'pc12', kind:'pic', emoji:'🦋', title:'Is All Change Good?', img:'https://images.unsplash.com/photo-1664073204901-e2d9c84d558f?w=1200&q=80&auto=format&fit=crop', caption:'A butterfly rests on a plant, transformed from what it was.', scenario:'A butterfly rests on a leaf, its wings fully open. Not long ago it was a caterpillar; to become this, it had to give up completely what it was before. The old form is gone for good.', questions:['Looking at the butterfly, what does the picture suggest about what change costs as well as what it gives?','We often say \u201cchange is good.\u201d Is it always? When is it braver to change, and when is it braver to stay the same?','Describe a change you have gone through where, like the caterpillar, you could not go back. Was it worth it?']},
+      {id:'pc13', kind:'pic', emoji:'🪟', title:'The Self You Show', img:'https://images.unsplash.com/photo-1781520422637-1dee7f6576a8?w=1200&q=80&auto=format&fit=crop', caption:'A person is reflected in a window above the city.', scenario:'A person stands at a high window, their reflection layered over the glowing city outside. Two versions appear at once \u2014 the real person, and the faint image reflected back. It is hard to tell which one you are really looking at.', questions:['The picture shows a person and their reflection together. Which \u201cself\u201d does the camera make you look at first, and why?','Online, people show a chosen, polished version of themselves. Is that simply normal, or a kind of dishonesty?','How different is the \u201cyou\u201d that others see from the \u201cyou\u201d that you know? Use the double image to explain.']},
+      {id:'pc14', kind:'pic', emoji:'🌆', title:'Dream Big or Aim Real?', img:'https://images.unsplash.com/photo-1772026251139-10b856e62955?w=1200&q=80&auto=format&fit=crop', caption:'A person looks out over a wide city skyline.', scenario:'A person stands looking out over a vast city skyline stretching into the distance. Countless lit windows suggest countless possible lives and paths. The whole horizon is open in front of them.', questions:['What does the huge, open view in the picture make you imagine about this person\u2019s future?','Should a young person chase one huge, risky dream, or set smaller goals they are likely to reach? Argue your side.','Which serves a person better in the long run \u2014 aiming high and maybe failing, or aiming safely and succeeding? Use the image.']},
+      {id:'pc15', kind:'pic', emoji:'🌉', title:'Leave or Stay?', img:'https://images.unsplash.com/photo-1778537374212-d3f013dcf146?w=1200&q=80&auto=format&fit=crop', caption:'A single figure crosses a bright urban bridge.', scenario:'A single figure crosses a long, brightly lit bridge, halfway between the side they came from and the side ahead. Behind them is the familiar; in front, the unknown. To keep walking is to leave one bank behind.', questions:['The person is caught in the middle of the bridge. What does that in-between position make you feel about their decision?','When life offers a big change \u2014 a new city, school or path \u2014 is it braver to cross over, or to stay and build where you are?','What would you need to see on the far side before deciding to keep crossing? Explain using the picture.']},
+      {id:'pc16', kind:'pic', emoji:'🤳', title:'The Selfie', img:'https://images.unsplash.com/photo-1774298752297-b0c095f5e1dd?w=1200&q=80&auto=format&fit=crop', caption:'A man turns from the view to take a selfie.', scenario:'On a beautiful viewpoint, a man turns his back on the real scenery to take a selfie of himself in front of it. Behind him the view is stunning; his eyes, though, are on the screen. The moment is being captured rather than watched.', questions:['Look at where the man is facing. What is he missing, and what is he trying to keep, by turning away from the view?','Do photos help us enjoy and remember a moment, or do they steal us from the moment we are trying to keep?','When is it worth putting the camera down, and when is a photo worth taking? Use this picture to decide.']},
+      {id:'pc17', kind:'pic', emoji:'🪑', title:'The Empty Chair', img:null, caption:'A single empty chair facing a wide window.', scenario:'A single empty chair sits facing a wide window, angled as if someone has only just stood up and walked away. Soft light falls across the seat. The room is quiet, and the chair seems to be waiting.', questions:['Who do you imagine usually sits in this chair, and where have they gone? What in the scene makes you think so?','An empty chair can feel peaceful or sad. Which does this one feel like to you, and why?','Is a quiet, empty space something to enjoy, or something to fill? Explain your view.']},
+      {id:'pc18', kind:'pic', emoji:'🚪', title:'The Closed Door', img:null, caption:'A heavy old door, firmly shut.', scenario:'A heavy old door stands firmly shut at the end of a passage. Its handle is worn from years of use, but right now it will not open, and you cannot see what is on the other side.', questions:['From the door alone, what do you imagine lies behind it \u2014 and why?','Some closed doors protect us; some hold us back. How can you tell the difference before you try to open one?','Describe a \u201cdoor\u201d in your own life that is closed right now. Do you want it open, and what would opening it cost?']},
+      {id:'pc19', kind:'pic', emoji:'🕯️', title:'One Small Light', img:null, caption:'A single light glowing in the dark.', scenario:'In a wide stretch of darkness, a single small light glows steadily. It does not fill the whole space, but it is enough to see by, and everything near it takes shape. The dark around it feels less empty because the light is there.', questions:['What does the one small light let you notice that the darkness hides? Describe it.','Sometimes one person, idea or kind act is the \u201cone small light\u201d for others. Who or what has been that for you?','Is a small light in great darkness a sign of hope, or a reminder of how much dark remains? Argue your view.']},
+      {id:'pc20', kind:'pic', emoji:'🛤️', title:'The Two Paths', img:null, caption:'A path splitting into two directions.', scenario:'A single path reaches a fork and splits into two. One way looks worn and easy; the other is narrow and overgrown, disappearing quickly from view. A traveller has stopped exactly where the two divide.', questions:['Compare the two paths in the scene. What does each one seem to promise, and what does each one hide?','When you face a choice between the easy, familiar way and the harder, unknown one, how do you decide?','Is the \u201cright\u201d path always the harder one? Use the fork in the scene to explain your answer.']}
     ]};
-
+WASPK_PIC_CAT.prompts.forEach(function(p){ if(!p.write) p.write=p.scenario||''; if(!p.speak) p.speak='Look at the picture and talk it through out loud: describe what you see, then answer the questions, giving reasons and an example.'; });
 const WASPK_PUZZLE_CAT = { key:'p_puz', name:'Puzzles to ponder', emoji:'🧩', grad:['#0FA98B','#0b6e5c'], scene:'imagine', prompts:[
       {id:'pz1', kind:'puzzle', emoji:'🧩', title:'Uninvent One Thing', statement:'If you could uninvent one thing in the world, what would it be — and why?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
       {id:'pz2', kind:'puzzle', emoji:'⏳', title:'One Extra Hour', statement:'You are given one extra hour every day that no one else has. What do you do with it?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
@@ -22199,8 +22232,7 @@ const WASPK_TED = (function(){
     mk('ted1','🎩','Can you solve the prisoner hat riddle?','https://www.youtube.com/watch?v=N5vJSNXPEwA','Ten prisoners, black or white hats, one shared chance to go free.'),
     mk('ted2','🌉','Can you solve the bridge riddle?','https://www.youtube.com/watch?v=7yDmGnA8Hw0','Four survivors, one lantern, a rickety bridge — and zombies closing in.'),
     mk('ted3','👁️','Can you solve the green-eyed logic puzzle?','https://www.youtube.com/watch?v=98TQv5IAtY8','A hundred logicians must reason their own way off an island.'),
-    mk('ted4','🧪','Can you solve the virus riddle?','https://www.youtube.com/watch?v=ZKh6z0X6KRw','A deadly virus is loose in the lab — can you seal it in before it escapes?'),
-    mk('ted5','🗿','Can you solve the three gods riddle?','https://www.youtube.com/watch?v=LKvjIsyYng8','Three gods, three questions — called the hardest logic puzzle ever made.')
+    mk('ted4','🧪','Can you solve the virus riddle?','https://www.youtube.com/watch?v=ZKh6z0X6KRw','A deadly virus is loose in the lab — can you seal it in before it escapes?')
   ];
 })();
 WASPK_TED.forEach(p => { WASPK_INDEX[p.id] = { p:p, c:WASPK_TED_CAT }; });
@@ -22309,6 +22341,31 @@ function waspkTileVisual(vo){
 function waspkYTId(u){ if(!u) return ''; try{ const m=String(u).match(/(?:youtube\.com\/(?:shorts\/|watch\?v=|embed\/|v\/)|youtu\.be\/)([A-Za-z0-9_-]{6,})/); return m?m[1]:''; }catch(e){ return ''; } }
 function waspkYTEmbed(u){ const id=waspkYTId(u); return id?('https://www.youtube-nocookie.com/embed/'+id+'?rel=0&modestbranding=1&playsinline=1'):''; }
 function waspkYTThumb(u){ const id=waspkYTId(u); return id?('https://img.youtube.com/vi/'+id+'/hqdefault.jpg'):''; }
+
+/* ---- Bring-your-own TED-Ed video: paste a link, run the standard flow --- */
+const WASPK_TED_PLAYLISTS = 'https://www.youtube.com/@TEDEd/playlists';
+const WASPK_TED_WRITE = 'Watch your TED-Ed video once, pausing whenever you need to. In your own words, write about it: What is it mainly about? What are two or three key ideas or facts you learned? What surprised you or made you think — and why? Finish with one question the video left you wanting to explore.';
+const WASPK_TED_SPEAK = 'Now teach it back out loud, as if you were explaining the video to a friend who has not seen it: say what it was about, walk through the main ideas in your own words, then give your opinion and your question.';
+/* Live thumbnail preview under the paste box. */
+function waspkTedThumb(){
+  const inp=document.getElementById('waspkTedUrl'), prev=document.getElementById('waspkTedPrev'), msg=document.getElementById('waspkTedMsg');
+  if(!inp||!prev) return;
+  const u=(inp.value||'').trim(), id=waspkYTId(u);
+  if(id){
+    prev.style.display=''; prev.innerHTML='<img src="'+waspkYTThumb(u)+'" alt="video preview" style="width:170px;max-width:46%;border-radius:10px;vertical-align:middle;box-shadow:0 2px 8px rgba(0,0,0,.15)"> <span style="color:var(--muted);font-size:.86rem">Looks good — press <b>Watch &amp; write</b>.</span>';
+    if(msg){ msg.textContent=''; }
+  } else { prev.style.display='none'; prev.innerHTML=''; }
+}
+/* Build a video prompt from the pasted link and jump straight into Window 1. */
+function waspkStartTed(){
+  const inp=document.getElementById('waspkTedUrl'), msg=document.getElementById('waspkTedMsg');
+  const u=(inp&&inp.value||'').trim(), id=waspkYTId(u);
+  if(!id){ if(msg){ msg.textContent='Paste a full video link — it should look like https://www.youtube.com/watch?v=…'; msg.style.color='var(--muted)'; } if(inp){ inp.focus(); } return; }
+  WASPK_CUSTOM = { __custom:true, kind:'video', youtube:u, emoji:'💡',
+    title:'My TED-Ed Writeabout', caption:'A TED-Ed short I chose — watch it, write about it, then publish.',
+    write:WASPK_TED_WRITE, speak:WASPK_TED_SPEAK };
+  go('waspkDo','custom');
+}
 
 /* After render, hydrate any teacher video from IndexedDB. */
 function waspkHydrateVideo(vo){
@@ -22568,6 +22625,23 @@ ROUTES.waspkWatch = function(){
     <p style="color:var(--muted);margin:0 0 10px;max-width:680px">Each one plays here on the hub. Watch once, pause when it asks, then start your Writeabout — the same three windows as every prompt. Tap a title to see it, then press <b>Watch &amp; write</b>.</p>
     <div class="wa-barlist">${tedBars}</div>
 
+    <div class="wa-tedbyo" style="margin:16px 0 4px;border:1px solid var(--line);border-radius:14px;padding:15px 16px;background:linear-gradient(180deg,rgba(139,92,246,.06),rgba(91,141,239,.05))">
+      <div style="display:flex;gap:11px;align-items:flex-start">
+        <span style="font-size:1.6rem;line-height:1">🎞️</span>
+        <div>
+          <b style="color:var(--ink);font-size:1.05rem">Bring your own TED-Ed video</b>
+          <p style="margin:3px 0 0;color:var(--muted);font-size:.9rem;max-width:620px">Pick any short from TED-Ed, paste its link, and it runs the very same route — <b>Watch → Writeabout → Publish</b> — with a 10-minute Writeabout, a Speak window, and a certificate at the end.</p>
+        </div>
+      </div>
+      <a class="wl-yt" target="_blank" rel="noopener" href="${WASPK_TED_PLAYLISTS}" style="display:inline-flex;align-items:center;gap:6px;margin:11px 0 10px;font-weight:700;text-decoration:none">📚 Browse all TED-Ed playlists ↗</a>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+        <input id="waspkTedUrl" type="url" inputmode="url" autocomplete="off" placeholder="Paste a TED-Ed / YouTube link… e.g. https://www.youtube.com/watch?v=…" oninput="waspkTedThumb()" style="flex:1;min-width:230px;padding:11px 13px;border:1px solid var(--line);border-radius:10px;font-size:.95rem">
+        <button type="button" class="wa-bar-go" style="--bar:#7A2FD0;white-space:nowrap" onclick="waspkStartTed()">▶ Watch &amp; write →</button>
+      </div>
+      <div id="waspkTedPrev" style="display:none;margin-top:10px"></div>
+      <div class="wa-status" id="waspkTedMsg" style="margin-top:6px"></div>
+    </div>
+
     <div class="wl-how" style="margin-top:16px">
       <div class="wl-howcard"><span>🎧</span><div><b>Shadowing</b><p>Play a short clip, pause, and repeat it at once — copy the speaker's rhythm, stress and melody, not just the words.</p></div></div>
       <div class="wl-howcard"><span>🎙️</span><div><b>Self-recording</b><p>Record a one-minute monologue on any prompt, then listen back to catch pronunciation quirks and track your progress.</p></div></div>
@@ -22577,9 +22651,17 @@ ROUTES.waspkWatch = function(){
     <p style="color:var(--muted);margin:0 0 10px;max-width:640px">High-frequency spoken phrases — clear feeling, simple grammar, useful every day. <b>Tap one to hear it aloud</b>, then pause and repeat, copying the rhythm and melody.</p>
     ${shadowChips}
 
+    <div class="wa-cathead"><span class="ce">💬</span><h2>Everyday Idioms <span style="font-weight:500;font-size:.8rem;color:var(--muted)">· say what fluent speakers say</span></h2></div>
+    <p style="color:var(--muted);margin:0 0 10px;max-width:680px">Idioms are fixed everyday phrases whose meaning is not literal. <b>Tap 🔊 to hear one aloud</b>, learn what it means, then try slipping it into your Talkabout or a sentence of your own.</p>
+    ${(function(){ const its=(typeof SPELL_ENRICH!=='undefined'&&SPELL_ENRICH.phrase)?SPELL_ENRICH.phrase:[]; return '<div class="wl-grid">'+its.map(it=>`<div class="wl-link wl-noembed" style="--bar:#8B5CF6;cursor:default"><b>💬 ${esc(it.t)} <button type="button" onclick="waspkSay('${escq(it.t)}')" title="Hear it aloud" style="border:none;background:transparent;cursor:pointer;font-size:1rem;padding:0 2px;color:inherit">🔊</button></b><span>${esc(it.def||'')}${it.ex?` &nbsp;<i style="color:var(--muted)">\u2014 \u201c${esc(it.ex)}\u201d</i>`:''}</span></div>`).join('')+'</div>'; })()}
+
     <div class="wa-cathead"><span class="ce">🎧</span><h2>Practise shadowing online <span style="font-weight:500;font-size:.8rem;color:var(--muted)">· trusted sites &amp; channels</span></h2></div>
     <p style="color:var(--muted);margin:0 0 8px;max-width:680px">Hear real speakers say a phrase, then pause and copy them. Links open in a new tab — keep <b>Restricted Mode / SafeSearch</b> on, and ask an adult if you are unsure.</p>
     ${shadowResLinks}
+
+    <div class="wa-cathead"><span class="ce">📖</span><h2>Learn English through stories <span style="font-weight:500;font-size:.8rem;color:var(--muted)">· shadowing, vocabulary &amp; conversation</span></h2></div>
+    <p style="color:var(--muted);margin:0 0 8px;max-width:680px">Follow along with short stories: <b>listen and shadow</b> the narrator to copy natural rhythm, pick up <b>new vocabulary</b> in context, then <b>use it in conversation</b>. Opens in a new tab — keep Restricted Mode / SafeSearch on.</p>
+    <div class="wl-grid"><a class="wl-link" style="--bar:#E6464B;text-decoration:none" target="_blank" rel="noopener" href="https://www.youtube.com/@EnglishNatively"><b>📖 English Natively (YouTube) \u2197</b><span>Learn English through stories with shadowing, vocabulary and conversation — listen to a whole story, repeat it line by line, and grow your everyday English.</span></a></div>
 
     <div class="wa-cathead"><span class="ce">🍿</span><h2>Recommended films <span style="font-weight:500;font-size:.8rem;color:var(--muted)">· extra resources</span></h2></div>
     <p style="color:var(--muted);margin:0 0 6px;max-width:680px">A short, hand-picked list, grouped by who each film suits. Watch with English subtitles first to link sound to spelling, then again without them to test your listening. Where a trailer is on YouTube, tap the link.</p>
@@ -22617,6 +22699,23 @@ function waspkProgress(active){
   return `<div class="wa-progress">${items.map((it,i)=>{ const nn=i+1; const cls=nn<active?'dot done':(nn===active?'dot on':'dot'); return `<span class="${cls}"></span><span class="lab" style="${nn===active?'color:var(--ink)':''}">${it[1]}</span>${i<2?'<span style="color:var(--line)">·····</span>':''}`; }).join('')}</div>`;
 }
 
+/* Prompt body: for picture prompts with a scenario + questions, show a scenario
+   paragraph and a numbered list of picture-focused questions (Kids-Think-Wide
+   style); otherwise fall back to the plain write/speak line. */
+function waspkPromptBody(p, mode){
+  if(p && p.scenario && p.questions && p.questions.length){
+    const lead = mode==='speak'
+      ? 'Look at the picture, then talk it through out loud \u2014 first describe what you see, then answer:'
+      : 'Read the scenario, study the picture, then write your response to these questions:';
+    return `<p class="wa-scenario">${esc(p.scenario)}</p>`
+      + `<p class="wa-qlead">${esc(lead)}</p>`
+      + `<ol class="wa-qs">${p.questions.map(q=>`<li>${esc(q)}</li>`).join('')}</ol>`;
+  }
+  const fb  = mode==='speak' ? (p&&p.speak) : (p&&p.write);
+  const def = mode==='speak' ? 'Say your ideas out loud in your own words.'
+                             : 'Look at the prompt. Write freely about what you see, think and imagine.';
+  return `<p class="wa-hint">${esc(fb||def)}</p>`;
+}
 /* --- WINDOW 1: Write About This (10-min countdown) --- */
 function waspkStepWrite(){
   const vo=WASPK_CUR.vo, p=WASPK_CUR.prompt;
@@ -22630,7 +22729,7 @@ function waspkStepWrite(){
       ${waspkVisual(vo,true)}
       <div class="wa-step" id="waspkWriteCard">
         <div class="wa-step-h"><span class="wa-badge" style="background:#e6608a">1</span><h3>✍️ Writeabout</h3></div>
-        <p class="wa-hint">${esc(p.write||'Look at the prompt. Write freely about what you see, think and imagine.')}</p>
+        ${waspkPromptBody(p,'write')}
         <div class="wa-modebar">
           <button type="button" data-m="free" onclick="waspkSetWriteMode('free')">✍️ Write My Own<small>A blank page — just write</small></button>
           <button type="button" data-m="support" onclick="waspkSetWriteMode('support')">🧩 Need Support<small>Words, phrases &amp; a plan</small></button>
@@ -22675,7 +22774,7 @@ function waspkStepSpeak(){
       ${waspkVisual(vo,true)}
       <div class="wa-step">
         <div class="wa-step-h"><span class="wa-badge" style="background:#0FA98B">2</span><h3>🎤 Speak About It</h3></div>
-        <p class="wa-hint">${esc(p.speak||'Say your ideas out loud in your own words.')}</p>
+        ${waspkPromptBody(p,'speak')}
         ${WASPK_CUR.write?`<details style="margin-bottom:10px"><summary style="cursor:pointer;color:var(--teal-dk);font-weight:600">📄 Peek at what I wrote</summary><div style="white-space:pre-wrap;background:#fbfaf6;border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:8px;line-height:1.6">${esc(WASPK_CUR.write)}</div></details>`:''}
         <details class="wa-help" open>
           <summary>🗣️ Sentence helpers <span>— stuck for words? tap a line to hear it, then say it your way</span></summary>
@@ -23241,6 +23340,11 @@ function waspkBuilderHTML(pfx, d, opt){
           <div class="di">🎬</div><b style="color:var(--ink)">Tap to add a short video</b><div style="font-size:.85rem;color:var(--muted);margin-top:4px">A short clip works best (kept on this device)</div>
         </div>
         <input type="file" id="${pfx}vfile" accept="video/*" capture="environment" style="display:none" onchange="waspkPickVideo('${pfx}',this)">
+        <div style="text-align:center;color:var(--muted);font-size:.85rem;margin:10px 0 4px">— or paste a link —</div>
+        <label style="font-weight:700;display:block;margin:6px 0 4px">Video link <span style="font-weight:500;color:var(--muted)">(YouTube / TED-Ed — plays right on the hub)</span></label>
+        <input id="${pfx}youtube" value="${esc(d.youtube||'')}" placeholder="https://www.youtube.com/watch?v=…" style="width:100%" oninput="waspkBuilderYT('${pfx}')">
+        <a class="wl-yt" target="_blank" rel="noopener" href="https://www.youtube.com/@TEDEd/playlists" style="display:inline-block;margin:8px 0;font-weight:700;text-decoration:none">📚 Browse TED-Ed playlists ↗</a>
+        <div id="${pfx}ytprev" style="margin-top:4px"></div>
       </div>
       <div id="${pfx}stWrap" style="display:none">
         <label style="font-weight:700;display:block;margin:6px 0">The statement</label>
@@ -23278,7 +23382,14 @@ function waspkPickVideo(pfx,input){ const f=input.files&&input.files[0]; if(!f) 
   waspkPutBlob(key,f).then(ok=>{ if(ok){ WASPK_BUILD[pfx].videoKey=key; const drop=document.getElementById(pfx+'vdrop'); if(drop){ const url=URL.createObjectURL(f); drop.innerHTML='<video src="'+url+'" controls playsinline style="max-width:100%;border-radius:12px;max-height:280px"></video>'; } if(msg) msg.textContent='✓ Video added ('+Math.round(f.size/1024)+' KB).'; } else { if(msg) msg.textContent='Could not store the video (it may be too large). Try a shorter clip.'; } });
 }
 function waspkBuilderRead(pfx){ const b=WASPK_BUILD[pfx]||{kind:'pic'}; const g=id=>{ const e=document.getElementById(pfx+id); return e?e.value.trim():''; };
-  return { __custom:true, kind:b.kind||'pic', img:b.img||null, videoKey:b.videoKey||null, statement:g('statement'), title:g('title'), caption:g('caption'), write:g('write'), speak:g('speak') };
+  const yt = (b.kind==='video') ? (g('youtube')||null) : null;
+  return { __custom:true, kind:b.kind||'pic', img:b.img||null, videoKey:b.videoKey||null, youtube:yt, statement:g('statement'), title:g('title'), caption:g('caption'), write:g('write'), speak:g('speak') };
+}
+/* Live thumbnail for a pasted link inside the builder. */
+function waspkBuilderYT(pfx){
+  const inp=document.getElementById(pfx+'youtube'), prev=document.getElementById(pfx+'ytprev'); if(!inp||!prev) return;
+  const id=waspkYTId((inp.value||'').trim());
+  prev.innerHTML = id ? '<img src="'+waspkYTThumb((inp.value||'').trim())+'" alt="video preview" style="width:170px;max-width:46%;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.15)"> <span style="color:var(--muted);font-size:.85rem">✓ This video will play on the hub.</span>' : '';
 }
 
 /* ---- Printable quick page ---- */
