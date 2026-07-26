@@ -1105,8 +1105,30 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .rl-lbl{margin:10px 0 6px;font-size:.8rem;font-weight:700;color:var(--ink)}
 .rl-lbl span{font-weight:500;color:var(--muted)}
 .wl-phrs{display:flex;flex-wrap:wrap;gap:6px}
-.wl-phr{display:inline-block;border:1px solid var(--line);background:#fbfaf6;border-radius:999px;padding:5px 11px;font-size:.83rem;color:var(--ink);text-decoration:none;transition:.12s}
+.wl-phr{display:inline-block;border:1px solid var(--line);background:#fbfaf6;border-radius:999px;padding:5px 11px;font-size:.83rem;color:var(--ink);text-decoration:none;cursor:pointer;font-family:inherit;transition:.12s}
 .wl-phr:hover{border-color:var(--teal);background:#f2fbf8;color:var(--teal-dk)}
+/* two-register dialogue */
+.di-legend{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 16px;margin:12px 0 4px}
+.di-legend>b{color:var(--ink)}
+.di-legend p{margin:5px 0 0;font-size:.86rem;color:var(--muted);line-height:1.5}
+.di-wrap{border:1px solid var(--line);border-radius:12px;background:#fcfbf9;padding:10px 12px;margin:10px 0 10px}
+.di-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.di-tabs{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+.di-tab{border:none;background:#fff;padding:5px 12px;font-size:.82rem;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit}
+.di-tab.on{background:var(--bar,#E08A2B);color:#fff}
+.di-play{border:1px solid var(--line);background:#fff;border-radius:999px;padding:5px 11px;font-size:.78rem;font-weight:700;color:var(--bar,#E08A2B);cursor:pointer;font-family:inherit}
+.di-play:hover{filter:brightness(.98)}
+.di-line{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.di-line:last-child{border-bottom:none}
+.di-who{flex:none;min-width:74px;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.03em;padding-top:2px}
+.di-a .di-who{color:#b5561a}
+.di-b .di-who{color:#2b5fa6}
+.di-txt{flex:1;font-size:.92rem;color:var(--ink);line-height:1.4}
+.di-say{flex:none;border:none;background:transparent;cursor:pointer;font-size:.95rem;opacity:.7;padding:0 2px}
+.di-say:hover{opacity:1}
+.di-hint{margin:8px 0 0;font-size:.78rem;color:var(--muted);line-height:1.45}
+.di-hint b{color:var(--ink)}
+.di-drop{width:100%;border:1px solid var(--line);border-radius:10px;padding:9px 12px;font-size:.88rem;font-family:inherit;background:#fff;color:var(--ink);margin-bottom:10px;cursor:pointer}
 .rl-go{margin-top:12px;align-self:flex-start;background:var(--bar,#E08A2B);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-weight:700;cursor:pointer;font-size:.9rem}
 .rl-go:hover{filter:brightness(1.06)}
 .wl-lvlhead{font-weight:800;color:var(--ink);margin:16px 0 8px;padding-left:10px;border-left:5px solid var(--bar,#2B5FA6);font-size:1.02rem}
@@ -1117,6 +1139,13 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wl-link span{color:var(--muted);font-size:.82rem;line-height:1.4}
 .wl-flag{color:#b23c2b;font-size:.76rem;font-style:normal;font-weight:600}
 .wl-cta{color:var(--bar,#2B5FA6)!important;font-weight:700;font-size:.8rem!important;margin-top:2px}
+.wl-embed{margin-top:9px;display:flex;flex-direction:column;gap:6px}
+.wl-play{align-self:flex-start;background:var(--bar,#2B5FA6);color:#fff;border:none;border-radius:9px;padding:7px 14px;font-weight:700;cursor:pointer;font-size:.82rem}
+.wl-play:hover{filter:brightness(1.06)}
+.wl-embed-links{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.wl-yt{color:var(--bar,#2B5FA6);font-weight:700;font-size:.78rem;text-decoration:none}
+.wl-yt:hover{text-decoration:underline}
+.wl-noembed{opacity:.9}
 .wl-foot{color:var(--muted);font-size:.8rem;margin:18px 0 4px}
 .wa-modebar{display:flex;gap:8px;margin:2px 0 12px}
 .wa-modebar button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px 8px;font-weight:700;cursor:pointer;color:var(--slate);display:flex;flex-direction:column;gap:2px;align-items:center;font-size:.92rem}
@@ -21990,19 +22019,112 @@ WASPK_CATS.forEach(c => c.prompts.forEach(p => { WASPK_INDEX[p.id] = { p:p, c:c 
 const WASPK_REAL_CAT = { key:'p_real', name:'Real-Life Talk', emoji:'🎭', grad:['#E08A2B','#b5561a'], scene:'imagine' };
 const WA_RW='Quick prep (2 min): jot 4–5 phrases you will need — a greeting, your main request, one question to ask, and a polite closing. Note one thing that might go wrong, and how you would handle it.';
 const WA_RS='Act it out for 1–2 minutes. Play your role — and the other person too, if you are on your own. Speak clearly, stay polite, and keep going until you reach your goal. Record it and listen back.';
+const WASPK_REAL_GROUPS = [
+  {key:'eat',    label:'Eating out',        emoji:'🍽️', tint:'#E08A2B'},
+  {key:'shop',   label:'Shopping & money',  emoji:'🛍️', tint:'#E6608A'},
+  {key:'move',   label:'Getting around',    emoji:'🧭', tint:'#2B5FA6'},
+  {key:'health', label:'Health & help',     emoji:'🩺', tint:'#0FA98B'},
+  {key:'work',   label:'Work & study',      emoji:'💼', tint:'#8B5CF6'},
+  {key:'social', label:'Social & everyday', emoji:'🤝', tint:'#E6464B'}
+];
 const WASPK_REAL = [
-  {id:'real_cafe', emoji:'🍽️', title:'Ordering at a Café', role:"You're the customer; a partner (or you) plays the waiter.", goal:'Order a drink and a meal, ask one question about the menu, and handle a dish being sold out.', useful:['Could I see the menu, please?','What do you recommend?',"I'll have the …, please.",'Could I get the bill, please?'], statement:'You are at a café, ready to order. Greet the waiter, ask about one dish, order your food and drink, then politely deal with your first choice being sold out.'},
-  {id:'real_interview', emoji:'🧑‍💼', title:'A Job Interview', role:"You're the candidate; a partner is the interviewer.", goal:'Introduce yourself, answer three common questions, and ask one question of your own.', useful:['Thank you for having me.','My strongest skill is …','One example of that is …','Could you tell me more about …?'], statement:"You are in an interview for a part-time job you'd love. Introduce yourself in two sentences, then answer: 'Tell me about yourself', 'What is your greatest strength?' and 'Why should we choose you?' — and finish by asking the interviewer one question."},
-  {id:'real_return', emoji:'🛍️', title:'Returning an Item', role:"You're the customer; a partner is the shop assistant.", goal:'Explain the problem, ask for a refund or exchange, and stay polite if they say no at first.', useful:["I'd like to return this, please.","It doesn't fit / It's faulty.",'Could I exchange it instead?','I understand, but could you help me?'], statement:'You bought something that is the wrong size or faulty. Explain the problem to the assistant, ask for an exchange or refund, and stay polite when they first say it cannot be returned.'},
-  {id:'real_directions', emoji:'🧭', title:'Asking for Directions', role:"You're lost; a partner is a helpful stranger.", goal:'Ask the way, understand the directions, and repeat them back to check.', useful:['Excuse me, how do I get to …?','Is it far from here?','So I go straight, then turn left?','Thank you so much for your help.'], statement:'You are lost in a new city and need to reach the bus station. Stop a stranger politely, ask the way, listen to the directions, then repeat them back to make sure you understood.'},
-  {id:'real_doctor', emoji:'🩺', title:'At the Doctor', role:"You're the patient; a partner is the doctor.", goal:'Describe your symptoms clearly, answer questions, and understand the advice.', useful:["I've had a … for two days.",'It hurts when I …','How often should I take this?',"Should I come back if it doesn't improve?"], statement:"You don't feel well. Tell the doctor your symptoms, answer their questions about when it started and how bad it is, and make sure you understand the advice before you leave."},
-  {id:'real_phone', emoji:'📞', title:'Making a Phone Call', role:"You're calling; a partner answers.", goal:'Introduce yourself, make your booking, and confirm the details.', useful:['Hello, this is … speaking.',"I'm calling to …",'Could I book a table for four?','Let me confirm: … , is that right?'], statement:'Call a restaurant to book a table for Friday evening. Introduce yourself, say what you need, give the day, time and number of people, then repeat the details back to confirm.'},
-  {id:'real_meet', emoji:'🤝', title:'Meeting Someone New', role:'You and a partner are meeting for the first time.', goal:'Introduce yourself, make small talk, and find one thing in common.', useful:["Hi, I'm … . Nice to meet you.",'Where are you from?','What do you like doing?','Oh, me too!'], statement:"You've just met a new classmate or colleague. Introduce yourself, ask two friendly questions, share something about yourself, and find one thing you both have in common."},
-  {id:'real_complaint', emoji:'🗣️', title:'A Polite Complaint', role:"You're the guest; a partner is staff.", goal:"Raise a problem calmly, say what you'd like done, and thank them.", useful:['Excuse me, there seems to be a problem.',"This isn't what I ordered.",'Would it be possible to …?','Thank you for sorting that out.'], statement:'Your food arrived cold, or your room is not ready. Explain the problem to the staff calmly and politely, say clearly what you would like them to do, and keep a friendly tone throughout.'},
-  {id:'real_problem', emoji:'🆘', title:'Solving a Problem Together', role:'You and a partner disagree on a plan.', goal:'Explain your view, listen to theirs, and agree on a fair solution.', useful:["Here's what I think we should do.",'I see your point, but …','What if we …?',"So we're agreed, then?"], statement:'You and a friend are planning a day out but want different things. Explain your idea, listen to theirs, suggest a compromise, and agree together on a plan that works for you both.'},
-  {id:'real_qa', emoji:'🎓', title:'Handling Q&A After a Talk', role:'You just gave a short talk; a partner asks questions.', goal:"Answer clearly, admit if you're unsure, and stay calm under pressure.", useful:["That's a great question.",'In short, …','Let me give you an example.','Does that answer your question?'], statement:"You've just presented for one minute on a topic you like. Take three questions from the audience: answer clearly, give one example, and calmly handle a question you don't fully know the answer to."},
-  {id:'real_shop', emoji:'🛒', title:'Shopping & Prices', role:"You're the shopper; a partner is the seller.", goal:'Ask about price and size, compare options, and make a decision.', useful:['How much is this?','Do you have it in a smaller size?','Is there a discount?',"I'll take this one, thanks."], statement:"You're shopping for a gift on a budget. Ask about the price and sizes, compare two options out loud, ask if there's a discount, then decide which one to buy."},
-  {id:'real_checkin', emoji:'✈️', title:'Check-in & Reception', role:"You're the traveller; a partner is staff at the desk.", goal:'Check in, answer questions, and ask about your gate or room.', useful:["I'd like to check in, please.","Here's my passport / booking.",'Just one bag to check.','What time is boarding?'], statement:"You've arrived at airport check-in (or a hotel reception). Greet the staff, hand over your documents, answer their questions, then ask one question about your gate, seat or room."}
+  {id:'real_cafe', group:'eat', emoji:'🍽️', title:'Ordering at a Café', role:"You're the customer; a partner plays the waiter.", goal:'Order a drink and a meal, ask about a dish, and handle it being sold out.', useful:['Could I see the menu, please?','What do you recommend?',"I'll have the …, please.",'Could I get the bill, please?'], who:['You','Waiter'],
+    fml:[[0,'Good afternoon. Could I see the menu, please?'],[1,'Of course. Are you ready to order?'],[0,"Yes. I'd like the grilled chicken and a fresh orange juice, please."],[1,'I am afraid the chicken has sold out. May I suggest the beef?'],[0,"That's fine, thank you. I'll have the beef, then."]],
+    inf:[[0,'Hi, can I grab a menu?'],[1,'Sure. Know what you want?'],[0,"Yeah, I'll get the grilled chicken and an orange juice."],[1,'Ah, the chicken is gone, sorry. Beef instead?'],[0,'No worries, beef is good.']],
+    statement:'You are at a café, ready to order. Greet the waiter, ask about one dish, order your food and drink, then politely deal with your first choice being sold out.'},
+  {id:'real_coffee', group:'eat', emoji:'☕', title:'Coffee to Go', role:"You're the customer; a partner is the barista.", goal:'Order a drink to take away, answer a question, and pay.', useful:['A medium latte to take away, please.','Nothing else, thank you.','How much is that?','Can I pay by card?'], who:['You','Barista'],
+    fml:[[0,'Hello. Could I have a medium latte to take away, please?'],[1,'Certainly. Would you like anything else?'],[0,'No, thank you. How much is that?'],[1,'That will be twelve dirhams, please.']],
+    inf:[[0,'Hey, can I get a medium latte to go?'],[1,'Yep! Anything else?'],[0,"Nah, that's it. How much?"],[1,'Twelve dirhams, please.']],
+    statement:'You want a coffee to take away. Greet the barista, order your drink, answer whether you want anything else, and pay.'},
+  {id:'real_complaint', group:'eat', emoji:'🗣️', title:'A Polite Complaint', role:"You're the guest; a partner is the waiter.", goal:'Raise a problem calmly, say what you would like, and thank them.', useful:['Excuse me, there seems to be a problem.',"This isn't what I ordered.",'Would it be possible to …?','Thank you for sorting that out.'], who:['You','Waiter'],
+    fml:[[0,'Excuse me. I am sorry, but this soup is cold. Would it be possible to warm it up?'],[1,'I do apologise. I will bring you a fresh bowl right away.'],[0,'Thank you, I appreciate it.'],[1,'Again, my apologies for the inconvenience.']],
+    inf:[[0,'Sorry, but this soup has gone cold. Could you heat it up?'],[1,'Oh no, so sorry! I will grab you a fresh one.'],[0,'Thanks a lot.'],[1,'Sorry about that!']],
+    statement:'Your food arrived cold. Explain the problem to the waiter calmly and politely, say clearly what you would like them to do, and keep a friendly tone.'},
+  {id:'real_booking', group:'eat', emoji:'📞', title:'Booking a Table', role:"You're calling a restaurant; a partner answers.", goal:'Introduce yourself, make the booking, and confirm the details.', useful:["I'd like to book a table for four, please.",'On Friday at eight.','Let me confirm: … , is that right?','Thank you, goodbye.'], who:['You','Host'],
+    fml:[[1,'Good evening, Al Noor Restaurant. How may I help you?'],[0,"Hello. I'd like to book a table for four on Friday at eight, please."],[1,'Certainly. May I take a name?'],[0,"Yes, it's under Mona. Let me confirm: four people, Friday at eight."],[1,'That is all booked. We look forward to seeing you.']],
+    inf:[[1,'Hi, Al Noor Restaurant!'],[0,'Hi! Can I book a table for four this Friday at eight?'],[1,"Sure, what's the name?"],[0,"Mona. So that's four, Friday at eight, yeah?"],[1,'All set — see you then!']],
+    statement:'Call a restaurant to book a table for Friday evening. Introduce yourself, say what you need, give the day, time and number of people, then repeat the details back to confirm.'},
+
+  {id:'real_shop', group:'shop', emoji:'🛒', title:'Shopping & Prices', role:"You're the shopper; a partner is the seller.", goal:'Ask about price and size, ask for a discount, and decide.', useful:['How much is this?','Do you have it in a smaller size?','Is there a discount?',"I'll take this one, thanks."], who:['You','Seller'],
+    fml:[[0,'Excuse me, how much is this scarf?'],[1,'It is ninety dirhams. We also have it in blue.'],[0,'Do you have it in a smaller size? And is there a discount?'],[1,'Yes, and there is ten percent off today.'],[0,"Wonderful. I'll take the blue one, please."]],
+    inf:[[0,'Hi, how much is this scarf?'],[1,'Ninety. Got it in blue too.'],[0,'Any smaller? And is it on sale?'],[1,'Yeah, ten percent off today.'],[0,"Nice, I'll take the blue one."]],
+    statement:"You're shopping for a gift on a budget. Ask about the price and sizes, compare two options out loud, ask if there's a discount, then decide which one to buy."},
+  {id:'real_return', group:'shop', emoji:'↩️', title:'Returning an Item', role:"You're the customer; a partner is the assistant.", goal:'Explain the problem, ask for a refund or exchange, and stay polite.', useful:["I'd like to return this, please.","It doesn't fit.",'Could I exchange it instead?','I understand, but could you help me?'], who:['You','Assistant'],
+    fml:[[0,"Hello. I'd like to return this shirt. It doesn't fit, and here is the receipt."],[1,'I am sorry, but sale items cannot be refunded.'],[0,'I understand, but could I exchange it for a larger size instead?'],[1,'Yes, an exchange is fine. Let me help you with that.']],
+    inf:[[0,'Hi, I want to return this shirt — it does not fit. Got the receipt here.'],[1,'Sorry, sale stuff cannot be refunded.'],[0,'Ah okay — could I just swap it for a bigger size then?'],[1,'Yeah, a swap is fine. Let us sort it out.']],
+    statement:'You bought something the wrong size. Explain the problem to the assistant, ask for an exchange or refund, and stay polite when they first say it cannot be returned.'},
+  {id:'real_checkout', group:'shop', emoji:'🧾', title:'Supermarket Checkout', role:"You're paying; a partner is the cashier.", goal:'Answer the cashier, pay, and ask for a bag and receipt.', useful:['Do you accept card?','Could I have a bag, please?','Can I have the receipt?','Thank you very much.'], who:['You','Cashier'],
+    fml:[[1,'Good morning. Did you find everything you needed?'],[0,'Yes, thank you. Do you accept card?'],[1,'Of course. Would you like a bag?'],[0,'Yes, please. And could I have the receipt?']],
+    inf:[[1,'Morning! Find everything okay?'],[0,'Yep, thanks. Can I pay by card?'],[1,'Sure. Want a bag?'],[0,'Yes please. Oh, and the receipt?']],
+    statement:'You are paying at the supermarket. Answer the cashier, pay by card, and ask for a bag and the receipt.'},
+  {id:'real_bank', group:'shop', emoji:'🏧', title:'A Card Problem at the Bank', role:"You're the customer; a partner is the bank clerk.", goal:'Explain the problem, show ID, and get it fixed.', useful:['My card was declined.','Could you check it, please?','Here is my ID.','Thank you for looking into it.'], who:['You','Clerk'],
+    fml:[[0,'Good morning. My card was declined, but I am sure I have funds. Could you check, please?'],[1,'Certainly. May I see some identification?'],[0,'Yes, here is my ID. Thank you for looking into it.'],[1,'It appears your card was blocked for security. I will reactivate it now.']],
+    inf:[[0,'Hi, my card got declined but I have definitely got money — can you check?'],[1,'Sure, got any ID?'],[0,'Yeah, here. Thanks for checking.'],[1,'Looks like it got blocked for security. I will switch it back on.']],
+    statement:'Your bank card was declined although you have funds. Explain the problem to the clerk, show your ID, and ask them to fix it.'},
+
+  {id:'real_directions', group:'move', emoji:'🧭', title:'Asking for Directions', role:"You're lost; a partner is a helpful stranger.", goal:'Ask the way, understand it, and repeat it back to check.', useful:['Excuse me, how do I get to …?','Is it far from here?','So I go straight, then turn left?','Thank you so much.'], who:['You','Stranger'],
+    fml:[[0,'Excuse me, could you tell me how to get to the bus station?'],[1,'Certainly. Go straight ahead, then take the second left.'],[0,'So, straight on and second left. Is it far?'],[1,'No, about five minutes on foot.'],[0,'Thank you so much for your help.']],
+    inf:[[0,'Sorry, do you know how to get to the bus station?'],[1,'Yeah — go straight, then it is the second left.'],[0,'Straight, second left, got it. Is it far?'],[1,'Nah, like five minutes walking.'],[0,'Great, thanks a lot!']],
+    statement:'You are lost and need the bus station. Stop a stranger politely, ask the way, listen, then repeat the directions back to check you understood.'},
+  {id:'real_taxi', group:'move', emoji:'🚕', title:'Taking a Taxi', role:"You're the passenger; a partner is the driver.", goal:'Say where you are going, choose a route, and ask how long.', useful:['Could you take me to …, please?','The highway, please.','How long will it take?','Keep the change.'], who:['You','Driver'],
+    fml:[[0,'Good evening. Could you take me to the City Mall, please?'],[1,'Of course. Do you prefer the highway or the coast road?'],[0,'The highway, please. How long will it take?'],[1,'About fifteen minutes at this time.']],
+    inf:[[0,'Hi, can you take me to the City Mall?'],[1,'Sure. Highway or the coast road?'],[0,'Highway is fine. How long, roughly?'],[1,'About fifteen minutes now.']],
+    statement:'You are getting a taxi. Greet the driver, say where you are going, choose the route, and ask how long the journey will take.'},
+  {id:'real_ticket', group:'move', emoji:'🎟️', title:'Buying a Ticket', role:"You're the traveller; a partner is station staff.", goal:'Buy a ticket, find the platform, and ask the time.', useful:['A single ticket to …, please.','Which platform is it?','What time is the next train?','Thank you.'], who:['You','Staff'],
+    fml:[[0,'Hello. Could I have a single ticket to the museum, please?'],[1,'Here you are. Platform two, on your right.'],[0,'Thank you. What time is the next train?'],[1,'In seven minutes.']],
+    inf:[[0,'Hi, one ticket to the museum please.'],[1,'Here you go. Platform two, on your right.'],[0,'Thanks — when is the next train?'],[1,'Seven minutes.']],
+    statement:'You need to travel by train. Buy a single ticket, ask which platform, and ask what time the next train leaves.'},
+  {id:'real_checkin', group:'move', emoji:'🛎️', title:'Check-in & Reception', role:"You're the traveller; a partner is the receptionist.", goal:'Check in, show documents, and ask about breakfast or your room.', useful:["I'd like to check in, please.",'I have a reservation under …','What time is breakfast?','Thank you.'], who:['You','Receptionist'],
+    fml:[[0,"Good afternoon. I'd like to check in. I have a reservation under Mona."],[1,'Welcome. May I see your passport, please?'],[0,'Certainly, here it is. What time is breakfast?'],[1,'From seven to ten. Your room is on the third floor.']],
+    inf:[[0,'Hi, I am checking in — booking is under Mona.'],[1,'Welcome! Passport, please?'],[0,'Sure, here. Oh, when is breakfast?'],[1,'Seven till ten. You are on the third floor.']],
+    statement:'You have arrived at a hotel reception. Greet the staff, give your reservation name, hand over your passport, and ask one question about breakfast or your room.'},
+
+  {id:'real_doctor', group:'health', emoji:'🩺', title:'At the Doctor', role:"You're the patient; a partner is the doctor.", goal:'Describe your symptoms, answer questions, and understand the advice.', useful:["I've had a … for two days.",'It hurts when I …','How often should I take this?',"Should I come back if it doesn't improve?"], who:['You','Doctor'],
+    fml:[[1,'Good morning. What seems to be the problem?'],[0,'I have had a sore throat and a headache for two days.'],[1,'I see. Does it hurt when you swallow?'],[0,'Yes, quite a lot. What should I do?'],[1,'Take this twice a day, and rest. Come back if it does not improve.']],
+    inf:[[1,'Morning! What is up?'],[0,'I have had a sore throat and a headache for a couple of days.'],[1,'Okay — does it hurt to swallow?'],[0,'Yeah, loads. What should I do?'],[1,'Take this twice a day and rest. Pop back if it is no better.']],
+    statement:"You don't feel well. Tell the doctor your symptoms, answer their questions about when it started and how bad it is, and make sure you understand the advice before you leave."},
+  {id:'real_pharmacy', group:'health', emoji:'💊', title:'At the Pharmacy', role:"You're the customer; a partner is the pharmacist.", goal:'Ask for something for a symptom and how to take it.', useful:['Do you have anything for …?','How often should I take it?','Are there any side effects?','Thank you very much.'], who:['You','Pharmacist'],
+    fml:[[0,'Hello. Do you have anything for a dry cough?'],[1,'Yes. This syrup should help. Are you taking any other medication?'],[0,'No, none. How often should I take it?'],[1,'Three times a day, after meals.']],
+    inf:[[0,'Hi, got anything for a dry cough?'],[1,'Yeah, this syrup should do it. On any other meds?'],[0,'Nope. How often do I take it?'],[1,'Three times a day, after food.']],
+    statement:'You have a dry cough. Ask the pharmacist for something to help, answer whether you take other medicine, and ask how often to take it.'},
+  {id:'real_help', group:'health', emoji:'🆘', title:'Asking for Help', role:'You need help; a partner is a helper.', goal:'Explain the problem clearly and calmly, and accept help.', useful:['Excuse me, could you help me?','I think I am lost.','Could you call someone for me?','Thank you, I really appreciate it.'], who:['You','Helper'],
+    fml:[[0,'Excuse me, could you help me? I think I have lost my bag.'],[1,'Of course. Where did you last have it?'],[0,'On the bus, I believe. Could you help me find lost property?'],[1,'Certainly. The office is just over there — I will show you.']],
+    inf:[[0,'Excuse me, can you help me? I think I have lost my bag.'],[1,'Oh no, sure. Where did you last have it?'],[0,'On the bus, I think. Can you help me find lost property?'],[1,'Yeah, the office is just there — come on, I will show you.']],
+    statement:'You have lost your bag. Ask a stranger for help, explain calmly where you last had it, and accept their help to find the lost-property office.'},
+
+  {id:'real_interview', group:'work', emoji:'🧑‍💼', title:'A Job Interview', role:"You're the candidate; a partner is the interviewer.", goal:'Introduce yourself, answer three questions, and ask one of your own.', useful:['Thank you for having me.','My greatest strength is …','For example, …','Could you tell me more about …?'], who:['You','Interviewer'],
+    fml:[[1,'Thank you for coming. Tell me a little about yourself.'],[0,'Thank you for having me. I am a hard-working student with strong communication skills.'],[1,'What would you say is your greatest strength?'],[0,'My greatest strength is reliability. For example, I never miss a deadline.'],[1,'Why should we choose you?'],[0,'I learn quickly and I am keen to contribute. May I ask about the training?']],
+    inf:[[1,'Thanks for coming in! So, tell me about yourself.'],[0,'Thanks for having me! I am a hard worker and I am good with people.'],[1,'What is your biggest strength?'],[0,'I am really reliable — I never miss a deadline, honestly.'],[1,'So why should we pick you?'],[0,'I pick things up fast and I really want to help out. Can I ask about training?']],
+    statement:"You are in an interview for a part-time job you'd love. Introduce yourself in two sentences, then answer: 'Tell me about yourself', 'What is your greatest strength?' and 'Why should we choose you?' — and finish by asking one question."},
+  {id:'real_sick', group:'work', emoji:'🤒', title:'Calling in Sick', role:"You're the employee; a partner is your manager.", goal:'Say you are unwell, offer to catch up, and check for anything urgent.', useful:["I'm afraid I'm unwell today.",'I will make up the work tomorrow.','Is there anything urgent?','Thank you for understanding.'], who:['You','Manager'],
+    fml:[[0,"Good morning. I'm afraid I am unwell and won't be able to come in today."],[1,'I am sorry to hear that. Thank you for letting me know.'],[0,"I'll make up the work tomorrow. Is there anything urgent?"],[1,'Nothing urgent. Rest and feel better.']],
+    inf:[[0,'Hi, I am not feeling great — I cannot make it in today, sorry.'],[1,'Oh no, thanks for the heads-up.'],[0,"I'll catch up tomorrow. Anything urgent?"],[1,'Nah, nothing. Get some rest!']],
+    statement:'You are unwell and cannot go to work. Phone your manager, explain politely, offer to catch up tomorrow, and ask if anything is urgent.'},
+  {id:'real_teacher', group:'work', emoji:'👩‍🏫', title:'Talking to a Teacher', role:"You're the student; a partner is the teacher.", goal:'Ask for help, say what you find hard, and ask for an example.', useful:['Could you explain … again, please?','I do not understand the second step.','Could you give an example?','Thank you, that helps.'], who:['You','Teacher'],
+    fml:[[0,'Excuse me, Miss. Could you explain question three again, please?'],[1,'Of course. Which part is unclear?'],[0,'I do not understand the second step. Could you give an example?'],[1,'Certainly. Let us work through one together.']],
+    inf:[[0,'Miss, can you go over question three again?'],[1,'Sure — what is tripping you up?'],[0,'I do not get the second step. Can you show an example?'],[1,'Yeah, let us do one together.']],
+    statement:'You are stuck on a question. Ask your teacher politely to explain it again, say which part you find hard, and ask for an example.'},
+  {id:'real_qa', group:'work', emoji:'🎓', title:'Handling Q&A After a Talk', role:'You just gave a talk; a partner asks questions.', goal:"Answer clearly, admit if you're unsure, and stay calm.", useful:["That's a great question.",'In short, …','Let me give you an example.','Does that answer your question?'], who:['You','Audience'],
+    fml:[[1,'Thank you for your talk. What inspired your topic?'],[0,'That is a great question. In short, a personal experience inspired me.'],[1,'And what would you change next time?'],[0,'I am not entirely sure, but I believe I would add more examples. Does that answer your question?']],
+    inf:[[1,'Great talk! What got you into the topic?'],[0,'Good question! Basically, something that happened to me.'],[1,'What would you change next time?'],[0,'Not totally sure, but probably more examples. Does that make sense?']],
+    statement:"You've just presented for one minute. Take questions from the audience: answer clearly, give one example, and calmly handle a question you don't fully know the answer to."},
+
+  {id:'real_meet', group:'social', emoji:'🤝', title:'Meeting Someone New', role:'You and a partner meet for the first time.', goal:'Introduce yourself, make small talk, and find something in common.', useful:["Hi, I'm … . Nice to meet you.",'Where are you from?','What do you like doing?','Oh, me too!'], who:['You','New person'],
+    fml:[[0,"Hello, I'm Mona. It is a pleasure to meet you."],[1,'Nice to meet you too. Where are you from?'],[0,'I am from Abu Dhabi. What do you enjoy doing?'],[1,'I love reading. And you?'],[0,'Me too! We have that in common.']],
+    inf:[[0,"Hi, I'm Mona — nice to meet you!"],[1,'You too! Where are you from?'],[0,'Abu Dhabi. What are you into?'],[1,'I love reading. You?'],[0,'Same here!']],
+    statement:"You've just met a new classmate. Introduce yourself, ask two friendly questions, share something about yourself, and find one thing you both have in common."},
+  {id:'real_invite', group:'social', emoji:'🎉', title:'Inviting & Replying', role:'A partner invites you somewhere.', goal:'Accept warmly (or politely decline) and sort out the details.', useful:["I'd love to, thank you!",'What time shall I arrive?',"I'm afraid I can't, but thank you.",'Maybe next time?'], who:['You','Friend'],
+    fml:[[1,'Would you like to come to my birthday dinner on Saturday?'],[0,"I'd love to, thank you. What time shall I arrive?"],[1,'Around seven. Could you let me know if you are bringing anyone?'],[0,'Of course. I am really looking forward to it.']],
+    inf:[[1,'Want to come to my birthday dinner Saturday?'],[0,"Aw, I'd love to! What time?"],[1,'Around seven. Let me know if you are bringing anyone?'],[0,'Will do — cannot wait!']],
+    statement:'A friend invites you to a birthday dinner. Accept warmly (or politely decline), and sort out the time and any details. Try it once accepting and once declining.'},
+  {id:'real_apology', group:'social', emoji:'🙏', title:'Apologising', role:'You were late; a partner is your friend.', goal:'Apologise sincerely, explain briefly, and make it right.', useful:["I'm really sorry.",'I got held up in traffic.','It will not happen again.','Let me make it up to you.'], who:['You','Friend'],
+    fml:[[0,'I am really sorry I am late. I got held up in traffic.'],[1,'That is all right. I was starting to worry.'],[0,'It will not happen again. Let me make it up to you.'],[1,'Do not worry about it — let us enjoy the evening.']],
+    inf:[[0,'So sorry I am late! Got stuck in traffic.'],[1,'No worries — was starting to wonder though!'],[0,'Will not happen again, promise. I will make it up to you.'],[1,'Forget it — let us just have fun!']],
+    statement:'You arrived late to meet a friend. Apologise sincerely, explain briefly what happened, promise to do better, and offer to make it up to them.'},
+  {id:'real_smalltalk', group:'social', emoji:'💬', title:'Small Talk & Compliments', role:'You and a partner are colleagues.', goal:'Start a friendly chat, give a compliment, and ask a question.', useful:['Lovely weather today, isn’t it?','I like your …','How was your weekend?','Have a good one!'], who:['You','Colleague'],
+    fml:[[0,'Good morning! Lovely weather today, is it not?'],[1,'It really is. By the way, I like your jacket.'],[0,'Thank you, that is very kind. How was your weekend?'],[1,'Quite relaxing, thank you. And yours?']],
+    inf:[[0,'Morning! Gorgeous weather, right?'],[1,'So nice! Oh, love your jacket by the way.'],[0,'Aw thanks! How was your weekend?'],[1,'Pretty chill, thanks. You?']],
+    statement:'You meet a colleague in the morning. Start a friendly chat about the weather, give a genuine compliment, and ask about their weekend.'}
 ].map(s => Object.assign(s, { kind:'debate', caption:'Real-life scenario · '+s.title, write:WA_RW, speak:WA_RS }));
 /* register scenarios so the normal Write → Speak → Publish flow can open them */
 WASPK_REAL.forEach(p => { WASPK_INDEX[p.id] = { p:p, c:WASPK_REAL_CAT }; });
@@ -22013,7 +22135,7 @@ WASPK_REAL.forEach(p => { WASPK_INDEX[p.id] = { p:p, c:WASPK_REAL_CAT }; });
 const WASPK_SHADOW = ['behave yourself','bear with me','point taken','take your time',"I couldn't agree more",'suit yourself',"that's not fair",'I mean it','hang in there','no hard feelings',"it's not a big deal",'give me a second',"I'll take that as a yes",'fair enough'];
 const WASPK_FILMS = [
   {lvl:'Beginner', tint:'#0FA98B', items:[
-    {t:'Finding Nemo', n:'Everyday phrases, calm pacing, warm family dialogue.'},
+    {t:'Finding Nemo', n:'Everyday phrases, calm pacing, warm family dialogue.', yt:'2zLkasScy7A'},
     {t:'Kung Fu Panda', n:'Short punchy lines and comedic delivery — easy to shadow.'},
     {t:'The Lion King', n:'Classic phrasing and emotional, quotable lines.'}
   ]},
@@ -22023,8 +22145,8 @@ const WASPK_FILMS = [
   ]},
   {lvl:'Intermediate', tint:'#E08A2B', items:[
     {t:'Life of Pi', n:'Narrative storytelling with rich, descriptive vocabulary.'},
-    {t:'The Pursuit of Happyness', n:'Emotional, clear conversation; an inspiring story.'},
-    {t:"The King's Speech", n:'Superb for public-speaking practice and pronunciation.'},
+    {t:'The Pursuit of Happyness', n:'Emotional, clear conversation; an inspiring story.', yt:'7guyl6_7sBo'},
+    {t:"The King's Speech", n:'Superb for public-speaking practice and pronunciation.', yt:'gSw6ei5tdbg'},
     {t:'Forrest Gump', n:'Everyday conversation with a Southern American accent.'},
     {t:'Notting Hill', n:'Casual modern English, mixed British/American accents.'},
     {t:'IF (2024)', n:'Everyday conversation and friendship vocabulary.'},
@@ -22038,7 +22160,7 @@ const WASPK_FILMS = [
     {t:'Dead Poets Society', n:'Rich, literary language and persuasive speech.'},
     {t:'The Green Mile', n:'Southern American dialects and emotional depth.', flag:'Mature themes — preview first.'},
     {t:'Good Will Hunting', n:'Fast, intelligent dialogue; mixed registers.', flag:'Strong language — preview first.'},
-    {t:'Interstellar', n:'Scientific vocabulary and emotional family dialogue.'},
+    {t:'Interstellar', n:'Scientific vocabulary and emotional family dialogue.', yt:'ePbKGoIGAXY'},
     {t:'Men in Black', n:'Fast comedic banter and action vocabulary.'},
     {t:'The Social Network', n:'Very fast, sharp dialogue — great advanced listening.'},
     {t:'The Beekeeper', n:'Action-thriller and cybersecurity vocabulary.', flag:'Action violence — preview first.'}
@@ -22046,20 +22168,30 @@ const WASPK_FILMS = [
 ];
 const WASPK_TV = [
   {t:'Mind Your Language', n:'A classic ESL sitcom — gentle comedy built around English learners.'},
-  {t:'Extra English', n:'Made for learners: short, story-driven episodes with repeated vocabulary.'},
+  {t:'Extra English', n:'Made for learners: short, story-driven episodes with repeated vocabulary.', yt:'uG3XVajkQ_4', list:'https://www.youtube.com/playlist?list=PLdYSWqTrWP2jyqWIdjsATbrb11uN_BMrF'},
   {t:'Horrible Histories', n:'British sketch comedy for children — culture and vocabulary, fun.'},
   {t:'Friends', n:'Clear, everyday conversational English, great for shadowing.', flag:'Some adult humour/dating themes — preview for younger classes.'},
   {t:'Bluey / Peppa Pig', n:'Very young beginners: short, simple sentences and clear pronunciation.'},
   {t:'Sesame Street', n:'Foundational vocabulary and phonics for young children.'}
 ];
-const WASPK_TED = [
-  {theme:'🧠 Mind & Psychology', items:['The language of lying','The psychology of narcissism','What is depression?','What is bipolar disorder?','The benefits of a bilingual brain','The missing ingredient in how we learn']},
-  {theme:'🧩 Logic Puzzles & Riddles', items:['Can you solve the prisoner hat riddle?','Can you solve the bridge riddle?','Can you solve the green-eyed logic puzzle?','Can you solve the virus riddle?','Can you solve the wizard standoff riddle?']},
-  {theme:'🏛️ History & Culture', items:['When did we start using passports?','How to attack (and defend) a medieval castle','The incredible engineering of Venice','The haunting history of the Paris Catacombs','A brief history of cheese','The dark origins of Disney fairy tales']},
-  {theme:'🦋 Nature & Animals', items:['The mystery of the giant kelp forest','Meet the slow loris, the only venomous primate','Why does catnip make cats go crazy?','How do snakes swallow animals so much bigger than they are?']},
-  {theme:'🔬 Everyday Science', items:['How does the space station never run out of oxygen?','Should you rinse your dishes before the dishwasher?','What happens if you eat a silica gel packet?','Why avalanches are most deadly when they stop','How does anesthesia work?']}
-];
-function waspkYouglish(ph){ return 'https://youglish.com/pronounce/'+encodeURIComponent(ph)+'/english'; }
+/* TED-Ed short videos — wired as full Watch → Writeabout → Publish prompts.
+   Each has a real, embeddable YouTube id, so the video plays on the hub and runs
+   the same three-window flow as every other prompt. To add more, copy a line and
+   paste the video id from the TED-Ed video's URL (youtube.com/watch?v=THE_ID). */
+const WASPK_TED_CAT = { key:'p_ted', name:'TED-Ed', emoji:'💡', grad:['#8B5CF6','#5B8DEF'], scene:'imagine' };
+const WASPK_TED = (function(){
+  const _w = 'Watch the riddle once, pausing when the video asks you to. In your own words, write the problem clearly: who is involved, the rule they must follow, and what they need to achieve. Then write your own plan for solving it — before the video reveals the answer.';
+  const _s = 'Explain this riddle out loud as if you were teaching a friend who has not seen it: set up the situation, state the rule, then walk through the solution step by step in your own words.';
+  const mk=(id,emoji,title,yt,caption)=>({id:id,kind:'video',emoji:emoji,title:title,youtube:yt,caption:caption,write:_w,speak:_s});
+  return [
+    mk('ted1','🎩','Can you solve the prisoner hat riddle?','https://www.youtube.com/watch?v=N5vJSNXPEwA','Ten prisoners, black or white hats, one shared chance to go free.'),
+    mk('ted2','🌉','Can you solve the bridge riddle?','https://www.youtube.com/watch?v=7yDmGnA8Hw0','Four survivors, one lantern, a rickety bridge — and zombies closing in.'),
+    mk('ted3','👁️','Can you solve the green-eyed logic puzzle?','https://www.youtube.com/watch?v=98TQv5IAtY8','A hundred logicians must reason their own way off an island.'),
+    mk('ted4','🧪','Can you solve the virus riddle?','https://www.youtube.com/watch?v=ZKh6z0X6KRw','A deadly virus is loose in the lab — can you seal it in before it escapes?'),
+    mk('ted5','🗿','Can you solve the three gods riddle?','https://www.youtube.com/watch?v=LKvjIsyYng8','Three gods, three questions — called the hardest logic puzzle ever made.')
+  ];
+})();
+WASPK_TED.forEach(p => { WASPK_INDEX[p.id] = { p:p, c:WASPK_TED_CAT }; });
 function waspkYT(q){ return 'https://www.youtube.com/results?search_query='+encodeURIComponent(q); }
 
 /* ---- Media & deck storage (IndexedDB blobs via the shared IDB store) ----- */
@@ -22179,7 +22311,6 @@ ROUTES.waspk = function(){
   const isT = SESSION && SESSION.role==='teacher';
   const n = waspkPieces().length;
   const mode=(route,arg,grad,ic,title,sub)=>`<button class="wa-mode" style="background:linear-gradient(135deg,${grad[0]},${grad[1]})" onclick="${arg===undefined?`go('${route}')`:`go('${route}','${arg}')`}"><span class="mi">${ic}</span><b>${title}</b><span>${sub}</span></button>`;
-  const ids=Object.keys(WASPK_INDEX); const sample=ids.sort(()=>Math.random()-0.5).slice(0,3).map(id=>WASPK_INDEX[id]);
   app().innerHTML = `
   <div class="wrap screen">
     <button class="back" onclick="go('dashboard')">← Home</button>
@@ -22198,16 +22329,11 @@ ROUTES.waspk = function(){
     <div class="wa-modes">
       ${mode('waspkCats',undefined,['#3a9d8a','#2c6e63'],'🗂️','Prompt Library','Pictures, videos, puzzles &amp; debates')}
       ${mode('waspkReal',undefined,['#E08A2B','#b5561a'],'🎭','Real-Life Talk','Order food, interviews, problems')}
-      ${mode('waspkWatch',undefined,['#2B5FA6','#173a6b'],'🎬','Watch &amp; Shadow','Films, shows &amp; TED-Ed + shadowing')}
-      ${mode('waspkDo','random',['#e6608a','#b23c78'],'🎲','Surprise Me','A random prompt to begin')}
+      ${mode('waspkWatch',undefined,['#2B5FA6','#173a6b'],'🎬','Watch &amp; Shadow','TED-Ed to write about + films &amp; shows')}
       ${mode('waspkCreate',undefined,['#8B5CF6','#5B8DEF'],'📸','Create Your Own','Add a picture, video, puzzle or debate')}
       ${mode('waspkMine',undefined,['#15183A','#26308a'],'📔','My Portal',`Your published projects${n?` · ${n}`:''}`)}
       ${mode('waspkHelp',undefined,['#0FA98B','#5B8DEF'],'💡','How It Works','The three easy windows')}
-      ${isT?mode('waspkTeacher',undefined,['#c0392b','#7d2b20'],'👩‍🏫','Teacher Studio','Upload your own prompts'):mode('waspkDo','random',['#F5A301','#d97a12'],'⚡','Quick Start','Jump straight in')}
-    </div>
-    <div class="wa-cathead"><span class="ce">✨</span><h2>Try one now</h2></div>
-    <div class="wa-grid">
-      ${sample.map(e=>`<div class="wa-tile" onclick="go('waspkDo','${e.p.id}')">${waspkTileVisual(waspkVO(e))}</div>`).join('')}
+      ${isT?mode('waspkTeacher',undefined,['#c0392b','#7d2b20'],'👩‍🏫','Teacher Studio','Upload your own prompts'):''}
     </div>
   </div>`;
 };
@@ -22246,18 +22372,21 @@ ROUTES.waspkCats = function(){
     const total = cats.reduce((n,c)=>n+c.prompts.length,0);
     const multi = cats.length>1;
     const body = cats.map(c=>{
-      if(t.kind==='debate' || t.kind==='puzzle'){
+      if(t.kind==='debate' || t.kind==='puzzle' || t.kind==='video'){
         const bars = c.prompts.map(p=>{
           const col = WASPK_BAR_PALETTE[barI++ % WASPK_BAR_PALETTE.length];
+          const isVid = (p.kind==='video');
+          const sub = isVid ? (p.caption||p.title) : (p.statement||p.title);
+          const goLbl = isVid ? '▶ Watch &amp; write →' : '✍️ Start this task';
           return `<div class="wa-baritem">
             <button type="button" class="wa-bar" style="--bar:${col.c};background:${col.bg}" onclick="waspkBarToggle(this)">
-              <span class="wa-bar-ic">${p.emoji||'🗣️'}</span>
+              <span class="wa-bar-ic">${p.emoji||(isVid?'🎬':'🗣️')}</span>
               <span class="wa-bar-t">${esc(p.title)}</span>
               <span class="wa-bar-x">›</span>
             </button>
             <div class="wa-bar-panel"><div class="wa-bar-pad">
-              <p class="wa-bar-st">${esc(p.statement||p.title)}</p>
-              <button type="button" class="wa-bar-go" style="--bar:${col.c}" onclick="event.stopPropagation();go('waspkDo','${p.id}')">✍️ Start this task</button>
+              <p class="wa-bar-st">${esc(sub)}</p>
+              <button type="button" class="wa-bar-go" style="--bar:${col.c}" onclick="event.stopPropagation();go('waspkDo','${p.id}')">${goLbl}</button>
             </div></div>
           </div>`;
         }).join('');
@@ -22296,19 +22425,39 @@ ROUTES.waspkHelp = function(){
 };
 
 /* ===== REAL-LIFE TALK (scenario role-plays) ============================= */
+function waspkDiLine(sc, li){ const s=li[0], txt=li[1]; return `<div class="di-line di-${s?'b':'a'}"><span class="di-who">${esc(sc.who[s]||'')}</span><span class="di-txt">${esc(txt)}</span><button type="button" class="di-say" onclick="waspkSayEl(this)" title="Hear this line">🔊</button></div>`; }
+function waspkRealCard(sc, col){
+  const inf=sc.inf.map(l=>waspkDiLine(sc,l)).join('');
+  const fml=sc.fml.map(l=>waspkDiLine(sc,l)).join('');
+  const drop=`<select class="di-drop" onchange="waspkSaySel(this)"><option value="">🔊 Hear a handy expression…</option>${sc.useful.map(u=>`<option>${esc(u)}</option>`).join('')}</select>`;
+  return `<div class="rl-card" style="--bar:${col}">
+    <div class="rl-head"><span class="rl-ic">${sc.emoji}</span><h3>${esc(sc.title)}</h3></div>
+    <p class="rl-line"><b>You:</b> ${esc(sc.role)}</p>
+    <p class="rl-line"><b>Goal:</b> ${esc(sc.goal)}</p>
+    <div class="di-wrap" id="di_${sc.id}">
+      <div class="di-bar">
+        <div class="di-tabs">
+          <button type="button" class="di-tab on" onclick="waspkDiMode('${sc.id}','inf')">🗣️ Spoken</button>
+          <button type="button" class="di-tab" onclick="waspkDiMode('${sc.id}','fml')">✍️ Written</button>
+        </div>
+        <button type="button" class="di-play" onclick="waspkDiPlay('${sc.id}')">▶ Play all</button>
+      </div>
+      <div class="di-lines di-inf">${inf}</div>
+      <div class="di-lines di-fml" hidden>${fml}</div>
+      <p class="di-hint di-inf-h"><b>Spoken:</b> short forms (I'm, don't), fillers (yeah, well), relaxed grammar.</p>
+      <p class="di-hint di-fml-h" hidden><b>Written:</b> full forms, complete sentences, polite modals (could, would).</p>
+    </div>
+    ${drop}
+    <button type="button" class="rl-go" onclick="go('waspkDo','${sc.id}')">🎤 Practise &amp; record →</button>
+  </div>`;
+}
 ROUTES.waspkReal = function(){
   waspkStopRec();
-  const phr=(arr)=>`<div class="wl-phrs">${arr.map(p=>`<a class="wl-phr" target="_blank" rel="noopener" href="${waspkYouglish(p)}" title="Hear real clips of this phrase">🔊 ${esc(p)}</a>`).join('')}</div>`;
-  const cards=WASPK_REAL.map((s,i)=>{
-    const col=WASPK_BAR_PALETTE[i%WASPK_BAR_PALETTE.length];
-    return `<div class="rl-card" style="--bar:${col.c}">
-      <div class="rl-head"><span class="rl-ic">${s.emoji}</span><h3>${esc(s.title)}</h3></div>
-      <p class="rl-line"><b>You:</b> ${esc(s.role)}</p>
-      <p class="rl-line"><b>Goal:</b> ${esc(s.goal)}</p>
-      <div class="rl-lbl">Useful phrases <span>— tap to hear them said by real speakers</span></div>
-      ${phr(s.useful)}
-      <button type="button" class="rl-go" onclick="go('waspkDo','${s.id}')">🎤 Practise &amp; record →</button>
-    </div>`;
+  const groups = WASPK_REAL_GROUPS.map(g=>{
+    const items = WASPK_REAL.filter(s=>s.group===g.key);
+    if(!items.length) return '';
+    return `<div class="wl-lvlhead" style="--bar:${g.tint}">${g.emoji} ${esc(g.label)} <span style="font-weight:500;color:var(--muted)">· ${items.length}</span></div>
+      <div class="rl-grid">${items.map(s=>waspkRealCard(s,g.tint)).join('')}</div>`;
   }).join('');
   app().innerHTML = `
   <div class="wrap screen">
@@ -22317,64 +22466,114 @@ ROUTES.waspkReal = function(){
       <div class="stem-kicker" style="color:#fff;opacity:.85">Speak for the real world</div>
       <h1>🎭 Real-Life Talk</h1>
       <div class="wa-subtitle">Everyday situations you can rehearse out loud</div>
-      <p>Pick a scenario, read your role and goal, then <b>act it out</b> — with a partner, or playing both parts yourself. Prepare for two minutes, speak for one or two, then <b>record and listen back</b>.</p>
+      <p>Pick a scenario, read the sample dialogue in <b>Spoken</b> or <b>Written</b> mode, tap any line to hear it, then <b>act it out</b> and record yourself.</p>
+    </div>
+    <div class="di-legend">
+      <b>🗣️ Spoken vs ✍️ Written — same meaning, different style</b>
+      <p>Spoken English uses <b>contractions</b> (I'm, don't, it's), <b>fillers</b> (well, yeah, you know), <b>phrasal verbs</b> and relaxed grammar. Written English uses <b>full forms</b>, complete sentences, and polite modals (could you…, would you…). Flip the toggle on any dialogue to compare — and tap 🔊 to hear the difference.</p>
     </div>
     <div class="wl-how">
-      <div class="wl-howcard"><span>🎯</span><div><b>Prepare</b><p>Jot the phrases you'll need: a greeting, your request, a question, a polite goodbye.</p></div></div>
-      <div class="wl-howcard"><span>🎭</span><div><b>Act it out</b><p>Play your role and the other person too. Stay polite and keep going to your goal.</p></div></div>
-      <div class="wl-howcard"><span>🔁</span><div><b>Record &amp; review</b><p>Record the role-play, listen back, and try again to sound more natural.</p></div></div>
+      <div class="wl-howcard"><span>🎯</span><div><b>Prepare</b><p>Read the dialogue and pick the phrases you'll use.</p></div></div>
+      <div class="wl-howcard"><span>🎭</span><div><b>Act it out</b><p>Play your role and the other person too. Stay polite, reach your goal.</p></div></div>
+      <div class="wl-howcard"><span>🔁</span><div><b>Record &amp; review</b><p>Record the role-play, listen back, and try again.</p></div></div>
     </div>
-    <div class="wa-cathead"><span class="ce">🗂️</span><h2>Choose a scenario</h2></div>
-    <div class="rl-grid">${cards}</div>
+    ${groups}
   </div>`;
 };
+function waspkSayEl(btn){ const w=btn.closest('.di-line'); const el=w&&w.querySelector('.di-txt'); if(el) waspkSay(el.textContent); }
+function waspkSaySel(sel){ const o=sel.options[sel.selectedIndex]; if(o&&o.value!=='') waspkSay(o.text.replace(/…/g,'')); sel.selectedIndex=0; }
+function waspkDiMode(id, mode){
+  const w=document.getElementById('di_'+id); if(!w) return;
+  const inf=mode==='inf';
+  w.querySelector('.di-inf').hidden=!inf; w.querySelector('.di-fml').hidden=inf;
+  w.querySelector('.di-inf-h').hidden=!inf; w.querySelector('.di-fml-h').hidden=inf;
+  const tabs=w.querySelectorAll('.di-tab'); tabs[0].classList.toggle('on',inf); tabs[1].classList.toggle('on',!inf);
+}
+function waspkDiPlay(id){
+  const w=document.getElementById('di_'+id); if(!w) return;
+  const box=w.querySelector('.di-inf').hidden ? w.querySelector('.di-fml') : w.querySelector('.di-inf');
+  const lines=[].slice.call(box.querySelectorAll('.di-txt')).map(e=>e.textContent);
+  if(lines.length) waspkSay(lines.join('. '));
+}
 
 /* ===== WATCH · SHADOW · RECORD (independent practice) =================== */
+/* Inline, tap-to-play YouTube embed for the Watch & Shadow shelves.
+   The video plays right here on the hub; the learner can also open it on YouTube. */
+function waspkInlineVid(ytid, listUrl){
+  const list = listUrl ? ` · <a class="wl-yt" target="_blank" rel="noopener" href="${listUrl}">Full series ↗</a>` : '';
+  return `<div class="wl-embed">
+    <div class="wl-embed-slot"><button type="button" class="wl-play" onclick="waspkPlayInline(this,'${ytid}')">▶ Watch here</button></div>
+    <div class="wl-embed-links"><a class="wl-yt" target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=${ytid}">Open on YouTube ↗</a>${list}</div>
+  </div>`;
+}
+function waspkPlayInline(btn, ytid){
+  const slot=btn.closest('.wl-embed-slot'); if(!slot) return;
+  slot.innerHTML = `<div class="wa-video"><iframe src="https://www.youtube-nocookie.com/embed/${ytid}?rel=0&modestbranding=1&playsinline=1&autoplay=1" title="video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+}
 ROUTES.waspkWatch = function(){
   waspkStopRec();
-  const shadowChips = `<div class="wl-phrs">${WASPK_SHADOW.map(p=>`<a class="wl-phr" target="_blank" rel="noopener" href="${waspkYouglish(p)}" title="Hear this phrase in real clips, then repeat it">🔊 ${esc(p)}</a>`).join('')}</div>`;
+  /* TED-Ed — full Watch → Writeabout → Publish, shown as Talking-Points-style bars */
+  let barI=0;
+  const tedBars = WASPK_TED.map(p=>{
+    const col = WASPK_BAR_PALETTE[barI++ % WASPK_BAR_PALETTE.length];
+    return `<div class="wa-baritem">
+      <button type="button" class="wa-bar" style="--bar:${col.c};background:${col.bg}" onclick="waspkBarToggle(this)">
+        <span class="wa-bar-ic">${p.emoji||'💡'}</span>
+        <span class="wa-bar-t">${esc(p.title)}</span>
+        <span class="wa-bar-x">›</span>
+      </button>
+      <div class="wa-bar-panel"><div class="wa-bar-pad">
+        <p class="wa-bar-st">${esc(p.caption||p.title)}</p>
+        <button type="button" class="wa-bar-go" style="--bar:${col.c}" onclick="event.stopPropagation();go('waspkDo','${p.id}')">▶ Watch &amp; write →</button>
+      </div></div>
+    </div>`;
+  }).join('');
+
+  const shadowChips = `<div class="wl-phrs">${WASPK_SHADOW.map(p=>`<button type="button" class="wl-phr" onclick="waspkSay(this.dataset.p)" data-p="${esc(p)}" title="Hear it, then pause and repeat">🔊 ${esc(p)}</button>`).join('')}</div>`;
+
+  const filmCard = (m, tint)=>{
+    const head = `<b>🎬 ${esc(m.t)}</b><span>${esc(m.n)}</span>${m.flag?`<em class="wl-flag">⚠ ${esc(m.flag)}</em>`:''}`;
+    return `<div class="wl-link${m.yt?'':' wl-noembed'}" style="--bar:${tint}">${head}${m.yt?waspkInlineVid(m.yt, m.list):''}</div>`;
+  };
   const filmSecs = WASPK_FILMS.map(g=>`
     <div class="wl-lvlhead" style="--bar:${g.tint}">${esc(g.lvl)}</div>
-    <div class="wl-grid">${g.items.map(m=>`<a class="wl-link" style="--bar:${g.tint}" target="_blank" rel="noopener" href="${waspkYT(m.t+' movie clip english')}">
-        <b>🎬 ${esc(m.t)}</b><span>${esc(m.n)}</span>${m.flag?`<em class="wl-flag">⚠ ${esc(m.flag)}</em>`:''}<span class="wl-cta">▶ Find clips</span></a>`).join('')}</div>`).join('');
-  const tvSec = `<div class="wl-grid">${WASPK_TV.map(s=>`<a class="wl-link" style="--bar:#0FA98B" target="_blank" rel="noopener" href="${waspkYT(s.t+' full episodes english')}">
-      <b>📺 ${esc(s.t)}</b><span>${esc(s.n)}</span>${s.flag?`<em class="wl-flag">⚠ ${esc(s.flag)}</em>`:''}<span class="wl-cta">▶ Watch</span></a>`).join('')}</div>`;
-  const tedSecs = WASPK_TED.map(g=>`
-    <div class="wl-lvlhead" style="--bar:#8B5CF6">${esc(g.theme)}</div>
-    <div class="wl-grid">${g.items.map(t=>`<a class="wl-link" style="--bar:#8B5CF6" target="_blank" rel="noopener" href="${waspkYT('TED-Ed '+t)}">
-        <b>💡 ${esc(t)}</b><span class="wl-cta">▶ Watch on TED-Ed</span></a>`).join('')}</div>`).join('');
+    <div class="wl-grid">${g.items.map(m=>filmCard(m,g.tint)).join('')}</div>`).join('');
+
+  const tvSec = `<div class="wl-grid">${WASPK_TV.map(s=>{
+    const head = `<b>📺 ${esc(s.t)}</b><span>${esc(s.n)}</span>${s.flag?`<em class="wl-flag">⚠ ${esc(s.flag)}</em>`:''}`;
+    return `<div class="wl-link${s.yt?'':' wl-noembed'}" style="--bar:#0FA98B">${head}${s.yt?waspkInlineVid(s.yt, s.list):''}</div>`;
+  }).join('')}</div>`;
+
   app().innerHTML = `
   <div class="wrap screen">
     <button class="back" onclick="go('waspk')">← Talkabout</button>
     <div class="wa-hero" style="background:linear-gradient(135deg,#2B5FA6,#173a6b)">
-      <div class="stem-kicker" style="color:#fff;opacity:.85">Independent practice · listen &amp; imitate</div>
+      <div class="stem-kicker" style="color:#fff;opacity:.85">Watch on the hub · then write &amp; speak</div>
       <h1>🎬 Watch &amp; Shadow</h1>
-      <div class="wa-subtitle">Learn real rhythm and intonation from film, TV and short talks</div>
-      <p>Two habits build fluent, natural speech: <b>shadowing</b> (repeat a clip the instant you hear it) and <b>self-recording</b> (record yourself, then listen back). Use the films, shows and TED-Ed videos below as your listening material.</p>
+      <div class="wa-subtitle">Short talks to build a whole project, plus films &amp; shows to soak up real English</div>
+      <p>Start with a <b>TED-Ed short</b> — watch it right here, then follow the usual route: <b>write about it</b>, <b>speak about it</b>, and <b>publish</b>. The films and shows below are extra listening — play the clip on the hub, or open it on YouTube if you'd rather.</p>
     </div>
 
-    <div class="wl-how">
+    <div class="wa-cathead"><span class="ce">💡</span><h2>TED-Ed shorts — watch, write &amp; publish</h2></div>
+    <p style="color:var(--muted);margin:0 0 10px;max-width:680px">Each one plays here on the hub. Watch once, pause when it asks, then start your Writeabout — the same three windows as every prompt. Tap a title to see it, then press <b>Watch &amp; write</b>.</p>
+    <div class="wa-barlist">${tedBars}</div>
+
+    <div class="wl-how" style="margin-top:16px">
       <div class="wl-howcard"><span>🎧</span><div><b>Shadowing</b><p>Play a short clip, pause, and repeat it at once — copy the speaker's rhythm, stress and melody, not just the words.</p></div></div>
       <div class="wl-howcard"><span>🎙️</span><div><b>Self-recording</b><p>Record a one-minute monologue on any prompt, then listen back to catch pronunciation quirks and track your progress.</p></div></div>
     </div>
-    <button type="button" class="btn" style="margin:2px 0 6px" onclick="go('waspkDo','random')">🎲 Get a random prompt to record →</button>
 
     <div class="wa-cathead"><span class="ce">🗣️</span><h2>Shadowing phrases</h2></div>
-    <p style="color:var(--muted);margin:0 0 10px;max-width:640px">High-frequency spoken phrases — clear feeling, simple grammar, useful every day. Tap one to hear it in real clips on YouGlish, then pause and repeat.</p>
+    <p style="color:var(--muted);margin:0 0 10px;max-width:640px">High-frequency spoken phrases — clear feeling, simple grammar, useful every day. <b>Tap one to hear it aloud</b>, then pause and repeat, copying the rhythm and melody.</p>
     ${shadowChips}
 
-    <div class="wa-cathead"><span class="ce">🍿</span><h2>Films by level</h2></div>
-    <p style="color:var(--muted);margin:0 0 6px;max-width:660px">Watch with English subtitles first to link sound to spelling, then rewatch without them to test your listening.</p>
+    <div class="wa-cathead"><span class="ce">🍿</span><h2>Films by level <span style="font-weight:500;font-size:.8rem;color:var(--muted)">· extra resources</span></h2></div>
+    <p style="color:var(--muted);margin:0 0 6px;max-width:680px">Play the trailer here on the hub (▶ Watch here), then watch the full film with English subtitles first to link sound to spelling, and again without them to test your listening.</p>
     ${filmSecs}
 
-    <div class="wa-cathead"><span class="ce">📺</span><h2>TV shows for spoken English</h2></div>
+    <div class="wa-cathead"><span class="ce">📺</span><h2>TV shows for spoken English <span style="font-weight:500;font-size:.8rem;color:var(--muted)">· extra resources</span></h2></div>
+    <p style="color:var(--muted);margin:0 0 6px;max-width:680px">Watch an episode here, or open the full series on YouTube to keep going.</p>
     ${tvSec}
-
-    <div class="wa-cathead"><span class="ce">💡</span><h2>TED-Ed short videos</h2></div>
-    <p style="color:var(--muted);margin:0 0 6px;max-width:660px">Five-to-seven minutes each, narrated slowly and clearly, with a companion lesson on ed.ted.com — a solid daily listening habit.</p>
-    ${tedSecs}
-
-    <p class="wl-foot">Tip: preview any clip yourself before class — links open a search so you can pick the best version.</p>
   </div>`;
 };
 
