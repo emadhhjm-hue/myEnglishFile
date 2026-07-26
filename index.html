@@ -1089,6 +1089,35 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wa-bar-st{margin:0 0 12px;font-family:'Fraunces',Georgia,serif;font-size:1.18rem;line-height:1.35;color:var(--ink)}
 .wa-bar-go{background:var(--bar,#e6464b);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;cursor:pointer;font-size:.92rem}
 .wa-bar-go:hover{filter:brightness(1.06)}
+/* Real-Life Talk + Watch & Shadow */
+.wl-how{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 6px}
+.wl-howcard{flex:1;min-width:200px;display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 14px}
+.wl-howcard>span{font-size:1.5rem;line-height:1}
+.wl-howcard b{color:var(--ink)}
+.wl-howcard p{margin:3px 0 0;font-size:.86rem;color:var(--muted);line-height:1.45}
+.rl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.rl-card{border:1px solid var(--line);border-top:5px solid var(--bar,#E08A2B);border-radius:14px;background:#fff;padding:14px 16px;display:flex;flex-direction:column}
+.rl-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.rl-ic{font-size:1.5rem}
+.rl-head h3{margin:0;font-size:1.12rem;color:var(--ink)}
+.rl-line{margin:2px 0;font-size:.9rem;color:var(--slate);line-height:1.45}
+.rl-line b{color:var(--ink)}
+.rl-lbl{margin:10px 0 6px;font-size:.8rem;font-weight:700;color:var(--ink)}
+.rl-lbl span{font-weight:500;color:var(--muted)}
+.wl-phrs{display:flex;flex-wrap:wrap;gap:6px}
+.wl-phr{display:inline-block;border:1px solid var(--line);background:#fbfaf6;border-radius:999px;padding:5px 11px;font-size:.83rem;color:var(--ink);text-decoration:none;transition:.12s}
+.wl-phr:hover{border-color:var(--teal);background:#f2fbf8;color:var(--teal-dk)}
+.rl-go{margin-top:12px;align-self:flex-start;background:var(--bar,#E08A2B);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-weight:700;cursor:pointer;font-size:.9rem}
+.rl-go:hover{filter:brightness(1.06)}
+.wl-lvlhead{font-weight:800;color:var(--ink);margin:16px 0 8px;padding-left:10px;border-left:5px solid var(--bar,#2B5FA6);font-size:1.02rem}
+.wl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
+.wl-link{display:flex;flex-direction:column;gap:3px;border:1px solid var(--line);border-left:5px solid var(--bar,#2B5FA6);border-radius:12px;background:#fff;padding:11px 13px;text-decoration:none;transition:box-shadow .12s,transform .06s}
+.wl-link:hover{box-shadow:0 8px 18px -12px rgba(21,24,58,.4);transform:translateY(-1px)}
+.wl-link b{color:var(--ink);font-size:.96rem}
+.wl-link span{color:var(--muted);font-size:.82rem;line-height:1.4}
+.wl-flag{color:#b23c2b;font-size:.76rem;font-style:normal;font-weight:600}
+.wl-cta{color:var(--bar,#2B5FA6)!important;font-weight:700;font-size:.8rem!important;margin-top:2px}
+.wl-foot{color:var(--muted);font-size:.8rem;margin:18px 0 4px}
 .wa-modebar{display:flex;gap:8px;margin:2px 0 12px}
 .wa-modebar button{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:10px 8px;font-weight:700;cursor:pointer;color:var(--slate);display:flex;flex-direction:column;gap:2px;align-items:center;font-size:.92rem}
 .wa-modebar button small{font-weight:500;color:var(--muted);font-size:.72rem}
@@ -1113,20 +1142,6 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wa-help>summary span{font-weight:500;color:var(--muted);font-size:.82rem}
 .wa-help>summary::-webkit-details-marker{display:none}
 .wa-help .wa-chips{margin-top:10px}
-/* gap-fill talk builder */
-.wa-gapwrap{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px 14px}
-.wa-gaptext{margin:0 0 10px;line-height:2.15;font-size:.98rem;color:var(--ink)}
-.wa-gap{display:inline-block;min-width:60px;text-align:center;border-bottom:2px solid var(--coral);border-radius:6px 6px 0 0;padding:1px 8px;margin:0 2px;color:var(--muted);background:#fff5f8;cursor:pointer;font-weight:600;transition:.12s;vertical-align:baseline}
-.wa-gap.has{color:var(--ink);background:#eafaf5;border-bottom-color:var(--teal)}
-.wa-gap.act{background:var(--amber);border-bottom-color:var(--ink);color:var(--ink);box-shadow:0 0 0 2px rgba(255,210,63,.55)}
-.wa-gap:hover{filter:brightness(.98)}
-.wa-wordbank{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
-.wa-word{border:1px solid var(--line);background:#fbfaf6;border-radius:999px;padding:6px 12px;font-size:.85rem;cursor:pointer;color:var(--ink);transition:.12s}
-.wa-word:hover{border-color:var(--teal);background:#f2fbf8;color:var(--teal-dk)}
-.wa-word:active{transform:translateY(1px)}
-.wa-gaptools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
-.wa-gapnote{font-size:.8rem;color:var(--muted);margin-top:8px;line-height:1.5}
-.wa-gapnote b{color:var(--teal-dk)}
 
 .wa-starters{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
 .wa-starter{border:1.5px dashed var(--line);background:#fbfaf6;border-radius:999px;padding:7px 13px;font-size:.85rem;color:var(--slate);cursor:pointer;transition:.12s}
@@ -21971,6 +21986,82 @@ const WASPK_STARTERS = ['I can see / I notice…','It looks like…','I think th
 const WASPK_INDEX = {};
 WASPK_CATS.forEach(c => c.prompts.forEach(p => { WASPK_INDEX[p.id] = { p:p, c:c }; }));
 
+/* ===== Real-Life Contexts (scenario role-plays) ========================== */
+const WASPK_REAL_CAT = { key:'p_real', name:'Real-Life Talk', emoji:'🎭', grad:['#E08A2B','#b5561a'], scene:'imagine' };
+const WA_RW='Quick prep (2 min): jot 4–5 phrases you will need — a greeting, your main request, one question to ask, and a polite closing. Note one thing that might go wrong, and how you would handle it.';
+const WA_RS='Act it out for 1–2 minutes. Play your role — and the other person too, if you are on your own. Speak clearly, stay polite, and keep going until you reach your goal. Record it and listen back.';
+const WASPK_REAL = [
+  {id:'real_cafe', emoji:'🍽️', title:'Ordering at a Café', role:"You're the customer; a partner (or you) plays the waiter.", goal:'Order a drink and a meal, ask one question about the menu, and handle a dish being sold out.', useful:['Could I see the menu, please?','What do you recommend?',"I'll have the …, please.",'Could I get the bill, please?'], statement:'You are at a café, ready to order. Greet the waiter, ask about one dish, order your food and drink, then politely deal with your first choice being sold out.'},
+  {id:'real_interview', emoji:'🧑‍💼', title:'A Job Interview', role:"You're the candidate; a partner is the interviewer.", goal:'Introduce yourself, answer three common questions, and ask one question of your own.', useful:['Thank you for having me.','My strongest skill is …','One example of that is …','Could you tell me more about …?'], statement:"You are in an interview for a part-time job you'd love. Introduce yourself in two sentences, then answer: 'Tell me about yourself', 'What is your greatest strength?' and 'Why should we choose you?' — and finish by asking the interviewer one question."},
+  {id:'real_return', emoji:'🛍️', title:'Returning an Item', role:"You're the customer; a partner is the shop assistant.", goal:'Explain the problem, ask for a refund or exchange, and stay polite if they say no at first.', useful:["I'd like to return this, please.","It doesn't fit / It's faulty.",'Could I exchange it instead?','I understand, but could you help me?'], statement:'You bought something that is the wrong size or faulty. Explain the problem to the assistant, ask for an exchange or refund, and stay polite when they first say it cannot be returned.'},
+  {id:'real_directions', emoji:'🧭', title:'Asking for Directions', role:"You're lost; a partner is a helpful stranger.", goal:'Ask the way, understand the directions, and repeat them back to check.', useful:['Excuse me, how do I get to …?','Is it far from here?','So I go straight, then turn left?','Thank you so much for your help.'], statement:'You are lost in a new city and need to reach the bus station. Stop a stranger politely, ask the way, listen to the directions, then repeat them back to make sure you understood.'},
+  {id:'real_doctor', emoji:'🩺', title:'At the Doctor', role:"You're the patient; a partner is the doctor.", goal:'Describe your symptoms clearly, answer questions, and understand the advice.', useful:["I've had a … for two days.",'It hurts when I …','How often should I take this?',"Should I come back if it doesn't improve?"], statement:"You don't feel well. Tell the doctor your symptoms, answer their questions about when it started and how bad it is, and make sure you understand the advice before you leave."},
+  {id:'real_phone', emoji:'📞', title:'Making a Phone Call', role:"You're calling; a partner answers.", goal:'Introduce yourself, make your booking, and confirm the details.', useful:['Hello, this is … speaking.',"I'm calling to …",'Could I book a table for four?','Let me confirm: … , is that right?'], statement:'Call a restaurant to book a table for Friday evening. Introduce yourself, say what you need, give the day, time and number of people, then repeat the details back to confirm.'},
+  {id:'real_meet', emoji:'🤝', title:'Meeting Someone New', role:'You and a partner are meeting for the first time.', goal:'Introduce yourself, make small talk, and find one thing in common.', useful:["Hi, I'm … . Nice to meet you.",'Where are you from?','What do you like doing?','Oh, me too!'], statement:"You've just met a new classmate or colleague. Introduce yourself, ask two friendly questions, share something about yourself, and find one thing you both have in common."},
+  {id:'real_complaint', emoji:'🗣️', title:'A Polite Complaint', role:"You're the guest; a partner is staff.", goal:"Raise a problem calmly, say what you'd like done, and thank them.", useful:['Excuse me, there seems to be a problem.',"This isn't what I ordered.",'Would it be possible to …?','Thank you for sorting that out.'], statement:'Your food arrived cold, or your room is not ready. Explain the problem to the staff calmly and politely, say clearly what you would like them to do, and keep a friendly tone throughout.'},
+  {id:'real_problem', emoji:'🆘', title:'Solving a Problem Together', role:'You and a partner disagree on a plan.', goal:'Explain your view, listen to theirs, and agree on a fair solution.', useful:["Here's what I think we should do.",'I see your point, but …','What if we …?',"So we're agreed, then?"], statement:'You and a friend are planning a day out but want different things. Explain your idea, listen to theirs, suggest a compromise, and agree together on a plan that works for you both.'},
+  {id:'real_qa', emoji:'🎓', title:'Handling Q&A After a Talk', role:'You just gave a short talk; a partner asks questions.', goal:"Answer clearly, admit if you're unsure, and stay calm under pressure.", useful:["That's a great question.",'In short, …','Let me give you an example.','Does that answer your question?'], statement:"You've just presented for one minute on a topic you like. Take three questions from the audience: answer clearly, give one example, and calmly handle a question you don't fully know the answer to."},
+  {id:'real_shop', emoji:'🛒', title:'Shopping & Prices', role:"You're the shopper; a partner is the seller.", goal:'Ask about price and size, compare options, and make a decision.', useful:['How much is this?','Do you have it in a smaller size?','Is there a discount?',"I'll take this one, thanks."], statement:"You're shopping for a gift on a budget. Ask about the price and sizes, compare two options out loud, ask if there's a discount, then decide which one to buy."},
+  {id:'real_checkin', emoji:'✈️', title:'Check-in & Reception', role:"You're the traveller; a partner is staff at the desk.", goal:'Check in, answer questions, and ask about your gate or room.', useful:["I'd like to check in, please.","Here's my passport / booking.",'Just one bag to check.','What time is boarding?'], statement:"You've arrived at airport check-in (or a hotel reception). Greet the staff, hand over your documents, answer their questions, then ask one question about your gate, seat or room."}
+].map(s => Object.assign(s, { kind:'debate', caption:'Real-life scenario · '+s.title, write:WA_RW, speak:WA_RS }));
+/* register scenarios so the normal Write → Speak → Publish flow can open them */
+WASPK_REAL.forEach(p => { WASPK_INDEX[p.id] = { p:p, c:WASPK_REAL_CAT }; });
+
+/* ===== Watch · Shadow · Record (independent practice) ==================== */
+/* Shadowing = play a short clip, pause, and repeat it at once to copy the rhythm.
+   Each phrase links to YouGlish, which plays real clips of that exact phrase. */
+const WASPK_SHADOW = ['behave yourself','bear with me','point taken','take your time',"I couldn't agree more",'suit yourself',"that's not fair",'I mean it','hang in there','no hard feelings',"it's not a big deal",'give me a second',"I'll take that as a yes",'fair enough'];
+const WASPK_FILMS = [
+  {lvl:'Beginner', tint:'#0FA98B', items:[
+    {t:'Finding Nemo', n:'Everyday phrases, calm pacing, warm family dialogue.'},
+    {t:'Kung Fu Panda', n:'Short punchy lines and comedic delivery — easy to shadow.'},
+    {t:'The Lion King', n:'Classic phrasing and emotional, quotable lines.'}
+  ]},
+  {lvl:'Beginner–Intermediate', tint:'#2B5FA6', items:[
+    {t:'Early Man', n:'Simple plot, exaggerated expressions, British accents.'},
+    {t:'Paddington', n:'Polite, everyday British English at a gentle pace.'}
+  ]},
+  {lvl:'Intermediate', tint:'#E08A2B', items:[
+    {t:'Life of Pi', n:'Narrative storytelling with rich, descriptive vocabulary.'},
+    {t:'The Pursuit of Happyness', n:'Emotional, clear conversation; an inspiring story.'},
+    {t:"The King's Speech", n:'Superb for public-speaking practice and pronunciation.'},
+    {t:'Forrest Gump', n:'Everyday conversation with a Southern American accent.'},
+    {t:'Notting Hill', n:'Casual modern English, mixed British/American accents.'},
+    {t:'IF (2024)', n:'Everyday conversation and friendship vocabulary.'},
+    {t:'Akeelah and the Bee', n:'Spelling and vocabulary focus, clear youth dialogue.'},
+    {t:'The Intern', n:'Workplace English in a modern, conversational tone.'},
+    {t:'Ghosted', n:'Casual modern dialogue with action-comedy pacing.'}
+  ]},
+  {lvl:'Intermediate–Advanced', tint:'#8B5CF6', items:[
+    {t:"Bridget Jones's Diary", n:'Fast, idiomatic British English and comic timing.', flag:'Adult themes — preview first.'},
+    {t:'1917', n:'Dramatic, historical dialogue; British military vocabulary.'},
+    {t:'Dead Poets Society', n:'Rich, literary language and persuasive speech.'},
+    {t:'The Green Mile', n:'Southern American dialects and emotional depth.', flag:'Mature themes — preview first.'},
+    {t:'Good Will Hunting', n:'Fast, intelligent dialogue; mixed registers.', flag:'Strong language — preview first.'},
+    {t:'Interstellar', n:'Scientific vocabulary and emotional family dialogue.'},
+    {t:'Men in Black', n:'Fast comedic banter and action vocabulary.'},
+    {t:'The Social Network', n:'Very fast, sharp dialogue — great advanced listening.'},
+    {t:'The Beekeeper', n:'Action-thriller and cybersecurity vocabulary.', flag:'Action violence — preview first.'}
+  ]}
+];
+const WASPK_TV = [
+  {t:'Mind Your Language', n:'A classic ESL sitcom — gentle comedy built around English learners.'},
+  {t:'Extra English', n:'Made for learners: short, story-driven episodes with repeated vocabulary.'},
+  {t:'Horrible Histories', n:'British sketch comedy for children — culture and vocabulary, fun.'},
+  {t:'Friends', n:'Clear, everyday conversational English, great for shadowing.', flag:'Some adult humour/dating themes — preview for younger classes.'},
+  {t:'Bluey / Peppa Pig', n:'Very young beginners: short, simple sentences and clear pronunciation.'},
+  {t:'Sesame Street', n:'Foundational vocabulary and phonics for young children.'}
+];
+const WASPK_TED = [
+  {theme:'🧠 Mind & Psychology', items:['The language of lying','The psychology of narcissism','What is depression?','What is bipolar disorder?','The benefits of a bilingual brain','The missing ingredient in how we learn']},
+  {theme:'🧩 Logic Puzzles & Riddles', items:['Can you solve the prisoner hat riddle?','Can you solve the bridge riddle?','Can you solve the green-eyed logic puzzle?','Can you solve the virus riddle?','Can you solve the wizard standoff riddle?']},
+  {theme:'🏛️ History & Culture', items:['When did we start using passports?','How to attack (and defend) a medieval castle','The incredible engineering of Venice','The haunting history of the Paris Catacombs','A brief history of cheese','The dark origins of Disney fairy tales']},
+  {theme:'🦋 Nature & Animals', items:['The mystery of the giant kelp forest','Meet the slow loris, the only venomous primate','Why does catnip make cats go crazy?','How do snakes swallow animals so much bigger than they are?']},
+  {theme:'🔬 Everyday Science', items:['How does the space station never run out of oxygen?','Should you rinse your dishes before the dishwasher?','What happens if you eat a silica gel packet?','Why avalanches are most deadly when they stop','How does anesthesia work?']}
+];
+function waspkYouglish(ph){ return 'https://youglish.com/pronounce/'+encodeURIComponent(ph)+'/english'; }
+function waspkYT(q){ return 'https://www.youtube.com/results?search_query='+encodeURIComponent(q); }
+
 /* ---- Media & deck storage (IndexedDB blobs via the shared IDB store) ----- */
 function waspkPutBlob(key, blob){ try{ return IDB.put(key, blob); }catch(e){ return Promise.resolve(false); } }
 async function waspkGetBlobURL(key){ try{ const b=await IDB.get(key); return b? URL.createObjectURL(b):null; }catch(e){ return null; } }
@@ -22106,6 +22197,8 @@ ROUTES.waspk = function(){
     </div>
     <div class="wa-modes">
       ${mode('waspkCats',undefined,['#3a9d8a','#2c6e63'],'🗂️','Prompt Library','Pictures, videos, puzzles &amp; debates')}
+      ${mode('waspkReal',undefined,['#E08A2B','#b5561a'],'🎭','Real-Life Talk','Order food, interviews, problems')}
+      ${mode('waspkWatch',undefined,['#2B5FA6','#173a6b'],'🎬','Watch &amp; Shadow','Films, shows &amp; TED-Ed + shadowing')}
       ${mode('waspkDo','random',['#e6608a','#b23c78'],'🎲','Surprise Me','A random prompt to begin')}
       ${mode('waspkCreate',undefined,['#8B5CF6','#5B8DEF'],'📸','Create Your Own','Add a picture, video, puzzle or debate')}
       ${mode('waspkMine',undefined,['#15183A','#26308a'],'📔','My Portal',`Your published projects${n?` · ${n}`:''}`)}
@@ -22199,6 +22292,89 @@ ROUTES.waspkHelp = function(){
     ${step('2️⃣','Speak About It — 2 minutes','Now say your ideas out loud. A 2-minute timer counts down as you record your voice. The words are already yours from your writing. Slide again to continue.','#0FA98B')}
     ${step('3️⃣','Publish &amp; Share','Download the colourful PowerPoint template, add your writing, your audio and your connection to self · local · world, then upload it and press Save &amp; Publish. It is stored in your Portal — a dated archive of everything you make.','#8B5CF6')}
     <button class="btn" style="margin-top:18px" onclick="go('waspkDo','random')">Start a project →</button>
+  </div>`;
+};
+
+/* ===== REAL-LIFE TALK (scenario role-plays) ============================= */
+ROUTES.waspkReal = function(){
+  waspkStopRec();
+  const phr=(arr)=>`<div class="wl-phrs">${arr.map(p=>`<a class="wl-phr" target="_blank" rel="noopener" href="${waspkYouglish(p)}" title="Hear real clips of this phrase">🔊 ${esc(p)}</a>`).join('')}</div>`;
+  const cards=WASPK_REAL.map((s,i)=>{
+    const col=WASPK_BAR_PALETTE[i%WASPK_BAR_PALETTE.length];
+    return `<div class="rl-card" style="--bar:${col.c}">
+      <div class="rl-head"><span class="rl-ic">${s.emoji}</span><h3>${esc(s.title)}</h3></div>
+      <p class="rl-line"><b>You:</b> ${esc(s.role)}</p>
+      <p class="rl-line"><b>Goal:</b> ${esc(s.goal)}</p>
+      <div class="rl-lbl">Useful phrases <span>— tap to hear them said by real speakers</span></div>
+      ${phr(s.useful)}
+      <button type="button" class="rl-go" onclick="go('waspkDo','${s.id}')">🎤 Practise &amp; record →</button>
+    </div>`;
+  }).join('');
+  app().innerHTML = `
+  <div class="wrap screen">
+    <button class="back" onclick="go('waspk')">← Talkabout</button>
+    <div class="wa-hero" style="background:linear-gradient(135deg,#E08A2B,#b5561a)">
+      <div class="stem-kicker" style="color:#fff;opacity:.85">Speak for the real world</div>
+      <h1>🎭 Real-Life Talk</h1>
+      <div class="wa-subtitle">Everyday situations you can rehearse out loud</div>
+      <p>Pick a scenario, read your role and goal, then <b>act it out</b> — with a partner, or playing both parts yourself. Prepare for two minutes, speak for one or two, then <b>record and listen back</b>.</p>
+    </div>
+    <div class="wl-how">
+      <div class="wl-howcard"><span>🎯</span><div><b>Prepare</b><p>Jot the phrases you'll need: a greeting, your request, a question, a polite goodbye.</p></div></div>
+      <div class="wl-howcard"><span>🎭</span><div><b>Act it out</b><p>Play your role and the other person too. Stay polite and keep going to your goal.</p></div></div>
+      <div class="wl-howcard"><span>🔁</span><div><b>Record &amp; review</b><p>Record the role-play, listen back, and try again to sound more natural.</p></div></div>
+    </div>
+    <div class="wa-cathead"><span class="ce">🗂️</span><h2>Choose a scenario</h2></div>
+    <div class="rl-grid">${cards}</div>
+  </div>`;
+};
+
+/* ===== WATCH · SHADOW · RECORD (independent practice) =================== */
+ROUTES.waspkWatch = function(){
+  waspkStopRec();
+  const shadowChips = `<div class="wl-phrs">${WASPK_SHADOW.map(p=>`<a class="wl-phr" target="_blank" rel="noopener" href="${waspkYouglish(p)}" title="Hear this phrase in real clips, then repeat it">🔊 ${esc(p)}</a>`).join('')}</div>`;
+  const filmSecs = WASPK_FILMS.map(g=>`
+    <div class="wl-lvlhead" style="--bar:${g.tint}">${esc(g.lvl)}</div>
+    <div class="wl-grid">${g.items.map(m=>`<a class="wl-link" style="--bar:${g.tint}" target="_blank" rel="noopener" href="${waspkYT(m.t+' movie clip english')}">
+        <b>🎬 ${esc(m.t)}</b><span>${esc(m.n)}</span>${m.flag?`<em class="wl-flag">⚠ ${esc(m.flag)}</em>`:''}<span class="wl-cta">▶ Find clips</span></a>`).join('')}</div>`).join('');
+  const tvSec = `<div class="wl-grid">${WASPK_TV.map(s=>`<a class="wl-link" style="--bar:#0FA98B" target="_blank" rel="noopener" href="${waspkYT(s.t+' full episodes english')}">
+      <b>📺 ${esc(s.t)}</b><span>${esc(s.n)}</span>${s.flag?`<em class="wl-flag">⚠ ${esc(s.flag)}</em>`:''}<span class="wl-cta">▶ Watch</span></a>`).join('')}</div>`;
+  const tedSecs = WASPK_TED.map(g=>`
+    <div class="wl-lvlhead" style="--bar:#8B5CF6">${esc(g.theme)}</div>
+    <div class="wl-grid">${g.items.map(t=>`<a class="wl-link" style="--bar:#8B5CF6" target="_blank" rel="noopener" href="${waspkYT('TED-Ed '+t)}">
+        <b>💡 ${esc(t)}</b><span class="wl-cta">▶ Watch on TED-Ed</span></a>`).join('')}</div>`).join('');
+  app().innerHTML = `
+  <div class="wrap screen">
+    <button class="back" onclick="go('waspk')">← Talkabout</button>
+    <div class="wa-hero" style="background:linear-gradient(135deg,#2B5FA6,#173a6b)">
+      <div class="stem-kicker" style="color:#fff;opacity:.85">Independent practice · listen &amp; imitate</div>
+      <h1>🎬 Watch &amp; Shadow</h1>
+      <div class="wa-subtitle">Learn real rhythm and intonation from film, TV and short talks</div>
+      <p>Two habits build fluent, natural speech: <b>shadowing</b> (repeat a clip the instant you hear it) and <b>self-recording</b> (record yourself, then listen back). Use the films, shows and TED-Ed videos below as your listening material.</p>
+    </div>
+
+    <div class="wl-how">
+      <div class="wl-howcard"><span>🎧</span><div><b>Shadowing</b><p>Play a short clip, pause, and repeat it at once — copy the speaker's rhythm, stress and melody, not just the words.</p></div></div>
+      <div class="wl-howcard"><span>🎙️</span><div><b>Self-recording</b><p>Record a one-minute monologue on any prompt, then listen back to catch pronunciation quirks and track your progress.</p></div></div>
+    </div>
+    <button type="button" class="btn" style="margin:2px 0 6px" onclick="go('waspkDo','random')">🎲 Get a random prompt to record →</button>
+
+    <div class="wa-cathead"><span class="ce">🗣️</span><h2>Shadowing phrases</h2></div>
+    <p style="color:var(--muted);margin:0 0 10px;max-width:640px">High-frequency spoken phrases — clear feeling, simple grammar, useful every day. Tap one to hear it in real clips on YouGlish, then pause and repeat.</p>
+    ${shadowChips}
+
+    <div class="wa-cathead"><span class="ce">🍿</span><h2>Films by level</h2></div>
+    <p style="color:var(--muted);margin:0 0 6px;max-width:660px">Watch with English subtitles first to link sound to spelling, then rewatch without them to test your listening.</p>
+    ${filmSecs}
+
+    <div class="wa-cathead"><span class="ce">📺</span><h2>TV shows for spoken English</h2></div>
+    ${tvSec}
+
+    <div class="wa-cathead"><span class="ce">💡</span><h2>TED-Ed short videos</h2></div>
+    <p style="color:var(--muted);margin:0 0 6px;max-width:660px">Five-to-seven minutes each, narrated slowly and clearly, with a companion lesson on ed.ted.com — a solid daily listening habit.</p>
+    ${tedSecs}
+
+    <p class="wl-foot">Tip: preview any clip yourself before class — links open a search so you can pick the best version.</p>
   </div>`;
 };
 
@@ -22389,6 +22565,21 @@ function waspkReadWriting(){ const t=((document.getElementById('waspkText')||{})
 let WASPK_WMODE='free';
 /* prompt-relevant scaffolding: topic lexicon + subject/claim helpers */
 const WASPK_LEX=[
+ /* High-priority, specific themes first, so a precise keyword (tattoo, happiness,
+    passion, "new word") wins over a generic one that happens to appear in the
+    prompt (machine, earth, school, minute). */
+ {k:['tattoo','piercing','body art'], topic:'tattoos and self-expression', w:['permanent','self-expression','identity','meaning','bold','design','personal','regret']},
+ {k:['passion','passionate','hobby','hobbies'], topic:'passions and hobbies', w:['passion','hobby','enjoy','skill','dedication','creative','free time','proud']},
+ {k:['happiness','happy','wellbeing','well-being'], topic:'happiness and wellbeing', w:['contentment','fulfilment','joy','meaning','balance','grateful','genuine','lasting']},
+ {k:['new word','invent a word'], topic:'words and language', w:['meaning','express','define','useful','catchy','communicate','feeling','everyday']},
+ {k:['invisible','invisibility'], topic:'being invisible', w:['unseen','secret','tempting','honest','watch','power','responsible','curious']},
+ {k:['superpower','super power','super-power'], topic:'having a superpower', w:['power','responsible','help','tempting','choice','control','good','limit']},
+ {k:['alien','ufo','spaceship','extraterrestrial'], topic:'aliens and the unknown', w:['curious','unknown','brave','risk','question','discover','strange','wonder']},
+ {k:['interview','candidate','job application'], topic:'job interviews', w:['confident','experience','strength','example','motivated','reliable','teamwork','professional']},
+ {k:['directions','how do i get','the way to','lost in'], topic:'finding your way', w:['straight','left','right','corner','opposite','nearby','turn','follow']},
+ {k:['doctor','symptom','patient','clinic','prescription'], topic:'health and the doctor', w:['symptom','painful','tired','dizzy','prescription','recover','appointment','advice']},
+ {k:['book a table','reception','check in','check-in','booking'], topic:'bookings and reception', w:['reserve','confirm','details','available','arrival','request','polite','arrange']},
+ {k:['waiter','menu','café','cafe','restaurant','order the'], topic:'ordering food out', w:['menu','order','recommend','dish','bill','starter','delicious','please']},
  {k:['market','spice','grocery','shopping','shop','store','stall'], topic:'the market', w:['stall','vendor','bustling','aroma','bargain','crowded','trade','fresh produce']},
  {k:['food','eat','meal','cook','hungry','diet','snack'], topic:'food and choices', w:['flavour','nutritious','tasty','portion','craving','variety','fresh','favourite']},
  {k:['phone','screen','social media','online','internet','selfie','app','device','post','scroll'], topic:'screens and social media', w:['notification','scrolling','distraction','screen time','online','addictive','post','offline']},
@@ -22396,7 +22587,7 @@ const WASPK_LEX=[
  {k:['water','drought'], topic:'saving water', w:['conserve','scarce','waste','drought','precious','supply','resource','leak']},
  {k:['forest','tree','nature','wildlife','ocean','sea','climate','planet','earth'], topic:'nature and the planet', w:['habitat','ecosystem','protect','wildlife','deforestation','fragile','balance','future']},
  {k:['freedom','cage','bird','trapped','escape','prison','free'], topic:'freedom', w:['freedom','captivity','release','liberty','safe','wild','choice','responsibility']},
- {k:['time','clock','hour','minute','deadline'], topic:'how we use time', w:['fleeting','precious','routine','waste','moment','deadline','patience','opportunity']},
+ {k:['time','clock','hour','deadline'], topic:'how we use time', w:['fleeting','precious','routine','waste','moment','deadline','patience','opportunity']},
  {k:['future','2050','tomorrow','one year','forever','immortal'], topic:'the future', w:['prediction','uncertain','progress','hope','change','plan','technology','possibility']},
  {k:['choice','decision','sign','crossroads','path'], topic:'making choices', w:['decision','direction','option','consequence','regret','commit','uncertain','turning point']},
  {k:['alone','lonely','loneliness','solitude','isolated','crowd'], topic:'loneliness and belonging', w:['loneliness','belonging','isolation','company','included','reach out','support','connection']},
@@ -22409,7 +22600,7 @@ const WASPK_LEX=[
  {k:['school','homework','exam','study','teacher','learn','grade','lesson','subject'], topic:'school and learning', w:['revision','pressure','grades','effort','understand','memorise','fair','motivation']},
  {k:['language','languages'], topic:'learning languages', w:['fluent','communicate','culture','translate','vocabulary','confident','opportunity','global']},
  {k:['tradition','heritage','culture','custom'], topic:'tradition and change', w:['heritage','custom','identity','preserve','modern','generation','value','change']},
- {k:['fashion','clothes','clothing','tattoo'], topic:'style and identity', w:['trend','waste','cheap','quality','style','throwaway','sustainable','identity']},
+ {k:['fashion','clothes','clothing'], topic:'style and identity', w:['trend','waste','cheap','quality','style','throwaway','sustainable','identity']},
  {k:['money','lottery','million','cash','rich','wealth','spend','$'], topic:'money and values', w:['generous','priority','spend','save','value','responsibility','share','need']},
  {k:['honest','honesty','truth','lie','fake'], topic:'honesty', w:['honest','truthful','trust','integrity','pretend','sincere','reputation','courage']},
  {k:['animal','zoo','pet'], topic:'animals', w:['welfare','captivity','habitat','protect','wild','care','respect','freedom']},
@@ -22421,7 +22612,16 @@ const WASPK_LEX=[
  {k:['laugh','funny','humour','joke'], topic:'humour', w:['laughter','joke','light-hearted','cheerful','witty','mood','share','smile']},
 ];
 function waspkLexMatch(vo){
-  const txt=((vo.title||'')+' '+(vo.caption||'')+' '+(vo.statement||'')+' '+(vo.write||'')).toLowerCase();
+  /* Match on the ACTUAL prompt (statement + title). The caption is only a generic
+     teacher note for debates/puzzles/speaking (e.g. "A perfect lesson opener"),
+     and words like "lesson" or "debate" there would wrongly hijack the topic — so
+     the caption is used only when there is no statement (picture prompts, whose
+     caption genuinely describes the image). */
+  const hasStatement = !!((vo.statement||'').trim());
+  const txt=(hasStatement
+      ? ((vo.statement||'')+' '+(vo.title||''))
+      : ((vo.title||'')+' '+(vo.caption||''))
+    ).toLowerCase();
   function has(key){
     if(/[^a-z ]/.test(key)) return txt.indexOf(key)>=0; // symbols like '$', hyphens
     return new RegExp('(^|[^a-z])'+key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'([^a-z]|$)').test(txt);
@@ -22487,147 +22687,9 @@ function waspkSupportHTML(vo){
   return `
     <div class="sec"><h4>🧭 A writing plan to follow</h4><ol class="wa-strat">${d.strategy.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></div>
     <div class="sec"><h4>🔑 Useful words <span style="font-weight:500;color:var(--muted)">— tap to add</span></h4>${chips(d.vocab)}</div>
-    <div class="sec"><h4>💬 Sentence starters <span style="font-weight:500;color:var(--muted)">— tap to add</span></h4>${chips(d.phrases)}</div>
-    ${waspkGapHTML(vo)}`;
+    <div class="sec"><h4>💬 Useful phrases <span style="font-weight:500;color:var(--muted)">— tap to add, or say them aloud</span></h4>${chips(d.phrases)}</div>`;
 }
 
-/* ---- Gap-fill talk builder (fill blanks from the word list to build a ~2-min talk) ---- */
-let WASPK_GAP=null;
-function waspkCountGaps(parts){ let n=0; parts.forEach(p=>{ if(typeof p!=='string') n++; }); return n; }
-function waspkGapFill(vo){
-  const k=vo.kind||'pic';
-  const m=waspkLexMatch(vo);
-  const B={_gap:1};
-  const topicW = m ? m.w.slice(0,5) : [];
-  /* natural gap-fillers used in real, informal talk */
-  const FILL=['well','you know','I mean','honestly','to be honest','actually','basically','sort of'];
-
-  if(k==='pic'){
-    const about = m ? m.topic : 'the moment it captures';
-    const parts=[
-      'Okay — ',B,', let me talk you through this picture for a minute. ',
-      'When I first look at it, ',B,', there is quite a lot going on. ',
-      'In the foreground I can see the main thing, ',B,' in the background there are smaller details as well. ',
-      'I think this picture is ',B,' about ',about,'. ',
-      'The part that stands out the most is easy to spot, ',B,' I keep coming back to it. ',
-      'Looking at the mood, it feels ',B,' to me, and ',B,' it makes me feel ',B,' too. ',
-      'I feel that way ',B,' it shows something real. ',
-      B,', it reminds me of my own life, ',B,' when I stop and think about it. ',
-      'If I had to give this picture one clear message, I would say it is ',B,'. ',
-      'So ',B,', that is how I read it — what do you see when you look?'
-    ];
-    const bank=[...FILL,'really','but','because','interesting','powerful','surprising','important',...topicW];
-    return {parts,bank};
-  }
-  if(k==='video'){
-    const about = m ? m.topic : 'the choice at its heart';
-    const parts=[
-      'So — ',B,', this short clip is all about ',about,'. ',
-      'At the very start, ',B,', not much seems to happen, ',B,' then things change quite fast. ',
-      'The turning point, ',B,', is the moment when everything shifts. ',
-      'You can really tell the main character feels ',B,', ',B,' because of what happens to them. ',
-      'For me, the part that stood out was near the end, and ',B,' it made me feel ',B,'. ',
-      B,', it made me think about ',about,' in a new way. ',
-      'If I put myself in that character\'s shoes, ',B,' I think I would feel ',B,' as well. ',
-      'If someone asked me for the message, I would ',B,' say it is ',B,'. ',
-      'So ',B,', that is my take on this clip — I would love to hear yours.'
-    ];
-    const bank=[...FILL,'suddenly','at first','because','surprised','moved','hopeful','important','maybe',...topicW];
-    return {parts,bank};
-  }
-  if(k==='debate' && waspkIsClaim(vo)){
-    const cl = waspkLc1(waspkClaim(vo));
-    const parts=[
-      'Right — ',B,', the claim here is that ',cl,'. ',
-      B,', I have thought about it, and I can honestly see both sides. ',
-      'On balance though, my own view is fairly clear, ',B,' let me explain why. ',
-      'My main reason is that this really matters, ',B,' it affects real people. ',
-      'For example, ',B,' you can see it in everyday life. ',
-      B,', some people would strongly disagree, ',B,' that is fair enough. ',
-      'They might argue the opposite, ',B,' I would still say my reason is the stronger one. ',
-      'A second reason worth adding is a simple one, ',B,' and ',B,' it backs up my whole point. ',
-      'So, ',B,', to sum up, that is where I stand — ',B,' what would you say?'
-    ];
-    const bank=[...FILL,'and','because','however','for example','though','of course','right','maybe',...topicW];
-    return {parts,bank};
-  }
-  /* puzzle / open question */
-  const about2 = m ? m.topic : (k==='puzzle' ? 'this puzzle' : 'this question');
-  const parts=[
-    'Okay — ',B,', let me think about ',about2,' out loud for a moment. ',
-    'At first, ',B,', the tricky part is working out where to even start. ',
-    B,', my answer would be this, ',B,' I will say why. ',
-    'I think this ',B,' it makes sense when you look at it closely. ',
-    'For example, ',B,' there is an easy way to picture it. ',
-    B,', someone might see it a different way, ',B,' that is okay with me. ',
-    'On balance though, ',B,' I would still stick with my answer. ',
-    'And if it turns out I am wrong, ',B,' I am happy to change my mind later, ',B,' that is how thinking works. ',
-    'So ',B,', that is my thinking on ',about2,' — how would you explain it?'
-  ];
-  const bank=[...FILL,'because','and','so','for example','however','maybe','of course','right',...topicW];
-  return {parts,bank};
-}
-function waspkGapHTML(vo){
-  const g=waspkGapFill(vo);
-  g.bank=[...new Set(g.bank)];
-  WASPK_GAP={ parts:g.parts, bank:g.bank, fills:new Array(waspkCountGaps(g.parts)).fill(null), active:null };
-  return `<div class="sec"><h4>📝 Fill the gaps to build your talk <span style="font-weight:500;color:var(--muted)">— tap a blank, then tap a word</span></h4>
-    <div class="wa-gapwrap">
-      <p class="wa-gaptext" id="waspkGapText">${waspkGapTextHTML()}</p>
-      <div class="wa-wordbank" id="waspkGapBank">${waspkGapBankHTML()}</div>
-      <div class="wa-gaptools">
-        <button type="button" class="btn ghost sm" onclick="waspkGapHear()">🔊 Hear my talk</button>
-        <button type="button" class="btn teal sm" onclick="waspkGapUse()">📋 Put this in my writing</button>
-        <button type="button" class="btn ghost sm" onclick="waspkGapReset()">↺ Clear gaps</button>
-        <span class="wa-count" id="waspkGapCount">${WASPK_GAP.fills.length} gaps to fill</span>
-      </div>
-      <div class="wa-gapnote" id="waspkGapMsg">This is your <b>~2-minute talk</b>. Fill every blank using the words above, then read it aloud in your own voice — and add your own ideas as you go. You can reuse a word as many times as you like.</div>
-    </div></div>`;
-}
-function waspkGapTextHTML(){
-  const G=WASPK_GAP; if(!G) return ''; let gi=-1;
-  return G.parts.map(pt=>{
-    if(typeof pt==='string') return esc(pt);
-    gi++; const idx=gi; const val=G.fills[idx];
-    const cls='wa-gap'+(val?' has':'')+(G.active===idx?' act':'');
-    return `<span class="${cls}" onclick="waspkGapBlank(${idx})">${val?esc(val):'&nbsp;____&nbsp;'}</span>`;
-  }).join('');
-}
-function waspkGapBankHTML(){
-  const G=WASPK_GAP; if(!G) return '';
-  return G.bank.map((w,i)=>`<button type="button" class="wa-word" onclick="waspkGapWord(${i})">${esc(w)}</button>`).join('');
-}
-function waspkGapBlank(i){
-  const G=WASPK_GAP; if(!G) return;
-  if(G.fills[i]){ G.fills[i]=null; G.active=i; }        /* tap a filled gap to clear it */
-  else { G.active = (G.active===i ? null : i); }        /* tap an empty gap to select it */
-  waspkGapPaint();
-}
-function waspkGapWord(wi){
-  const G=WASPK_GAP; if(!G) return; const w=G.bank[wi]; if(w==null) return;
-  let i=G.active;
-  if(i===null || i===undefined){ i=G.fills.findIndex(x=>!x); }
-  if(i<0 || i===undefined) return;                      /* all gaps already full */
-  G.fills[i]=w;
-  const nxt=G.fills.findIndex(x=>!x); G.active = nxt<0 ? null : nxt;
-  waspkGapPaint();
-}
-function waspkGapPaint(){
-  const t=document.getElementById('waspkGapText'); if(t) t.innerHTML=waspkGapTextHTML();
-  const c=document.getElementById('waspkGapCount');
-  if(c && WASPK_GAP){ const left=WASPK_GAP.fills.filter(x=>!x).length;
-    c.textContent = left===0 ? 'All gaps filled ✓ — now read it aloud!' : (left+' gap'+(left===1?'':'s')+' left'); }
-}
-function waspkGapReset(){ if(!WASPK_GAP) return; WASPK_GAP.fills=WASPK_GAP.fills.map(()=>null); WASPK_GAP.active=null; waspkGapPaint(); }
-function waspkGapAssemble(){
-  const G=WASPK_GAP; if(!G) return ''; let gi=-1;
-  return G.parts.map(pt=>{ if(typeof pt==='string') return pt; gi++; return G.fills[gi] || '…'; }).join('').replace(/\s+/g,' ').trim();
-}
-function waspkGapUse(){
-  const txt=waspkGapAssemble(); if(!txt) return; waspkInsert(txt);
-  const m=document.getElementById('waspkGapMsg'); if(m){ m.innerHTML='Added to your writing below ✓ — read it aloud when you slide across to <b>Speak</b>.'; m.style.color='var(--teal-dk)'; }
-}
-function waspkGapHear(){ waspkSay(waspkGapAssemble().replace(/…/g,'')); }
 function waspkSetWriteMode(m){
   WASPK_WMODE=m;
   const sup=document.getElementById('waspkSupport'); if(sup) sup.style.display=(m==='support')?'':'none';
