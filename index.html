@@ -923,7 +923,7 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 /* --- term rail + week popup --- */
 .wk-row{display:flex;gap:14px;align-items:flex-start}
 .wk-main{flex:1;min-width:0}
-.wk-rail{flex:0 0 148px;position:sticky;top:12px;background:#fff;border:1px solid var(--line,#dfd9c9);border-radius:14px;padding:8px;max-height:calc(100vh - 24px);overflow:auto}
+.wk-rail{flex:0 0 224px;position:sticky;top:12px;background:#fff;border:1px solid var(--line,#dfd9c9);border-radius:14px;padding:8px;max-height:calc(100vh - 24px);overflow:auto}
 .wk-head{display:flex;justify-content:space-between;align-items:baseline;padding:4px 6px 8px;border-bottom:1px solid var(--line,#dfd9c9);margin-bottom:6px}
 .wk-head b{font-size:.86rem}
 .wk-head small{font-size:.68rem;color:var(--muted,#6b6b6b)}
@@ -937,34 +937,35 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wk-btn.off{opacity:.72}
 .wk-btn.off .wk-s{color:#9a9ebe}
 .wk-foot{font-size:.64rem;color:var(--muted,#6b6b6b);line-height:1.35;margin:6px 4px 2px;font-style:italic}
-/* ---- weekly routine: rail teaser ---- */
-.wk-routine{border:1px solid var(--line,#dfd9c9);border-radius:12px;padding:8px;margin-bottom:10px;background:linear-gradient(180deg,#fbfaff,#f1eefc)}
-.wk-routine-h{display:flex;align-items:baseline;justify-content:space-between;margin:0 2px 6px}
-.wk-routine-h b{font-size:.82rem;color:#2c3070}
-.wk-routine-h small{font-size:.58rem;color:var(--muted,#6b6b6b)}
-.wk-daily{display:block;font-size:.6rem;line-height:1.35;color:#5b5f86;background:#fff;border:1px dashed #c9c5e8;border-radius:8px;padding:5px 7px;margin-bottom:7px}
-.wk-daily b{color:#2c3070}
-.wk-loop{display:flex;flex-direction:column;gap:4px}
-.wk-step{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line,#dfd9c9);border-left:4px solid var(--sc,#7A2FD0);border-radius:8px;padding:5px 7px;cursor:pointer;transition:transform .1s;text-align:left;width:100%;font-family:inherit}
-.wk-step:hover{transform:translateX(2px)}
-.wk-step .si{font-size:1rem;flex:none;line-height:1}
-.wk-step b{display:block;font-size:.68rem;color:var(--ink,#222);line-height:1.1}
-.wk-step span{display:block;font-size:.56rem;color:var(--muted,#6b6b6b);line-height:1.2}
-.wk-routine-more{display:block;width:100%;margin-top:8px;border:none;background:#2c3070;color:#fff;border-radius:8px;padding:6px;font-size:.64rem;font-weight:700;cursor:pointer;font-family:inherit}
-.wk-routine-more:hover{background:#3a3f8f}
-/* ---- weekly routine: modal ---- */
-.wkr-lead{font-size:.9rem;color:var(--ink,#222);line-height:1.5;margin:0 0 14px;background:#f5f3ff;border-left:4px solid #7A2FD0;border-radius:8px;padding:9px 12px}
-.wkr-day{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px dashed var(--line,#dfd9c9)}
-.wkr-day:last-child{border-bottom:0}
-.wkr-badge{flex:none;width:54px;height:54px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}
-.wkr-badge .si{font-size:1.25rem;line-height:1}
-.wkr-badge small{font-size:.5rem;font-weight:800;letter-spacing:.04em;opacity:.92;margin-top:2px}
-.wkr-txt{flex:1;min-width:0}
-.wkr-txt b{display:block;font-size:.96rem}
-.wkr-txt p{margin:2px 0 5px;font-size:.8rem;color:var(--muted,#6b6b6b);line-height:1.45}
-.wkr-open{border:1px solid var(--line,#dfd9c9);background:#fff;border-radius:8px;padding:3px 11px;font-size:.72rem;font-weight:700;color:#2c3070;cursor:pointer;font-family:inherit}
-.wkr-open:hover{background:#f2f0ff;border-color:#2c3070}
-.wkr-foot{font-size:.8rem;color:var(--muted,#6b6b6b);line-height:1.5;margin:14px 0 0;font-style:italic}
+/* ---- week accordion (dropdown of lessons) ---- */
+.wk-acc{margin-bottom:6px;border:1px solid var(--line,#dfd9c9);border-radius:10px;overflow:hidden;background:#fbfaf6}
+.wk-acc.on{background:linear-gradient(180deg,#f4fbf9,#eafaf3);border-color:#0f766e}
+.wk-acc.off{opacity:.82}
+.wk-accbtn{display:block;width:100%;text-align:left;border:none;background:transparent;padding:8px 9px;cursor:pointer;font-family:inherit}
+.wk-accbtn:hover{background:rgba(15,118,110,.05)}
+.wk-n{display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:.82rem}
+.wk-caret{font-size:.62rem;color:var(--muted,#6b6b6b);transition:transform .15s}
+.wk-acc.open .wk-caret{transform:rotate(180deg)}
+.wk-accbtn .wk-t{display:block;font-size:.67rem;color:var(--muted,#6b6b6b);line-height:1.25;margin:1px 0 4px}
+.wk-meta{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.wk-focus{display:inline-block;font-size:.55rem;font-weight:800;letter-spacing:.02em;padding:1px 7px;border-radius:999px;color:#fff}
+.wk-focus.read{background:#E0403F}
+.wk-focus.write{background:#2BA84F}
+.wk-accbtn .wk-s{font-size:.6rem;font-weight:700}
+.wk-acc.on .wk-s{color:#0f766e}
+.wk-acc.off .wk-s{color:#9a9ebe}
+.wk-drop{display:none;padding:2px 8px 9px}
+.wk-acc.open .wk-drop{display:block}
+.wk-drop h5{font-size:.56rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted,#6b6b6b);margin:10px 2px 4px;font-weight:800}
+.wk-l{display:flex;align-items:center;gap:7px;width:100%;text-align:left;border:1px solid var(--line,#dfd9c9);border-left:3px solid var(--lc,#888);border-radius:8px;padding:5px 7px;margin-bottom:4px;background:#fff;cursor:pointer;font-family:inherit;transition:transform .1s}
+.wk-l:hover:not(:disabled){transform:translateX(2px)}
+.wk-l:disabled{opacity:.5;cursor:not-allowed}
+.wk-l .li{font-size:.9rem;flex:none;line-height:1}
+.wk-l-b{flex:1;min-width:0}
+.wk-l-b b{display:block;font-size:.66rem;color:var(--ink,#222);line-height:1.2}
+.wk-l-b small{display:block;font-size:.55rem;color:var(--muted,#6b6b6b);line-height:1.2}
+.wk-more{display:block;width:100%;margin-top:8px;border:1px solid var(--line,#dfd9c9);background:#fff;color:#2c3070;border-radius:8px;padding:6px;font-size:.62rem;font-weight:700;cursor:pointer;font-family:inherit}
+.wk-more:hover{background:#f2f0ff;border-color:#2c3070}
 #wkModalHost .wk-modal{position:fixed;inset:0;background:rgba(10,12,32,.55);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:24px 14px;overflow:auto}
 .wk-card{background:#fff;border-radius:18px;max-width:680px;width:100%;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.4)}
 .wk-x{position:absolute;top:10px;right:12px;border:none;background:rgba(255,255,255,.25);color:#fff;width:30px;height:30px;border-radius:50%;font-size:1.2rem;cursor:pointer;line-height:1}
@@ -998,11 +999,8 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wk-item-k{font-size:.6rem;font-weight:700;color:#9a9ebe;letter-spacing:.5px;flex:none}
 @media(max-width:860px){
   .wk-row{flex-direction:column}
-  .wk-rail{position:static;flex:none;width:100%;max-height:none;display:flex;gap:6px;overflow-x:auto;padding:8px}
-  .wk-head{flex:0 0 auto;flex-direction:column;border:0;border-right:1px solid var(--line,#dfd9c9);margin:0 4px 0 0;padding:0 8px 0 2px}
-  .wk-btn{flex:0 0 118px;margin:0}
-  .wk-routine{flex:0 0 216px;margin:0 6px 0 0}
-  .wk-foot{display:none}
+  .wk-rail{position:static;flex:none;width:100%;max-height:none;padding:8px}
+  .wk-head{flex-direction:row}
 }
 
 .wk-note{font-size:.74rem;color:var(--muted,#6b6b6b);line-height:1.45;margin:2px 2px 0;font-style:italic}
@@ -16219,41 +16217,74 @@ const WK_STUDIO = { markTask:'Marking task \u2014 score a script before you writ
                     oreoTask:'OREO task \u2014 Opinion \u00b7 Reason \u00b7 Example \u00b7 Opinion' };
 
 /* ---- the left rail ---- */
+let WK_ACC = new Set();
+function toggleWeekAcc(w){ if(WK_ACC.has(w)) WK_ACC.delete(w); else WK_ACC.add(w); paintWeekRail(); }
+function weekFocus(w){ return (w % 2 === 1) ? 'read' : 'write'; }  /* alternate: odd = reading, even = writing */
 function weekRailHTML(){
   const teach = weekIsTeacher();
   const openCount = TERM_WEEKS.filter(x=>weekOpen(x.w)).length;
-  const step = (ic,name,sub,route,col)=>
-    `<button class="wk-step" style="--sc:${col}" onclick="go('${route}')">
-       <span class="si">${ic}</span><span><b>${name}</b><span>${sub}</span></span>
+  const li = (ic,name,strap,route,arg,colour,enabled)=>
+    `<button class="wk-l" style="--lc:${colour}" ${enabled?`onclick="go('${route}'${arg!=null?",'"+String(arg).replace(/'/g,"\\'")+"'":''})"`:'disabled'}>
+       <span class="li">${ic}</span>
+       <span class="wk-l-b"><b>${esc(name)}</b>${strap?`<small>${esc(strap)}</small>`:''}</span>
      </button>`;
+  const rows = TERM_WEEKS.map(x=>{
+    const on   = weekOpen(x.w);
+    const open = WK_ACC.has(x.w);
+    const focus = weekFocus(x.w);
+    const isRead = focus==='read';
+    let inner = '';
+
+    /* Week 1 carries the diagnostic — surface it first */
+    if(x.diag) inner += `<h5>\ud83e\udded Start here</h5>` +
+      li('\ud83e\udded','Start-of-year diagnostic','35 min \u00b7 baseline & grouping','diagnostic',null,'#15183A', on);
+
+    /* PRIMARY SKILL — the week's focus (alternates read / write) */
+    if(isRead){
+      let items = x.read.map(id=>{ const l=wkRead(id); return li('\ud83d\udcd6', l?l.name:id, l?l.strap:'', 'rcLesson', id, '#E0403F', on); }).join('');
+      const tx = x.text && wkText(x.text);
+      if(tx) items += li('\ud83d\udcc4', tx.title, 'anchor text \u00b7 '+(tx.genre||'read'), 'readItem', x.text, '#E0403F', on);
+      inner += `<h5>\ud83d\udcd6 Reading \u2014 this week\u2019s focus</h5>${items}`;
+    } else {
+      const items = x.write.map(id=>{ const l=wkWrite(id); return li('\u270d\ufe0f', l?l.name:id, l?l.strap:'', 'wcLesson', id, '#2BA84F', on); }).join('');
+      inner += `<h5>\u270d\ufe0f Writing \u2014 this week\u2019s focus</h5>${items}`;
+    }
+
+    /* GRAMMAR — chosen to enhance the primary skill */
+    const g = wkGram(x.gram);
+    inner += `<h5>\ud83e\udde9 Grammar \u2014 enhances your ${isRead?'reading':'writing'}</h5>` +
+      li('\ud83e\udde9', g?g.title:x.gram, isRead?'notice this structure as you read':'use this structure in your writing', 'grammarLesson', x.gram, '#0FA98B', on);
+
+    /* TALKABOUT — one speaking activity per week */
+    const sp = (x.speak!==null && x.speak!==undefined) ? wkSpeak(x.speak) : null;
+    inner += `<h5>\ud83c\udfa4 Talkabout \u2014 one this week</h5>` +
+      li('\ud83c\udfa4', sp?sp.cat:'Talkabout', sp?(sp.note||'speaking activity'):'speaking activity', 'waspk', null, '#F5A301', on);
+
+    /* DAILY PRACTICE — every day */
+    inner += `<h5>\ud83d\udd01 Every day</h5>` +
+      li('\ud83d\udcf0','Article-A-Day \u00b7 week '+x.aad,'build knowledge & vocabulary','articleaday',null,'#5B8DEF', on) +
+      li('\u2328\ufe0f','Typing & Spelling','say it \u00b7 spell it \u00b7 type it','spellType',null,'#5B8DEF', on);
+
+    inner += `<button class="wk-more" onclick="openWeek(${x.w})">Full week details${teach?' & controls':''} \u2192</button>`;
+
+    return `<div class="wk-acc ${on?'on':'off'} ${open?'open':''}">
+      <button class="wk-accbtn" onclick="toggleWeekAcc(${x.w})" title="${esc(x.title)}">
+        <span class="wk-n">Week ${x.w}<span class="wk-caret">\u25bc</span></span>
+        <span class="wk-t">${esc(x.title)}</span>
+        <span class="wk-meta"><span class="wk-focus ${focus}">${isRead?'\ud83d\udcd6 Reading':'\u270d\ufe0f Writing'}</span><span class="wk-s">${on?'\u25cf open':'\u25cf locked'}</span></span>
+      </button>
+      <div class="wk-drop">${inner}</div>
+    </div>`;
+  }).join('');
   return `
-  <div class="wk-routine">
-    <div class="wk-routine-h"><b>Your week</b><small>a light routine</small></div>
-    <span class="wk-daily">\u23f1\ufe0f <b>Every day \u00b7 10 min</b> \u2014 Grammar \u00b7 Article-a-Day \u00b7 Spell-Type</span>
-    <div class="wk-loop">
-      ${step('\ud83d\udcd6','Read','Reading Course','readingCourse','#E0403F')}
-      ${step('\ud83c\udfa4','Talkabout','Say it out loud','waspk','#F5A301')}
-      ${step('\u270d\ufe0f','Writeabout','Draft the piece','writingCourse','#2BA84F')}
-      ${step('\ud83c\udfa8','Design','Make the artefact','dstudio','#7A2FD0')}
-      ${step('\ud83c\udf1f','Share','Publish \u00b7 reflect','myDesigns','#15183A')}
-    </div>
-    <button class="wk-routine-more" onclick="openWeekRoutine()">See the full routine \u2192</button>
-  </div>
   <div class="wk-head">
     <b>The term</b>
     <small>${openCount} of ${TERM_WEEKS.length} open</small>
   </div>
-  ${TERM_WEEKS.map(x=>{
-    const on = weekOpen(x.w);
-    return `<button class="wk-btn ${on?'on':'off'}" onclick="openWeek(${x.w})" title="${esc(x.title)}">
-      <span class="wk-n">Week ${x.w}</span>
-      <span class="wk-t">${esc(x.title)}</span>
-      <span class="wk-s">${on?'\u25cf open':'\u25cf locked'}</span>
-    </button>`;
-  }).join('')}
+  ${rows}
   <p class="wk-foot">${teach
-    ? 'You are signed in as a teacher \u2014 open a week to activate or lock it for the class.'
-    : 'Your teacher opens each week when the class is ready.'}</p>`;
+    ? 'Open a week to activate it for the class, then tap any week to drop down its lessons.'
+    : 'Tap a week to drop down its lessons. Your teacher opens each week when the class is ready.'}</p>`;
 }
 /* ---- teacher dashboard: the week activation card ---- */
 function weekCardTeacherHTML(){ return `
@@ -16362,6 +16393,8 @@ function openWeek(w){
   const teach = weekIsTeacher();
   const on = weekOpen(w);
   const prev = TERM_WEEKS.find(t=>t.w===w-1);
+  const focus = weekFocus(w);
+  const isRead = focus==='read';
 
   const item = (label, name, strap, route, arg, colour) =>
     `<button class="wk-item" ${on?`onclick="wkGo('${route}','${arg}')"`:'disabled'}>
@@ -16385,35 +16418,39 @@ function openWeek(w){
       <p class="wk-note">Take this <b>before</b> the lessons below. It is the baseline every later week is measured against, and it sorts the class into four groups: ${DIAG_PLACE.map(b=>`<b style="color:${b.colour}">${b.label}</b>`).join(' \u00b7 ')}. Your group decides your tier, your grammar level and your scaffolds \u2014 so a guess here costs you the whole term.</p>`);
   }
 
-  /* READ */
+  /* READ — built as a section, ordered by this week's focus */
   let r = x.read.map(id=>{ const l=wkRead(id); return item('SKILL', l?l.name:id, l?l.strap:'', 'rcLesson', id, (l&&l.colour)||'#E0403F'); }).join('');
   const tx = x.text && wkText(x.text);
   if(tx) r += item('ANCHOR TEXT', tx.title, tx.genre, 'readItem', x.text, '#E0403F');
-  body += sec('\ud83d\udcd6 Read', r);
+  const readSec = sec(isRead ? '\ud83d\udcd6 Read \u2014 this week\u2019s focus' : '\ud83d\udcd6 Read \u2014 supporting the writing', r);
 
-  /* LISTEN + SPEAK */
+  /* LISTEN + SPEAK (Talkabout) \u2014 one speaking activity this week */
   let ls = '';
   const lc = x.listen && wkListen(x.listen);
   if(lc) ls += item('LISTEN', lc.title, lc.kind, 'listenComp', x.listen, '#0FA98B');
   const sp = (x.speak!==null && x.speak!==undefined) ? wkSpeak(x.speak) : null;
-  if(sp) ls += `<button class="wk-item" ${on?`onclick="wkGo('speaking','')"`:'disabled'}>
+  ls += `<button class="wk-item" ${on?`onclick="wkGo('waspk','')"`:'disabled'}>
       <span class="wk-dot" style="background:#F5A301"></span>
-      <span class="wk-item-b"><b>${esc(sp.cat)}</b><small>${esc(sp.note||'')}</small></span>
-      <span class="wk-item-k">SPEAK</span></button>`;
-  body += sec('\ud83c\udfa7 Listen &amp; speak \u2014 on the same anchor', ls);
+      <span class="wk-item-b"><b>Talkabout${sp?' \u00b7 '+esc(sp.cat):''}</b><small>${esc(sp?(sp.note||'one speaking activity this week'):'one speaking activity this week')}</small></span>
+      <span class="wk-item-k">TALKABOUT</span></button>`;
+  const talkSec = sec('\ud83c\udfa4 Talkabout \u2014 one this week', ls);
 
-  /* WRITE */
+  /* WRITE — built as a section, ordered by this week's focus */
   let wr = x.write.map(id=>{ const l=wkWrite(id); return item('SKILL', l?l.name:id, l?l.strap:'', 'wcLesson', id, (l&&l.colour)||'#2BA84F'); }).join('');
   if(x.studio) wr += `<button class="wk-item" ${on?`onclick="wkGo('wstudio','')"`:'disabled'}>
       <span class="wk-dot" style="background:#D6336C"></span>
       <span class="wk-item-b"><b>Writing Studio</b><small>${esc(WK_STUDIO[x.studio]||'')}</small></span>
       <span class="wk-item-k">STUDIO</span></button>`;
-  body += sec('\u270d\ufe0f Write', wr);
+  const writeSec = sec(!isRead ? '\u270d\ufe0f Write \u2014 this week\u2019s focus' : '\u270d\ufe0f Write \u2014 supporting the reading', wr);
 
-  /* GRAMMAR — every week, without exception */
+  /* Lead with the focus skill, then Talkabout, then the supporting skill */
+  if(isRead){ body += readSec; body += talkSec; body += writeSec; }
+  else      { body += writeSec; body += talkSec; body += readSec; }
+
+  /* GRAMMAR — every week, chosen to enhance the primary skill */
   const g = wkGram(x.gram);
-  body += sec('\ud83e\udde9 Grammar \u2014 this week\u2019s regular practice',
-    item('EVERY SESSION', g?g.title:x.gram, 'One structure, taken from this week\u2019s text \u2014 not a syllabus dropped in from outside', 'grammarLesson', x.gram, '#0FA98B'));
+  body += sec('\ud83e\udde9 Grammar \u2014 enhances your ' + (isRead?'reading':'writing'),
+    item('EVERY SESSION', g?g.title:x.gram, isRead?'Notice this structure as you read \u2014 it comes from this week\u2019s text':'Use this structure in your writing \u2014 it comes from this week\u2019s text', 'grammarLesson', x.gram, '#0FA98B'));
 
   /* DESIGN — exactly one artefact per week: a task, a mission, or a light card */
   let d = '';
@@ -16436,7 +16473,7 @@ function openWeek(w){
   /* HOME + CHECK */
   let h = `<button class="wk-item" ${on?`onclick="wkGo('articleaday','')"`:'disabled'}>
       <span class="wk-dot" style="background:#F5A301"></span>
-      <span class="wk-item-b"><b>Article-A-Day \u00b7 week ${x.aad}</b><small>One article a day \u00b7 gist + two ideas in your own words</small></span>
+      <span class="wk-item-b"><b>Article-A-Day \u00b7 week ${x.aad}</b><small>One a day \u00b7 build knowledge &amp; vocabulary (not comprehension)</small></span>
       <span class="wk-item-k">DAILY</span></button>
     <button class="wk-item" ${on?`onclick="wkGo('spellType','')"`:'disabled'}>
       <span class="wk-dot" style="background:#5B8DEF"></span>
@@ -16475,6 +16512,7 @@ function openWeek(w){
       <button class="wk-x" onclick="closeWeek()">\u00d7</button>
       <div class="wk-card-head ${on?'':'locked'}">
         <span class="wk-badge">Week ${x.w}${x.check?' \u00b7 '+esc(x.check):''}</span>
+        <span class="wk-badge" style="background:${isRead?'#E0403F':'#2BA84F'};color:#fff;margin-left:6px">${isRead?'\ud83d\udcd6 Reading focus':'\u270d\ufe0f Writing focus'}</span>
         <h3>${esc(x.title)}</h3>
         <p class="wk-why">${x.why}</p>
         <p class="wk-builds"><b>Builds on:</b> ${esc(x.builds)}</p>
@@ -16490,57 +16528,6 @@ function openWeek(w){
 }
 function closeWeek(){ const h = document.getElementById('wkModalHost'); if(h) h.innerHTML=''; }
 function wkGo(route, arg){ closeWeek(); if(arg) go(route, arg); else go(route); }
-
-/* ---- the weekly routine popup (the repeating RWD week) ---- */
-function weekRoutineHTML(){
-  const daily = (ic,name,sub,route)=>
-    `<button class="wk-item" onclick="wkGo('${route}','')">
-       <span class="wk-dot" style="background:#8B5CF6"></span>
-       <span class="wk-item-b"><b>${ic} ${name}</b><small>${sub}</small></span>
-       <span class="wk-item-k">10 MIN</span></button>`;
-  const day = (n,ic,col,name,desc,route)=>
-    `<div class="wkr-day">
-       <span class="wkr-badge" style="background:${col}"><span class="si">${ic}</span><small>STEP ${n}</small></span>
-       <span class="wkr-txt"><b>${name}</b><p>${desc}</p>
-         <button class="wkr-open" onclick="wkGo('${route}','')">Open \u2192</button></span>
-     </div>`;
-  const body = `
-    <p class="wkr-lead">One short <b>10-minute warm-up</b> plus <b>one focused step</b> each day. Five light sessions add up to a full <b>Read \u2192 Talk \u2192 Write \u2192 Design \u2192 Share</b> loop \u2014 enough to grow every week, without overloading anyone.</p>
-    <div class="wk-sec">
-      <h4>\u23f1\ufe0f Every day \u2014 a 10-minute warm-up</h4>
-      ${daily('\ud83e\udde9','Grammar drill','One structure from this week\u2019s text \u2014 quick and focused','grammar')}
-      ${daily('\ud83d\udcf0','Article-a-Day','Read one short article \u00b7 gist + two ideas in your own words','articleaday')}
-      ${daily('\u2328\ufe0f','Spell-Type','Say it \u00b7 spell it \u00b7 type it \u2014 on the words you banked','spellType')}
-      <p class="wk-note" style="font-size:.74rem;color:var(--muted,#6b6b6b);margin:6px 2px 0">Rotate one each day, or do a little of each \u2014 ten minutes is the whole budget.</p>
-    </div>
-    <div class="wk-sec">
-      <h4>\ud83d\udd01 The RWD week \u2014 one step a day</h4>
-      ${day(1,'\ud83d\udcd6','#E0403F','Read \u00b7 Reading Course','Read a levelled passage and notice how strong writing works. Bank the new words \u2014 they feed the rest of the week.','readingCourse')}
-      ${day(2,'\ud83c\udfa4','#F5A301','Talkabout \u00b7 say it out loud','Turn the reading into talk: Notice \u2192 Structure \u2192 Speak \u2192 Share. Speaking first makes the writing easier.','waspk')}
-      ${day(3,'\u270d\ufe0f','#2BA84F','Writeabout \u00b7 Writing Course','Draft the week\u2019s piece with the rubric open \u2014 one idea, clearly built. One peer-feedback round, then revise.','writingCourse')}
-      ${day(4,'\ud83c\udfa8','#7A2FD0','Design \u00b7 Design Studio','Turn the writing into a designed artefact for a real audience \u2014 a poster, a book, an infographic, a storyboard.','dstudio')}
-      ${day(5,'\ud83c\udf1f','#15183A','Share &amp; reflect','Publish it, give and receive D.I.R.T. feedback (WWW \u00b7 EBI \u00b7 Next step), and fix one thing. That fix is the learning.','myDesigns')}
-    </div>
-    <p class="wkr-foot">The same five-step rhythm repeats every week across the ten-week term \u2014 only the topic and the challenge grow. Use the weeks in the rail to see where the class is.</p>`;
-  return `
-  <div class="wk-modal" onclick="if(event.target===this) closeWeek()">
-    <div class="wk-card">
-      <button class="wk-x" onclick="closeWeek()">\u00d7</button>
-      <div class="wk-card-head">
-        <span class="wk-badge">Weekly routine</span>
-        <h3>Your week at iCAN</h3>
-        <p class="wk-why">How a week works \u2014 the same rhythm every week, so the habit does the heavy lifting.</p>
-        <p class="wk-builds"><b>Integrates:</b> Reading \u00b7 Talkabout \u00b7 Writeabout \u00b7 Design \u2014 with daily Grammar, Article-a-Day &amp; Spell-Type</p>
-      </div>
-      <div class="wk-body">${body}</div>
-    </div>
-  </div>`;
-}
-function openWeekRoutine(){
-  let host = document.getElementById('wkModalHost');
-  if(!host){ host = document.createElement('div'); host.id = 'wkModalHost'; document.body.appendChild(host); }
-  host.innerHTML = weekRoutineHTML();
-}
 
 
 const HP_MODS = {
