@@ -937,6 +937,34 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wk-btn.off{opacity:.72}
 .wk-btn.off .wk-s{color:#9a9ebe}
 .wk-foot{font-size:.64rem;color:var(--muted,#6b6b6b);line-height:1.35;margin:6px 4px 2px;font-style:italic}
+/* ---- weekly routine: rail teaser ---- */
+.wk-routine{border:1px solid var(--line,#dfd9c9);border-radius:12px;padding:8px;margin-bottom:10px;background:linear-gradient(180deg,#fbfaff,#f1eefc)}
+.wk-routine-h{display:flex;align-items:baseline;justify-content:space-between;margin:0 2px 6px}
+.wk-routine-h b{font-size:.82rem;color:#2c3070}
+.wk-routine-h small{font-size:.58rem;color:var(--muted,#6b6b6b)}
+.wk-daily{display:block;font-size:.6rem;line-height:1.35;color:#5b5f86;background:#fff;border:1px dashed #c9c5e8;border-radius:8px;padding:5px 7px;margin-bottom:7px}
+.wk-daily b{color:#2c3070}
+.wk-loop{display:flex;flex-direction:column;gap:4px}
+.wk-step{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line,#dfd9c9);border-left:4px solid var(--sc,#7A2FD0);border-radius:8px;padding:5px 7px;cursor:pointer;transition:transform .1s;text-align:left;width:100%;font-family:inherit}
+.wk-step:hover{transform:translateX(2px)}
+.wk-step .si{font-size:1rem;flex:none;line-height:1}
+.wk-step b{display:block;font-size:.68rem;color:var(--ink,#222);line-height:1.1}
+.wk-step span{display:block;font-size:.56rem;color:var(--muted,#6b6b6b);line-height:1.2}
+.wk-routine-more{display:block;width:100%;margin-top:8px;border:none;background:#2c3070;color:#fff;border-radius:8px;padding:6px;font-size:.64rem;font-weight:700;cursor:pointer;font-family:inherit}
+.wk-routine-more:hover{background:#3a3f8f}
+/* ---- weekly routine: modal ---- */
+.wkr-lead{font-size:.9rem;color:var(--ink,#222);line-height:1.5;margin:0 0 14px;background:#f5f3ff;border-left:4px solid #7A2FD0;border-radius:8px;padding:9px 12px}
+.wkr-day{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px dashed var(--line,#dfd9c9)}
+.wkr-day:last-child{border-bottom:0}
+.wkr-badge{flex:none;width:54px;height:54px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff}
+.wkr-badge .si{font-size:1.25rem;line-height:1}
+.wkr-badge small{font-size:.5rem;font-weight:800;letter-spacing:.04em;opacity:.92;margin-top:2px}
+.wkr-txt{flex:1;min-width:0}
+.wkr-txt b{display:block;font-size:.96rem}
+.wkr-txt p{margin:2px 0 5px;font-size:.8rem;color:var(--muted,#6b6b6b);line-height:1.45}
+.wkr-open{border:1px solid var(--line,#dfd9c9);background:#fff;border-radius:8px;padding:3px 11px;font-size:.72rem;font-weight:700;color:#2c3070;cursor:pointer;font-family:inherit}
+.wkr-open:hover{background:#f2f0ff;border-color:#2c3070}
+.wkr-foot{font-size:.8rem;color:var(--muted,#6b6b6b);line-height:1.5;margin:14px 0 0;font-style:italic}
 #wkModalHost .wk-modal{position:fixed;inset:0;background:rgba(10,12,32,.55);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:24px 14px;overflow:auto}
 .wk-card{background:#fff;border-radius:18px;max-width:680px;width:100%;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.4)}
 .wk-x{position:absolute;top:10px;right:12px;border:none;background:rgba(255,255,255,.25);color:#fff;width:30px;height:30px;border-radius:50%;font-size:1.2rem;cursor:pointer;line-height:1}
@@ -973,6 +1001,7 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
   .wk-rail{position:static;flex:none;width:100%;max-height:none;display:flex;gap:6px;overflow-x:auto;padding:8px}
   .wk-head{flex:0 0 auto;flex-direction:column;border:0;border-right:1px solid var(--line,#dfd9c9);margin:0 4px 0 0;padding:0 8px 0 2px}
   .wk-btn{flex:0 0 118px;margin:0}
+  .wk-routine{flex:0 0 216px;margin:0 6px 0 0}
   .wk-foot{display:none}
 }
 
@@ -16193,7 +16222,23 @@ const WK_STUDIO = { markTask:'Marking task \u2014 score a script before you writ
 function weekRailHTML(){
   const teach = weekIsTeacher();
   const openCount = TERM_WEEKS.filter(x=>weekOpen(x.w)).length;
+  const step = (ic,name,sub,route,col)=>
+    `<button class="wk-step" style="--sc:${col}" onclick="go('${route}')">
+       <span class="si">${ic}</span><span><b>${name}</b><span>${sub}</span></span>
+     </button>`;
   return `
+  <div class="wk-routine">
+    <div class="wk-routine-h"><b>Your week</b><small>a light routine</small></div>
+    <span class="wk-daily">\u23f1\ufe0f <b>Every day \u00b7 10 min</b> \u2014 Grammar \u00b7 Article-a-Day \u00b7 Spell-Type</span>
+    <div class="wk-loop">
+      ${step('\ud83d\udcd6','Read','Reading Course','readingCourse','#E0403F')}
+      ${step('\ud83c\udfa4','Talkabout','Say it out loud','waspk','#F5A301')}
+      ${step('\u270d\ufe0f','Writeabout','Draft the piece','writingCourse','#2BA84F')}
+      ${step('\ud83c\udfa8','Design','Make the artefact','dstudio','#7A2FD0')}
+      ${step('\ud83c\udf1f','Share','Publish \u00b7 reflect','myDesigns','#15183A')}
+    </div>
+    <button class="wk-routine-more" onclick="openWeekRoutine()">See the full routine \u2192</button>
+  </div>
   <div class="wk-head">
     <b>The term</b>
     <small>${openCount} of ${TERM_WEEKS.length} open</small>
@@ -16445,6 +16490,57 @@ function openWeek(w){
 }
 function closeWeek(){ const h = document.getElementById('wkModalHost'); if(h) h.innerHTML=''; }
 function wkGo(route, arg){ closeWeek(); if(arg) go(route, arg); else go(route); }
+
+/* ---- the weekly routine popup (the repeating RWD week) ---- */
+function weekRoutineHTML(){
+  const daily = (ic,name,sub,route)=>
+    `<button class="wk-item" onclick="wkGo('${route}','')">
+       <span class="wk-dot" style="background:#8B5CF6"></span>
+       <span class="wk-item-b"><b>${ic} ${name}</b><small>${sub}</small></span>
+       <span class="wk-item-k">10 MIN</span></button>`;
+  const day = (n,ic,col,name,desc,route)=>
+    `<div class="wkr-day">
+       <span class="wkr-badge" style="background:${col}"><span class="si">${ic}</span><small>STEP ${n}</small></span>
+       <span class="wkr-txt"><b>${name}</b><p>${desc}</p>
+         <button class="wkr-open" onclick="wkGo('${route}','')">Open \u2192</button></span>
+     </div>`;
+  const body = `
+    <p class="wkr-lead">One short <b>10-minute warm-up</b> plus <b>one focused step</b> each day. Five light sessions add up to a full <b>Read \u2192 Talk \u2192 Write \u2192 Design \u2192 Share</b> loop \u2014 enough to grow every week, without overloading anyone.</p>
+    <div class="wk-sec">
+      <h4>\u23f1\ufe0f Every day \u2014 a 10-minute warm-up</h4>
+      ${daily('\ud83e\udde9','Grammar drill','One structure from this week\u2019s text \u2014 quick and focused','grammar')}
+      ${daily('\ud83d\udcf0','Article-a-Day','Read one short article \u00b7 gist + two ideas in your own words','articleaday')}
+      ${daily('\u2328\ufe0f','Spell-Type','Say it \u00b7 spell it \u00b7 type it \u2014 on the words you banked','spellType')}
+      <p class="wk-note" style="font-size:.74rem;color:var(--muted,#6b6b6b);margin:6px 2px 0">Rotate one each day, or do a little of each \u2014 ten minutes is the whole budget.</p>
+    </div>
+    <div class="wk-sec">
+      <h4>\ud83d\udd01 The RWD week \u2014 one step a day</h4>
+      ${day(1,'\ud83d\udcd6','#E0403F','Read \u00b7 Reading Course','Read a levelled passage and notice how strong writing works. Bank the new words \u2014 they feed the rest of the week.','readingCourse')}
+      ${day(2,'\ud83c\udfa4','#F5A301','Talkabout \u00b7 say it out loud','Turn the reading into talk: Notice \u2192 Structure \u2192 Speak \u2192 Share. Speaking first makes the writing easier.','waspk')}
+      ${day(3,'\u270d\ufe0f','#2BA84F','Writeabout \u00b7 Writing Course','Draft the week\u2019s piece with the rubric open \u2014 one idea, clearly built. One peer-feedback round, then revise.','writingCourse')}
+      ${day(4,'\ud83c\udfa8','#7A2FD0','Design \u00b7 Design Studio','Turn the writing into a designed artefact for a real audience \u2014 a poster, a book, an infographic, a storyboard.','dstudio')}
+      ${day(5,'\ud83c\udf1f','#15183A','Share &amp; reflect','Publish it, give and receive D.I.R.T. feedback (WWW \u00b7 EBI \u00b7 Next step), and fix one thing. That fix is the learning.','myDesigns')}
+    </div>
+    <p class="wkr-foot">The same five-step rhythm repeats every week across the ten-week term \u2014 only the topic and the challenge grow. Use the weeks in the rail to see where the class is.</p>`;
+  return `
+  <div class="wk-modal" onclick="if(event.target===this) closeWeek()">
+    <div class="wk-card">
+      <button class="wk-x" onclick="closeWeek()">\u00d7</button>
+      <div class="wk-card-head">
+        <span class="wk-badge">Weekly routine</span>
+        <h3>Your week at iCAN</h3>
+        <p class="wk-why">How a week works \u2014 the same rhythm every week, so the habit does the heavy lifting.</p>
+        <p class="wk-builds"><b>Integrates:</b> Reading \u00b7 Talkabout \u00b7 Writeabout \u00b7 Design \u2014 with daily Grammar, Article-a-Day &amp; Spell-Type</p>
+      </div>
+      <div class="wk-body">${body}</div>
+    </div>
+  </div>`;
+}
+function openWeekRoutine(){
+  let host = document.getElementById('wkModalHost');
+  if(!host){ host = document.createElement('div'); host.id = 'wkModalHost'; document.body.appendChild(host); }
+  host.innerHTML = weekRoutineHTML();
+}
 
 
 const HP_MODS = {
