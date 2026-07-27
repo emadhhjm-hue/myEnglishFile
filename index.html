@@ -1029,12 +1029,13 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wa-flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0 2px;font-weight:800}
 .wa-flow .s{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 14px;color:#fff;font-size:.92rem}
 .wa-flow .ar{opacity:.9;font-size:1.1rem}
-.wa-modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:22px}
-.wa-mode{cursor:pointer;border:none;border-radius:16px;padding:14px 10px;color:#fff;text-align:center;box-shadow:var(--shadow);transition:transform .15s,filter .15s;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:116px;justify-content:center}
+.wa-modes{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:22px}
+@media(min-width:760px){ .wa-modes{grid-template-columns:repeat(3,1fr)} }
+.wa-mode{cursor:pointer;border:none;border-radius:20px;padding:22px 16px;color:#fff;text-align:center;box-shadow:var(--shadow);transition:transform .15s,filter .15s;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:158px;justify-content:center}
 .wa-mode:hover{transform:translateY(-4px);filter:brightness(1.04)}
-.wa-mode .mi{font-size:2rem;line-height:1}
-.wa-mode b{font-family:'Fraunces',Georgia,serif;font-size:1rem;line-height:1.15}
-.wa-mode span{font-size:.72rem;opacity:.95;line-height:1.3}
+.wa-mode .mi{font-size:2.7rem;line-height:1}
+.wa-mode b{font-family:'Fraunces',Georgia,serif;font-size:1.22rem}
+.wa-mode span{font-size:.82rem;opacity:.95;line-height:1.35}
 /* picture prompt card */
 .wa-pic{position:relative;border-radius:18px;overflow:hidden;box-shadow:var(--shadow);width:100%;background:#eee}
 .wa-pic.ar{aspect-ratio:4/3}
@@ -1094,17 +1095,17 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wa-subhead{font-weight:700;color:var(--ink);margin:16px 0 8px;font-size:.98rem}
 .wa-subhead span{color:var(--muted);font-weight:500;font-size:.85rem}
 /* Talking Points — compact colour-coded bars (tap a title to reveal the task) */
-.wa-barlist{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:0 0 8px;align-items:start}
+.wa-barlist{display:flex;flex-direction:column;gap:8px;margin:0 0 8px}
 .wa-baritem{border-radius:12px}
-.wa-bar{width:100%;display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;font-family:inherit;
-  border:1px solid var(--line);border-left:6px solid var(--bar,#e6464b);border-radius:12px;padding:10px 12px;
+.wa-bar{width:100%;display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;font-family:inherit;
+  border:1px solid var(--line);border-left:6px solid var(--bar,#e6464b);border-radius:12px;padding:10px 14px;
   transition:box-shadow .12s,transform .06s}
 .wa-bar:hover{box-shadow:0 8px 18px -12px rgba(21,24,58,.4)}
 .wa-bar:active{transform:translateY(1px)}
-.wa-bar-ic{flex:none;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;
-  font-size:1rem;background:var(--bar,#e6464b);color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
-.wa-bar-t{flex:1;font-weight:700;color:var(--ink);font-size:.9rem;line-height:1.25}
-.wa-bar-x{display:none}
+.wa-bar-ic{flex:none;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:1.05rem;background:var(--bar,#e6464b);color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
+.wa-bar-t{flex:1;font-weight:700;color:var(--ink);font-size:.97rem;line-height:1.3}
+.wa-bar-x{flex:none;color:var(--bar,#e6464b);font-size:1.3rem;font-weight:800;line-height:1;transition:transform .2s}
 .wa-baritem.open .wa-bar-x{transform:rotate(90deg)}
 .wa-baritem.open .wa-bar{border-bottom-left-radius:0;border-bottom-right-radius:0}
 .wa-bar-panel{max-height:0;overflow:hidden;background:#fff;border:1px solid var(--line);border-top:none;
@@ -8896,9 +8897,9 @@ function drawCert(o){
   const corner=(cx,cy,sx,sy)=>{ x.strokeStyle=t.a; x.lineWidth=4; x.beginPath(); x.moveTo(cx,cy+sy*56); x.lineTo(cx,cy); x.lineTo(cx+sx*56,cy); x.stroke();
     x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(cx+sx*13,cy+sy*42); x.lineTo(cx+sx*13,cy+sy*13); x.lineTo(cx+sx*42,cy+sy*13); x.stroke(); };
   corner(72,72,1,1); corner(W-72,72,-1,1); corner(72,H-72,1,-1); corner(W-72,H-72,-1,-1);
-  drawCertBrand(x, 66, 60, 200);
+  drawCertBrand(x, 80, 74, 150);
   x.textAlign="center";
-  { const _sch=(CONFIG.schoolName||'').trim(); if(_sch && !/^iCAN\s+English\s+Practice$/i.test(_sch)){ x.fillStyle=t.ink; x.font="600 22px 'Lexend',Georgia,sans-serif"; x.fillText(_sch.toUpperCase(), W/2, 122); } }
+  x.fillStyle=t.ink; x.font="600 22px 'Lexend',Georgia,sans-serif"; x.fillText((CONFIG.schoolName||"iCAN English Practice").toUpperCase(), W/2, 122);
   x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(W/2-130,136); x.lineTo(W/2+130,136); x.stroke();
   x.fillStyle=t.a; x.font="bold 64px Georgia"; x.fillText("CERTIFICATE", W/2, 208);
   x.fillStyle="#8a8a8a"; x.font="italic 26px Georgia"; x.fillText(o.subtitle, W/2, 248);
@@ -13085,13 +13086,13 @@ function drawEarnedCert(cert){
     x.strokeStyle=pal.gold; x.lineWidth=2; x.beginPath(); x.arc(cx,cy,12,0,7); x.stroke();
   });
   // iCAN Academy logo — top-left glyph only; the wordmark now leads the masthead
-  drawCertBrand(x, 56, 50, 214, false);
+  drawCertBrand(x, 72, 66, 150, false);
   // Masthead — iCAN Academy brand, RWD motto, then the school
   x.textAlign='center';
   x.fillStyle=pal.primary; x.font='800 38px Georgia'; x.fillText('iCAN Academy', W/2, 112);
   x.fillStyle=pal.dark; x.font='italic 600 16px Georgia';
   x.fillText('Multiliteracies RWD Framework \u00b7 where learners belong, where learners grow', W/2, 140);
-  { const _sch=(cert.school||'').trim(); if(_sch && !/^iCAN\s+English\s+Practice$/i.test(_sch)){ x.fillStyle=pal.primary; x.font='700 22px Georgia'; x.fillText(_sch.toUpperCase(), W/2, 168); } }
+  x.fillStyle=pal.primary; x.font='700 22px Georgia'; x.fillText((cert.school||'AL-DHANNAH SCHOOL').toUpperCase(), W/2, 168);
   // gold dot divider
   x.strokeStyle=pal.gold; x.lineWidth=2;
   x.beginPath(); x.moveTo(W/2-60,184); x.lineTo(W/2-8,184); x.moveTo(W/2+8,184); x.lineTo(W/2+60,184); x.stroke();
@@ -13139,9 +13140,9 @@ function drawEarnedCert(cert){
   x.strokeStyle=pal.gold; x.lineWidth=1;
   x.beginPath(); x.moveTo(W/2-200,dY); x.lineTo(W/2-30,dY); x.moveTo(W/2+30,dY); x.lineTo(W/2+200,dY); x.stroke();
   x.fillStyle=pal.gold; [-24,-8,8,24].forEach(dx=>{ x.beginPath(); x.arc(W/2+dx,dY,3,0,7); x.fill(); });
-  // recognition paragraph — enlarged for visibility
-  x.fillStyle='#333'; x.font='500 22px Georgia';
-  const recEndY = certWrap(x, honoraryV2(Object.assign({}, cert, {tier:tier})), W/2, dY+40, W*0.74, 32);
+  // recognition paragraph
+  x.fillStyle='#333'; x.font='500 18px Georgia';
+  const recEndY = certWrap(x, honoraryV2(Object.assign({}, cert, {tier:tier})), W/2, dY+40, W*0.72, 28);
 
   // --- Article-A-Day work record: the student's own ideas + banked words ---
   const hasWork = (cert.ideas && cert.ideas.length) || (cert.words && cert.words.length);
@@ -13153,11 +13154,8 @@ function drawEarnedCert(cert){
   // motto — short, catchy, brain-sticky; bold cursive script
   x.textAlign='center';   /* the work table above draws left-aligned rows */
   x.fillStyle=pal.primary;
-  { const _motto='iCAN connect, author, and nurture the world';
-    const _mfont=n=>"700 "+n+"px 'Great Vibes','Snell Roundhand','Brush Script MT','Segoe Script',cursive";
-    let _mf=44; x.font=_mfont(_mf);
-    while(x.measureText(_motto).width>W*0.82 && _mf>22){ _mf-=2; x.font=_mfont(_mf); }
-    x.fillText(_motto, W/2, H-256); }
+  x.font="700 40px 'Great Vibes','Snell Roundhand','Brush Script MT','Segoe Script',cursive";
+  x.fillText('Read it. Write it. Design it.', W/2, H-256);
   // awarded on
   x.fillStyle='#666'; x.font='italic 500 14px Georgia'; x.fillText('Awarded on', W/2, H-210);
   x.fillStyle=pal.primary; x.font='700 18px Georgia';
@@ -17910,7 +17908,7 @@ function stemCert(id,pct){
   doc.setTextColor(255,255,255); doc.setFont('times','bold'); doc.setFontSize(32);
   doc.text(kind, W/2, 152, {align:'center'});
   doc.setFont('times','italic'); doc.setFontSize(13); doc.setTextColor(214,216,236);
-  doc.text('iCAN connect, author, and nurture the world', W/2, 172, {align:'center'});
+  doc.text('Read it. Write it. Design it.', W/2, 172, {align:'center'});
   /* name */
   doc.setFont('times','bolditalic'); doc.setFontSize(34); doc.setTextColor(255,255,255);
   doc.text(nm, W/2, 216, {align:'center'});
@@ -22019,14 +22017,16 @@ const WASPK_VID_CATS = (function(){
         mk('vbe6','🕊️','Soar','https://www.youtube.com/watch?v=eDkpVwrhYfo','A young girl helps a tiny pilot get back into the sky.'),
         mk('vbe7','🌙','One Small Step','https://www.youtube.com/watch?v=yWd4mzGqQYo','A girl dreams of becoming an astronaut, one setback at a time.'),
         mk('vbe8','🐦','For the Birds','https://www.youtube.com/watch?v=Lz3KYrPQaN0','A flock learns a lesson about leaving others out.'),
-        mk('vbe9','🌱','Alike','https://www.youtube.com/watch?v=PDHIyrfMl_U','A father and son rediscover colour and creativity.')
+        mk('vbe9','🌱','Alike','https://www.youtube.com/watch?v=PDHIyrfMl_U','A father and son rediscover colour and creativity.'),
+        mk('vbe10','🥊','“Impossible Is Nothing” — Muhammad Ali','https://www.youtube.com/watch?v=ifuO7QB0i6w','Muhammad Ali’s own words on daring to attempt what others call impossible.')
       ]}),
     cat({ key:'v_role', name:'Role Models · Shorts', emoji:'⭐', grad:['#d99a3a','#9c5a1e'], scene:'imagine',
       _w:'Watch and listen closely. Who is speaking, and what is their main message? Write down one line that stayed with you, and explain why it matters.',
       _s:'Retell the message in your own words, then say who your own role model is and what you have learned from them.',
       prompts:[
         mk('vro1','🏀','Michael Jordan — Mentality','https://www.youtube.com/shorts/MqD9pMeVZvk','A champion on failing again and again — then succeeding.'),
-        mk('vro2','🧒','Kids Can Be Role Models — Jack Bonneau','https://www.youtube.com/watch?v=JnNrxoxkg20','A young entrepreneur shows that age is no barrier.')
+        mk('vro2','🧒','Kids Can Be Role Models — Jack Bonneau','https://www.youtube.com/watch?v=JnNrxoxkg20','A young entrepreneur shows that age is no barrier.'),
+        mk('vro3','📣','A Pep Talk from Kid President to You','https://www.youtube.com/watch?v=l-gQLqv9f4o','A young voice dares everyone to stop being boring and do something awesome.')
       ]}),
     cat({ key:'v_wisdom', name:'Wisdom & Humour · Shorts', emoji:'🎙️', grad:['#e08a2b','#b5561a'], scene:'imagine',
       _w:'This clip is funny — but there is a lesson underneath. Retell the joke or story, then explain the serious idea hidden inside it. Do you agree with it?',
@@ -22116,7 +22116,15 @@ const WASPK_PUZZLE_CAT = { key:'p_puz', name:'Puzzles to ponder', emoji:'🧩', 
       {id:'pz12', kind:'puzzle', emoji:'🔤', title:'A New Word', statement:'You can add one brand-new word to every language on Earth. What does it mean?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
       {id:'pz13', kind:'puzzle', emoji:'🗣️', title:'Always True', statement:'Would you press a button that forced you to always tell the truth?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
       {id:'pz14', kind:'puzzle', emoji:'🎯', title:'Trade a Talent', statement:'If you could trade one talent you have for one you wish you had, would you?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
-      {id:'pz15', kind:'puzzle', emoji:'📣', title:'One Message', statement:'You may send one 20-word message to the whole world, once. What do you say?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'}
+      {id:'pz15', kind:'puzzle', emoji:'📣', title:'One Message', statement:'You may send one 20-word message to the whole world, once. What do you say?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz16', kind:'puzzle', emoji:'🏗️', title:'Your Empty Desert', statement:'You are given a stretch of empty desert and a year of unlimited help. What do you build there, and who is it for?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz17', kind:'puzzle', emoji:'🎁', title:'One Gift for Every Youth', statement:'You can give every young person in the world one skill, tool or chance. What do you give — and why that one?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz18', kind:'puzzle', emoji:'🏙️', title:'A City of Newcomers', statement:'You may invite people from any three places on Earth to build one brand-new city together. Who do you choose, and what do they create?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz19', kind:'puzzle', emoji:'📚', title:'Invent a School Subject', statement:'You can add one new subject that every school must teach. What is it, and what would students actually do in it?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz20', kind:'puzzle', emoji:'🔮', title:'A Sentence from Future You', statement:'The wisest version of your future self can send you one sentence. What does it say?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz21', kind:'puzzle', emoji:'🗺️', title:'Famous for One Good Thing', statement:'In fifty years, your town could be known around the world for one good thing. What would you want it to be?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz22', kind:'puzzle', emoji:'🔓', title:'Make the Hard Thing Easy', statement:'You can make one thing that is hard for some people — reading, hearing, remembering, moving — easy for everyone. Which do you choose, and how?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'},
+      {id:'pz23', kind:'puzzle', emoji:'🌍', title:'One Rule for the Whole World', statement:'You may add one gentle rule that everyone on Earth agrees to follow. What is it?', caption:'A puzzle to ponder — there is no single right answer.', write:'Think it through on paper first. Weigh the good and the bad, and give the reasons behind your choice.', speak:'Explain your thinking out loud, step by step — and convince us your answer makes sense.'}
     ]};
 
 const WASPK_DEBATE_CAT = { key:'p_hot', name:'Debate starters', emoji:'🔥', grad:['#e6464b','#992b2f'], scene:'imagine', prompts:[
@@ -22134,7 +22142,23 @@ const WASPK_DEBATE_CAT = { key:'p_hot', name:'Debate starters', emoji:'🔥', gr
       {id:'db12', kind:'debate', emoji:'📝', title:'Exams & Memory', statement:'Exams measure memory, not real intelligence.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
       {id:'db13', kind:'debate', emoji:'💧', title:'Wasting Water', statement:'People who waste water should be fined.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
       {id:'db14', kind:'debate', emoji:'🦁', title:'Zoos', statement:'Zoos do more good than harm.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db15', kind:'debate', emoji:'🎭', title:'Honest or Liked', statement:'It is better to be honest and unpopular than liked and fake.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'}
+      {id:'db15', kind:'debate', emoji:'🎭', title:'Honest or Liked', statement:'It is better to be honest and unpopular than liked and fake.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db16', kind:'debate', emoji:'🌍', title:'A World in One City', statement:'Living in a place where people come from many different countries makes life richer than living where everyone is the same.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db17', kind:'debate', emoji:'🌱', title:'People or Oil', statement:'A country’s greatest wealth is its young people, not its money or natural resources.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db18', kind:'debate', emoji:'🤖', title:'AI in Every Lesson', statement:'Every student should learn to work with AI, the way they learn to use a calculator.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db19', kind:'debate', emoji:'⚖️', title:'Fairer with AI?', statement:'AI helpers in the classroom will make learning fairer for every student.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db20', kind:'debate', emoji:'🧑‍🦽', title:'One Classroom for All', statement:'Students of every ability should learn together in the same classroom, not in separate ones.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db21', kind:'debate', emoji:'🗳️', title:'Give Youth Real Power', statement:'Young people should be given real decision-making power in their schools and cities — not just asked for their opinion.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db22', kind:'debate', emoji:'🌳', title:'Towers or Trees', statement:'A city built for the future should put parks, clean air and schools before tall towers.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db23', kind:'debate', emoji:'🏡', title:'Stay or Go', statement:'The best place to build your future is the country you grew up in.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db24', kind:'debate', emoji:'🏺', title:'Old Roots, New Wings', statement:'Keeping old traditions alive matters just as much as building new technology.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db25', kind:'debate', emoji:'🚀', title:'Aim for the Stars', statement:'Bold national dreams — reaching Mars, planting a billion trees — are worth the cost, even if they might fail.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db26', kind:'debate', emoji:'🧑‍🏫', title:'Robots Can’t Replace Teachers', statement:'No matter how clever AI becomes, it should never replace human teachers.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db27', kind:'debate', emoji:'✏️', title:'Show What You Know', statement:'Students should be allowed to show what they have learned by speaking, drawing or building — not only by writing exams.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db28', kind:'debate', emoji:'💛', title:'Measure of Success', statement:'Real success is measured by the good you do for others, not by how much money you make.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db29', kind:'debate', emoji:'🛠️', title:'A Skill Before You Leave', statement:'Every teenager should master one real-world skill — coding, first aid, or growing food — before finishing school.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db30', kind:'debate', emoji:'🌟', title:'Dream Big or Play Safe', statement:'It is better to dream big and risk failing than to set safe goals you are sure to reach.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db31', kind:'debate', emoji:'🤝', title:'Judge a City by Its Kindest Corner', statement:'A great city should be judged by how well it includes its most vulnerable people.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'}
     ]};
 
 const WASPK_SPK_CATS = (function(){
