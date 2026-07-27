@@ -1029,13 +1029,12 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wa-flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0 2px;font-weight:800}
 .wa-flow .s{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 14px;color:#fff;font-size:.92rem}
 .wa-flow .ar{opacity:.9;font-size:1.1rem}
-.wa-modes{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:22px}
-@media(min-width:760px){ .wa-modes{grid-template-columns:repeat(3,1fr)} }
-.wa-mode{cursor:pointer;border:none;border-radius:20px;padding:22px 16px;color:#fff;text-align:center;box-shadow:var(--shadow);transition:transform .15s,filter .15s;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:158px;justify-content:center}
+.wa-modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:22px}
+.wa-mode{cursor:pointer;border:none;border-radius:16px;padding:14px 10px;color:#fff;text-align:center;box-shadow:var(--shadow);transition:transform .15s,filter .15s;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:116px;justify-content:center}
 .wa-mode:hover{transform:translateY(-4px);filter:brightness(1.04)}
-.wa-mode .mi{font-size:2.7rem;line-height:1}
-.wa-mode b{font-family:'Fraunces',Georgia,serif;font-size:1.22rem}
-.wa-mode span{font-size:.82rem;opacity:.95;line-height:1.35}
+.wa-mode .mi{font-size:2rem;line-height:1}
+.wa-mode b{font-family:'Fraunces',Georgia,serif;font-size:1rem;line-height:1.15}
+.wa-mode span{font-size:.72rem;opacity:.95;line-height:1.3}
 /* picture prompt card */
 .wa-pic{position:relative;border-radius:18px;overflow:hidden;box-shadow:var(--shadow);width:100%;background:#eee}
 .wa-pic.ar{aspect-ratio:4/3}
@@ -1095,17 +1094,17 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wa-subhead{font-weight:700;color:var(--ink);margin:16px 0 8px;font-size:.98rem}
 .wa-subhead span{color:var(--muted);font-weight:500;font-size:.85rem}
 /* Talking Points — compact colour-coded bars (tap a title to reveal the task) */
-.wa-barlist{display:flex;flex-direction:column;gap:8px;margin:0 0 8px}
+.wa-barlist{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:0 0 8px;align-items:start}
 .wa-baritem{border-radius:12px}
-.wa-bar{width:100%;display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;font-family:inherit;
-  border:1px solid var(--line);border-left:6px solid var(--bar,#e6464b);border-radius:12px;padding:10px 14px;
+.wa-bar{width:100%;display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;font-family:inherit;
+  border:1px solid var(--line);border-left:6px solid var(--bar,#e6464b);border-radius:12px;padding:10px 12px;
   transition:box-shadow .12s,transform .06s}
 .wa-bar:hover{box-shadow:0 8px 18px -12px rgba(21,24,58,.4)}
 .wa-bar:active{transform:translateY(1px)}
-.wa-bar-ic{flex:none;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;
-  font-size:1.05rem;background:var(--bar,#e6464b);color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
-.wa-bar-t{flex:1;font-weight:700;color:var(--ink);font-size:.97rem;line-height:1.3}
-.wa-bar-x{flex:none;color:var(--bar,#e6464b);font-size:1.3rem;font-weight:800;line-height:1;transition:transform .2s}
+.wa-bar-ic{flex:none;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;background:var(--bar,#e6464b);color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
+.wa-bar-t{flex:1;font-weight:700;color:var(--ink);font-size:.9rem;line-height:1.25}
+.wa-bar-x{display:none}
 .wa-baritem.open .wa-bar-x{transform:rotate(90deg)}
 .wa-baritem.open .wa-bar{border-bottom-left-radius:0;border-bottom-right-radius:0}
 .wa-bar-panel{max-height:0;overflow:hidden;background:#fff;border:1px solid var(--line);border-top:none;
@@ -8897,9 +8896,9 @@ function drawCert(o){
   const corner=(cx,cy,sx,sy)=>{ x.strokeStyle=t.a; x.lineWidth=4; x.beginPath(); x.moveTo(cx,cy+sy*56); x.lineTo(cx,cy); x.lineTo(cx+sx*56,cy); x.stroke();
     x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(cx+sx*13,cy+sy*42); x.lineTo(cx+sx*13,cy+sy*13); x.lineTo(cx+sx*42,cy+sy*13); x.stroke(); };
   corner(72,72,1,1); corner(W-72,72,-1,1); corner(72,H-72,1,-1); corner(W-72,H-72,-1,-1);
-  drawCertBrand(x, 80, 74, 150);
+  drawCertBrand(x, 66, 60, 200);
   x.textAlign="center";
-  x.fillStyle=t.ink; x.font="600 22px 'Lexend',Georgia,sans-serif"; x.fillText((CONFIG.schoolName||"iCAN English Practice").toUpperCase(), W/2, 122);
+  { const _sch=(CONFIG.schoolName||'').trim(); if(_sch && !/^iCAN\s+English\s+Practice$/i.test(_sch)){ x.fillStyle=t.ink; x.font="600 22px 'Lexend',Georgia,sans-serif"; x.fillText(_sch.toUpperCase(), W/2, 122); } }
   x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(W/2-130,136); x.lineTo(W/2+130,136); x.stroke();
   x.fillStyle=t.a; x.font="bold 64px Georgia"; x.fillText("CERTIFICATE", W/2, 208);
   x.fillStyle="#8a8a8a"; x.font="italic 26px Georgia"; x.fillText(o.subtitle, W/2, 248);
@@ -13086,13 +13085,13 @@ function drawEarnedCert(cert){
     x.strokeStyle=pal.gold; x.lineWidth=2; x.beginPath(); x.arc(cx,cy,12,0,7); x.stroke();
   });
   // iCAN Academy logo — top-left glyph only; the wordmark now leads the masthead
-  drawCertBrand(x, 72, 66, 150, false);
+  drawCertBrand(x, 56, 50, 214, false);
   // Masthead — iCAN Academy brand, RWD motto, then the school
   x.textAlign='center';
   x.fillStyle=pal.primary; x.font='800 38px Georgia'; x.fillText('iCAN Academy', W/2, 112);
   x.fillStyle=pal.dark; x.font='italic 600 16px Georgia';
   x.fillText('Multiliteracies RWD Framework \u00b7 where learners belong, where learners grow', W/2, 140);
-  x.fillStyle=pal.primary; x.font='700 22px Georgia'; x.fillText((cert.school||'AL-DHANNAH SCHOOL').toUpperCase(), W/2, 168);
+  { const _sch=(cert.school||'').trim(); if(_sch && !/^iCAN\s+English\s+Practice$/i.test(_sch)){ x.fillStyle=pal.primary; x.font='700 22px Georgia'; x.fillText(_sch.toUpperCase(), W/2, 168); } }
   // gold dot divider
   x.strokeStyle=pal.gold; x.lineWidth=2;
   x.beginPath(); x.moveTo(W/2-60,184); x.lineTo(W/2-8,184); x.moveTo(W/2+8,184); x.lineTo(W/2+60,184); x.stroke();
@@ -13140,9 +13139,9 @@ function drawEarnedCert(cert){
   x.strokeStyle=pal.gold; x.lineWidth=1;
   x.beginPath(); x.moveTo(W/2-200,dY); x.lineTo(W/2-30,dY); x.moveTo(W/2+30,dY); x.lineTo(W/2+200,dY); x.stroke();
   x.fillStyle=pal.gold; [-24,-8,8,24].forEach(dx=>{ x.beginPath(); x.arc(W/2+dx,dY,3,0,7); x.fill(); });
-  // recognition paragraph
-  x.fillStyle='#333'; x.font='500 18px Georgia';
-  const recEndY = certWrap(x, honoraryV2(Object.assign({}, cert, {tier:tier})), W/2, dY+40, W*0.72, 28);
+  // recognition paragraph — enlarged for visibility
+  x.fillStyle='#333'; x.font='500 22px Georgia';
+  const recEndY = certWrap(x, honoraryV2(Object.assign({}, cert, {tier:tier})), W/2, dY+40, W*0.74, 32);
 
   // --- Article-A-Day work record: the student's own ideas + banked words ---
   const hasWork = (cert.ideas && cert.ideas.length) || (cert.words && cert.words.length);
@@ -13154,8 +13153,11 @@ function drawEarnedCert(cert){
   // motto — short, catchy, brain-sticky; bold cursive script
   x.textAlign='center';   /* the work table above draws left-aligned rows */
   x.fillStyle=pal.primary;
-  x.font="700 40px 'Great Vibes','Snell Roundhand','Brush Script MT','Segoe Script',cursive";
-  x.fillText('Read it. Write it. Design it.', W/2, H-256);
+  { const _motto='iCAN connect, author, and nurture the world';
+    const _mfont=n=>"700 "+n+"px 'Great Vibes','Snell Roundhand','Brush Script MT','Segoe Script',cursive";
+    let _mf=44; x.font=_mfont(_mf);
+    while(x.measureText(_motto).width>W*0.82 && _mf>22){ _mf-=2; x.font=_mfont(_mf); }
+    x.fillText(_motto, W/2, H-256); }
   // awarded on
   x.fillStyle='#666'; x.font='italic 500 14px Georgia'; x.fillText('Awarded on', W/2, H-210);
   x.fillStyle=pal.primary; x.font='700 18px Georgia';
@@ -17908,7 +17910,7 @@ function stemCert(id,pct){
   doc.setTextColor(255,255,255); doc.setFont('times','bold'); doc.setFontSize(32);
   doc.text(kind, W/2, 152, {align:'center'});
   doc.setFont('times','italic'); doc.setFontSize(13); doc.setTextColor(214,216,236);
-  doc.text('Read it. Write it. Design it.', W/2, 172, {align:'center'});
+  doc.text('iCAN connect, author, and nurture the world', W/2, 172, {align:'center'});
   /* name */
   doc.setFont('times','bolditalic'); doc.setFontSize(34); doc.setTextColor(255,255,255);
   doc.text(nm, W/2, 216, {align:'center'});
@@ -22018,7 +22020,8 @@ const WASPK_VID_CATS = (function(){
         mk('vbe7','🌙','One Small Step','https://www.youtube.com/watch?v=yWd4mzGqQYo','A girl dreams of becoming an astronaut, one setback at a time.'),
         mk('vbe8','🐦','For the Birds','https://www.youtube.com/watch?v=Lz3KYrPQaN0','A flock learns a lesson about leaving others out.'),
         mk('vbe9','🌱','Alike','https://www.youtube.com/watch?v=PDHIyrfMl_U','A father and son rediscover colour and creativity.'),
-        mk('vbe10','🥊','“Impossible Is Nothing” — Muhammad Ali','https://www.youtube.com/watch?v=ifuO7QB0i6w','Muhammad Ali’s own words on daring to attempt what others call impossible.')
+        mk('vbe10','🥊','“Impossible Is Nothing” — Muhammad Ali','https://www.youtube.com/watch?v=ifuO7QB0i6w','Muhammad Ali’s own words on daring to attempt what others call impossible.'),
+        mk('vbe11','🏆','“I Am The Greatest” — Muhammad Ali','https://www.youtube.com/watch?v=J9CeC3yrcG4','The young champion declares his belief in himself before the world believed in him.')
       ]}),
     cat({ key:'v_role', name:'Role Models · Shorts', emoji:'⭐', grad:['#d99a3a','#9c5a1e'], scene:'imagine',
       _w:'Watch and listen closely. Who is speaking, and what is their main message? Write down one line that stayed with you, and explain why it matters.',
@@ -22056,13 +22059,23 @@ const WASPK_VID_CATS = (function(){
       _w:'Retell what happens when the character feels angry. What set it off, and what helped calm it down? Write about a way you calm yourself when you feel the same.',
       _s:'Retell the story, then share one thing you do — or could do — to cool down when anger rises.',
       prompts:[
-        mk('van1','🌋','The Volcano Inside Me','https://www.youtube.com/watch?v=pwaudZWNPAc','Learning to notice and control anger before it erupts.')
+        mk('van1','🌋','The Volcano Inside Me','https://www.youtube.com/watch?v=pwaudZWNPAc','Learning to notice and control anger before it erupts.'),
+        mk('van2','🧠','How to Manage Your Emotions — TED-Ed','https://www.youtube.com/watch?v=Uew5BbvmLks','A simple model for noticing a strong feeling and steering it before it takes over.')
       ]}),
     cat({ key:'v_self', name:'Seeing Yourself · Shorts', emoji:'🪞', grad:['#e6608a','#b23c78'], scene:'imagine',
       _w:'Watch closely. What does the character see when they look at themselves, and how does it change? Write about one thing you like about who you are.',
       _s:'Retell the short in your own words, then speak kindly about yourself — name one strength and one thing you are proud of.',
       prompts:[
         mk('vse1','🪞','The Reflection in Me','https://www.youtube.com/watch?v=D9OOXCu5XMg','A girl learns to accept and value her own reflection.')
+      ]}),
+    cat({ key:'v_ideas', name:'Ideas, Issues & the Future · Shorts', emoji:'💡', grad:['#2b5fa6','#173a6b'], scene:'imagine',
+      _w:'Watch once, then again if you need. In your own words, sum up the main idea in two or three sentences. Then note one thing you learned and one question you still have.',
+      _s:'Explain the big idea of this clip out loud, then give your own view: do you agree, and what does it mean for you or your country? Aim for a clear minute.',
+      prompts:[
+        mk('vid1','📰','How False News Can Spread — TED-Ed','https://www.youtube.com/watch?v=cSKGa_7XJkg','How a rumour can circle the world before the truth catches up — and how to check what you read.'),
+        mk('vid2','🤖','Will Automation Take Away Our Jobs? — TED','https://www.youtube.com/watch?v=th3nnEpITz0','An economist asks what work will look like as machines and AI do more of it.'),
+        mk('vid3','🚀','The Single Biggest Reason Startups Succeed — TED','https://www.youtube.com/watch?v=Zt8ytHp3u6Y','What really decides whether a new business wins or fails — the answer surprises even the expert.'),
+        mk('vid4','🔴','Could We Actually Live on Mars? — TED-Ed','https://www.youtube.com/watch?v=DMMPYkRrd4o','What it would truly take for humans to make a home on the red planet.')
       ]})
   ];
 })();
@@ -22158,7 +22171,19 @@ const WASPK_DEBATE_CAT = { key:'p_hot', name:'Debate starters', emoji:'🔥', gr
       {id:'db28', kind:'debate', emoji:'💛', title:'Measure of Success', statement:'Real success is measured by the good you do for others, not by how much money you make.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
       {id:'db29', kind:'debate', emoji:'🛠️', title:'A Skill Before You Leave', statement:'Every teenager should master one real-world skill — coding, first aid, or growing food — before finishing school.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
       {id:'db30', kind:'debate', emoji:'🌟', title:'Dream Big or Play Safe', statement:'It is better to dream big and risk failing than to set safe goals you are sure to reach.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
-      {id:'db31', kind:'debate', emoji:'🤝', title:'Judge a City by Its Kindest Corner', statement:'A great city should be judged by how well it includes its most vulnerable people.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'}
+      {id:'db31', kind:'debate', emoji:'🤝', title:'Judge a City by Its Kindest Corner', statement:'A great city should be judged by how well it includes its most vulnerable people.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db32', kind:'debate', emoji:'📱', title:'Age Limit for Social Media', statement:'No one under sixteen should be allowed to use social media.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db33', kind:'debate', emoji:'🏠', title:'Home or School', statement:'Learning at home can be just as good as learning in a regular school.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db34', kind:'debate', emoji:'🌐', title:'Trust the Internet?', statement:'Most of what people read on the internet cannot be fully trusted.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db35', kind:'debate', emoji:'🔬', title:'Money for Science', statement:'Governments should spend far more on scientific research, even when the rewards are years away.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db36', kind:'debate', emoji:'🧭', title:'Jobs That Don’t Exist Yet', statement:'Schools should prepare students for the jobs of the future, not the jobs of today.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db37', kind:'debate', emoji:'💰', title:'All in One Basket', statement:'A person — or a country — that relies on a single source of income is taking a dangerous risk.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db38', kind:'debate', emoji:'🍎', title:'Know Your Food', statement:'Every shop and restaurant should be forced to show exactly where their food comes from.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db39', kind:'debate', emoji:'🔐', title:'Guard Your Data', statement:'Protecting your personal information online is now as important as locking your front door.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db40', kind:'debate', emoji:'🌍', title:'Fix Earth or Find Another', statement:'We should focus on saving planet Earth rather than spending billions searching for a new home in space.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db41', kind:'debate', emoji:'🛰️', title:'A Backup Planet', statement:'Humanity should aim to become a species that can live on more than one planet.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db42', kind:'debate', emoji:'📰', title:'Teach Spotting Fake News', statement:'Every school should teach students how to spot fake news and misinformation.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'},
+      {id:'db43', kind:'debate', emoji:'🧪', title:'Curiosity Pays', statement:'Research driven only by curiosity, with no obvious use, is still worth funding.', caption:'Debate starter — take a side and defend it.', write:'List your strongest reasons for one side. Then note what the other side would say, and how you would answer them.', speak:'Give a one-minute argument for your side. Lead with your best reason, and answer one objection.'}
     ]};
 
 const WASPK_SPK_CATS = (function(){
@@ -22600,7 +22625,7 @@ ROUTES.waspkCats = function(){
         const vgrid = `<div class="wa-grid wa-grid-sm">${c.prompts.map(p=>`<div class="wa-tile" onclick="go('waspkDo','${p.id}')">${waspkTileVisual(waspkVO({p,c}))}${waspkStatusBadge(p.id,true)}</div>`).join('')}</div>`;
         return multi ? `<div class="wa-subhead">${esc(c.name)} <span>· ${c.prompts.length}</span></div>${vgrid}` : vgrid;
       }
-      const grid = `<div class="wa-grid">${c.prompts.map(p=>`<div class="wa-tile" onclick="go('waspkDo','${p.id}')">${waspkTileVisual(waspkVO({p,c}))}${waspkStatusBadge(p.id,true)}</div>`).join('')}</div>`;
+      const grid = `<div class="wa-grid wa-grid-sm">${c.prompts.map(p=>`<div class="wa-tile" onclick="go('waspkDo','${p.id}')">${waspkTileVisual(waspkVO({p,c}))}${waspkStatusBadge(p.id,true)}</div>`).join('')}</div>`;
       return multi ? `<div class="wa-subhead">${esc(c.name)} <span>· ${c.prompts.length}</span></div>${grid}` : grid;
     }).join('');
     return `<div class="wa-typehead"><span class="ti">${t.ic}</span><div><h2>${t.label} <span class="ct">${total}</span></h2><p>${t.sub}</p></div></div>${body}`;
