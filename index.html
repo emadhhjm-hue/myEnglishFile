@@ -1029,13 +1029,12 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wa-flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:16px 0 2px;font-weight:800}
 .wa-flow .s{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 14px;color:#fff;font-size:.92rem}
 .wa-flow .ar{opacity:.9;font-size:1.1rem}
-.wa-modes{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:22px}
-@media(min-width:760px){ .wa-modes{grid-template-columns:repeat(3,1fr)} }
-.wa-mode{cursor:pointer;border:none;border-radius:20px;padding:22px 16px;color:#fff;text-align:center;box-shadow:var(--shadow);transition:transform .15s,filter .15s;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:158px;justify-content:center}
+.wa-modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:22px}
+.wa-mode{cursor:pointer;border:none;border-radius:16px;padding:14px 10px;color:#fff;text-align:center;box-shadow:var(--shadow);transition:transform .15s,filter .15s;display:flex;flex-direction:column;align-items:center;gap:4px;min-height:116px;justify-content:center}
 .wa-mode:hover{transform:translateY(-4px);filter:brightness(1.04)}
-.wa-mode .mi{font-size:2.7rem;line-height:1}
-.wa-mode b{font-family:'Fraunces',Georgia,serif;font-size:1.22rem}
-.wa-mode span{font-size:.82rem;opacity:.95;line-height:1.35}
+.wa-mode .mi{font-size:2rem;line-height:1}
+.wa-mode b{font-family:'Fraunces',Georgia,serif;font-size:1rem;line-height:1.15}
+.wa-mode span{font-size:.72rem;opacity:.95;line-height:1.3}
 /* picture prompt card */
 .wa-pic{position:relative;border-radius:18px;overflow:hidden;box-shadow:var(--shadow);width:100%;background:#eee}
 .wa-pic.ar{aspect-ratio:4/3}
@@ -1047,7 +1046,29 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wa-grid{display:grid;grid-template-columns:1fr;gap:16px}
 @media(min-width:620px){ .wa-grid{grid-template-columns:1fr 1fr} }
 @media(min-width:980px){ .wa-grid{grid-template-columns:1fr 1fr 1fr} }
-.wa-tile{cursor:pointer;transition:transform .15s}
+/* compact grid — used for video prompts: smaller boxes, more per row */
+.wa-grid-sm{grid-template-columns:1fr 1fr;gap:12px}
+@media(min-width:620px){ .wa-grid-sm{grid-template-columns:repeat(3,1fr)} }
+@media(min-width:980px){ .wa-grid-sm{grid-template-columns:repeat(4,1fr)} }
+@media(min-width:1240px){ .wa-grid-sm{grid-template-columns:repeat(5,1fr)} }
+.wa-grid-sm .wa-pic.ar{aspect-ratio:1/1}
+.wa-grid-sm .wa-pic .wa-cap{padding:18px 10px 9px}
+.wa-grid-sm .wa-pic .wa-cap b{font-size:.9rem;line-height:1.14}
+.wa-grid-sm .wa-catpill{display:none}
+.wa-grid-sm .wa-kindbadge{font-size:.55rem;padding:3px 7px;top:8px;right:8px}
+.wa-grid-sm .wa-stbadge.corner{bottom:8px;right:8px;transform:scale(.82);transform-origin:bottom right}
+.wa-tile{cursor:pointer;transition:transform .15s;position:relative}
+/* "Start → Done" progress slider badge on library prompts */
+.wa-stbadge{display:inline-flex;align-items:center;gap:7px;padding:4px 10px 4px 7px;border-radius:999px;font-size:.7rem;font-weight:800;letter-spacing:.02em;color:#fff;white-space:nowrap;box-shadow:0 2px 7px rgba(0,0,0,.2)}
+.wa-stbadge .sld{position:relative;width:26px;height:8px;border-radius:999px;background:rgba(255,255,255,.5);flex:0 0 auto}
+.wa-stbadge .sld i{position:absolute;top:-2px;left:1px;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.35);transition:left .3s ease}
+.wa-stbadge.done{background:linear-gradient(135deg,#12a150,#0c7a3c)}
+.wa-stbadge.done .sld i{left:13px}
+.wa-stbadge.prog{background:linear-gradient(135deg,#f0a500,#cf8500)}
+.wa-stbadge.prog .sld i{left:7px}
+.wa-stbadge.corner{position:absolute;bottom:12px;right:12px;z-index:4}
+.wa-bar .wa-stbadge{margin-left:auto;box-shadow:none;padding:3px 9px 3px 6px}
+.wa-bar-t + .wa-stbadge{margin-left:auto}
 .wa-tile:hover{transform:translateY(-5px)}
 .wa-cathead{display:flex;align-items:center;gap:10px;margin:26px 0 12px}
 .wa-cathead .ce{font-size:1.6rem}
@@ -1073,17 +1094,17 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wa-subhead{font-weight:700;color:var(--ink);margin:16px 0 8px;font-size:.98rem}
 .wa-subhead span{color:var(--muted);font-weight:500;font-size:.85rem}
 /* Talking Points — compact colour-coded bars (tap a title to reveal the task) */
-.wa-barlist{display:flex;flex-direction:column;gap:8px;margin:0 0 8px}
+.wa-barlist{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin:0 0 8px;align-items:start}
 .wa-baritem{border-radius:12px}
-.wa-bar{width:100%;display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;font-family:inherit;
-  border:1px solid var(--line);border-left:6px solid var(--bar,#e6464b);border-radius:12px;padding:10px 14px;
+.wa-bar{width:100%;display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;font-family:inherit;
+  border:1px solid var(--line);border-left:6px solid var(--bar,#e6464b);border-radius:12px;padding:10px 12px;
   transition:box-shadow .12s,transform .06s}
 .wa-bar:hover{box-shadow:0 8px 18px -12px rgba(21,24,58,.4)}
 .wa-bar:active{transform:translateY(1px)}
-.wa-bar-ic{flex:none;width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;
-  font-size:1.05rem;background:var(--bar,#e6464b);color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
-.wa-bar-t{flex:1;font-weight:700;color:var(--ink);font-size:.97rem;line-height:1.3}
-.wa-bar-x{flex:none;color:var(--bar,#e6464b);font-size:1.3rem;font-weight:800;line-height:1;transition:transform .2s}
+.wa-bar-ic{flex:none;width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  font-size:1rem;background:var(--bar,#e6464b);color:#fff;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
+.wa-bar-t{flex:1;font-weight:700;color:var(--ink);font-size:.9rem;line-height:1.25}
+.wa-bar-x{display:none}
 .wa-baritem.open .wa-bar-x{transform:rotate(90deg)}
 .wa-baritem.open .wa-bar{border-bottom-left-radius:0;border-bottom-right-radius:0}
 .wa-bar-panel{max-height:0;overflow:hidden;background:#fff;border:1px solid var(--line);border-top:none;
@@ -8515,15 +8536,70 @@ function drawRwdLogo(x, cx, cy, size){
   x.restore();
 }
 
-/* Logo + name, top-left inside the frame.
-   No credit line here — it already sits under the teacher's signature, and the long
-   version overflowed the left border on narrower certificates. */
+/* ---- Full ringed RWD emblem — canvas port of the homepage's rotating logo.
+   Purple ring + circular "READ to WRITE to DESIGN and back again" caption +
+   the three labelled bubbles (READ·view, WRITE·represent, DESIGN·DST). ---- */
+const RWD_CAP_RUNS=[
+  {t:'READ', b:true, c:'#E0403F'},
+  {t:' to ', i:true, c:'#15183A'},
+  {t:'WRITE', b:true, c:'#2BA84F'},
+  {t:' to ', i:true, c:'#15183A'},
+  {t:'DESIGN', b:true, c:'#7A2FD0'},
+  {t:' and ', c:'#15183A'},
+  {t:'back again', b:true, c:'#15183A'},
+  {t:'  \u00b7  The Iterative ', c:'#15183A'},
+  {t:'Multiliteracies', b:true, c:'#2b6cb0'},
+  {t:' Process  \u00b7  ', c:'#15183A'}
+];
+function drawArcTextRWD(x, runs, cx, cy, r, startAngle, fontPx){
+  const chars=[];
+  runs.forEach(run=>{ for(let i=0;i<run.t.length;i++) chars.push({ch:run.t[i], run:run}); });
+  const fontFor=run=>(run.i?'italic ':'')+(run.b?'800 ':'600 ')+fontPx+'px Georgia,serif';
+  chars.forEach(o=>{ x.font=fontFor(o.run); o.w=x.measureText(o.ch).width; });
+  let ang=startAngle;
+  x.textAlign='center'; x.textBaseline='middle';
+  chars.forEach(o=>{
+    const a=ang + (o.w/2)/r;
+    x.save();
+    x.translate(cx + r*Math.cos(a), cy + r*Math.sin(a));
+    x.rotate(a + Math.PI/2);
+    x.font=fontFor(o.run); x.fillStyle=o.run.c;
+    x.fillText(o.ch, 0, 0);
+    x.restore();
+    ang += o.w/r;
+  });
+}
+function drawRwdEmblem(x, cx, cy, size){
+  const s=size/640;
+  x.save();
+  x.translate(cx,cy); x.scale(s,s); x.translate(-320,-320);
+  // outer ring + inner disc
+  x.fillStyle='#b4a8ee'; x.beginPath(); x.arc(320,320,304,0,7); x.fill();
+  x.fillStyle='#f3f0fc'; x.beginPath(); x.arc(320,320,206,0,7); x.fill();
+  x.strokeStyle='rgba(255,255,255,.75)'; x.lineWidth=3; x.beginPath(); x.arc(320,320,206,0,7); x.stroke();
+  // circular caption around the ring
+  drawArcTextRWD(x, RWD_CAP_RUNS, 320, 320, 254, Math.PI, 38);
+  // dashed rotation ring + arrow head (the "and back again" iteration cue)
+  x.save(); x.globalAlpha=0.35; x.strokeStyle='#6a5fd0'; x.lineWidth=2; if(x.setLineDash) x.setLineDash([2,10]);
+  x.beginPath(); x.arc(320,320,184,0,7); x.stroke(); x.restore();
+  x.fillStyle='#2b6cb0'; x.beginPath(); x.moveTo(300,136); x.lineTo(330,120); x.lineTo(330,152); x.closePath(); x.fill();
+  // three labelled bubbles
+  const bub=(bx,by,col,l1,l2)=>{ x.save();
+    x.shadowColor='rgba(59,45,122,.30)'; x.shadowBlur=10; x.shadowOffsetY=4;
+    x.fillStyle=col; x.beginPath(); x.arc(bx,by,64,0,7); x.fill(); x.restore();
+    x.fillStyle='#fff'; x.textAlign='center'; x.textBaseline='alphabetic';
+    x.font='700 21px Georgia,serif'; x.fillText(l1, bx, by-2);
+    x.font='700 18px Georgia,serif'; x.fillText(l2, bx, by+22); };
+  bub(243,262,'#E0403F','READ \u2013','view');
+  bub(397,262,'#2BA84F','WRITE \u2013','represent');
+  bub(320,392,'#7A2FD0','DESIGN \u2013','DST');
+  x.restore();
+}
+
+/* Corner emblem inside the certificate frame — the ringed RWD logo from the homepage.
+   No caption: the masthead already carries the "iCAN Academy" wordmark. */
 function drawCertBrand(x, left, top, size, showCaption){
-  drawRwdLogo(x, left + size/2, top + size/2, size);
-  if(showCaption===false) return;   // masthead already carries the wordmark
-  x.textAlign = 'center';
-  x.fillStyle = '#15183A'; x.font = '800 16px Georgia, serif';
-  x.fillText('iCAN Academy', left + size/2, top + size + 18);
+  drawRwdEmblem(x, left + size/2, top + size/2, size);
 }
 
 /* Which motif belongs to this certificate? */
@@ -8820,9 +8896,9 @@ function drawCert(o){
   const corner=(cx,cy,sx,sy)=>{ x.strokeStyle=t.a; x.lineWidth=4; x.beginPath(); x.moveTo(cx,cy+sy*56); x.lineTo(cx,cy); x.lineTo(cx+sx*56,cy); x.stroke();
     x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(cx+sx*13,cy+sy*42); x.lineTo(cx+sx*13,cy+sy*13); x.lineTo(cx+sx*42,cy+sy*13); x.stroke(); };
   corner(72,72,1,1); corner(W-72,72,-1,1); corner(72,H-72,1,-1); corner(W-72,H-72,-1,-1);
-  drawCertBrand(x, 100, 92, 96);
+  drawCertBrand(x, 66, 60, 200);
   x.textAlign="center";
-  x.fillStyle=t.ink; x.font="600 22px 'Lexend',Georgia,sans-serif"; x.fillText((CONFIG.schoolName||"iCAN English Practice").toUpperCase(), W/2, 122);
+  { const _sch=(CONFIG.schoolName||'').trim(); if(_sch && !/^iCAN\s+English\s+Practice$/i.test(_sch)){ x.fillStyle=t.ink; x.font="600 22px 'Lexend',Georgia,sans-serif"; x.fillText(_sch.toUpperCase(), W/2, 122); } }
   x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(W/2-130,136); x.lineTo(W/2+130,136); x.stroke();
   x.fillStyle=t.a; x.font="bold 64px Georgia"; x.fillText("CERTIFICATE", W/2, 208);
   x.fillStyle="#8a8a8a"; x.font="italic 26px Georgia"; x.fillText(o.subtitle, W/2, 248);
@@ -13009,13 +13085,13 @@ function drawEarnedCert(cert){
     x.strokeStyle=pal.gold; x.lineWidth=2; x.beginPath(); x.arc(cx,cy,12,0,7); x.stroke();
   });
   // iCAN Academy logo — top-left glyph only; the wordmark now leads the masthead
-  drawCertBrand(x, 86, 78, 104, false);
+  drawCertBrand(x, 56, 50, 214, false);
   // Masthead — iCAN Academy brand, RWD motto, then the school
   x.textAlign='center';
   x.fillStyle=pal.primary; x.font='800 38px Georgia'; x.fillText('iCAN Academy', W/2, 112);
   x.fillStyle=pal.dark; x.font='italic 600 16px Georgia';
   x.fillText('Multiliteracies RWD Framework \u00b7 where learners belong, where learners grow', W/2, 140);
-  x.fillStyle=pal.primary; x.font='700 22px Georgia'; x.fillText((cert.school||'AL-DHANNAH SCHOOL').toUpperCase(), W/2, 168);
+  { const _sch=(cert.school||'').trim(); if(_sch && !/^iCAN\s+English\s+Practice$/i.test(_sch)){ x.fillStyle=pal.primary; x.font='700 22px Georgia'; x.fillText(_sch.toUpperCase(), W/2, 168); } }
   // gold dot divider
   x.strokeStyle=pal.gold; x.lineWidth=2;
   x.beginPath(); x.moveTo(W/2-60,184); x.lineTo(W/2-8,184); x.moveTo(W/2+8,184); x.lineTo(W/2+60,184); x.stroke();
@@ -13063,9 +13139,9 @@ function drawEarnedCert(cert){
   x.strokeStyle=pal.gold; x.lineWidth=1;
   x.beginPath(); x.moveTo(W/2-200,dY); x.lineTo(W/2-30,dY); x.moveTo(W/2+30,dY); x.lineTo(W/2+200,dY); x.stroke();
   x.fillStyle=pal.gold; [-24,-8,8,24].forEach(dx=>{ x.beginPath(); x.arc(W/2+dx,dY,3,0,7); x.fill(); });
-  // recognition paragraph
-  x.fillStyle='#333'; x.font='500 18px Georgia';
-  const recEndY = certWrap(x, honoraryV2(Object.assign({}, cert, {tier:tier})), W/2, dY+40, W*0.72, 28);
+  // recognition paragraph — enlarged for visibility
+  x.fillStyle='#333'; x.font='500 22px Georgia';
+  const recEndY = certWrap(x, honoraryV2(Object.assign({}, cert, {tier:tier})), W/2, dY+40, W*0.74, 32);
 
   // --- Article-A-Day work record: the student's own ideas + banked words ---
   const hasWork = (cert.ideas && cert.ideas.length) || (cert.words && cert.words.length);
@@ -13074,10 +13150,14 @@ function drawEarnedCert(cert){
     drawAadWorkTable(x, cert, W, recEndY+26);
   }
 
-  // motivational quote
+  // motto — short, catchy, brain-sticky; bold cursive script
   x.textAlign='center';   /* the work table above draws left-aligned rows */
-  x.fillStyle=pal.primary; x.font='italic 500 18px Georgia';
-  x.fillText('A reader and writer today, a designer of knowledge tomorrow.', W/2, H-258);
+  x.fillStyle=pal.primary;
+  { const _motto='iCAN connect, author, and nurture the world';
+    const _mfont=n=>"700 "+n+"px 'Great Vibes','Snell Roundhand','Brush Script MT','Segoe Script',cursive";
+    let _mf=44; x.font=_mfont(_mf);
+    while(x.measureText(_motto).width>W*0.82 && _mf>22){ _mf-=2; x.font=_mfont(_mf); }
+    x.fillText(_motto, W/2, H-256); }
   // awarded on
   x.fillStyle='#666'; x.font='italic 500 14px Georgia'; x.fillText('Awarded on', W/2, H-210);
   x.fillStyle=pal.primary; x.font='700 18px Georgia';
@@ -17830,7 +17910,7 @@ function stemCert(id,pct){
   doc.setTextColor(255,255,255); doc.setFont('times','bold'); doc.setFontSize(32);
   doc.text(kind, W/2, 152, {align:'center'});
   doc.setFont('times','italic'); doc.setFontSize(13); doc.setTextColor(214,216,236);
-  doc.text('Read it. Write it. Design it.', W/2, 172, {align:'center'});
+  doc.text('iCAN connect, author, and nurture the world', W/2, 172, {align:'center'});
   /* name */
   doc.setFont('times','bolditalic'); doc.setFontSize(34); doc.setTextColor(255,255,255);
   doc.text(nm, W/2, 216, {align:'center'});
@@ -22008,7 +22088,17 @@ const WASPK_PIC_CAT = { key:'p_pic', name:'Thought-provoking photos', emoji:'�
       {id:'pc17', kind:'pic', emoji:'🪑', title:'The Empty Chair', img:'https://images.unsplash.com/photo-1757563856964-2eed45ee2884?w=1200&q=80&auto=format&fit=crop', caption:'A single empty chair facing a wide window.', scenario:'A single empty chair sits facing a wide window, angled as if someone has only just stood up and walked away. Soft light falls across the seat. The room is quiet, and the chair seems to be waiting.', questions:['Who do you imagine usually sits in this chair, and where have they gone? What in the scene makes you think so?','An empty chair can feel peaceful or sad. Which does this one feel like to you, and why?','Is a quiet, empty space something to enjoy, or something to fill? Explain your view.']},
       {id:'pc18', kind:'pic', emoji:'🚪', title:'The Closed Door', img:'https://images.unsplash.com/photo-1561232295-b5ada34a032e?w=1200&q=80&auto=format&fit=crop', caption:'A heavy old door, firmly shut.', scenario:'A heavy old door stands firmly shut at the end of a passage. Its handle is worn from years of use, but right now it will not open, and you cannot see what is on the other side.', questions:['From the door alone, what do you imagine lies behind it \u2014 and why?','Some closed doors protect us; some hold us back. How can you tell the difference before you try to open one?','Describe a \u201cdoor\u201d in your own life that is closed right now. Do you want it open, and what would opening it cost?']},
       {id:'pc19', kind:'pic', emoji:'🕯️', title:'One Small Light', img:'https://images.unsplash.com/photo-1762871627042-280df1a17b98?w=1200&q=80&auto=format&fit=crop', caption:'A single light glowing in the dark.', scenario:'In a wide stretch of darkness, a single small light glows steadily. It does not fill the whole space, but it is enough to see by, and everything near it takes shape. The dark around it feels less empty because the light is there.', questions:['What does the one small light let you notice that the darkness hides? Describe it.','Sometimes one person, idea or kind act is the \u201cone small light\u201d for others. Who or what has been that for you?','Is a small light in great darkness a sign of hope, or a reminder of how much dark remains? Argue your view.']},
-      {id:'pc20', kind:'pic', emoji:'🛤️', title:'The Two Paths', img:'https://images.unsplash.com/photo-1429743305873-d4065c15f93e?w=1200&q=80&auto=format&fit=crop', caption:'A path splitting into two directions.', scenario:'A single path reaches a fork and splits into two. One way looks worn and easy; the other is narrow and overgrown, disappearing quickly from view. A traveller has stopped exactly where the two divide.', questions:['Compare the two paths in the scene. What does each one seem to promise, and what does each one hide?','When you face a choice between the easy, familiar way and the harder, unknown one, how do you decide?','Is the \u201cright\u201d path always the harder one? Use the fork in the scene to explain your answer.']}
+      {id:'pc20', kind:'pic', emoji:'🛤️', title:'The Two Paths', img:'https://images.unsplash.com/photo-1429743305873-d4065c15f93e?w=1200&q=80&auto=format&fit=crop', caption:'A path splitting into two directions.', scenario:'A single path reaches a fork and splits into two. One way looks worn and easy; the other is narrow and overgrown, disappearing quickly from view. A traveller has stopped exactly where the two divide.', questions:['Compare the two paths in the scene. What does each one seem to promise, and what does each one hide?','When you face a choice between the easy, familiar way and the harder, unknown one, how do you decide?','Is the \u201cright\u201d path always the harder one? Use the fork in the scene to explain your answer.']},
+      {id:'pc21', kind:'pic', emoji:'👑', title:'The Pawn in the Mirror', img:'https://images.unsplash.com/photo-1772617388664-a7a4189732b5?w=1200&q=80&auto=format&fit=crop', caption:'A small pawn sees a queen looking back.', scenario:'A single chess pawn stands before a mirror. It is the smallest, weakest piece on the board \u2014 yet the reflection looking back is not a pawn at all, but a queen, the most powerful piece of all. For a moment, what it is and what it could become stand side by side.', questions:['Look at the two pieces in the picture. Which one is the \u201creal\u201d piece \u2014 the pawn or the queen \u2014 and which one is only a possibility?','A pawn becomes a queen only by crossing the whole board, one careful square at a time. What is the \u201cwhole board\u201d you would have to cross to become who you want to be?','Are people limited by what they start as, or free to become something far greater? Use the mirror to argue your view.']},
+      {id:'pc22', kind:'pic', emoji:'🏜️', title:'The Last Tree Standing', img:'https://images.unsplash.com/photo-1706277750070-038c259c2ab7?w=1200&q=80&auto=format&fit=crop', caption:'One bare tree alone on a cracked desert floor.', scenario:'On a cracked, pale desert floor, a single bare tree stands against a wall of towering red dunes. Nothing else grows for miles around it. It has survived where almost nothing could \u2014 and it stands completely alone.', questions:['Describe the mood of this place. Does the lone tree look defeated or defiant \u2014 and what in the picture makes you say so?','The tree keeps going with almost no water, shade or company. What do you think keeps something \u2014 or someone \u2014 going through the hardest conditions?','Is it better to be one of many in an easy place, or to stand alone somewhere hard but be truly seen? Use the tree to explain.']},
+      {id:'pc23', kind:'pic', emoji:'🌱', title:'In Whose Hands?', img:'https://images.unsplash.com/photo-1679110663825-c6ec1ad51884?w=1200&q=80&auto=format&fit=crop', caption:'A tiny green seedling cupped in two hands.', scenario:'A tiny seedling, only a few leaves tall, is cupped carefully in a pair of open hands. It is far too small and fragile to survive out in the world on its own. For now, whether it lives or dies depends entirely on the hands that hold it.', questions:['Look at how the plant is held. What does the careful, cupped shape of the hands tell you about how the person feels toward it?','Something small and fragile has been placed in someone\u2019s care. What is one thing in your own life that you are responsible for keeping alive or keeping going?','Is it the size of a thing that makes it matter, or its potential to grow? Use the seedling to argue your answer.']},
+      {id:'pc24', kind:'pic', emoji:'🪜', title:'One Rung at a Time', img:'https://images.unsplash.com/photo-1635082627989-dcd12a107364?w=1200&q=80&auto=format&fit=crop', caption:'A wooden ladder climbing a wall toward open sky.', scenario:'A plain wooden ladder leans against a high wall, its rungs climbing up out of the frame toward a clear blue sky. You cannot see the top from where you stand. To find out what is up there, someone has to start climbing \u2014 one rung at a time.', questions:['The top of the ladder is out of sight. Does that make the climb feel exciting or frightening to you \u2014 and why?','Big goals are almost always reached one small step at a time. What is a \u201cladder\u201d you are climbing right now, and what is the very next rung?','Is it braver to climb toward something you cannot yet see, or to stay safely on the ground? Use the picture to explain.']},
+      {id:'pc25', kind:'pic', emoji:'👣', title:'The Marks We Leave', img:'https://images.unsplash.com/photo-1668385900491-48ad396f9cde?w=1200&q=80&auto=format&fit=crop', caption:'A single line of footprints crossing wet sand.', scenario:'A single line of footprints stretches across smooth, wet sand toward the horizon. Someone has walked this way alone. Very soon the tide will come in and wash every print away, as if no one had ever passed.', questions:['Follow the footprints with your eyes. What kind of journey do you imagine the person was on \u2014 and where might they be now?','The sea will erase these marks completely. Does that make the walk meaningless, or does the walk still matter even after the prints are gone?','What kind of \u201cfootprints\u201d do you hope to leave behind you \u2014 marks the tide cannot wash away? Use the picture to explain.']},
+      {id:'pc26', kind:'pic', emoji:'🕯️', title:'Toward the Light', img:'https://images.unsplash.com/photo-1733001514997-993eac75a4e4?w=1200&q=80&auto=format&fit=crop', caption:'A figure walks through a dark tunnel toward a distant light.', scenario:'A lone figure walks into a long, dark tunnel. The walls close in and the shadows are deep \u2014 but far ahead, a single opening of light marks the way out. The person keeps walking toward it.', questions:['Describe the feeling of this scene. What makes the tunnel frightening, and what makes the light at the end feel hopeful?','Everyone goes through \u201cdark tunnels\u201d \u2014 hard weeks, hard years. What helps a person keep walking toward the light instead of turning back?','Is the light at the end always worth the dark walk to reach it? Use the picture to explain your view.']},
+      {id:'pc27', kind:'pic', emoji:'🪨', title:'Holding the Balance', img:'https://images.unsplash.com/photo-1758947041685-5de333619040?w=1200&q=80&auto=format&fit=crop', caption:'Smooth stones stacked in perfect balance at sunset.', scenario:'On a quiet shore at sunset, smooth stones are stacked one on top of another in a delicate tower. Each stone had to be placed slowly and patiently; one careless move and the whole thing falls. Yet right now, it holds.', questions:['Look at the tower of stones. What does it tell you about the patience and care needed to build something that lasts?','In your own life \u2014 school, family, friendships \u2014 what are the \u201cstones\u201d you are trying to keep in balance right now?','Is a life better when it is busy and full, or calm and balanced like this tower? Use the picture to argue your view.']},
+      {id:'pc28', kind:'pic', emoji:'🗝️', title:'What Would You Unlock?', img:'https://images.unsplash.com/photo-1632849369576-06cb097fe68f?w=1200&q=80&auto=format&fit=crop', caption:'A single old golden key resting on wood.', scenario:'A single old golden key rests on a worn wooden surface. It clearly opens something \u2014 but there is no lock, no door and no clue in sight to say what. Its whole purpose is a mystery waiting to be matched to the right door.', questions:['Look closely at the key. From its shape, age and design, what kind of door do you imagine it was made to open?','A key is useless until it meets the right lock. What is one \u201clocked door\u201d in your own life that you would most like to open \u2014 and what is stopping you?','Are the best opportunities handed to us like a key, or do we have to make our own? Use the image to explain.']},
+      {id:'pc29', kind:'pic', emoji:'⛵', title:'Set Adrift', img:'https://images.unsplash.com/photo-1515378040420-7d3f50e186e8?w=1200&q=80&auto=format&fit=crop', caption:'A small paper boat floats alone on dark, open water.', scenario:'A small paper boat floats alone on wide, dark water. It is fragile \u2014 one wave, one gust of wind, one drop of rain could sink it \u2014 yet it keeps floating, carried further from the shore with every ripple.', questions:['Describe the paper boat against the vast water. What feeling does something so small and fragile, out so far, give you?','Setting out on something new can feel like launching a paper boat \u2014 exciting but risky. When was the last time you \u201cset yourself adrift\u201d into something unknown?','Is it braver to stay safe on the shore, or to set out even when you might sink? Use the picture to explain.']},
+      {id:'pc30', kind:'pic', emoji:'🕸️', title:'By Design', img:'https://images.unsplash.com/photo-1615827157349-b3225b74f6e4?w=1200&q=80&auto=format&fit=crop', caption:'A spider\u2019s web strung with dew at dawn.', scenario:'At dawn, a spider\u2019s web hangs strung with tiny beads of dew. Up close it is astonishing \u2014 a precise, patient design of fine threads, each one placed to hold the whole together. It looks fragile, yet it was built to catch and to last.', questions:['Look at the pattern of the web. What does its design tell you about the care and planning that went into building it?','The web is both delicate and strong at once. Where in life have you seen something that is fragile and powerful at the same time?','We often admire nature\u2019s designs. What is one thing humans could learn from how this web is built? Use the picture to explain.']}
     ]};
 WASPK_PIC_CAT.prompts.forEach(function(p){ if(!p.write) p.write=p.scenario||''; if(!p.speak) p.speak='Look at the picture and talk it through out loud: describe what you see, then answer the questions, giving reasons and an example.'; });
 const WASPK_PUZZLE_CAT = { key:'p_puz', name:'Puzzles to ponder', emoji:'🧩', grad:['#0FA98B','#0b6e5c'], scene:'imagine', prompts:[
@@ -22261,6 +22351,26 @@ function waspkPieces(){ return waspkAll()[waspkKey()]||[]; }
 function waspkSavePieces(list){ const all=waspkAll(); all[waspkKey()]=list; try{ Store.set('waspk_pieces',all); return true; }catch(e){ return false; } }
 function waspkGetPiece(pid){ return waspkPieces().find(x=>x.id===pid)||null; }
 
+/* ---- Prompt progress: has this student done this prompt before? --------
+   'done'     = at least one published piece exists for the prompt
+   'progress' = a draft was started (Window 1 saved) but never published    */
+function waspkPromptStatus(promptId){
+  if(!promptId) return null;
+  try{ if(waspkPieces().some(x=>x.promptId===promptId)) return 'done'; }catch(e){}
+  try{ const d=Store.get('waspk_draft_'+promptId); if(d && String(d).trim()) return 'progress'; }catch(e){}
+  return null;
+}
+/* A small "Start → Done" slider badge shown on library prompts the student
+   has already begun or finished. corner=true → absolute overlay on a tile. */
+function waspkStatusBadge(promptId, corner){
+  const s=waspkPromptStatus(promptId); if(!s) return '';
+  const done=s==='done';
+  const cls='wa-stbadge '+(corner?'corner ':'')+(done?'done':'prog');
+  const label=done?'Done':'Started';
+  const tip=done?'You have already published this prompt':'You started this — not published yet';
+  return `<span class="${cls}" title="${tip}"><span class="sld"><i></i></span><span class="lb">${done?'✓ ':''}${label}</span></span>`;
+}
+
 /* ---- Transient state --------------------------------------------------- */
 let WASPK_CUR=null;      // active unit: {promptId, vo, prompt, kind, custom, write, spoke, pieceId, deckKey, deckName}
 let WASPK_CUSTOM=null;   // in-progress student "Create Your Own" prompt
@@ -22426,7 +22536,7 @@ ROUTES.waspkCats = function(){
   const teacherBlock = tp.length ? `
     <div class="wa-cathead"><span class="ce">👩‍🏫</span><h2>From my teacher</h2></div>
     <div class="wa-grid">
-      ${tp.map(p=>`<div class="wa-tile" onclick="go('waspkDo','${p.id}')">${waspkTileVisual(waspkVO({p, c:{name:'From my teacher',key:'teacher',grad:['#15183A','#26308a'],scene:'imagine'}}))}</div>`).join('')}
+      ${tp.map(p=>`<div class="wa-tile" onclick="go('waspkDo','${p.id}')">${waspkTileVisual(waspkVO({p, c:{name:'From my teacher',key:'teacher',grad:['#15183A','#26308a'],scene:'imagine'}}))}${waspkStatusBadge(p.id,true)}</div>`).join('')}
     </div>` : '';
   const TYPES=[
     {kind:'video', ic:'🎬', label:'Video prompts', sub:'Watch a short film, then retell &amp; react'},
@@ -22441,28 +22551,32 @@ ROUTES.waspkCats = function(){
     const total = cats.reduce((n,c)=>n+c.prompts.length,0);
     const multi = cats.length>1;
     const body = cats.map(c=>{
-      if(t.kind==='debate' || t.kind==='puzzle' || t.kind==='video'){
+      if(t.kind==='debate' || t.kind==='puzzle'){
         const bars = c.prompts.map(p=>{
           const col = WASPK_BAR_PALETTE[barI++ % WASPK_BAR_PALETTE.length];
-          const isVid = (p.kind==='video');
-          const sub = isVid ? (p.caption||p.title) : (p.statement||p.title);
-          const goLbl = isVid ? '▶ Watch &amp; write →' : '✍️ Start this task';
+          const sub = (p.statement||p.title);
           return `<div class="wa-baritem">
             <button type="button" class="wa-bar" style="--bar:${col.c};background:${col.bg}" onclick="waspkBarToggle(this)">
-              <span class="wa-bar-ic">${p.emoji||(isVid?'🎬':'🗣️')}</span>
+              <span class="wa-bar-ic">${p.emoji||'🗣️'}</span>
               <span class="wa-bar-t">${esc(p.title)}</span>
+              ${waspkStatusBadge(p.id,false)}
               <span class="wa-bar-x">›</span>
             </button>
             <div class="wa-bar-panel"><div class="wa-bar-pad">
               <p class="wa-bar-st">${esc(sub)}</p>
-              <button type="button" class="wa-bar-go" style="--bar:${col.c}" onclick="event.stopPropagation();go('waspkDo','${p.id}')">${goLbl}</button>
+              <button type="button" class="wa-bar-go" style="--bar:${col.c}" onclick="event.stopPropagation();go('waspkDo','${p.id}')">✍️ Start this task</button>
             </div></div>
           </div>`;
         }).join('');
         const list = `<div class="wa-barlist">${bars}</div>`;
         return multi ? `<div class="wa-subhead">${esc(c.name)} <span>· ${c.prompts.length}</span></div>${list}` : list;
       }
-      const grid = `<div class="wa-grid">${c.prompts.map(p=>`<div class="wa-tile" onclick="go('waspkDo','${p.id}')">${waspkTileVisual(waspkVO({p,c}))}</div>`).join('')}</div>`;
+      // Video prompts → compact thumbnail grid (like pictures, but smaller boxes) — tap a tile to Watch & write
+      if(t.kind==='video'){
+        const vgrid = `<div class="wa-grid wa-grid-sm">${c.prompts.map(p=>`<div class="wa-tile" onclick="go('waspkDo','${p.id}')">${waspkTileVisual(waspkVO({p,c}))}${waspkStatusBadge(p.id,true)}</div>`).join('')}</div>`;
+        return multi ? `<div class="wa-subhead">${esc(c.name)} <span>· ${c.prompts.length}</span></div>${vgrid}` : vgrid;
+      }
+      const grid = `<div class="wa-grid">${c.prompts.map(p=>`<div class="wa-tile" onclick="go('waspkDo','${p.id}')">${waspkTileVisual(waspkVO({p,c}))}${waspkStatusBadge(p.id,true)}</div>`).join('')}</div>`;
       return multi ? `<div class="wa-subhead">${esc(c.name)} <span>· ${c.prompts.length}</span></div>${grid}` : grid;
     }).join('');
     return `<div class="wa-typehead"><span class="ti">${t.ic}</span><div><h2>${t.label} <span class="ct">${total}</span></h2><p>${t.sub}</p></div></div>${body}`;
