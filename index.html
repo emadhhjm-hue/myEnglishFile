@@ -951,6 +951,7 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wk-focus{display:inline-block;font-size:.55rem;font-weight:800;letter-spacing:.02em;padding:1px 7px;border-radius:999px;color:#fff}
 .wk-focus.read{background:#E0403F}
 .wk-focus.write{background:#2BA84F}
+.wk-focus.rwd{background:#4b3f8f;letter-spacing:0}
 .wk-accbtn .wk-s{font-size:.6rem;font-weight:700}
 .wk-acc.on .wk-s{color:#0f766e}
 .wk-acc.off .wk-s{color:#9a9ebe}
@@ -966,6 +967,14 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .wk-l-b small{display:block;font-size:.55rem;color:var(--muted,#6b6b6b);line-height:1.2}
 .wk-more{display:block;width:100%;margin-top:8px;border:1px solid var(--line,#dfd9c9);background:#fff;color:#2c3070;border-radius:8px;padding:6px;font-size:.62rem;font-weight:700;cursor:pointer;font-family:inherit}
 .wk-more:hover{background:#f2f0ff;border-color:#2c3070}
+.wk-lrow{display:flex;align-items:stretch;gap:4px;margin-bottom:4px}
+.wk-lrow .wk-l{margin-bottom:0;flex:1}
+.wk-lrow.skip .wk-l{opacity:.45;text-decoration:line-through;filter:grayscale(.6)}
+.wk-skip{flex:none;width:26px;border:1px solid var(--line,#dfd9c9);background:#fff;border-radius:8px;color:#b23;font-size:.8rem;font-weight:800;cursor:pointer;font-family:inherit;line-height:1}
+.wk-skip:hover{background:#fdecec;border-color:#b23}
+.wk-lrow.skip .wk-skip{color:#0f766e}
+.wk-lrow.skip .wk-skip:hover{background:#e6f6f0;border-color:#0f766e}
+.wk-adapt{font-size:.58rem;line-height:1.4;color:#5b5f86;background:#f5f3ff;border:1px dashed #c9c5e8;border-radius:8px;padding:6px 8px;margin:9px 2px 2px}
 #wkModalHost .wk-modal{position:fixed;inset:0;background:rgba(10,12,32,.55);z-index:9999;display:flex;align-items:flex-start;justify-content:center;padding:24px 14px;overflow:auto}
 .wk-card{background:#fff;border-radius:18px;max-width:680px;width:100%;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.4)}
 .wk-x{position:absolute;top:10px;right:12px;border:none;background:rgba(255,255,255,.25);color:#fff;width:30px;height:30px;border-radius:50%;font-size:1.2rem;cursor:pointer;line-height:1}
@@ -16219,59 +16228,71 @@ const WK_STUDIO = { markTask:'Marking task \u2014 score a script before you writ
 /* ---- the left rail ---- */
 let WK_ACC = new Set();
 function toggleWeekAcc(w){ if(WK_ACC.has(w)) WK_ACC.delete(w); else WK_ACC.add(w); paintWeekRail(); }
-function weekFocus(w){ return (w % 2 === 1) ? 'read' : 'write'; }  /* alternate: odd = reading, even = writing */
+let WK_SKIP = new Set((()=>{ try{ return JSON.parse(Store.get('ican_wk_skip')||'[]'); }catch(e){ return []; } })());
+function wkSkipped(w,key){ return WK_SKIP.has(w+':'+key); }
+function toggleWeekSkip(w,key){ const k=w+':'+key; if(WK_SKIP.has(k)) WK_SKIP.delete(k); else WK_SKIP.add(k); try{ Store.set('ican_wk_skip', JSON.stringify([...WK_SKIP])); }catch(e){} paintWeekRail(); }
 function weekRailHTML(){
   const teach = weekIsTeacher();
   const openCount = TERM_WEEKS.filter(x=>weekOpen(x.w)).length;
-  const li = (ic,name,strap,route,arg,colour,enabled)=>
-    `<button class="wk-l" style="--lc:${colour}" ${enabled?`onclick="go('${route}'${arg!=null?",'"+String(arg).replace(/'/g,"\\'")+"'":''})"`:'disabled'}>
-       <span class="li">${ic}</span>
-       <span class="wk-l-b"><b>${esc(name)}</b>${strap?`<small>${esc(strap)}</small>`:''}</span>
-     </button>`;
   const rows = TERM_WEEKS.map(x=>{
     const on   = weekOpen(x.w);
     const open = WK_ACC.has(x.w);
-    const focus = weekFocus(x.w);
-    const isRead = focus==='read';
+    const li = (ic,name,strap,route,arg,colour,skipKey)=>{
+      const sk = skipKey && wkSkipped(x.w, skipKey);
+      if(sk && !teach) return '';                       /* students never see a cancelled activity */
+      const clickable = on && !sk;
+      const skipBtn = (teach && skipKey)
+        ? `<button class="wk-skip" title="${sk?'Restore this activity':'Cancel this activity (time / level)'}" onclick="event.stopPropagation();toggleWeekSkip(${x.w},'${skipKey}')">${sk?'\u21ba':'\u2715'}</button>`
+        : '';
+      return `<div class="wk-lrow${sk?' skip':''}">
+        <button class="wk-l" style="--lc:${colour}" ${clickable?`onclick="go('${route}'${arg!=null?",'"+String(arg).replace(/'/g,"\\'")+"'":''})"`:'disabled'}>
+          <span class="li">${ic}</span>
+          <span class="wk-l-b"><b>${esc(name)}</b>${strap?`<small>${esc(strap)}</small>`:''}</span>
+        </button>${skipBtn}</div>`;
+    };
     let inner = '';
 
     /* Week 1 carries the diagnostic — surface it first */
     if(x.diag) inner += `<h5>\ud83e\udded Start here</h5>` +
-      li('\ud83e\udded','Start-of-year diagnostic','35 min \u00b7 baseline & grouping','diagnostic',null,'#15183A', on);
+      li('\ud83e\udded','Start-of-year diagnostic','35 min \u00b7 baseline & grouping','diagnostic',null,'#15183A','diag');
 
-    /* PRIMARY SKILL — the week's focus (alternates read / write) */
-    if(isRead){
-      let items = x.read.map(id=>{ const l=wkRead(id); return li('\ud83d\udcd6', l?l.name:id, l?l.strap:'', 'rcLesson', id, '#E0403F', on); }).join('');
-      const tx = x.text && wkText(x.text);
-      if(tx) items += li('\ud83d\udcc4', tx.title, 'anchor text \u00b7 '+(tx.genre||'read'), 'readItem', x.text, '#E0403F', on);
-      inner += `<h5>\ud83d\udcd6 Reading \u2014 this week\u2019s focus</h5>${items}`;
-    } else {
-      const items = x.write.map(id=>{ const l=wkWrite(id); return li('\u270d\ufe0f', l?l.name:id, l?l.strap:'', 'wcLesson', id, '#2BA84F', on); }).join('');
-      inner += `<h5>\u270d\ufe0f Writing \u2014 this week\u2019s focus</h5>${items}`;
-    }
+    /* READ \u2014 Days 1\u20132 (the input) */
+    let rd = x.read.map(id=>{ const l=wkRead(id); return li('\ud83d\udcd6', l?l.name:id, l?l.strap:'', 'rcLesson', id, '#E0403F','r'); }).join('');
+    const tx = x.text && wkText(x.text);
+    if(tx) rd += li('\ud83d\udcc4', tx.title, 'anchor text', 'readItem', x.text, '#E0403F','r');
+    inner += `<h5>\ud83d\udcd6 Read \u00b7 Days 1\u20132</h5>${rd}`;
 
-    /* GRAMMAR — chosen to enhance the primary skill */
+    /* WRITE \u2014 Days 3\u20134 (the build), grammar rides along, always via the Grammar Lab */
+    let wr = x.write.map(id=>{ const l=wkWrite(id); return li('\u270d\ufe0f', l?l.name:id, l?l.strap:'', 'wcLesson', id, '#2BA84F','w'); }).join('');
     const g = wkGram(x.gram);
-    inner += `<h5>\ud83e\udde9 Grammar \u2014 enhances your ${isRead?'reading':'writing'}</h5>` +
-      li('\ud83e\udde9', g?g.title:x.gram, isRead?'notice this structure as you read':'use this structure in your writing', 'grammarLesson', x.gram, '#0FA98B', on);
+    wr += li('\ud83e\udde9', g?g.title:x.gram, 'grammar \u00b7 in the Grammar Lab', 'grammarLesson', x.gram, '#0FA98B','g');
+    inner += `<h5>\u270d\ufe0f Write \u00b7 Days 3\u20134</h5>${wr}`;
 
-    /* TALKABOUT — one speaking activity per week */
+    /* DESIGN \u2014 Day 5, the final output built from the reading + writing */
+    let designItem;
+    if(x.stem){ const s=wkStem(x.stem); designItem = li('\ud83d\ude80', s?s.title:x.stem, 'STEM mission \u00b7 built from the week', 'stemUnit', x.stem, '#7A2FD0','d'); }
+    else if(x.design){ const t=wkTask(x.design); designItem = li('\ud83c\udfa8', t?t.title:x.design, (t&&t.genre?t.genre+' \u00b7 ':'')+'from your reading + writing', 'writeItem', x.design, '#7A2FD0','d'); }
+    else { designItem = li('\ud83c\udfa8', x.designFree||'Design Studio', 'one card \u00b7 from your reading + writing', 'dstudio', null, '#7A2FD0','d'); }
+    inner += `<h5>\ud83c\udfa8 Design \u00b7 Day 5 \u2014 final output</h5>${designItem}`;
+
+    /* DAILY PRACTICE \u2014 short, every day */
+    inner += `<h5>\ud83d\udd01 Every day \u2014 daily practice</h5>` +
+      li('\ud83d\udcf0','Article-A-Day \u00b7 week '+x.aad,'build knowledge & vocabulary','articleaday',null,'#5B8DEF','aad') +
+      li('\u2328\ufe0f','Spelling & Typing','say it \u00b7 spell it \u00b7 type it','spellType',null,'#5B8DEF','spell');
+
+    /* WEEKEND / HOMEWORK \u2014 Talkabout, one per week */
     const sp = (x.speak!==null && x.speak!==undefined) ? wkSpeak(x.speak) : null;
-    inner += `<h5>\ud83c\udfa4 Talkabout \u2014 one this week</h5>` +
-      li('\ud83c\udfa4', sp?sp.cat:'Talkabout', sp?(sp.note||'speaking activity'):'speaking activity', 'waspk', null, '#F5A301', on);
+    inner += `<h5>\ud83d\uddd3\ufe0f Weekend / homework</h5>` +
+      li('\ud83c\udfa4', 'Talkabout'+(sp&&sp.cat?' \u00b7 '+sp.cat:''), sp?(sp.note||'one speaking activity'):'one speaking activity', 'waspk', null, '#F5A301','talk');
 
-    /* DAILY PRACTICE — every day */
-    inner += `<h5>\ud83d\udd01 Every day</h5>` +
-      li('\ud83d\udcf0','Article-A-Day \u00b7 week '+x.aad,'build knowledge & vocabulary','articleaday',null,'#5B8DEF', on) +
-      li('\u2328\ufe0f','Typing & Spelling','say it \u00b7 spell it \u00b7 type it','spellType',null,'#5B8DEF', on);
-
+    if(teach) inner += `<p class="wk-adapt">\u270f\ufe0f <b>Adapt:</b> tap \u2715 to cancel an activity for time, \u21ba to restore. A Read or Write lesson can be split across its two days, or swapped for the level your group needs.</p>`;
     inner += `<button class="wk-more" onclick="openWeek(${x.w})">Full week details${teach?' & controls':''} \u2192</button>`;
 
     return `<div class="wk-acc ${on?'on':'off'} ${open?'open':''}">
       <button class="wk-accbtn" onclick="toggleWeekAcc(${x.w})" title="${esc(x.title)}">
         <span class="wk-n">Week ${x.w}<span class="wk-caret">\u25bc</span></span>
         <span class="wk-t">${esc(x.title)}</span>
-        <span class="wk-meta"><span class="wk-focus ${focus}">${isRead?'\ud83d\udcd6 Reading':'\u270d\ufe0f Writing'}</span><span class="wk-s">${on?'\u25cf open':'\u25cf locked'}</span></span>
+        <span class="wk-meta"><span class="wk-focus rwd">\ud83d\udcd6\u2192\u270d\ufe0f\u2192\ud83c\udfa8 R\u00b7W\u00b7D</span><span class="wk-s">${on?'\u25cf open':'\u25cf locked'}</span></span>
       </button>
       <div class="wk-drop">${inner}</div>
     </div>`;
@@ -16283,8 +16304,8 @@ function weekRailHTML(){
   </div>
   ${rows}
   <p class="wk-foot">${teach
-    ? 'Open a week to activate it for the class, then tap any week to drop down its lessons.'
-    : 'Tap a week to drop down its lessons. Your teacher opens each week when the class is ready.'}</p>`;
+    ? 'Each week runs Read \u2192 Write \u2192 Design, with daily practice and a weekend Talkabout. Open a week, then tap it to drop down and adapt its lessons.'
+    : 'Each week: Read (2 days) \u2192 Write (2 days) \u2192 Design. Article-A-Day, spelling & typing every day; Talkabout at the weekend. Tap a week to see its lessons.'}</p>`;
 }
 /* ---- teacher dashboard: the week activation card ---- */
 function weekCardTeacherHTML(){ return `
@@ -16393,8 +16414,6 @@ function openWeek(w){
   const teach = weekIsTeacher();
   const on = weekOpen(w);
   const prev = TERM_WEEKS.find(t=>t.w===w-1);
-  const focus = weekFocus(w);
-  const isRead = focus==='read';
 
   const item = (label, name, strap, route, arg, colour) =>
     `<button class="wk-item" ${on?`onclick="wkGo('${route}','${arg}')"`:'disabled'}>
@@ -16418,39 +16437,35 @@ function openWeek(w){
       <p class="wk-note">Take this <b>before</b> the lessons below. It is the baseline every later week is measured against, and it sorts the class into four groups: ${DIAG_PLACE.map(b=>`<b style="color:${b.colour}">${b.label}</b>`).join(' \u00b7 ')}. Your group decides your tier, your grammar level and your scaffolds \u2014 so a guess here costs you the whole term.</p>`);
   }
 
-  /* READ — built as a section, ordered by this week's focus */
+  /* READ — Days 1–2 (the input) */
   let r = x.read.map(id=>{ const l=wkRead(id); return item('SKILL', l?l.name:id, l?l.strap:'', 'rcLesson', id, (l&&l.colour)||'#E0403F'); }).join('');
   const tx = x.text && wkText(x.text);
   if(tx) r += item('ANCHOR TEXT', tx.title, tx.genre, 'readItem', x.text, '#E0403F');
-  const readSec = sec(isRead ? '\ud83d\udcd6 Read \u2014 this week\u2019s focus' : '\ud83d\udcd6 Read \u2014 supporting the writing', r);
+  body += sec('\ud83d\udcd6 Read \u00b7 Days 1\u20132 \u2014 the input', r);
 
-  /* LISTEN + SPEAK (Talkabout) \u2014 one speaking activity this week */
-  let ls = '';
-  const lc = x.listen && wkListen(x.listen);
-  if(lc) ls += item('LISTEN', lc.title, lc.kind, 'listenComp', x.listen, '#0FA98B');
-  const sp = (x.speak!==null && x.speak!==undefined) ? wkSpeak(x.speak) : null;
-  ls += `<button class="wk-item" ${on?`onclick="wkGo('waspk','')"`:'disabled'}>
-      <span class="wk-dot" style="background:#F5A301"></span>
-      <span class="wk-item-b"><b>Talkabout${sp?' \u00b7 '+esc(sp.cat):''}</b><small>${esc(sp?(sp.note||'one speaking activity this week'):'one speaking activity this week')}</small></span>
-      <span class="wk-item-k">TALKABOUT</span></button>`;
-  const talkSec = sec('\ud83c\udfa4 Talkabout \u2014 one this week', ls);
-
-  /* WRITE — built as a section, ordered by this week's focus */
+  /* WRITE — Days 3–4 (the build); grammar rides along, always via the Grammar Lab */
   let wr = x.write.map(id=>{ const l=wkWrite(id); return item('SKILL', l?l.name:id, l?l.strap:'', 'wcLesson', id, (l&&l.colour)||'#2BA84F'); }).join('');
   if(x.studio) wr += `<button class="wk-item" ${on?`onclick="wkGo('wstudio','')"`:'disabled'}>
       <span class="wk-dot" style="background:#D6336C"></span>
       <span class="wk-item-b"><b>Writing Studio</b><small>${esc(WK_STUDIO[x.studio]||'')}</small></span>
       <span class="wk-item-k">STUDIO</span></button>`;
-  const writeSec = sec(!isRead ? '\u270d\ufe0f Write \u2014 this week\u2019s focus' : '\u270d\ufe0f Write \u2014 supporting the reading', wr);
-
-  /* Lead with the focus skill, then Talkabout, then the supporting skill */
-  if(isRead){ body += readSec; body += talkSec; body += writeSec; }
-  else      { body += writeSec; body += talkSec; body += readSec; }
-
-  /* GRAMMAR — every week, chosen to enhance the primary skill */
   const g = wkGram(x.gram);
-  body += sec('\ud83e\udde9 Grammar \u2014 enhances your ' + (isRead?'reading':'writing'),
-    item('EVERY SESSION', g?g.title:x.gram, isRead?'Notice this structure as you read \u2014 it comes from this week\u2019s text':'Use this structure in your writing \u2014 it comes from this week\u2019s text', 'grammarLesson', x.gram, '#0FA98B'));
+  wr += `<button class="wk-item" ${on?`onclick="wkGo('grammarLesson','${x.gram}')"`:'disabled'}>
+      <span class="wk-dot" style="background:#0FA98B"></span>
+      <span class="wk-item-b"><b>${esc(g?g.title:x.gram)}</b><small>Grammar \u00b7 practised in the Grammar Lab \u2014 it comes from this week\u2019s text</small></span>
+      <span class="wk-item-k">GRAMMAR</span></button>`;
+  body += sec('\u270d\ufe0f Write \u00b7 Days 3\u20134 \u2014 the build', wr);
+
+  /* Talkabout (with any listening) is a weekend / homework task — built here, placed last */
+  const lc = x.listen && wkListen(x.listen);
+  const sp = (x.speak!==null && x.speak!==undefined) ? wkSpeak(x.speak) : null;
+  let weekendInner = '';
+  if(lc) weekendInner += item('LISTEN', lc.title, lc.kind, 'listenComp', x.listen, '#0FA98B');
+  weekendInner += `<button class="wk-item" ${on?`onclick="wkGo('waspk','')"`:'disabled'}>
+      <span class="wk-dot" style="background:#F5A301"></span>
+      <span class="wk-item-b"><b>Talkabout${sp?' \u00b7 '+esc(sp.cat):''}</b><small>${esc(sp?(sp.note||'one speaking activity'):'one speaking activity')} \u00b7 do it at the weekend or as homework</small></span>
+      <span class="wk-item-k">TALKABOUT</span></button>`;
+  const weekendSec = sec('\ud83d\uddd3\ufe0f Weekend / homework', weekendInner);
 
   /* DESIGN — exactly one artefact per week: a task, a mission, or a light card */
   let d = '';
@@ -16468,7 +16483,7 @@ function openWeek(w){
       <span class="wk-item-b"><b>${esc(x.designFree||'Design Studio')}</b><small>A light artefact \u2014 one card or panel, built in Design Studio</small></span>
       <span class="wk-item-k">DESIGN</span></button>`;
   }
-  body += sec('\ud83c\udfa8 Design \u2014 one artefact, no more', d);
+  body += sec('\ud83c\udfa8 Design \u00b7 Day 5 \u2014 the final output', d);
 
   /* HOME + CHECK */
   let h = `<button class="wk-item" ${on?`onclick="wkGo('articleaday','')"`:'disabled'}>
@@ -16494,6 +16509,10 @@ function openWeek(w){
     body += sec('\ud83c\udf93 Check', c);
   }
 
+  /* Talkabout / speaking is the weekend or homework task — comes last */
+  body += weekendSec;
+  if(teach) body += `<p class="wk-note" style="background:#f5f3ff;border:1px dashed #c9c5e8;border-radius:8px;padding:8px 10px"><b>\u270f\ufe0f Adapt this week:</b> a Read or Write lesson can be <b>split across its two days</b>, or swapped for the level your group needs. In the term rail you can <b>cancel</b> any activity (\u2715) when time is short and <b>restore</b> it (\u21ba) later.</p>`;
+
   const teacherBar = teach ? `
     <div class="wk-teach">
       <div>
@@ -16512,7 +16531,7 @@ function openWeek(w){
       <button class="wk-x" onclick="closeWeek()">\u00d7</button>
       <div class="wk-card-head ${on?'':'locked'}">
         <span class="wk-badge">Week ${x.w}${x.check?' \u00b7 '+esc(x.check):''}</span>
-        <span class="wk-badge" style="background:${isRead?'#E0403F':'#2BA84F'};color:#fff;margin-left:6px">${isRead?'\ud83d\udcd6 Reading focus':'\u270d\ufe0f Writing focus'}</span>
+        <span class="wk-badge" style="background:#4b3f8f;color:#fff;margin-left:6px">\ud83d\udcd6 Read \u2192 \u270d\ufe0f Write \u2192 \ud83c\udfa8 Design</span>
         <h3>${esc(x.title)}</h3>
         <p class="wk-why">${x.why}</p>
         <p class="wk-builds"><b>Builds on:</b> ${esc(x.builds)}</p>
