@@ -782,6 +782,31 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .aad-result-pct{font-size:1.7rem; font-weight:800; color:var(--teal-dk); background:#fff; border:2px solid #bfe8dc; border-radius:12px; padding:6px 12px; min-width:70px; text-align:center}
 @media(max-width:560px){ .aad-reader-top{flex-wrap:wrap} .aad-r-title{font-size:1.12rem} .aad-article-text{font-size:1rem} }
 
+/* ---- Article-A-Day typing practice ---- */
+.tw-overlay{position:fixed; inset:0; background:rgba(15,20,45,.72); z-index:400; display:none; align-items:center; justify-content:center; padding:2vh 2vw}
+.tw-overlay.show{display:flex}
+.tw-box{background:#fff; width:min(1080px,96vw); height:min(880px,92vh); border-radius:18px; box-shadow:0 24px 70px rgba(10,12,40,.5); display:flex; flex-direction:column; overflow:hidden}
+.tw-head{display:flex; align-items:center; gap:12px; padding:14px 20px; background:linear-gradient(135deg,#15183A,#2a2f66); color:#fff; flex-wrap:wrap}
+.tw-head h3{margin:0; font:800 1.12rem/1.2 Fraunces,Georgia,serif; flex:1; min-width:160px}
+.tw-stat{font:800 .95rem/1 ui-monospace,Menlo,monospace; background:rgba(255,255,255,.15); padding:6px 11px; border-radius:9px; font-variant-numeric:tabular-nums; white-space:nowrap}
+.tw-stat b{color:#ffd23f}
+.tw-text{flex:1; overflow-y:auto; padding:26px 32px; font-family:Georgia,serif; font-size:1.32rem; line-height:2.15; color:#1b2233; letter-spacing:.2px; scroll-behavior:smooth}
+.tw-w{color:#1b2233}
+.tw-w.done{color:#9aa4b2}
+.tw-w.err{color:#dc2626}
+.tw-w.cur{color:#7c3aed; font-weight:800}
+.tw-w.cur .c{color:#7c3aed}
+.tw-w.cur .c.ok{color:#7c3aed}
+.tw-w.cur .c.bad{color:#dc2626; background:#fde2e2; border-radius:3px}
+.tw-caret{display:inline-block; width:2px; height:1.15em; background:#7c3aed; vertical-align:-.18em; margin:0 -1px; animation:twBlink 1s steps(1) infinite}
+@keyframes twBlink{50%{opacity:0}}
+.tw-foot{display:flex; align-items:center; gap:12px; padding:12px 18px; border-top:1px solid #e6e8f0; background:#f7f8fc; flex-wrap:wrap}
+.tw-input{flex:1; min-width:180px; font-family:Georgia,serif; font-size:1.05rem; padding:11px 14px; border:2px solid #c9d2e6; border-radius:10px; outline:none; background:#fff}
+.tw-input:focus{border-color:#7c3aed; box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+.tw-input:disabled{background:#eef0f6; color:#9aa4b2}
+.tw-done-note{font:800 .95rem/1.3 Georgia,serif; color:#0f766e; padding:14px 32px; background:#e8f7f2; border-top:1px solid #bfe8dc}
+.tw-hint{padding:8px 32px 0; font-size:.82rem; color:var(--muted)}
+
 
 /* ---------- STEM·STREAM Lab ---------- */
 .stem-hero{background:linear-gradient(135deg,#0e1130 0%,#1c2260 55%,#3b2a7a 100%);border-radius:20px;padding:30px 28px;color:#fff;display:grid;gap:22px;box-shadow:var(--shadow);margin-top:8px}
@@ -8970,14 +8995,8 @@ function drawCert(o){
     drawIcanTileWatermark(x, W, H, t.ink);
     drawTrophyWatermark(x, W/2, H*0.52, 470, t.a, 0.11);
   } else {
-    // single large faint watermark of the section/skill the student was examined in
-    x.save();
-    x.translate(W/2, H/2+40); x.rotate(-Math.PI/10);
-    x.textAlign="center"; x.textBaseline="middle";
-    let _wm=(o.watermark||"iCAN"), _wf=150; x.font="800 "+_wf+"px Georgia";
-    while(x.measureText(_wm).width>(W-170) && _wf>34){ _wf-=4; x.font="800 "+_wf+"px Georgia"; }
-    x.globalAlpha=0.07; x.fillStyle=t.a; x.fillText(_wm, 0, 0);
-    x.globalAlpha=1; x.restore();
+    // faint tiled "iCAN" repeated on a diagonal across the whole panel
+    drawIcanTileWatermark(x, W, H, t.ink);
   }
   // vertical brand lockup down the left edge
   x.save();
@@ -13111,21 +13130,8 @@ function drawAadWorkTable(x, cert, W, topY){
     y += rowH;
   });
 
-  // ---- Banked words strip ----
-  if(words.length){
-    y += 14;
-    x.textAlign='center'; x.fillStyle=pal.primary; x.font='italic 600 15px Georgia';
-    x.fillText('Words added to their vocabulary bank', W/2, y);
-    y += 8;
-    const wline = words.join('   \u00b7   ') + (extraWords>0 ? '   \u00b7   +'+extraWords+' more' : '');
-    const wlines = cellLines(wline, tableW-20, '600 12.5px Georgia');
-    const boxH = wlines.length*16 + 14;
-    x.strokeStyle='#e4d9bf'; x.lineWidth=1; x.strokeRect(tX, y, tableW, boxH);
-    x.fillStyle=pal.dark; x.font='600 12.5px Georgia'; x.textAlign='center';
-    let wy = y + 18;
-    wlines.forEach(ln=>{ x.fillText(ln, W/2, wy); wy+=16; });
-    y += boxH;
-  }
+  // (The "Words added to their vocabulary bank" strip is intentionally omitted
+  //  from Article-A-Day certificates.)
   x.restore();
   return y;
 }
@@ -13149,17 +13155,26 @@ function drawEarnedCert(cert){
     // Talkabout certificates: a small/medium diagonal "Talkabout" watermark across the whole panel
     drawTalkaboutWatermark(x, W, H, pal.primary);
   } else {
-    x.save(); x.translate(W/2,H/2); x.rotate(-Math.PI/9); x.textAlign='center';
-    x.fillStyle=pal.primary; x.globalAlpha=0.05; x.font='900 200px Georgia';
-    x.fillText((cert.skill||'READING').toUpperCase(),0,-40); x.fillText('EXCELLENCE',0,150);
-    x.restore();
+    // faint tiled "iCAN" repeated on a diagonal across the whole panel
+    drawIcanTileWatermark(x, W, H, pal.primary);
   }
   // activity-specific background art — reading certificates use the faded
   // "story book" illustration; every other skill keeps its drawn motif.
   const _certLabel=(cert.skill||'')+' '+(cert.activity||'');
-  if(!_isSpeak){
-    // every non-speaking skill (reading included) uses its drawn motif; Talkabout
-    // uses the tiled "Talkabout" watermark above instead of the microphone motif.
+  if(/read|article|literac|comprehen/i.test(_certLabel) && IMG_READING_BG && IMG_READING_BG.complete && IMG_READING_BG.naturalWidth){
+    // Reading Course + Article-A-Day: faint photographic open-book background.
+    x.save();
+    x.beginPath(); x.rect(52,52,W-104,H-104); x.clip();
+    x.globalAlpha=0.12;                              // faint, background-only
+    const iw=IMG_READING_BG.naturalWidth, ih=IMG_READING_BG.naturalHeight;
+    const sc=Math.min((W-180)/iw, (H-180)/ih);       // contain: whole picture, clear of the frame
+    const dw=iw*sc, dh=ih*sc;
+    x.drawImage(IMG_READING_BG, (W-dw)/2, (H-dh)/2, dw, dh);
+    x.restore(); x.globalAlpha=1;
+  } else if(!_isSpeak){
+    // every other skill uses its drawn motif; the plain open-book motif (with
+    // its spine line) is suppressed inside drawCertMotif, so non-reading certs
+    // show no book at all.
     drawCertMotif(x, W, H, _certLabel, 0.16);
   }
   // double border + corner circles
@@ -13231,18 +13246,23 @@ function drawEarnedCert(cert){
   // --- Article-A-Day work record: the student's own ideas + banked words ---
   const hasWork = (cert.ideas && cert.ideas.length) || (cert.words && cert.words.length);
   const isAAD = /Article-A-Day/i.test(cert.activity||'');
+  let _workEndY = recEndY;
   if(isAAD && hasWork){
-    drawAadWorkTable(x, cert, W, recEndY+26);
+    _workEndY = drawAadWorkTable(x, cert, W, recEndY+26) || recEndY;
   }
 
-  // motto — short, catchy, brain-sticky; bold cursive script
+  // motto — short, catchy cursive script. Smaller than before, and when a work
+  // table is present it drops just below it (clamped clear of the date band) so
+  // it never overlaps the vocabulary list.
   x.textAlign='center';   /* the work table above draws left-aligned rows */
   x.fillStyle=pal.primary;
   { const _motto='iCAN connect, author, and nurture the world';
     const _mfont=n=>"700 "+n+"px 'Great Vibes','Snell Roundhand','Brush Script MT','Segoe Script',cursive";
-    let _mf=44; x.font=_mfont(_mf);
-    while(x.measureText(_motto).width>W*0.82 && _mf>22){ _mf-=2; x.font=_mfont(_mf); }
-    x.fillText(_motto, W/2, H-256); }
+    let _mottoY = H-256;                                   // default: plenty of clearance
+    if(isAAD && hasWork){ _mottoY = Math.min(H-228, Math.max(H-256, _workEndY+28)); }
+    let _mf=32; x.font=_mfont(_mf);
+    while(x.measureText(_motto).width>W*0.82 && _mf>16){ _mf-=2; x.font=_mfont(_mf); }
+    x.fillText(_motto, W/2, _mottoY); }
   // awarded on
   x.fillStyle='#666'; x.font='italic 500 14px Georgia'; x.fillText('Awarded on', W/2, H-210);
   x.fillStyle=pal.primary; x.font='700 18px Georgia';
@@ -15583,6 +15603,7 @@ function openAadArticle(id){
           </div>
           <button class="btn sm" style="background:#F5A301;color:#3a2a00" onclick="aadSpellBee()" title="Spell this article's key vocabulary">🐝 Spelling Bee</button>
           <button class="btn ghost sm" onclick="beePickLaunch()" title="Spell the words you chose yourself from this article">⭐ My spelling list</button>
+          <button class="btn sm" style="background:#ede9fe;color:#5b21b6" onclick="aadTypePractice()" title="Type the article to practise your typing and spelling of academic words">⌨️ Type this article</button>
           <a class="aad-dict-link" href="https://www.vocabulary.com/dictionary/" target="_blank" rel="noopener" title="Look up a word on Vocabulary.com">📖 Dictionary</a>
         </div>
         <p class="aad-tts-hint" style="margin:0 2px 10px;font-size:.78rem;color:var(--muted)">💡 Tip: <b>highlight</b> a sentence or paragraph, then press <b>🔊 Read to me</b> to start reading from there. With nothing highlighted, it reads from the beginning. The part being read is highlighted as it goes.</p>
@@ -15804,6 +15825,165 @@ function aadSubmitArticle(auto){
     </div>`;
   }
   const t=document.getElementById('aadTimer'); if(t && !auto){ t.textContent='read ✓'; t.classList.add('done'); }
+}
+
+/* ============ Article-A-Day: Type-the-article practice ============
+   A window-wide pop-up shows the article text. The learner types it word by
+   word; the current word is purple + bold; already-typed words grey (red if a
+   word was wrong). A count-up timer runs from the first keystroke, and the
+   text auto-scrolls to keep the current word in view. */
+let _aadType = null;
+
+function aadTypePlainText(html){
+  // Reuse the shared HTML→text helper, then normalise fancy punctuation so the
+  // target can be typed on an ordinary keyboard.
+  let t = htmlToText(html||'');
+  t = t.replace(/[\u2018\u2019\u201B]/g,"'").replace(/[\u201C\u201D]/g,'"')
+       .replace(/[\u2013\u2014]/g,'-').replace(/\u2026/g,'...').replace(/\u00a0/g,' ');
+  return t.replace(/\s+/g,' ').trim();
+}
+
+function aadTypePractice(){
+  const cur = _aadCurrent;
+  const text = cur && cur.art ? aadTypePlainText(cur.art.text) : '';
+  const words = text.split(' ').filter(Boolean);
+  if(!words.length){ alert('There is no text to type for this article.'); return; }
+  _aadType = { words, idx:0, wrong:0, typedChars:0, correctChars:0, startTs:0, timer:null, done:false };
+
+  let m = document.getElementById('twOverlay');
+  if(!m){ m=document.createElement('div'); m.id='twOverlay'; m.className='tw-overlay'; document.body.appendChild(m); }
+  const title = cur && cur.art ? cur.art.title : 'Article';
+  const wordSpans = words.map((w,i)=>'<span class="tw-w'+(i===0?' cur':'')+'" id="tw'+i+'">'+esc(w)+'</span>').join(' ');
+  m.innerHTML =
+    '<div class="tw-box" role="dialog" aria-label="Typing practice">'+
+      '<div class="tw-head">'+
+        '<h3>⌨️ Type this article — '+esc(title)+'</h3>'+
+        '<div class="tw-stat">⏱ <span id="twTimer">0:00</span></div>'+
+        '<div class="tw-stat"><b id="twProg">0</b>/'+words.length+' words</div>'+
+        '<div class="tw-stat"><span id="twAcc">100</span>% acc</div>'+
+        '<button class="coach-x" onclick="closeAadType()" aria-label="Close">✕</button>'+
+      '</div>'+
+      '<p class="tw-hint">Type each word then press <b>space</b> (or Enter after the last word). The word you are on is shown in <b style="color:#7c3aed">purple</b>.</p>'+
+      '<div class="tw-text" id="twText">'+wordSpans+'</div>'+
+      '<div class="tw-done-note" id="twDone" style="display:none"></div>'+
+      '<div class="tw-foot">'+
+        '<input class="tw-input" id="twInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Start typing here…" oninput="aadTypeInput(event)" onkeydown="aadTypeKey(event)">'+
+        '<button class="btn ghost sm" onclick="aadTypeRestart()">↺ Restart</button>'+
+        '<button class="btn ghost sm" onclick="closeAadType()">Close</button>'+
+      '</div>'+
+    '</div>';
+  m.classList.add('show');
+  aadTypePaintCurrent('');
+  const inp=document.getElementById('twInput'); if(inp){ inp.disabled=false; inp.value=''; setTimeout(()=>inp.focus(),30); }
+}
+
+function aadTypeRestart(){
+  const st=_aadType; if(!st) return;
+  if(st.timer){ clearInterval(st.timer); st.timer=null; }
+  const words=st.words;
+  _aadType={ words, idx:0, wrong:0, typedChars:0, correctChars:0, startTs:0, timer:null, done:false };
+  const txt=document.getElementById('twText');
+  if(txt) txt.innerHTML = words.map((w,i)=>'<span class="tw-w'+(i===0?' cur':'')+'" id="tw'+i+'">'+esc(w)+'</span>').join(' ');
+  const done=document.getElementById('twDone'); if(done){ done.style.display='none'; }
+  const tm=document.getElementById('twTimer'); if(tm) tm.textContent='0:00';
+  const pg=document.getElementById('twProg'); if(pg) pg.textContent='0';
+  const ac=document.getElementById('twAcc'); if(ac) ac.textContent='100';
+  const inp=document.getElementById('twInput'); if(inp){ inp.disabled=false; inp.value=''; inp.focus(); }
+  aadTypePaintCurrent('');
+}
+
+function aadTypeTick(){
+  const st=_aadType; if(!st||!st.startTs) return;
+  const s=Math.floor((Date.now()-st.startTs)/1000);
+  const tm=document.getElementById('twTimer');
+  if(tm) tm.textContent = Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+}
+
+function aadTypeStats(){
+  const st=_aadType; if(!st) return;
+  const pg=document.getElementById('twProg'); if(pg) pg.textContent=String(st.idx);
+  const ac=document.getElementById('twAcc');
+  if(ac){ const acc = st.typedChars ? Math.round(st.correctChars/st.typedChars*100) : 100; ac.textContent=String(acc); }
+}
+
+function aadTypePaintCurrent(prefix){
+  const st=_aadType; if(!st||st.done) return;
+  const el=document.getElementById('tw'+st.idx); if(!el) return;
+  const word=st.words[st.idx]||'';
+  let html='';
+  for(let i=0;i<word.length;i++){
+    const ch=esc(word[i]);
+    if(i<prefix.length){ html += '<span class="c '+(prefix[i]===word[i]?'ok':'bad')+'">'+ch+'</span>'; }
+    else if(i===prefix.length){ html += '<span class="tw-caret"></span>'+'<span class="c">'+ch+'</span>'; }
+    else { html += '<span class="c">'+ch+'</span>'; }
+  }
+  if(prefix.length>=word.length) html += '<span class="tw-caret"></span>';
+  el.innerHTML=html;
+  try{ el.scrollIntoView({block:'center'}); }catch(e){}
+}
+
+function aadTypeCommit(typed){
+  const st=_aadType; if(!st||st.done) return;
+  const word=st.words[st.idx]||'';
+  const el=document.getElementById('tw'+st.idx);
+  const ok = (typed===word);
+  st.typedChars += Math.max(typed.length, word.length);
+  for(let i=0;i<word.length;i++){ if(typed[i]===word[i]) st.correctChars++; }
+  if(!ok) st.wrong++;
+  if(el){ el.classList.remove('cur'); el.classList.add(ok?'done':'err'); el.innerHTML=esc(word); }
+  st.idx++;
+  if(st.idx>=st.words.length){ aadTypeFinish(); return; }
+  const nx=document.getElementById('tw'+st.idx); if(nx) nx.classList.add('cur');
+  aadTypePaintCurrent('');
+}
+
+function aadTypeInput(e){
+  const st=_aadType; if(!st||st.done) return;
+  if(!st.startTs){ st.startTs=Date.now(); st.timer=setInterval(aadTypeTick,250); }
+  const inp=e.target; let v=inp.value;
+  // Commit every space-terminated word; keep any trailing partial in the box.
+  while(v.indexOf(' ')>=0 && !st.done){
+    const sp=v.indexOf(' ');
+    const typed=v.slice(0,sp);
+    v=v.slice(sp+1);
+    if(typed.length) aadTypeCommit(typed); // ignore stray/leading spaces
+  }
+  inp.value=v;
+  if(!st.done){ aadTypePaintCurrent(v); aadTypeStats(); }
+}
+
+function aadTypeKey(e){
+  if(e.key==='Enter'){
+    e.preventDefault();
+    const st=_aadType; if(!st||st.done) return;
+    const inp=e.target; const v=inp.value;
+    if(v.length){ if(!st.startTs){ st.startTs=Date.now(); st.timer=setInterval(aadTypeTick,250); } aadTypeCommit(v); inp.value=''; if(!st.done) aadTypePaintCurrent(''); aadTypeStats(); }
+  }
+}
+
+function aadTypeFinish(){
+  const st=_aadType; if(!st) return;
+  st.done=true;
+  if(st.timer){ clearInterval(st.timer); st.timer=null; }
+  const secs = st.startTs ? Math.max(1, Math.round((Date.now()-st.startTs)/1000)) : 1;
+  const mins = secs/60;
+  const wpm = Math.round(st.words.length/mins);
+  const acc = st.typedChars ? Math.round(st.correctChars/st.typedChars*100) : 100;
+  const done=document.getElementById('twDone');
+  if(done){
+    done.style.display='block';
+    done.innerHTML='✅ Finished! '+st.words.length+' words in '+Math.floor(secs/60)+'m '+(secs%60)+'s · '+
+                   '<b>'+wpm+' WPM</b> · <b>'+acc+'%</b> accuracy'+(st.wrong?(' · '+st.wrong+' word'+(st.wrong>1?'s':'')+' to review'):' · perfect spelling!');
+  }
+  const inp=document.getElementById('twInput'); if(inp){ inp.disabled=true; }
+  aadTypeStats();
+}
+
+function closeAadType(){
+  const st=_aadType;
+  if(st && st.timer){ clearInterval(st.timer); st.timer=null; }
+  _aadType=null;
+  const m=document.getElementById('twOverlay'); if(m) m.classList.remove('show');
 }
 
 function closeAadReader(){
