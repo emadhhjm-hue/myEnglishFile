@@ -13153,18 +13153,9 @@ function drawEarnedCert(cert){
   // activity-specific background art — reading certificates use the faded
   // "story book" illustration; every other skill keeps its drawn motif.
   const _certLabel=(cert.skill||'')+' '+(cert.activity||'');
-  if(/read|article|literac|comprehen/i.test(_certLabel) && IMG_READING_BG && IMG_READING_BG.complete && IMG_READING_BG.naturalWidth){
-    x.save();
-    x.beginPath(); x.rect(52,52,W-104,H-104); x.clip();
-    x.globalAlpha=0.12;                              // faint, background-only
-    const iw=IMG_READING_BG.naturalWidth, ih=IMG_READING_BG.naturalHeight;
-    const sc=Math.min((W-180)/iw, (H-180)/ih);       // contain: show the whole picture, clear of the frame
-    const dw=iw*sc, dh=ih*sc;
-    x.drawImage(IMG_READING_BG, (W-dw)/2, (H-dh)/2, dw, dh);
-    x.restore(); x.globalAlpha=1;
-  } else if(!_isSpeak){
-    // every non-speaking skill keeps its drawn motif; Talkabout uses the tiled
-    // "Talkabout" watermark above instead of the microphone motif.
+  if(!_isSpeak){
+    // every non-speaking skill (reading included) uses its drawn motif; Talkabout
+    // uses the tiled "Talkabout" watermark above instead of the microphone motif.
     drawCertMotif(x, W, H, _certLabel, 0.16);
   }
   // double border + corner circles
@@ -13373,11 +13364,12 @@ function gateDefs(){ return [
   {key:'grammar',    icon:'🧩', label:'Grammar lessons & quizzes'},
   {key:'spelling',   icon:'🐝', label:'Spelling quizzes'},
   {key:'listenQuiz', icon:'🎧', label:'Listening comprehension quizzes'},
-  {key:'diag',       icon:'🧭', label:'Diagnostic test'},
+  {key:'diag',       icon:'🧭', label:'Diagnostic test (RWD course)'},
   {key:'exams',      icon:'🎓', label:'Exams, quizzes & mock tests'},
   {key:'aad',        icon:'📰', label:'Article-A-Day (10-week reading)'},
   {key:'stem',       icon:'🚀', label:'STEM·STREAM missions (RWD challenges)'},
-  {key:'yl',         icon:'🧒', label:'Foundational exam practice'}
+  {key:'yl',         icon:'🧒', label:'Foundational exam practice'},
+  {key:'ylDiag',     icon:'🎯', label:'Diagnostic checkpoints (Foundational)'}
 ];}
 function gateKeyOf(screen){
   return ({
@@ -13401,7 +13393,11 @@ function gateKeyOf(screen){
     ylWriting:'yl', ylWriteRun:'yl', ylDesign:'yl', ylDesignFrom:'yl',
     ylStem:'yl', ylStemUnit:'yl',
     ylMM:'yl', ylMini:'yl', ylArcade:'yl',
-    ylExam:'yl', ylExams:'yl', ylExamRun:'yl', ylExamTask:'yl'
+    ylExam:'yl', ylExams:'yl', ylExamRun:'yl', ylExamTask:'yl',
+    /* Diagnostic checkpoints are gated separately from the rest of the
+       Foundational course, so the teacher can open (or hold back) them on
+       their own. Locked by default until the teacher activates them. */
+    ylDiag:'ylDiag'
   })[screen]||null;
 }
 function gates(){ return Store.get('ican_gates')||{}; }
@@ -20593,17 +20589,17 @@ const YL_DIAG={
   start:{ label:"Start", when:"Beginning of the year — where are you now?", colour:"#0FA98B",
     passage:{title:"The School Garden", text:"Every Friday afternoon, the students of Class 6 put down their pens and pick up their tools. Behind the science block, in a corner that was once full of broken chairs and dry weeds, they have slowly built a small garden. They water the young plants, pull out the weeds that crowd them, and press the soil with their fingers to feel whether it is too dry.<br><br>At first, nothing seemed to work. The seeds they planted in October did not appear for three long weeks, and several students were sure they had done something wrong. Then, on one cold morning, tiny green shoots pushed up through the dark earth. Last month, for the very first time, the class grew tomatoes — small, uneven, and, everyone agreed, the best they had ever tasted.<br><br>Their teacher, Ms Fadila, rarely talks about tomatoes. She says the garden teaches something that no textbook ever could: patience. 'A plant will not hurry for anyone,' she tells them with a smile. 'And neither will anything else that is truly worth doing.'"},
     mcq:[
-      {skill:"Reading",q:"Where did the students build their garden?",o:["On the school roof","Behind the science block","Inside the classroom"],a:1},
-      {skill:"Reading",q:"Why were several students sure they had done something wrong?",o:["The seeds took three weeks to appear","The teacher was angry","The tomatoes tasted bad"],a:0},
-      {skill:"Reading (inference)",q:"'The best they had ever tasted' most likely shows that the students felt…",o:["disappointed with the garden","proud of what they had grown","bored by the work"],a:1},
+      {skill:"Reading",q:"Where did the students build their garden?",o:["Behind the science block","On the school roof","Inside the classroom"],a:0},
+      {skill:"Reading",q:"Why were several students sure they had done something wrong?",o:["The teacher was angry","The tomatoes tasted bad","The seeds took three weeks to appear"],a:2},
+      {skill:"Reading (inference)",q:"'The best they had ever tasted' most likely shows that the students felt…",o:["proud of what they had grown","disappointed with the garden","bored by the work"],a:0},
       {skill:"T / F / Not Given",q:"The corner was already tidy before the garden was built.",o:["True","False","Not Given"],a:1},
       {skill:"T / F / Not Given",q:"The tomatoes were small and not perfectly shaped.",o:["True","False","Not Given"],a:0},
       {skill:"T / F / Not Given",q:"The students sell their vegetables at a local market.",o:["True","False","Not Given"],a:2},
-      {skill:"Grammar",q:"Choose the correct verb: 'The class ___ the plants every Friday.'",o:["water","waters","watering"],a:1},
+      {skill:"Grammar",q:"Choose the correct verb: 'The class ___ the plants every Friday.'",o:["water","watering","waters"],a:2},
       {skill:"Grammar",q:"Choose the correct past form: 'The seeds ___ three weeks to appear.'",o:["take","took","taken"],a:1},
-      {skill:"Grammar",q:"Choose the correct form: 'Look — a green shoot ___ up through the soil right now!'",o:["pushes","is pushing","pushed"],a:1},
-      {skill:"Vocabulary (in context)",q:"In this text, 'shoots' means…",o:["fires a weapon","new plant growth","fast movements"],a:1},
-      {skill:"Vocabulary (in context)",q:"The weeds 'crowd' the young plants. 'Crowd' here is closest to…",o:["grow too close and take their space","water them gently","make them taller"],a:0},
+      {skill:"Grammar",q:"Choose the correct form: 'Look — a green shoot ___ up through the soil right now!'",o:["is pushing","pushes","pushed"],a:0},
+      {skill:"Vocabulary (in context)",q:"In this text, 'shoots' means…",o:["fires a weapon","fast movements","new plant growth"],a:2},
+      {skill:"Vocabulary (in context)",q:"The weeds 'crowd' the young plants. 'Crowd' here is closest to…",o:["water them gently","grow too close and take their space","make them taller"],a:1},
       {skill:"Language use",q:"Ms Fadila says a plant 'will not hurry for anyone.' She means…",o:["gardens are a waste of time","good things take time and cannot be rushed","students should walk slowly"],a:1}
     ],
     scenario:{title:"Scenario — Our class garden", setup:"Your class is starting a small garden of its own. Write a short answer to each prompt (2–3 sentences).",
@@ -20612,18 +20608,18 @@ const YL_DIAG={
   middle:{ label:"Middle", when:"Middle of the year — how far have you come?", colour:"#F5A301",
     passage:{title:"The Bin That Changed a School", text:"Two years ago, the corridors of Al Noor School were lined with a single kind of bin. Into it went everything: paper, plastic bottles, banana skins, and the foil from a hundred lunchboxes. Nobody thought about it much, because nobody had ever been asked to.<br><br>Then a group of Grade 7 students did something small. They counted. For one week, they weighed the rubbish from their own classroom and discovered that more than half of it — clean paper and plastic — could have been recycled, if only it had been separated first. The number surprised even their teachers.<br><br>The students did not complain, and they did not wait for the adults to act. Instead, they designed three coloured bins, wrote clear labels, and placed a set in every classroom. At first, people made mistakes: bottles ended up with the paper, and sandwiches ended up almost everywhere. But within a month, sorting rubbish had quietly become a habit — the same way that throwing everything into one bin had once been a habit too.<br><br>Not everyone was convinced. A few students argued that one small school could never make a real difference while factories poured waste into rivers every day. It was a fair point. Yet the campaign's leader, Mariam, had a simple answer. 'We are not trying to save the planet by Friday,' she said. 'We are trying to change what feels normal — and a habit spreads much further than a poster ever could.' Today the coloured bins are simply part of the school, and the students who started it have almost forgotten that, once, they were something new."},
     mcq:[
-      {skill:"Reading",q:"What did the students do FIRST?",o:["They built new bins","They weighed their classroom rubbish for a week","They wrote to the government"],a:1},
-      {skill:"Reading",q:"What did their week of counting reveal?",o:["More than half of the rubbish could be recycled","The bins were too small","Nobody ate lunch at school"],a:0},
-      {skill:"Reading (inference)",q:"The detail that 'sandwiches ended up almost everywhere' mainly shows that…",o:["students were hungry","the new system was hard to get used to at first","the bins were broken"],a:1},
+      {skill:"Reading",q:"What did the students do FIRST?",o:["They weighed their classroom rubbish for a week","They built new bins","They wrote to the government"],a:0},
+      {skill:"Reading",q:"What did their week of counting reveal?",o:["The bins were too small","Nobody ate lunch at school","More than half of the rubbish could be recycled"],a:2},
+      {skill:"Reading (inference)",q:"The detail that 'sandwiches ended up almost everywhere' mainly shows that…",o:["the new system was hard to get used to at first","students were hungry","the bins were broken"],a:0},
       {skill:"T / F / Not Given",q:"The students waited for the adults to solve the problem.",o:["True","False","Not Given"],a:1},
       {skill:"T / F / Not Given",q:"Some students doubted that one school could make a real difference.",o:["True","False","Not Given"],a:0},
       {skill:"T / F / Not Given",q:"The school won a national prize for its recycling.",o:["True","False","Not Given"],a:2},
       {skill:"T / F / Not Given",q:"Mariam believes the campaign will save the planet very quickly.",o:["True","False","Not Given"],a:1},
-      {skill:"Grammar",q:"First conditional: 'If we separate our rubbish, we ___ much more of it.'",o:["recycle","will recycle","recycled"],a:1},
-      {skill:"Grammar",q:"Passive: 'Three coloured bins ___ in every classroom last term.'",o:["were placed","are placing","place"],a:0},
-      {skill:"Grammar",q:"Relative clause: 'The campaign, ___ started two years ago, is now completely normal.'",o:["who","which","where"],a:1},
-      {skill:"Vocabulary (in context)",q:"'A habit spreads much further…' Here 'spreads' is closest to…",o:["reaches more and more people","becomes thinner","is cleaned up"],a:0},
-      {skill:"Language use",q:"Which sentence politely accepts a point before disagreeing with it?",o:["'You are completely wrong.'","'That is a fair point, but I still think we should act.'","'I do not care what you think.'"],a:1},
+      {skill:"Grammar",q:"First conditional: 'If we separate our rubbish, we ___ much more of it.'",o:["recycle","recycled","will recycle"],a:2},
+      {skill:"Grammar",q:"Passive: 'Three coloured bins ___ in every classroom last term.'",o:["are placing","were placed","place"],a:1},
+      {skill:"Grammar",q:"Relative clause: 'The campaign, ___ started two years ago, is now completely normal.'",o:["who","where","which"],a:2},
+      {skill:"Vocabulary (in context)",q:"'A habit spreads much further…' Here 'spreads' is closest to…",o:["becomes thinner","reaches more and more people","is cleaned up"],a:1},
+      {skill:"Language use",q:"Which sentence politely accepts a point before disagreeing with it?",o:["'That is a fair point, but I still think we should act.'","'You are completely wrong.'","'I do not care what you think.'"],a:0},
       {skill:"Language use",q:"Which sentence is the most formal, for a letter to the head teacher?",o:["'Gimme separate bins.'","'We would like to request separate bins for each classroom.'","'Bins, please, now.'"],a:1}
     ],
     scenario:{title:"Scenario — Reduce our waste", setup:"Your school wants to reduce the waste it produces. Write a short answer to each prompt (3–4 sentences).",
@@ -20632,20 +20628,20 @@ const YL_DIAG={
   final:{ label:"Final", when:"End of the year — show what you can do now", colour:"#e6464b",
     passage:{title:"The Patient Machine", text:"In classrooms around the world, a quiet change is under way. Students who once had to wait for a teacher to be free can now type a question into a machine and receive an answer in seconds. Artificial intelligence, its supporters say, is the most patient tutor ever invented. It does not sigh, it does not grow tired, and it will explain the same idea for the tenth time exactly as calmly as it did the first.<br><br>For a student who is struggling, this patience can feel like a gift. A shy learner who would never raise a hand in front of thirty classmates might ask a machine almost anything, without the fear of being laughed at. In the best cases, the technology does not replace effort at all — it simply removes the fear that used to stop effort from ever beginning.<br><br>Yet many teachers are uneasy, and their worry is not only that machines sometimes make mistakes, although they certainly do. Their deeper concern is a quieter one. A machine can correct a sentence, but it cannot see the particular child who has silently stopped trying — the one who copies the answer, closes the screen, and learns nothing at all. It cannot notice the flicker of boredom, or the pride hidden behind a difficult question, or the moment when encouragement matters far more than information. These things, teachers argue, are not the extra parts of teaching. They are teaching.<br><br>Perhaps the honest conclusion is the least dramatic one. The machine is neither a saviour nor a threat; it is a tool, and like every tool it is only as wise as the hand that holds it. The classroom of the future will almost certainly contain both a screen and a teacher. The interesting question is not which of the two will win, but what each of them is truly for."},
     mcq:[
-      {skill:"Reading",q:"According to its supporters, why is AI an excellent tutor?",o:["It is cheap to buy","It is endlessly patient and never tires","It gives students the day off"],a:1},
-      {skill:"Reading",q:"How might AI help a shy learner in particular?",o:["It gives them higher marks automatically","They can ask questions without fear of being laughed at","It lets them leave the lesson early"],a:1},
-      {skill:"Reading",q:"What is the teachers' DEEPER concern?",o:["Machines are too expensive","A machine cannot notice a child who has quietly given up","Students type too slowly"],a:1},
-      {skill:"Reading (inference)",q:"'Only as wise as the hand that holds it' suggests the writer believes…",o:["machines are always dangerous","the value of AI depends on how people choose to use it","teachers should never use technology"],a:1},
+      {skill:"Reading",q:"According to its supporters, why is AI an excellent tutor?",o:["It is endlessly patient and never tires","It is cheap to buy","It gives students the day off"],a:0},
+      {skill:"Reading",q:"How might AI help a shy learner in particular?",o:["It gives them higher marks automatically","It lets them leave the lesson early","They can ask questions without fear of being laughed at"],a:2},
+      {skill:"Reading",q:"What is the teachers' DEEPER concern?",o:["A machine cannot notice a child who has quietly given up","Machines are too expensive","Students type too slowly"],a:0},
+      {skill:"Reading (inference)",q:"'Only as wise as the hand that holds it' suggests the writer believes…",o:["machines are always dangerous","teachers should never use technology","the value of AI depends on how people choose to use it"],a:2},
       {skill:"Reading (inference)",q:"The writer's overall attitude to AI is best described as…",o:["completely against it","balanced — neither for nor against","certain it will replace teachers"],a:1},
       {skill:"T / F / Not Given",q:"The writer claims that machines never make mistakes.",o:["True","False","Not Given"],a:1},
       {skill:"T / F / Not Given",q:"A shy student may find it easier to ask a machine than a teacher.",o:["True","False","Not Given"],a:0},
       {skill:"T / F / Not Given",q:"The writer believes teachers will soon be completely replaced.",o:["True","False","Not Given"],a:1},
       {skill:"T / F / Not Given",q:"The article gives figures for how many schools now use AI.",o:["True","False","Not Given"],a:2},
-      {skill:"Grammar",q:"Third conditional: 'If teachers had ignored this problem, students ___ far less.'",o:["would learn","would have learned","will learn"],a:1},
-      {skill:"Grammar",q:"Inversion: 'Not only ___ it answer questions, it also stays calm.'",o:["it does","does","did it"],a:1},
+      {skill:"Grammar",q:"Third conditional: 'If teachers had ignored this problem, students ___ far less.'",o:["would have learned","would learn","will learn"],a:0},
+      {skill:"Grammar",q:"Inversion: 'Not only ___ it answer questions, it also stays calm.'",o:["it does","did it","does"],a:2},
       {skill:"Grammar",q:"Reported speech: 'She said that the machine ___ patient.'",o:["is","was","will be"],a:1},
-      {skill:"Vocabulary (in context)",q:"'Many teachers are uneasy.' 'Uneasy' is closest to…",o:["worried or not comfortable","extremely happy","completely certain"],a:0},
-      {skill:"Vocabulary (in context)",q:"'The flicker of boredom' suggests something that is…",o:["loud and lasting","brief and easy to miss","bright and warm"],a:1},
+      {skill:"Vocabulary (in context)",q:"'Many teachers are uneasy.' 'Uneasy' is closest to…",o:["extremely happy","completely certain","worried or not comfortable"],a:2},
+      {skill:"Vocabulary (in context)",q:"'The flicker of boredom' suggests something that is…",o:["brief and easy to miss","loud and lasting","bright and warm"],a:0},
       {skill:"Language use",q:"Which sentence is the clearest thesis statement for an essay on this topic?",o:["Computers are everywhere these days.","AI should support teachers rather than replace them.","I used a laptop yesterday in class."],a:1}
     ],
     scenario:{title:"Scenario — Should schools use more AI?", setup:"Should schools use more AI to help students learn? Write a short, clear answer to each prompt (3–4 sentences).",
