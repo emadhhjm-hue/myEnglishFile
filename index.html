@@ -874,6 +874,60 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .yl-big span{font-size:.85rem;opacity:.94}
 .yl-gamecard{margin-top:16px;background:linear-gradient(120deg,#15183A,#3b2a72);color:#fff;border-radius:16px;padding:16px 18px}
 .yl-banner{width:100%;margin-top:14px;text-align:left;border:none;border-radius:18px;padding:16px 20px;cursor:pointer;color:#fff;display:flex;justify-content:space-between;align-items:center;gap:14px;background:linear-gradient(115deg,#e6464b,#F5A301 45%,#0FA98B 85%);box-shadow:var(--shadow)}
+.yl-layout{display:flex;gap:16px;align-items:flex-start;margin-top:8px}
+.yl-main{flex:1;min-width:0}
+.yl-rail{flex:0 0 248px;position:sticky;top:12px;background:#fff;border:2px solid #ffe1b0;border-radius:18px;padding:10px;max-height:calc(100vh - 24px);overflow:auto}
+@media(max-width:900px){.yl-layout{flex-direction:column}.yl-rail{position:static;flex:none;width:100%;max-height:none}}
+.ylw-head{padding:4px 6px 10px;border-bottom:2px dashed #ffe1b0;margin-bottom:10px}
+.ylw-head b{display:block;font-size:1.02rem;color:#15183A}
+.ylw-head small{color:#8a6d3b;font-size:.72rem}
+.ylw-acc{border:2px solid #efe9db;border-radius:16px;margin-bottom:9px;overflow:hidden;background:#fffdf8}
+.ylw-acc.open{border-color:#ffd23f;box-shadow:0 2px 8px rgba(245,163,1,.12)}
+.ylw-btn{width:100%;display:flex;align-items:center;gap:10px;padding:11px 10px;background:none;border:none;cursor:pointer;font-family:inherit;text-align:left}
+.ylw-emo{font-size:1.7rem;flex:none;line-height:1}
+.ylw-b{flex:1}
+.ylw-b b{display:block;font-size:.92rem;color:#15183A}
+.ylw-b small{color:#7a7060;font-size:.74rem}
+.ylw-car{color:#c7ad4e;font-size:1rem;transition:transform .2s;flex:none}
+.ylw-acc.open .ylw-car{transform:rotate(180deg)}
+.ylw-drop{display:none;padding:0 9px 10px}
+.ylw-acc.open .ylw-drop{display:block}
+.ylw-step{width:100%;display:flex;align-items:center;gap:10px;padding:9px 11px;margin-top:7px;border:2px solid var(--sc);border-left-width:7px;border-radius:12px;background:#fff;cursor:pointer;font-family:inherit;text-align:left}
+.ylw-step:hover{background:#fbf9ff;transform:translateX(2px)}
+.ylw-step>span:first-child{font-size:1.35rem;flex:none;line-height:1}
+.ylw-sb{flex:1}
+.ylw-sb b{display:block;font-size:.92rem;color:#15183A}
+.ylw-sb small{color:#7a7060;font-size:.74rem}
+.ylw-grade{margin-top:8px;text-align:center;font-size:.68rem;font-weight:800;letter-spacing:.04em;color:#8a6d3b;text-transform:uppercase}
+.ylw-daily{margin-top:8px;padding:10px 11px;background:#eef7f2;border:2px dashed #b6e2d3;border-radius:14px}
+.ylw-loop{margin-top:8px;text-align:center;font-size:.68rem;font-weight:800;color:#8B5CF6;background:#f4efff;border-radius:10px;padding:5px 6px;letter-spacing:.01em}
+.ylw-diag{margin:0 0 10px;padding:9px 10px;background:linear-gradient(120deg,#fff4e6,#ffe9ef);border:2px solid #ffd23f;border-radius:14px}
+.ylw-diag-h{font-size:.82rem;font-weight:800;color:#15183A;margin-bottom:7px}
+.ylw-diag-btns{display:flex;gap:6px}
+.ylw-diag-btns button{flex:1;border:2px solid #e6464b;background:#fff;color:#e6464b;border-radius:10px;padding:7px 4px;font-size:.72rem;font-weight:800;cursor:pointer;font-family:inherit}
+.ylw-diag-btns button:hover{background:#e6464b;color:#fff}
+.yld-tabs{display:flex;gap:8px;margin-top:8px}
+.yld-tab{border:2px solid #d9d3c4;background:#fff;color:#5b5f86;border-radius:999px;padding:6px 16px;font-size:.82rem;font-weight:800;cursor:pointer;font-family:inherit}
+.yld-tab.on{background:#15183A;color:#fff;border-color:#15183A}
+.yld-q{margin:10px 0}
+.yld-qh{font-weight:700;color:#15183A;margin-bottom:6px;line-height:1.5}
+.yld-skill{display:inline-block;font-size:.6rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:#8a8fbb;border-radius:999px;padding:2px 8px;margin-right:6px;vertical-align:middle}
+.yld-opts{display:flex;flex-direction:column;gap:6px}
+.yld-opt{display:flex;align-items:center;gap:9px;border:2px solid #e7e2d5;border-radius:10px;padding:9px 12px;cursor:pointer;background:#fff}
+.yld-opt:hover{border-color:#b9bde0;background:#fbfaff}
+.yld-opt input{accent-color:#15183A;flex:none}
+.yld-opt.right{border-color:#0f9d6f;background:#e9f8f1}
+.yld-opt.wrong{border-color:#e6464b;background:#fdecec}
+.yld-wp{margin:10px 0}
+.yld-wp label{display:block;font-weight:700;color:#1f2340;margin-bottom:4px;line-height:1.5}
+.yld-wp textarea{width:100%;border:2px solid #e7e2d5;border-radius:10px;padding:9px;font-family:inherit;font-size:.9rem;resize:vertical}
+.yld-wp textarea:focus{outline:none;border-color:#F5A301}
+.yld-result{background:#f3fbf7;border:2px solid #b6e2d3;border-radius:14px;padding:14px 16px;margin-bottom:20px}
+.yld-skills{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.yld-skills span{font-size:.74rem;font-weight:700;color:#3a6ea5;background:#eaf2fc;border-radius:999px;padding:3px 10px}
+.ylw-daily b{display:block;font-size:.84rem;color:#0f766e}
+.ylw-daily span{color:#3f8a76;font-size:.74rem}
+.ylw-foot{font-size:.7rem;color:#9a8f7a;text-align:center;margin:9px 4px 2px}
 
 /* --- iCAN Hub Lesson Planner --- */
 .dl-tile-hero{border:2px solid var(--teal-dk,#0f766e)!important;background:linear-gradient(180deg,#f7fdfb,#eef8f5)!important}
@@ -16265,7 +16319,7 @@ function weekRailHTML(){
     /* WRITE \u2014 Days 3\u20134 (the build), grammar rides along, always via the Grammar Lab */
     let wr = x.write.map(id=>{ const l=wkWrite(id); return li('\u270d\ufe0f', l?l.name:id, l?l.strap:'', 'wcLesson', id, '#2BA84F','w'); }).join('');
     const g = wkGram(x.gram);
-    wr += li('\ud83e\udde9', g?g.title:x.gram, 'grammar \u00b7 in the Grammar Lab', 'grammarLesson', x.gram, '#0FA98B','g');
+    wr += li('\ud83e\udde9', g?g.title:x.gram, 'find this point in the Grammar Lab \u00b7 Connect \u2192 Study \u2192 Test', 'grammar', null, '#0FA98B','g');
     inner += `<h5>\u270d\ufe0f Write \u00b7 Days 3\u20134</h5>${wr}`;
 
     /* DESIGN \u2014 Day 5, the final output built from the reading + writing */
@@ -16292,7 +16346,7 @@ function weekRailHTML(){
       <button class="wk-accbtn" onclick="toggleWeekAcc(${x.w})" title="${esc(x.title)}">
         <span class="wk-n">Week ${x.w}<span class="wk-caret">\u25bc</span></span>
         <span class="wk-t">${esc(x.title)}</span>
-        <span class="wk-meta"><span class="wk-focus rwd">\ud83d\udcd6\u2192\u270d\ufe0f\u2192\ud83c\udfa8 R\u00b7W\u00b7D</span><span class="wk-s">${on?'\u25cf open':'\u25cf locked'}</span></span>
+        <span class="wk-meta"><span class="wk-focus rwd">\ud83d\udcd6\u2192\u270d\ufe0f\u2192\ud83c\udfa8\u21bb R\u00b7W\u00b7D</span><span class="wk-s">${on?'\u25cf open':'\u25cf locked'}</span></span>
       </button>
       <div class="wk-drop">${inner}</div>
     </div>`;
@@ -16450,9 +16504,9 @@ function openWeek(w){
       <span class="wk-item-b"><b>Writing Studio</b><small>${esc(WK_STUDIO[x.studio]||'')}</small></span>
       <span class="wk-item-k">STUDIO</span></button>`;
   const g = wkGram(x.gram);
-  wr += `<button class="wk-item" ${on?`onclick="wkGo('grammarLesson','${x.gram}')"`:'disabled'}>
+  wr += `<button class="wk-item" ${on?`onclick="wkGo('grammar','')"`:'disabled'}>
       <span class="wk-dot" style="background:#0FA98B"></span>
-      <span class="wk-item-b"><b>${esc(g?g.title:x.gram)}</b><small>Grammar \u00b7 practised in the Grammar Lab \u2014 it comes from this week\u2019s text</small></span>
+      <span class="wk-item-b"><b>${esc(g?g.title:x.gram)}</b><small>Find this point in the Grammar Lab \u2014 Connect \u00b7 Study \u00b7 Test. It comes from this week\u2019s text.</small></span>
       <span class="wk-item-k">GRAMMAR</span></button>`;
   body += sec('\u270d\ufe0f Write \u00b7 Days 3\u20134 \u2014 the build', wr);
 
@@ -20488,12 +20542,236 @@ ROUTES.ylStemUnit=function(id){
 };
 
 
+/* ---- Foundational weekly plan (young learners): one reader a week, Read → Write → Make ---- */
+const YL_WEEKS=[
+  {w:1,r:'r1',emoji:'\ud83d\udc31',theme:'Pets & everyday life',grades:'Grades 5\u20136'},
+  {w:2,r:'r2',emoji:'\u26bd',theme:'Sport & teamwork',grades:'Grades 5\u20136'},
+  {w:3,r:'r3',emoji:'\ud83c\udf72',theme:'Food & routines',grades:'Grades 5\u20136'},
+  {w:4,r:'r4',emoji:'\ud83c\udf0d',theme:'Travel & nature',grades:'Grade 7'},
+  {w:5,r:'r5',emoji:'\ud83c\udf31',theme:'Environment & community',grades:'Grade 7'},
+  {w:6,r:'r6',emoji:'\ud83e\udd85',theme:'Heritage & wildlife',grades:'Grade 7'},
+  {w:7,r:'r7',emoji:'\ud83d\udd2c',theme:'Science & sustainability',grades:'Grade 8'},
+  {w:8,r:'r8',emoji:'\ud83d\udca1',theme:'Health & technology',grades:'Grade 8'}
+];
+let YL_ACC = new Set([1]);
+function toggleYlAcc(w){ if(YL_ACC.has(w)) YL_ACC.delete(w); else YL_ACC.add(w); const el=document.getElementById('ylRail'); if(el) el.innerHTML=ylWeekRailHTML(); }
+function ylWeekRailHTML(){
+  const rows = YL_WEEKS.map(x=>{
+    const open = YL_ACC.has(x.w);
+    return `<div class="ylw-acc ${open?'open':''}">
+      <button class="ylw-btn" onclick="toggleYlAcc(${x.w})">
+        <span class="ylw-emo">${x.emoji}</span>
+        <span class="ylw-b"><b>Week ${x.w}</b><small>${esc(x.theme)}</small></span>
+        <span class="ylw-car">\u25be</span>
+      </button>
+      <div class="ylw-drop">
+        <button class="ylw-step" style="--sc:#0FA98B" onclick="go('ylReader','${x.r}')"><span>\ud83d\udcd6</span><span class="ylw-sb"><b>Read</b><small>the picture reader</small></span></button>
+        <button class="ylw-step" style="--sc:#e6608a" onclick="go('ylWriting')"><span>\u270d\ufe0f</span><span class="ylw-sb"><b>Write</b><small>write about it</small></span></button>
+        <button class="ylw-step" style="--sc:#F5A301" onclick="go('ylGrammar')"><span>\ud83e\udde9</span><span class="ylw-sb"><b>Grammar</b><small>a maze \u2014 teacher's choice</small></span></button>
+        <button class="ylw-step" style="--sc:#8B5CF6" onclick="go('ylDesignFrom','${x.r}')"><span>\ud83c\udfa8</span><span class="ylw-sb"><b>Design</b><small>design &amp; build it</small></span></button>
+        <div class="ylw-loop">\u21bb then loop back \u2014 read more, write more, design better!</div>
+        <div class="ylw-grade">${esc(x.grades)}</div>
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="ylw-head"><b>\ud83d\uddd3\ufe0f My weekly plan</b><small>one reader a week \u00b7 Read \u2192 Write \u2192 Design \u21bb and back again</small></div>
+    <div class="ylw-diag">
+      <div class="ylw-diag-h">\ud83c\udfaf Checkpoints</div>
+      <div class="ylw-diag-btns">
+        <button onclick="go('ylDiag','start')">Start</button>
+        <button onclick="go('ylDiag','middle')">Middle</button>
+        <button onclick="go('ylDiag','final')">Final</button>
+      </div>
+    </div>
+    ${rows}
+    <div class="ylw-daily"><b>\ud83d\udd01 Every day \u2014 daily practice</b><span>Your teacher sets these: spelling \u00b7 typing \u00b7 talkabout \u00b7 writeabout. Always on: \ud83d\udd0a read-to-me \u00b7 \u2b50 one new word.</span></div>
+    <p class="ylw-foot">Tap a week to open it. Do a little each day \u2014 no rush!</p>`;
+}
+
+/* ---- Foundational diagnostic: Start · Middle · Final (Grades 5–8, all EFL skills) ---- */
+const YL_DIAG={
+  start:{ label:"Start", when:"Beginning of the year — where are you now?", colour:"#0FA98B",
+    passage:{title:"The School Garden", text:"Every Friday afternoon, the students of Class 6 put down their pens and pick up their tools. Behind the science block, in a corner that was once full of broken chairs and dry weeds, they have slowly built a small garden. They water the young plants, pull out the weeds that crowd them, and press the soil with their fingers to feel whether it is too dry.<br><br>At first, nothing seemed to work. The seeds they planted in October did not appear for three long weeks, and several students were sure they had done something wrong. Then, on one cold morning, tiny green shoots pushed up through the dark earth. Last month, for the very first time, the class grew tomatoes — small, uneven, and, everyone agreed, the best they had ever tasted.<br><br>Their teacher, Ms Fadila, rarely talks about tomatoes. She says the garden teaches something that no textbook ever could: patience. 'A plant will not hurry for anyone,' she tells them with a smile. 'And neither will anything else that is truly worth doing.'"},
+    mcq:[
+      {skill:"Reading",q:"Where did the students build their garden?",o:["On the school roof","Behind the science block","Inside the classroom"],a:1},
+      {skill:"Reading",q:"Why were several students sure they had done something wrong?",o:["The seeds took three weeks to appear","The teacher was angry","The tomatoes tasted bad"],a:0},
+      {skill:"Reading (inference)",q:"'The best they had ever tasted' most likely shows that the students felt…",o:["disappointed with the garden","proud of what they had grown","bored by the work"],a:1},
+      {skill:"T / F / Not Given",q:"The corner was already tidy before the garden was built.",o:["True","False","Not Given"],a:1},
+      {skill:"T / F / Not Given",q:"The tomatoes were small and not perfectly shaped.",o:["True","False","Not Given"],a:0},
+      {skill:"T / F / Not Given",q:"The students sell their vegetables at a local market.",o:["True","False","Not Given"],a:2},
+      {skill:"Grammar",q:"Choose the correct verb: 'The class ___ the plants every Friday.'",o:["water","waters","watering"],a:1},
+      {skill:"Grammar",q:"Choose the correct past form: 'The seeds ___ three weeks to appear.'",o:["take","took","taken"],a:1},
+      {skill:"Grammar",q:"Choose the correct form: 'Look — a green shoot ___ up through the soil right now!'",o:["pushes","is pushing","pushed"],a:1},
+      {skill:"Vocabulary (in context)",q:"In this text, 'shoots' means…",o:["fires a weapon","new plant growth","fast movements"],a:1},
+      {skill:"Vocabulary (in context)",q:"The weeds 'crowd' the young plants. 'Crowd' here is closest to…",o:["grow too close and take their space","water them gently","make them taller"],a:0},
+      {skill:"Language use",q:"Ms Fadila says a plant 'will not hurry for anyone.' She means…",o:["gardens are a waste of time","good things take time and cannot be rushed","students should walk slowly"],a:1}
+    ],
+    scenario:{title:"Scenario — Our class garden", setup:"Your class is starting a small garden of its own. Write a short answer to each prompt (2–3 sentences).",
+      prompts:["What would you like to grow, and why?","Describe one job you would do in the garden and how you would do it.","Write one clear rule to keep the garden nice for everyone."]}
+  },
+  middle:{ label:"Middle", when:"Middle of the year — how far have you come?", colour:"#F5A301",
+    passage:{title:"The Bin That Changed a School", text:"Two years ago, the corridors of Al Noor School were lined with a single kind of bin. Into it went everything: paper, plastic bottles, banana skins, and the foil from a hundred lunchboxes. Nobody thought about it much, because nobody had ever been asked to.<br><br>Then a group of Grade 7 students did something small. They counted. For one week, they weighed the rubbish from their own classroom and discovered that more than half of it — clean paper and plastic — could have been recycled, if only it had been separated first. The number surprised even their teachers.<br><br>The students did not complain, and they did not wait for the adults to act. Instead, they designed three coloured bins, wrote clear labels, and placed a set in every classroom. At first, people made mistakes: bottles ended up with the paper, and sandwiches ended up almost everywhere. But within a month, sorting rubbish had quietly become a habit — the same way that throwing everything into one bin had once been a habit too.<br><br>Not everyone was convinced. A few students argued that one small school could never make a real difference while factories poured waste into rivers every day. It was a fair point. Yet the campaign's leader, Mariam, had a simple answer. 'We are not trying to save the planet by Friday,' she said. 'We are trying to change what feels normal — and a habit spreads much further than a poster ever could.' Today the coloured bins are simply part of the school, and the students who started it have almost forgotten that, once, they were something new."},
+    mcq:[
+      {skill:"Reading",q:"What did the students do FIRST?",o:["They built new bins","They weighed their classroom rubbish for a week","They wrote to the government"],a:1},
+      {skill:"Reading",q:"What did their week of counting reveal?",o:["More than half of the rubbish could be recycled","The bins were too small","Nobody ate lunch at school"],a:0},
+      {skill:"Reading (inference)",q:"The detail that 'sandwiches ended up almost everywhere' mainly shows that…",o:["students were hungry","the new system was hard to get used to at first","the bins were broken"],a:1},
+      {skill:"T / F / Not Given",q:"The students waited for the adults to solve the problem.",o:["True","False","Not Given"],a:1},
+      {skill:"T / F / Not Given",q:"Some students doubted that one school could make a real difference.",o:["True","False","Not Given"],a:0},
+      {skill:"T / F / Not Given",q:"The school won a national prize for its recycling.",o:["True","False","Not Given"],a:2},
+      {skill:"T / F / Not Given",q:"Mariam believes the campaign will save the planet very quickly.",o:["True","False","Not Given"],a:1},
+      {skill:"Grammar",q:"First conditional: 'If we separate our rubbish, we ___ much more of it.'",o:["recycle","will recycle","recycled"],a:1},
+      {skill:"Grammar",q:"Passive: 'Three coloured bins ___ in every classroom last term.'",o:["were placed","are placing","place"],a:0},
+      {skill:"Grammar",q:"Relative clause: 'The campaign, ___ started two years ago, is now completely normal.'",o:["who","which","where"],a:1},
+      {skill:"Vocabulary (in context)",q:"'A habit spreads much further…' Here 'spreads' is closest to…",o:["reaches more and more people","becomes thinner","is cleaned up"],a:0},
+      {skill:"Language use",q:"Which sentence politely accepts a point before disagreeing with it?",o:["'You are completely wrong.'","'That is a fair point, but I still think we should act.'","'I do not care what you think.'"],a:1},
+      {skill:"Language use",q:"Which sentence is the most formal, for a letter to the head teacher?",o:["'Gimme separate bins.'","'We would like to request separate bins for each classroom.'","'Bins, please, now.'"],a:1}
+    ],
+    scenario:{title:"Scenario — Reduce our waste", setup:"Your school wants to reduce the waste it produces. Write a short answer to each prompt (3–4 sentences).",
+      prompts:["Describe one real waste problem you have noticed at school or at home.","Suggest one practical solution, and explain how it would actually work.","Write one convincing sentence to persuade a classmate to join in."]}
+  },
+  final:{ label:"Final", when:"End of the year — show what you can do now", colour:"#e6464b",
+    passage:{title:"The Patient Machine", text:"In classrooms around the world, a quiet change is under way. Students who once had to wait for a teacher to be free can now type a question into a machine and receive an answer in seconds. Artificial intelligence, its supporters say, is the most patient tutor ever invented. It does not sigh, it does not grow tired, and it will explain the same idea for the tenth time exactly as calmly as it did the first.<br><br>For a student who is struggling, this patience can feel like a gift. A shy learner who would never raise a hand in front of thirty classmates might ask a machine almost anything, without the fear of being laughed at. In the best cases, the technology does not replace effort at all — it simply removes the fear that used to stop effort from ever beginning.<br><br>Yet many teachers are uneasy, and their worry is not only that machines sometimes make mistakes, although they certainly do. Their deeper concern is a quieter one. A machine can correct a sentence, but it cannot see the particular child who has silently stopped trying — the one who copies the answer, closes the screen, and learns nothing at all. It cannot notice the flicker of boredom, or the pride hidden behind a difficult question, or the moment when encouragement matters far more than information. These things, teachers argue, are not the extra parts of teaching. They are teaching.<br><br>Perhaps the honest conclusion is the least dramatic one. The machine is neither a saviour nor a threat; it is a tool, and like every tool it is only as wise as the hand that holds it. The classroom of the future will almost certainly contain both a screen and a teacher. The interesting question is not which of the two will win, but what each of them is truly for."},
+    mcq:[
+      {skill:"Reading",q:"According to its supporters, why is AI an excellent tutor?",o:["It is cheap to buy","It is endlessly patient and never tires","It gives students the day off"],a:1},
+      {skill:"Reading",q:"How might AI help a shy learner in particular?",o:["It gives them higher marks automatically","They can ask questions without fear of being laughed at","It lets them leave the lesson early"],a:1},
+      {skill:"Reading",q:"What is the teachers' DEEPER concern?",o:["Machines are too expensive","A machine cannot notice a child who has quietly given up","Students type too slowly"],a:1},
+      {skill:"Reading (inference)",q:"'Only as wise as the hand that holds it' suggests the writer believes…",o:["machines are always dangerous","the value of AI depends on how people choose to use it","teachers should never use technology"],a:1},
+      {skill:"Reading (inference)",q:"The writer's overall attitude to AI is best described as…",o:["completely against it","balanced — neither for nor against","certain it will replace teachers"],a:1},
+      {skill:"T / F / Not Given",q:"The writer claims that machines never make mistakes.",o:["True","False","Not Given"],a:1},
+      {skill:"T / F / Not Given",q:"A shy student may find it easier to ask a machine than a teacher.",o:["True","False","Not Given"],a:0},
+      {skill:"T / F / Not Given",q:"The writer believes teachers will soon be completely replaced.",o:["True","False","Not Given"],a:1},
+      {skill:"T / F / Not Given",q:"The article gives figures for how many schools now use AI.",o:["True","False","Not Given"],a:2},
+      {skill:"Grammar",q:"Third conditional: 'If teachers had ignored this problem, students ___ far less.'",o:["would learn","would have learned","will learn"],a:1},
+      {skill:"Grammar",q:"Inversion: 'Not only ___ it answer questions, it also stays calm.'",o:["it does","does","did it"],a:1},
+      {skill:"Grammar",q:"Reported speech: 'She said that the machine ___ patient.'",o:["is","was","will be"],a:1},
+      {skill:"Vocabulary (in context)",q:"'Many teachers are uneasy.' 'Uneasy' is closest to…",o:["worried or not comfortable","extremely happy","completely certain"],a:0},
+      {skill:"Vocabulary (in context)",q:"'The flicker of boredom' suggests something that is…",o:["loud and lasting","brief and easy to miss","bright and warm"],a:1},
+      {skill:"Language use",q:"Which sentence is the clearest thesis statement for an essay on this topic?",o:["Computers are everywhere these days.","AI should support teachers rather than replace them.","I used a laptop yesterday in class."],a:1}
+    ],
+    scenario:{title:"Scenario — Should schools use more AI?", setup:"Should schools use more AI to help students learn? Write a short, clear answer to each prompt (3–4 sentences).",
+      prompts:["Give one clear benefit of using AI in class, with a reason.","Give one risk or worry about using AI in class.","State your own opinion clearly, and give one reason for it."]}
+  }
+};
+function ylDiagOpts(i,o){ return o.map(function(t,oi){ return '<label class="yld-opt"><input type="radio" name="yldq'+i+'" value="'+oi+'"><span>'+esc(t)+'</span></label>'; }).join(''); }
+ROUTES.ylDiag=function(stage){
+  stage=(stage&&YL_DIAG[stage])?stage:'start';
+  const d=YL_DIAG[stage];
+  try{speechSynthesis.cancel();}catch(e){}
+  const tabs=Object.keys(YL_DIAG).map(function(k){ return '<button class="yld-tab'+(k===stage?' on':'')+'" onclick="go(\'ylDiag\',\''+k+'\')">'+esc(YL_DIAG[k].label)+'</button>'; }).join('');
+  const mcqHtml=d.mcq.map(function(m,i){ return '<div class="yld-q"><div class="yld-qh"><span class="yld-skill">'+esc(m.skill)+'</span> '+(i+1)+'. '+m.q+'</div><div id="yldopt'+i+'" class="yld-opts">'+ylDiagOpts(i,m.o)+'</div></div>'; }).join('');
+  const promptsHtml=d.scenario.prompts.map(function(p,k){ return '<div class="yld-wp"><label>'+(k+1)+'. '+esc(p)+'</label><textarea id="yldw'+k+'" rows="3" placeholder="Write your answer\u2026"></textarea></div>'; }).join('');
+  app().innerHTML=`
+  <div class="wrap screen">
+    <button class="back" onclick="go('ylhub')">\u2190 Foundational</button>
+    <div class="yld-tabs">${tabs}</div>
+    <h1 style="font-size:1.7rem;margin:8px 0 2px">\ud83c\udfaf ${esc(d.label)} checkpoint</h1>
+    <p class="note" style="margin:0 0 8px">${esc(d.when)} \u00b7 all your English skills \u00b7 Grades 5\u20138. Read the text, choose the best answer, then write your short responses.</p>
+    <div style="margin:0 0 12px"><button class="btn ghost sm" onclick="ylDiagWorksheetPDF('${stage}')">\ud83d\udcc4 Download worksheet (PDF)</button></div>
+    <div class="card" style="background:#f7fbff;border:1px solid #d9e6f5"><div style="font-size:.7rem;font-weight:800;letter-spacing:.06em;color:#3a6ea5;text-transform:uppercase;margin-bottom:4px">\ud83d\udcd6 Read this first</div><b>${esc(d.passage.title)}</b><p style="margin:6px 0 0;line-height:1.7">${d.passage.text}</p></div>
+    <h3 style="margin:16px 0 4px">Part A \u00b7 Multiple choice <span style="font-size:.8rem;color:var(--muted);font-weight:400">(reading \u00b7 grammar \u00b7 vocabulary \u00b7 language use)</span></h3>
+    ${mcqHtml}
+    <h3 style="margin:18px 0 4px">Part B \u00b7 Short writing</h3>
+    <div class="card" style="background:#fffaf0;border:1px solid #f0e2c4"><b>${esc(d.scenario.title)}</b><p style="margin:6px 0 10px;line-height:1.6">${esc(d.scenario.setup)}</p>${promptsHtml}</div>
+    <div style="margin:14px 0"><button class="btn teal" onclick="ylDiagCheck('${stage}')">Check my answers</button></div>
+    <div id="yldResult" class="yld-result" style="display:none"></div>
+  </div>`;
+};
+function ylDiagCheck(stage){
+  const d=YL_DIAG[stage]; if(!d) return;
+  let correct=0; const bySkill={};
+  d.mcq.forEach(function(m,i){
+    const sel=document.querySelector('input[name="yldq'+i+'"]:checked');
+    const chosen=sel?parseInt(sel.value,10):-1;
+    bySkill[m.skill]=bySkill[m.skill]||{c:0,t:0}; bySkill[m.skill].t++;
+    if(chosen===m.a){ correct++; bySkill[m.skill].c++; }
+    const wrap=document.getElementById('yldopt'+i);
+    if(wrap){ const opts=wrap.querySelectorAll('.yld-opt'); opts.forEach(function(el,oi){ el.classList.remove('right','wrong'); if(oi===m.a) el.classList.add('right'); else if(oi===chosen) el.classList.add('wrong'); }); }
+  });
+  const total=d.mcq.length;
+  const words=[0,1,2].map(function(k){ const el=document.getElementById('yldw'+k); const t=el?(el.value||'').trim():''; return t?t.split(/\s+/).length:0; });
+  const written=words.reduce(function(a,b){return a+b;},0);
+  /* full answer sheet text for the student portal */
+  const sheet=['Part A — multiple choice ('+correct+'/'+total+')'];
+  d.mcq.forEach(function(m,i){
+    const sel=document.querySelector('input[name="yldq'+i+'"]:checked');
+    const chosen=sel?parseInt(sel.value,10):-1;
+    const mine=chosen>=0?(LET[chosen]+'. '+htmlToText(m.o[chosen])):'(no answer)';
+    const ok=chosen===m.a;
+    sheet.push((i+1)+'. ['+m.skill+'] '+htmlToText(m.q)+'\n   My answer: '+mine+'  '+(ok?'[correct]':'[correct = '+LET[m.a]+'. '+htmlToText(m.o[m.a])+']'));
+  });
+  sheet.push('\nPart B — short writing');
+  d.scenario.prompts.forEach(function(p,k){ const el=document.getElementById('yldw'+k); sheet.push((k+1)+'. '+p+'\n   '+((el&&el.value.trim())||'(not answered)')); });
+  const essay=sheet.join('\n');
+  let saved=false;
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){
+    try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Checkpoint \u2014 '+d.label,score:correct,max:total,percent:Math.round(correct/total*100),detail:'MCQ '+correct+'/'+total+' \u00b7 writing '+written+' words',essay:essay}); saved=true; }catch(e){}
+  }
+  const res=document.getElementById('yldResult');
+  if(res){
+    res.style.display='block';
+    res.innerHTML='<b style="font-size:1.05rem">Multiple choice: '+correct+' / '+total+'</b>'
+      +'<div class="yld-skills">'+Object.keys(bySkill).map(function(s){return '<span>'+esc(s)+' '+bySkill[s].c+'/'+bySkill[s].t+'</span>';}).join('')+'</div>'
+      +'<p style="margin:8px 0 0">Correct answers are marked in green above. Your written part ('+written+' words) is read and marked by your teacher.</p>'
+      +'<div style="margin-top:12px"><button class="btn teal sm" onclick="ylDiagAnswerPDF(\''+stage+'\')">\ud83d\udce5 Download my answer sheet (PDF)</button></div>'
+      +(saved
+          ?'<p style="margin:8px 0 0;font-size:.82rem;color:#0f766e">\u2705 Saved to your student portal \u2014 your teacher can see it too.</p>'
+          :'<p style="margin:8px 0 0;font-size:.82rem;color:var(--muted)">Tip: sign in as a student to save this to your portal automatically. You can still download and share the PDF above.</p>');
+    res.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+/* ---- Checkpoint PDFs: blank worksheet + submitted answer sheet ---- */
+function ylDiagWorksheetPDF(stage){
+  if(!pdfReady()) return noPdf();
+  const d=YL_DIAG[stage]; if(!d) return;
+  const p=pdfDoc(d.label+' checkpoint');
+  p.h1(d.label+' Checkpoint \u2014 Foundational English');
+  p.text(d.when+' \u00b7 Grades 5\u20138 \u00b7 all skills',{size:9,color:120,gap:6});
+  nameLine(p);
+  p.h2('Read the text: '+d.passage.title);
+  p.text(htmlToText(d.passage.text),{gap:6});
+  p.h2('Part A \u2014 Multiple choice (circle one letter)');
+  d.mcq.forEach(function(m,i){ p.text((i+1)+'. ['+m.skill+']  '+htmlToText(m.q),{style:'bold'}); m.o.forEach(function(o,j){ p.text('      '+LET[j]+'.  '+htmlToText(o)); }); p.gap(3); });
+  p.newpage();
+  p.h2('Part B \u2014 '+d.scenario.title);
+  p.text(d.scenario.setup,{gap:4});
+  d.scenario.prompts.forEach(function(pr,k){ p.text((k+1)+'. '+pr,{style:'bold'}); p.lines(4); });
+  p.save('iCAN-'+stage+'-checkpoint-worksheet.pdf');
+}
+function ylDiagAnswerPDF(stage){
+  if(!pdfReady()) return noPdf();
+  const d=YL_DIAG[stage]; if(!d) return;
+  const p=pdfDoc(d.label+' checkpoint \u2014 answers');
+  const nm=(typeof SESSION!=='undefined'&&SESSION&&SESSION.name)?SESSION.name:'__________________';
+  const cl=(typeof SESSION!=='undefined'&&SESSION&&SESSION.class)?SESSION.class:'________';
+  p.h1(d.label+' Checkpoint \u2014 my answers');
+  p.text('Name: '+nm+'      Class: '+cl+'      Date: '+new Date().toLocaleDateString(),{size:10,gap:6});
+  let correct=0;
+  p.h2('Part A \u2014 Multiple choice');
+  d.mcq.forEach(function(m,i){
+    const sel=document.querySelector('input[name="yldq'+i+'"]:checked');
+    const chosen=sel?parseInt(sel.value,10):-1;
+    const ok=chosen===m.a; if(ok)correct++;
+    p.text((i+1)+'. ['+m.skill+']  '+htmlToText(m.q),{style:'bold'});
+    p.text('      My answer: '+(chosen>=0?LET[chosen]+'. '+htmlToText(m.o[chosen]):'(no answer)')+(ok?'   [correct]':'   [see key]'),{size:10,color:ok?30:70});
+    if(!ok) p.text('      Correct answer: '+LET[m.a]+'. '+htmlToText(m.o[m.a]),{size:10,color:100});
+    p.gap(2);
+  });
+  p.h2('Score: '+correct+' / '+d.mcq.length);
+  p.h2('Part B \u2014 '+d.scenario.title);
+  d.scenario.prompts.forEach(function(pr,k){ const el=document.getElementById('yldw'+k); const v=el?(el.value||'').trim():''; p.text((k+1)+'. '+pr,{style:'bold'}); p.text(v||'(not answered)',{size:10,color:60,gap:4}); });
+  p.text('The writing above is read and marked by your teacher.',{size:9,color:120,gap:2});
+  p.save('iCAN-'+stage+'-checkpoint-my-answers.pdf');
+}
+
 ROUTES.ylhub=function(){
   try{speechSynthesis.cancel();}catch(e){}
   const box=(route,bg1,bg2,icon,title,sub,rwd)=>`<button class="yl-big" style="--bg1:${bg1};--bg2:${bg2};min-height:150px;align-items:flex-start;text-align:left" onclick="go('${route}')"><b style="font-size:1.15rem">${icon} ${title}</b><span>${sub}</span><span style="display:block;margin-top:auto;padding-top:8px;font-size:.72rem;opacity:.9;font-weight:700">${rwd}</span></button>`;
   app().innerHTML=`
   <div class="wrap screen">
     <button class="back" onclick="go('dashboard')">← Home</button>
+    <div class="yl-layout">
+    <aside class="yl-rail" id="ylRail">${ylWeekRailHTML()}</aside>
+    <div class="yl-main">
     <div class="yl-hero"><div>
       <div class="stem-kicker" style="color:#ffe39a">iCAN Academy · Grades 1–8</div>
       <h1 style="color:#fff;margin:4px 0">🧒 Foundational Course</h1>
@@ -20528,6 +20806,8 @@ ROUTES.ylhub=function(){
       ${box('ylStem','#0FA98B','#5B8DEF','🚀','STEM·STREAM','Read about a real invention, find the puzzle inside it, then make something you can touch, feel, taste or imagine.','RWD · Read → Puzzle → Connect → Make')}
       ${box('ylExams','#e6464b','#F5A301','⚡','Exams &amp; Quizzes','A full exam in one sitting — reading, grammar, vocabulary and short-response writing — with the answer key on submit.','RWD · Check &amp; apply')}
     </div>
+    </div><!-- /yl-main -->
+    </div><!-- /yl-layout -->
   </div>`;
 };
 function ylDictGo(){ const w=(val('ylDict')||'').trim(); if(!w) return; window.open('https://www.vocabulary.com/dictionary/'+encodeURIComponent(w),'_blank','noopener'); }
