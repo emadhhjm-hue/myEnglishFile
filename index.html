@@ -8916,7 +8916,7 @@ function drawWordCloud(x, W, H, label, alpha, inset){
 /* Big, colourful, activity-specific background art. Drawn behind everything. */
 function drawCertMotif(x, W, H, label, alpha){
   const kind = certMotifKind(label);
-  if(kind === 'book') return kind;   // no open-book watermark (or its spine line) on certificates
+  if(kind === 'book' || kind === 'quill') return kind;   // no open-book or pen-and-ink (quill) motif on certificates
   const r = H*0.30;
   x.save();
   x.beginPath(); x.rect(52, 52, W - 104, H - 104); x.clip();
