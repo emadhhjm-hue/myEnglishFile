@@ -4458,7 +4458,7 @@ const ROUTES = {
           <circle cx="450" cy="260" r="68" fill="#0e1130" stroke="rgba(255,255,255,.9)" stroke-width="2.5"/>
           <text x="450" y="270" text-anchor="middle" font-family="Fraunces,serif" font-weight="800" font-size="34">
             <tspan fill="#ffffff">i</tspan><tspan fill="#ff5a5f">C</tspan><tspan fill="#34d39a">A</tspan><tspan fill="#5b8def">N</tspan></text>
-          ${[["spellType","🐝","Spelling & Typing",450,60,"Say it · Spell it · Type it"],["articleaday","📰","Article-A-Day",700,147,"Read · 20 min"],["grammar","🧩","Grammar",762,344,""],["exams","🎓","Exams & Quizzes",589,501,""],["stemlab","🚀","STEM·STREAM",311,501,"Read · Write · Design"],["diagnostic","🧭","Diagnostic",138,344,""],["waspk","🎤","Talkabout",200,147,"Watch · Write · Speak"]].map(([r,ic,lab,cx,cy,sub],idx)=>{
+          ${[["spellType","🐝","Spelling & Typing",450,60,"Say it · Spell it · Type it"],["articleaday","📰","Article-A-Day",700,147,"Read · 20 min"],["grammar","🧩","Grammar",762,344,""],["exams","🎓","Exams & Quizzes",589,501,""],["stemlab","🚀","STEM·STREAM",311,501,"Read · Write · Design"],["waspk","🎤","Talkabout",200,147,"Watch · Write · Speak"]].map(([r,ic,lab,cx,cy,sub],idx)=>{
             const bee = r==='spellType', stem = r==='stemlab', wa = r==='waspk';
             const big = bee||stem||wa;
             const rad = big?60:55;
@@ -4523,7 +4523,7 @@ const ROUTES = {
             <p style="color:var(--muted);font-size:.9rem">${d.blurb}</p>
             <p style="font-size:.85rem;color:var(--slate);margin:8px 0">4 sections · ${d.vocab.length} vocab · ${d.grammar.length} grammar · ${d.readingA.questions.length+d.readingB.questions.length} reading · 1 essay</p>
             <button class="btn" ${locked?'disabled':''} onclick="go('diagTest','${v}')">${locked?'🔒 Locked — teacher opens this later':'Start '+d.short+' →'}</button>
-            <button class="btn ghost sm" style="margin-top:8px" onclick="wsDiag('${v}')">📄 Paper version (PDF)</button>
+            ${locked ? '' : `<button class="btn ghost sm" style="margin-top:8px" onclick="wsDiag('${v}')">📄 Paper version (PDF)</button>`}
           </div>`; }).join('')}
       </div>
     </div>`;
@@ -8525,6 +8525,7 @@ function runExam(ex, ctx){
        <h1 style="font-size:1.9rem;margin:0">${ex.label}</h1>${timer}
      </div>
      <p style="color:var(--muted)">${ctx.minutes?`You have <b>${ctx.minutes} minutes</b>. The test submits itself automatically when time runs out.`:'Answer every question, then press Submit.'}</p>
+     ${ctx.paper?`<div style="margin:2px 0 8px"><button class="btn ghost sm" onclick="wsDiag('${ctx.paper}')">📄 Download worksheet (PDF)</button></div>`:''}
      ${sec('1 · Vocabulary','Choose the option that best completes each sentence.')}${qh(ex.vocab,'d_v_')}
      ${sec('2 · Grammar','Choose the grammatically correct option.')}${qh(ex.grammar,'d_g_')}
      ${sec('3 · Reading','Read each text, then answer the questions.')}
@@ -8610,8 +8611,16 @@ function wsExam(ex, fileTag){ if(!pdfReady())return noPdf(); const p=pdfDoc("Ful
   p.save(`iCAN-${fileTag}.pdf`);
 }
 /* diagnostic uses the generic engine */
-function renderDiag(v){ runExam(DIAG[v], {key:'diag_'+v, minutes:35, backRoute:'diagnostic', skill:'Diagnostic', cert:true}); }
-function wsDiag(v){ wsExam(DIAG[v], 'diagnostic-'+v); }
+function renderDiag(v){ runExam(DIAG[v], {key:'diag_'+v, minutes:35, backRoute:'dashboard', skill:'Diagnostic', cert:true, paper:v}); }
+function wsDiag(v){
+  // A locked checkpoint must not expose its paper (PDF) test to test-takers —
+  // the paper version is only available once the teacher has opened the stage.
+  if(typeof SESSION!=='undefined' && SESSION && SESSION.role==='student' && !gateOpen('diag:'+v)){
+    alert('This diagnostic is locked. Your teacher will open it when the time comes.');
+    return;
+  }
+  wsExam(DIAG[v], 'diagnostic-'+v);
+}
 
 /* ---- certificate image (canvas → PNG, right-click or button to save) ---- */
 function roundRect(x,X,Y,w,h,r){ x.beginPath(); x.moveTo(X+r,Y); x.arcTo(X+w,Y,X+w,Y+h,r); x.arcTo(X+w,Y+h,X,Y+h,r); x.arcTo(X,Y+h,X,Y,r); x.arcTo(X,Y,X+w,Y,r); x.closePath(); }
@@ -8670,19 +8679,28 @@ const RWD_CAP_RUNS=[
   {t:' Process  \u00b7  ', c:'#15183A'}
 ];
 function drawArcTextRWD(x, runs, cx, cy, r, startAngle, fontPx){
+  const gap = 0.32;                       // radians of clear space kept between the end and the start
   const chars=[];
   runs.forEach(run=>{ for(let i=0;i<run.t.length;i++) chars.push({ch:run.t[i], run:run}); });
-  const fontFor=run=>(run.i?'italic ':'')+(run.b?'800 ':'600 ')+fontPx+'px Georgia,serif';
-  chars.forEach(o=>{ x.font=fontFor(o.run); o.w=x.measureText(o.ch).width; });
-  let ang=startAngle;
-  x.textAlign='center'; x.textBaseline='middle';
+  const fontFor=(run,fp)=>(run.i?'italic ':'')+(run.b?'800 ':'600 ')+fp+'px Georgia,serif';
+  let total=0;
+  chars.forEach(o=>{ x.font=fontFor(o.run,fontPx); o.w=x.measureText(o.ch).width; total+=o.w; });
+  // shrink to fit one full turn minus a gap, so "Process ·" never runs into "READ"
+  let fp=fontPx;
+  const maxW=(2*Math.PI - gap)*r;
+  if(total>maxW){ const k=maxW/total; fp=fontPx*k; chars.forEach(o=>o.w*=k); total=maxW; }
+  // centre the caption in the remaining arc: the leftover space is split so the
+  // gap sits symmetrically just before the start point
+  let ang=startAngle + (2*Math.PI - (total/r))/2;
+  x.textAlign='center'; x.textBaseline='middle'; x.lineJoin='round';
   chars.forEach(o=>{
     const a=ang + (o.w/2)/r;
     x.save();
     x.translate(cx + r*Math.cos(a), cy + r*Math.sin(a));
     x.rotate(a + Math.PI/2);
-    x.font=fontFor(o.run); x.fillStyle=o.run.c;
-    x.fillText(o.ch, 0, 0);
+    x.font=fontFor(o.run,fp);
+    x.lineWidth=fp*0.17; x.strokeStyle='rgba(255,255,255,.9)'; x.strokeText(o.ch, 0, 0);   // white halo → crisp on the ring
+    x.fillStyle=o.run.c; x.fillText(o.ch, 0, 0);
     x.restore();
     ang += o.w/r;
   });
@@ -8693,10 +8711,10 @@ function drawRwdEmblem(x, cx, cy, size){
   x.translate(cx,cy); x.scale(s,s); x.translate(-320,-320);
   // outer ring + inner disc
   x.fillStyle='#b4a8ee'; x.beginPath(); x.arc(320,320,304,0,7); x.fill();
-  x.fillStyle='#f3f0fc'; x.beginPath(); x.arc(320,320,206,0,7); x.fill();
-  x.strokeStyle='rgba(255,255,255,.75)'; x.lineWidth=3; x.beginPath(); x.arc(320,320,206,0,7); x.stroke();
+  x.fillStyle='#ffffff'; x.beginPath(); x.arc(320,320,206,0,7); x.fill();
+  x.strokeStyle='rgba(122,47,208,.35)'; x.lineWidth=4; x.beginPath(); x.arc(320,320,206,0,7); x.stroke();
   // circular caption around the ring
-  drawArcTextRWD(x, RWD_CAP_RUNS, 320, 320, 254, Math.PI, 38);
+  drawArcTextRWD(x, RWD_CAP_RUNS, 320, 320, 254, Math.PI, 40);
   // dashed rotation ring + arrow head (the "and back again" iteration cue)
   x.save(); x.globalAlpha=0.35; x.strokeStyle='#6a5fd0'; x.lineWidth=2; if(x.setLineDash) x.setLineDash([2,10]);
   x.beginPath(); x.arc(320,320,184,0,7); x.stroke(); x.restore();
@@ -9009,7 +9027,7 @@ function drawCert(o){
   const corner=(cx,cy,sx,sy)=>{ x.strokeStyle=t.a; x.lineWidth=4; x.beginPath(); x.moveTo(cx,cy+sy*56); x.lineTo(cx,cy); x.lineTo(cx+sx*56,cy); x.stroke();
     x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(cx+sx*13,cy+sy*42); x.lineTo(cx+sx*13,cy+sy*13); x.lineTo(cx+sx*42,cy+sy*13); x.stroke(); };
   corner(72,72,1,1); corner(W-72,72,-1,1); corner(72,H-72,1,-1); corner(W-72,H-72,-1,-1);
-  drawCertBrand(x, 66, 60, 200);
+  drawCertBrand(x, 66, 60, 220);
   x.textAlign="center";
   { const _sch=(CONFIG.schoolName||'').trim(); if(_sch && !/^iCAN\s+English\s+Practice$/i.test(_sch)){ x.fillStyle=t.ink; x.font="600 22px 'Lexend',Georgia,sans-serif"; x.fillText(_sch.toUpperCase(), W/2, 122); } }
   x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(W/2-130,136); x.lineTo(W/2+130,136); x.stroke();
@@ -13185,7 +13203,7 @@ function drawEarnedCert(cert){
     x.strokeStyle=pal.gold; x.lineWidth=2; x.beginPath(); x.arc(cx,cy,12,0,7); x.stroke();
   });
   // iCAN Academy logo — top-left glyph only; the wordmark now leads the masthead
-  drawCertBrand(x, 56, 50, 214, false);
+  drawCertBrand(x, 52, 46, 236, false);
   // Masthead — iCAN Academy brand, RWD motto, then the school
   x.textAlign='center';
   x.fillStyle=pal.primary; x.font='800 38px Georgia'; x.fillText('iCAN Academy', W/2, 112);
@@ -16478,6 +16496,13 @@ function toggleWeekAcc(w){ if(WK_ACC.has(w)) WK_ACC.delete(w); else WK_ACC.add(w
 let WK_SKIP = new Set((()=>{ try{ return JSON.parse(Store.get('ican_wk_skip')||'[]'); }catch(e){ return []; } })());
 function wkSkipped(w,key){ return WK_SKIP.has(w+':'+key); }
 function toggleWeekSkip(w,key){ const k=w+':'+key; if(WK_SKIP.has(k)) WK_SKIP.delete(k); else WK_SKIP.add(k); try{ Store.set('ican_wk_skip', JSON.stringify([...WK_SKIP])); }catch(e){} paintWeekRail(); }
+/* A primary-course diagnostic checkpoint button: a student sees it locked until
+   the teacher opens that stage; teachers always see it live. Mirrors ylCkBtn. */
+function diagCkBtn(stage, label){
+  var locked = (typeof SESSION!=='undefined' && SESSION && SESSION.role==='student') && !gateOpen('diag:'+stage);
+  if(locked) return '<button disabled title="Locked — your teacher opens this later">'+label+' 🔒</button>';
+  return '<button onclick="go(\'diagTest\',\''+stage+'\')">'+label+'</button>';
+}
 function weekRailHTML(){
   const teach = weekIsTeacher();
   const openCount = TERM_WEEKS.filter(x=>weekOpen(x.w)).length;
@@ -16499,9 +16524,8 @@ function weekRailHTML(){
     };
     let inner = '';
 
-    /* Week 1 carries the diagnostic — surface it first */
-    if(x.diag) inner += `<h5>\ud83e\udded Start here</h5>` +
-      li('\ud83e\udded','Start-of-year diagnostic','35 min \u00b7 baseline & grouping','diagnostic',null,'#15183A','diag');
+    /* The diagnostic checkpoints (Start / Middle / Final) now sit in the
+       Checkpoints box at the top of the plan, mirroring the Foundational hub. */
 
     /* READ \u2014 Days 1\u20132 (the input) */
     let rd = x.read.map(id=>{ const l=wkRead(id); return li('\ud83d\udcd6', l?l.name:id, l?l.strap:'', 'rcLesson', id, '#E0403F','r'); }).join('');
@@ -16548,6 +16572,10 @@ function weekRailHTML(){
   <div class="wk-head">
     <b>The term</b>
     <small>${openCount} of ${TERM_WEEKS.length} open</small>
+  </div>
+  <div class="ylw-diag">
+    <div class="ylw-diag-h">\ud83c\udfaf Checkpoints</div>
+    <div class="ylw-diag-btns">${diagCkBtn('pre','Start')}${diagCkBtn('mid','Middle')}${diagCkBtn('post','Final')}</div>
   </div>
   ${rows}
   <p class="wk-foot">${teach
@@ -16677,7 +16705,7 @@ function openWeek(w){
   if(x.diag){
     const done = diagPlacements().length;
     body += sec('\ud83e\udded Start here \u2014 the diagnostic',
-      `<button class="wk-item" ${on?`onclick="wkGo('diagnostic','')"`:'disabled'} style="border-color:#15183A">
+      `<button class="wk-item" ${on?`onclick="wkGo('diagTest','pre')"`:'disabled'} style="border-color:#15183A">
         <span class="wk-dot" style="background:#15183A"></span>
         <span class="wk-item-b"><b>Start-of-year diagnostic</b><small>Vocabulary \u00b7 grammar \u00b7 two reading passages \u00b7 one written response \u00b7 35 min</small></span>
         <span class="wk-item-k">FIRST</span></button>
