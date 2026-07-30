@@ -807,6 +807,21 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .tw-done-note{font:800 .95rem/1.3 Georgia,serif; color:#0f766e; padding:14px 32px; background:#e8f7f2; border-top:1px solid #bfe8dc}
 .tw-hint{padding:8px 32px 0; font-size:.82rem; color:var(--muted)}
 
+/* ---- teacher dashboard collapsible boxes ---- */
+.tbox{border:1.5px solid var(--line);border-radius:14px;margin-bottom:14px;background:#fff;overflow:hidden}
+.tbox>summary{cursor:pointer;list-style:none;padding:15px 20px;font-family:Fraunces,Georgia,serif;font-size:1.12rem;font-weight:700;color:var(--ink);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tbox>summary::-webkit-details-marker{display:none}
+.tbox>summary::after{content:'\25B8';color:var(--muted);font-size:1rem;transition:transform .15s}
+.tbox[open]>summary::after{transform:rotate(90deg)}
+.tbox>summary:hover{background:var(--mist)}
+.tbox[open]>summary{border-bottom:1px solid var(--line)}
+.tbox-body{padding:16px 20px}
+.tbox-body>.card{border:none!important;box-shadow:none!important;padding:0!important;margin:0!important;background:transparent!important}
+.tbox-body>.card>h3:first-child{display:none}
+.tbox-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:760px){ .tbox-grid{grid-template-columns:1fr} }
+.attn-row.sel{background:#eef6ff}
+
 
 /* ---------- STEM·STREAM Lab ---------- */
 .stem-hero{background:linear-gradient(135deg,#0e1130 0%,#1c2260 55%,#3b2a7a 100%);border-radius:20px;padding:30px 28px;color:#fff;display:grid;gap:22px;box-shadow:var(--shadow);margin-top:8px}
@@ -4478,15 +4493,6 @@ const ROUTES = {
         <div class="hub-copyright">© 2026 Emad Ali Mohamed · <i>Developer of iCAN my English File — a multiliteracy hub for EFL learners</i></div>
       </div>
 
-      <button class="stem-dash-banner" onclick="go('stemlab')">
-        <span class="sdb-ic">🚀</span>
-        <span style="flex:1">
-          <h3>STEM·STREAM Lab <span style="font-size:.75rem;background:#ffd23f;color:#15183A;border-radius:50px;padding:2px 10px;vertical-align:middle;font-family:Lexend">NEW</span></h3>
-          <p>Six real-world science missions — clean water, solar ovens, Mars landers — where you <b>read</b> the research, <b>write</b> the reasoning and <b>design</b> the solution. Plus the Spark Lab: 12 experiments just for wonder.</p>
-        </span>
-        <span class="sdb-go">Launch →</span>
-      </button>
-
       <div class="grid c2" style="margin-top:22px">
         <button onclick="go('toolsRes')" style="text-align:left;border:1.5px dashed var(--line);background:#fff;border-radius:14px;padding:14px 18px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px">
           <span><b style="color:var(--ink)">🧰 Tools &amp; Resources</b><br><span style="font-size:.85rem;color:var(--muted)">AI creation tools and trusted online literacy resources (incl. IELTS).</span></span>
@@ -5755,30 +5761,29 @@ const ROUTES = {
         </div>
       </div>
 
-      <div class="card" style="margin-bottom:22px">
-        <h3 style="font-size:1.2rem">🔎 Verify a certificate</h3>
-        <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Enter the <b>serial number</b> printed at the bottom of any iCAN certificate to check it is genuine. A real serial is accepted (and its details shown); a mistyped or forged one is rejected. Optionally add the student's full name to confirm the certificate belongs to them. Works on any device — no internet needed.</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <input id="verSerial" placeholder="ICAN-XXXX-XXXX-XXXX-XXXX" style="flex:2;min-width:240px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:.9rem;letter-spacing:.5px;text-transform:uppercase" onkeydown="if(event.key==='Enter')runCertVerify()">
-          <input id="verName" placeholder="Student full name (optional)" style="flex:1;min-width:180px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:.9rem" onkeydown="if(event.key==='Enter')runCertVerify()">
-          <button class="btn sm" onclick="runCertVerify()">Verify</button>
-        </div>
-        <div id="verResult" style="margin-top:12px"></div>
-      </div>
-
-      <div class="card" style="margin-bottom:22px">
-        <h3 style="font-size:1.2rem">Online sync ${online?'<span class="pill done">connected</span>':''}</h3>
-        <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Paste your Google Sheet web-app URL to save every student's results online (so any device — student or teacher — keeps the same record). Leave empty to stay local. Setup steps are in the project notes.</p>
+      <div class="card" style="margin-bottom:16px">
+        <h3 style="font-size:1.2rem">🔗 Online sync ${online?'<span class="pill done">connected</span>':''}</h3>
+        <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Paste your Google Sheet web-app URL to save every student's results online (so any device — student or teacher — keeps the same record). Leave empty to stay local.</p>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <input id="cloudInput" value="${esc(cloudUrl())}" placeholder="https://script.google.com/macros/s/..../exec" style="flex:1;min-width:240px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:.85rem">
           <button class="btn sm" onclick="saveCloudUrl()">Save &amp; connect</button>
           ${online?'<button class="btn sm ghost" onclick="testCloud()">Test</button>':''}
         </div>
         <div id="cloudMsg" style="font-size:.82rem;color:var(--muted);margin-top:8px"></div>
+        <details style="margin-top:10px"><summary style="cursor:pointer;font-size:.85rem;color:var(--teal-dk);font-weight:700">▸ How to set up online sync (Google Sheet)</summary>
+          <ol style="font-size:.85rem;color:var(--slate);margin:8px 0 0;padding-left:20px;line-height:1.65">
+            <li>Create a new <b>Google Sheet</b> — this is where results are stored.</li>
+            <li>In the Sheet, open <b>Extensions → Apps Script</b>.</li>
+            <li>Paste the iCAN sync script (in the project notes), then <b>Deploy → New deployment → Web app</b>. Set <i>Execute as: Me</i> and <i>Who has access: Anyone</i>.</li>
+            <li>Copy the <b>Web app URL</b> (it ends in <span class="kbd">/exec</span>), paste it in the box above, and press <b>Save &amp; connect</b>.</li>
+            <li>Press <b>Test</b> to confirm. Every attempt now syncs to your Sheet, and any device using this app reads the same record.</li>
+          </ol>
+          <p style="font-size:.8rem;color:var(--muted);margin:8px 0 0">No URL yet? Leave it empty — the app keeps a full local record on this device.</p>
+        </details>
       </div>
 
-      <div class="card" style="margin-bottom:22px">
-        <h3 style="font-size:1.2rem">Access codes</h3>
+      <div class="card" style="margin-bottom:20px">
+        <h3 style="font-size:1.2rem">🔑 Access codes</h3>
         <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Codes students use to sign in. Add a code for a new class or group.</p>
         <div id="codeList" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0"></div>
         <div style="display:flex;gap:8px">
@@ -5787,8 +5792,25 @@ const ROUTES = {
         </div>
       </div>
 
-      <div class="card" style="margin-bottom:22px">
-        <h3 style="font-size:1.2rem">Class results &amp; intervention</h3>
+      <p style="font-size:.82rem;color:var(--muted);margin:0 0 10px">Everything below is tucked into boxes — <b>click a box to open it</b>.</p>
+      <div id="teacherControls"></div>
+
+      <details class="tbox">
+        <summary>🔎 Verify a certificate</summary>
+        <div class="tbox-body">
+          <p style="color:var(--muted);font-size:.9rem;margin:0 0 10px">Enter the <b>serial number</b> printed at the bottom of any iCAN certificate to check it is genuine. Optionally add the student's full name to confirm the certificate belongs to them. Works on any device — no internet needed.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input id="verSerial" placeholder="ICAN-XXXX-XXXX-XXXX-XXXX" style="flex:2;min-width:240px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:.9rem;letter-spacing:.5px;text-transform:uppercase" onkeydown="if(event.key==='Enter')runCertVerify()">
+            <input id="verName" placeholder="Student full name (optional)" style="flex:1;min-width:180px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:.9rem" onkeydown="if(event.key==='Enter')runCertVerify()">
+            <button class="btn sm" onclick="runCertVerify()">Verify</button>
+          </div>
+          <div id="verResult" style="margin-top:12px"></div>
+        </div>
+      </details>
+
+      <details class="tbox">
+        <summary>👥 Class results &amp; intervention${students.length?` · ${students.length}`:''}</summary>
+        <div class="tbox-body">
         ${students.length? `<div style="overflow:auto"><table class="data">
           <tr><th>Student</th><th>Class</th><th>Attempts</th><th>Avg score</th><th>Skills covered</th><th>Progress</th><th>Feedback / intervention</th></tr>
           ${students.map(s=>`<tr>
@@ -5800,15 +5822,26 @@ const ROUTES = {
           </tr>`).join('')}
         </table></div>`
         : `<p class="note">No results yet. Ask a student to complete a quiz, or use code <span class="kbd">DEMO</span> to generate sample data.</p>`}
-      </div>
+        </div>
+      </details>
 
-      <div class="card">
-        <h3 style="font-size:1.2rem">All attempts (raw log)</h3>
-        ${res.length? `<div style="overflow:auto"><table class="data">
-          <tr><th>Date</th><th>Student</th><th>Class</th><th>Skill</th><th>Activity</th><th>Score</th><th>%</th><th>Written / detail</th></tr>
-          ${res.slice().reverse().map(r=>`<tr><td style="font-size:.78rem">${new Date(r.date).toLocaleString()}</td><td>${esc(r.name)}</td><td>${esc(r.class)}</td><td>${r.skill}</td><td style="font-size:.8rem">${esc(r.activity)}</td><td>${r.score==null?'—':r.score+'/'+r.max}</td><td>${r.percent==null?'—':r.percent+'%'}</td><td style="font-size:.76rem;max-width:260px">${esc(r.detail||'')}</td></tr>`).join('')}
+      <details class="tbox">
+        <summary>📋 All attempts (raw log)${res.length?` · ${res.length}`:''}</summary>
+        <div class="tbox-body">
+        ${res.length? `
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center">
+          <button class="btn sm ghost" onclick="teacherSelectAllAttempts(true)">Select all</button>
+          <button class="btn sm ghost" onclick="teacherSelectAllAttempts(false)">Clear selection</button>
+          <button class="btn sm" style="background:var(--coral);color:#fff;border-color:var(--coral)" onclick="teacherDeleteAttempts('selected')">🗑 Delete selected</button>
+          <button class="btn sm" style="background:var(--coral-dk);color:#fff;border-color:var(--coral-dk)" onclick="teacherDeleteAttempts('all')">Clear ALL</button>
+          <span style="font-size:.8rem;color:var(--muted)">Remove test entries here to start with an empty log.</span>
+        </div>
+        <div style="overflow:auto"><table class="data">
+          <tr><th><input type="checkbox" onclick="teacherSelectAllAttempts(this.checked)" title="Select all"></th><th>Date</th><th>Student</th><th>Class</th><th>Skill</th><th>Activity</th><th>Score</th><th>%</th><th>Written / detail</th></tr>
+          ${res.slice().reverse().map(r=>`<tr class="attn-row"><td><input type="checkbox" class="attn-chk" value="${r.date}" onclick="this.closest('tr').classList.toggle('sel',this.checked)"></td><td style="font-size:.78rem">${new Date(r.date).toLocaleString()}</td><td>${esc(r.name)}</td><td>${esc(r.class)}</td><td>${r.skill}</td><td style="font-size:.8rem">${esc(r.activity)}</td><td>${r.score==null?'—':r.score+'/'+r.max}</td><td>${r.percent==null?'—':r.percent+'%'}</td><td style="font-size:.76rem;max-width:260px">${esc(r.detail||'')}</td></tr>`).join('')}
         </table></div>` : `<p class="note">No attempts logged yet.</p>`}
-      </div>
+        </div>
+      </details>
     </div>`;
     renderCodeList();
     if(online){ refreshCloud(()=>{ if(CURRENT_SCREEN==='teacher') { qaMergeCloudReplies(); const r2=allResults(); if(r2.length!==res.length){ ROUTES.teacher(); } else { if(typeof paintQA==='function') paintQA(); if(typeof paintAadJournals==='function') paintAadJournals(); } } }); }
@@ -8006,6 +8039,36 @@ function pdfDoc(titleLeft){
 }
 function nameLine(p){ p.text("Name: __________________     Class: __________     Date: __________",{size:10,gap:8}); }
 
+/* Parent/guardian consent form for STEM·STREAM missions — printable PDF.
+   Emphasises that the mission is collaborative, shared-roles teamwork. */
+function stemConsentForm(title){
+  if(!pdfReady()) return noPdf();
+  const p=pdfDoc("Parent/Guardian consent");
+  p.h1("Parent / Guardian Consent Form");
+  p.text("iCAN Academy \u00b7 STEM\u00b7STREAM Mission"+(title?" \u00b7 "+title:""),{size:9,color:120,gap:8});
+  p.h2("About this mission — collaborative teamwork");
+  p.text("STEM\u00b7STREAM missions are collaborative projects carried out in a team with shared roles (for example: researcher, writer, designer / builder, and presenter). Every member contributes a fair share, and roles rotate between missions so everyone practises every part. Students read real research, write their scientific reasoning in their own words, then design, build and present an artefact and upload it for the teacher.",{gap:6});
+  p.h2("Student & team");
+  p.text("Student name: __________________________________     Class: ______________",{size:10,gap:6});
+  p.text("Team / project name: ________________________________________________________",{size:10,gap:8});
+  p.text("Team members and their shared roles:",{size:10,style:"bold"});
+  p.lines(4);
+  p.h2("What I am consenting to (parent / guardian)");
+  p.text("\u2022 I understand my child will take part in a collaborative, team-based STEM\u00b7STREAM mission, including hands-on making and a short class presentation.",{gap:2});
+  p.text("\u2022 I give permission for my child to take part.",{gap:2});
+  p.text("\u2022 I understand a photo or file of the team's artefact may be uploaded to the class record for the teacher.",{gap:6});
+  p.h2("Integrity & responsible use (student + parent / guardian)");
+  p.text("\u2022 The work we submit is our team's own work \u2014 not copied or plagiarised.",{gap:2});
+  p.text("\u2022 Any AI or online help has been acknowledged to the teacher.",{gap:2});
+  p.text("\u2022 We declare no conflict of interest.",{gap:6});
+  p.h2("Signatures");
+  p.text("Parent / Guardian name: __________________________________________________",{size:10,gap:10});
+  p.text("Parent / Guardian signature: ______________________________     Date: ____________",{size:10,gap:10});
+  p.text("Student signature: ______________________________     Date: ____________",{size:10,gap:12});
+  p.text("Please print and complete this form, then hand it to your teacher together with your mission submission (your uploaded artefact and your written work). A mission certificate is awarded only when the work is complete and this consent has been given.",{size:9,color:90});
+  p.save("iCAN-STEM-consent-form"+(title?"-"+String(title).replace(/[^a-z0-9]+/gi,'-').slice(0,30):"")+".pdf");
+}
+
 function wsReadingCourse(id){ if(!pdfReady())return noPdf(); const f=findRc(id); const l=f.lesson; const p=pdfDoc("Reading worksheet");
   p.h1(l.title); p.text(`Skill ${f.skill.n}: ${f.skill.name} · ${f.level.label} · ${rcGenreOf(l)} · ${l.register||''} · ${l.type||'Text'} · ${l.field||''}`,{size:9,color:120,gap:6}); nameLine(p);
   p.h2("Read the text"); p.text(htmlToText(l.text),{gap:6});
@@ -9043,7 +9106,7 @@ function drawCert(o){
   const corner=(cx,cy,sx,sy)=>{ x.strokeStyle=t.a; x.lineWidth=4; x.beginPath(); x.moveTo(cx,cy+sy*56); x.lineTo(cx,cy); x.lineTo(cx+sx*56,cy); x.stroke();
     x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(cx+sx*13,cy+sy*42); x.lineTo(cx+sx*13,cy+sy*13); x.lineTo(cx+sx*42,cy+sy*13); x.stroke(); };
   corner(72,72,1,1); corner(W-72,72,-1,1); corner(72,H-72,1,-1); corner(W-72,H-72,-1,-1);
-  if(!drawCertLogo(x, 52, 50, 220, 260)) drawCertBrand(x, 66, 60, 220);
+  if(!drawCertLogo(x, 70, 80, 205, 235)) drawCertBrand(x, 66, 60, 220);
   x.textAlign="center";
   { const _sch=(CONFIG.schoolName||'').trim(); if(_sch && !/^iCAN\s+English\s+Practice$/i.test(_sch)){ x.fillStyle=t.ink; x.font="600 22px 'Lexend',Georgia,sans-serif"; x.fillText(_sch.toUpperCase(), W/2, 122); } }
   x.strokeStyle=t.b; x.lineWidth=2; x.beginPath(); x.moveTo(W/2-130,136); x.lineTo(W/2+130,136); x.stroke();
@@ -13221,7 +13284,7 @@ function drawEarnedCert(cert){
     x.strokeStyle=pal.gold; x.lineWidth=2; x.beginPath(); x.arc(cx,cy,12,0,7); x.stroke();
   });
   // iCAN Academy logo — top-left glyph only; the wordmark now leads the masthead
-  if(!drawCertLogo(x, 40, 40, 250, 300)) drawCertBrand(x, 52, 46, 236, false);
+  if(!drawCertLogo(x, 68, 82, 238, 272)) drawCertBrand(x, 52, 46, 236, false);
   // Masthead — iCAN Academy brand, RWD motto, then the school
   x.textAlign='center';
   x.fillStyle=pal.primary; x.font='800 38px Georgia'; x.fillText('iCAN Academy', W/2, 112);
@@ -13528,21 +13591,49 @@ function injectTeacherBar(){
   const bar=document.createElement('div'); bar.className='mini-bar';
   bar.innerHTML = `
     <span class="mb-title">Teacher tools</span>
-    <button class="chip" onclick="document.getElementById('gateCard').scrollIntoView({behavior:'smooth'})">🔓 Activation</button>
-    <button class="chip" onclick="document.getElementById('initCard').scrollIntoView({behavior:'smooth'})">🚀 Initiatives</button>
+    <button class="chip" onclick="revealTBox('gateCard')">🔓 Activation</button>
+    <button class="chip" onclick="revealTBox('initCard')">🚀 Initiatives</button>
     <button class="chip" onclick="go('articleaday')">📰 Article-A-Day</button>
     <button class="chip" onclick="go('stemlab')">🚀 STEM·STREAM Lab</button>
     <button class="chip" onclick="openBarPanel('taids')">🧑‍🏫 Lesson plans & AI aids</button>
     <button class="chip" onclick="openBarPanel('kp')">🧠 RWD grounding (KP)</button>
-    <button class="chip" onclick="document.getElementById('consentCard').scrollIntoView({behavior:'smooth'})">📝 Consent log</button>
-    <button class="chip" onclick="document.getElementById('qaCard').scrollIntoView({behavior:'smooth'})">💬 Q&A inbox</button>`;
+    <button class="chip" onclick="revealTBox('consentCard')">📝 Consent log</button>
+    <button class="chip" onclick="revealTBox('qaCard')">💬 Q&A inbox</button>`;
   const st=wrap.querySelector('.section-title');
   (st||wrap.firstElementChild).insertAdjacentElement('afterend', bar);
 }
+function tboxWrap(title, inner){ return `<details class="tbox"><summary>${title}</summary><div class="tbox-body">${inner}</div></details>`; }
+function revealTBox(id){ const el=document.getElementById(id); if(!el) return; const d=el.closest('details'); if(d) d.open=true; try{ el.scrollIntoView({behavior:'smooth',block:'start'}); }catch(e){} }
+function teacherSelectAllAttempts(on){ document.querySelectorAll('.attn-chk').forEach(function(x){ x.checked=!!on; const tr=x.closest('tr'); if(tr) tr.classList.toggle('sel',!!on); }); }
+function teacherDeleteAttempts(mode){
+  let arr=getResults();
+  if(mode==='all'){
+    if(!arr.length){ alert('The log is already empty.'); return; }
+    if(!confirm('Delete ALL '+arr.length+' locally-stored attempt(s)? This cannot be undone.')) return;
+    Store.set('ican_results',[]);
+  } else {
+    const keys=Array.from(document.querySelectorAll('.attn-chk:checked')).map(x=>String(x.value));
+    if(!keys.length){ alert('Tick at least one row first (or use “Clear ALL”).'); return; }
+    if(!confirm('Delete '+keys.length+' selected attempt(s)? This cannot be undone.')) return;
+    const ks=new Set(keys);
+    arr=arr.filter(r=>!ks.has(String(r.date)));
+    Store.set('ican_results',arr);
+  }
+  if(typeof cloudUrl==='function' && cloudUrl()){ try{ alert('Local records updated. Note: entries already synced to your Google Sheet are not removed there — delete them in the Sheet if needed.'); }catch(e){} }
+  if(typeof ROUTES!=='undefined' && ROUTES.teacher) ROUTES.teacher();
+}
 function injectTeacherCards(){
   const wrap=document.querySelector('#app .wrap'); if(!wrap) return;
-  const anchor=wrap.querySelector('.card'); if(!anchor) return;
-  anchor.insertAdjacentHTML('afterend', weekCardTeacherHTML()+gateCardHTML()+aadWeekCardTeacherHTML()+aadJournalsCardHTML()+initCardHTML()+consentCardHTML()+qaCardHTML());
+  const slot=document.getElementById('teacherControls');
+  const html = tboxWrap('🗓️ Week activation', weekCardTeacherHTML())
+    + tboxWrap('🔓 Activity &amp; item activation', gateCardHTML())
+    + tboxWrap('📰 Article-A-Day weeks', aadWeekCardTeacherHTML())
+    + tboxWrap('📓 Article-A-Day journals', aadJournalsCardHTML())
+    + tboxWrap('🚀 Initiatives', initCardHTML())
+    + tboxWrap('📝 Consent log', consentCardHTML())
+    + tboxWrap('💬 Q&amp;A inbox', qaCardHTML());
+  if(slot){ slot.innerHTML = html; }
+  else { const anchor=wrap.querySelector('.card'); if(!anchor) return; anchor.insertAdjacentHTML('afterend', html); }
   paintWeekCard(); paintPlaceCard(); paintGates(); paintAadWeeks(); paintAadJournals(); paintInits(); paintConsents(); paintQA();
 }
 
@@ -18067,7 +18158,7 @@ ROUTES.stemlab = function(){
     </div>
 
     <h2 class="stem-h2" style="margin-top:26px">🛰️ The Missions</h2>
-    <p style="color:var(--muted);max-width:760px;margin:4px 0 8px">Five core missions, the <b>🇦🇪 UAE Series</b> — three ADNOC-style national challenges — and the open-ended <b>💡 Invention Studio</b>, where <i>you</i> choose who to help and what to invent. Every mission: scenario → guided plan → build → scored RWD Challenge → certificate.</p>
+    <p style="color:var(--muted);max-width:760px;margin:4px 0 8px">Choose the mission you would like to work on — or start the one your teacher has assigned. The <b>🇦🇪 UAE Series</b> offers ADNOC-style national challenges, and the open-ended <b>💡 Invention Studio</b> lets <i>you</i> choose who to help and what to invent. Every mission: scenario → guided plan → build → scored RWD Challenge → certificate.</p>
     <div class="grid c2" style="margin-top:8px">
       ${allStemUnits().map((u,i)=>`
         <div class="item-row stem-unit-card" style="flex-direction:column;align-items:flex-start">
@@ -18092,7 +18183,7 @@ ROUTES.stemUnit = function(id){
   const u=findStemUnit(id); if(!u){ go('stemlab'); return; }
   try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
   const c=u.challenge;
-  const wDraft=stemGetDraft(id+'_w'), dDraft=stemGetDraft(id+'_d');
+  const wDraft=stemGetDraft(id+'_w'), dDraft=stemGetDraft(id+'_d'), nDraft=stemGetDraft(id+'_n');
   app().innerHTML = `
   <div class="wrap screen">
     <button class="back" onclick="go('stemlab')">← STEM·STREAM</button>
@@ -18100,6 +18191,12 @@ ROUTES.stemUnit = function(id){
     <span class="genre-tag">${u.theme}</span>
     <h1 style="font-size:2rem">${u.title}</h1>
     <div class="stem-brief"><b>📡 Mission briefing.</b> ${u.scenario}<br><b>🎯 Your mission:</b> ${u.mission}<br><span style="opacity:.85;font-size:.86rem"><i>Driving question: ${u.drivingQ}</i></span></div>
+
+    <div class="card" style="margin-top:12px;border-left:5px solid var(--amber);background:#fff8f0">
+      <h3 style="font-size:1.02rem;margin:0 0 6px">🤝 Teamwork &amp; consent — do this first</h3>
+      <p style="font-size:.9rem;color:var(--slate);margin:0 0 8px">This mission is <b>collaborative teamwork</b>: your team shares the roles (<b>researcher · writer · designer/builder · presenter</b>) and everyone contributes a fair share. Before you start, <b>download the parent/guardian consent form</b>, fill it in, and hand it to your teacher <b>together with your mission submission</b> (your uploaded artefact and written work). Your certificate is awarded only once the work is complete and consent has been given.</p>
+      <button class="btn sm" onclick="stemConsentForm('${escq(u.title)}')">📄 Download parent/guardian consent form (PDF)</button>
+    </div>
     <div class="stem-plan-strip">
       <span class="stem-phase">1 · Briefing</span><span>→</span>
       <span class="stem-phase">2 · Research 📖</span><span>→</span>
@@ -18130,6 +18227,11 @@ ROUTES.stemUnit = function(id){
 
     <div class="stem-ch-head"><h2>🏆 The RWD Challenge</h2><p>Three stages, all scored: <b>Read 25%</b> · <b>Write 35%</b> · <b>Design 40%</b>. Complete all three, then submit for your mission certificate.</p></div>
 
+    <div class="field" style="margin-top:14px;background:#f0fdfa;border:1px solid #99e6d8;border-radius:12px;padding:12px 14px">
+      <label style="font-weight:700">🏷️ Project / invention name <span style="color:var(--coral-dk)">*required</span></label>
+      <input id="stemName_${u.id}" value="${esc(nDraft||'')}" oninput="stemSaveDraft('${u.id}_n','stemName_${u.id}')" placeholder="e.g., The Sunrise Water Filter" style="width:100%;margin-top:6px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px">
+    </div>
+
     <div class="stem-stage" style="--sc:#12a585">
       <h3><span class="stem-stage-n">1</span> 📖 READ — ${c.read.title}</h3>
       <div class="stem-read-tools">
@@ -18152,7 +18254,8 @@ ROUTES.stemUnit = function(id){
       <p style="font-size:.92rem;color:var(--slate)">${c.write.prompt}</p>
       <div style="background:var(--mist);border-radius:10px;padding:10px 14px;margin:8px 0"><b style="font-size:.8rem;color:var(--ink)">Sentence starters</b><ul style="margin:4px 0 0;padding-left:18px;font-size:.86rem;color:var(--slate)">${c.write.starters.map(s=>`<li style="margin:3px 0">${s}</li>`).join('')}</ul></div>
       <div class="field"><label>Your writing (saves automatically)</label>
-        <textarea id="stemW_${u.id}" style="min-height:150px" oninput="stemSaveDraft('${u.id}_w','stemW_${u.id}');stemUpdateWc('${u.id}')" placeholder="Write here…">${esc(wDraft)}</textarea></div>
+        <textarea id="stemW_${u.id}" style="min-height:150px" oninput="stemSaveDraft('${u.id}_w','stemW_${u.id}');stemUpdateWc('${u.id}')" onpaste="return stemNoPaste(event,'stemPasteW_${u.id}')" placeholder="Write here…">${esc(wDraft)}</textarea>
+        <div id="stemPasteW_${u.id}" class="hidden" style="color:var(--coral-dk);font-size:.82rem;font-weight:700;margin-top:4px">⚠️ Pasting is switched off for this task — please type your own reasoning.</div></div>
       <div id="stemWc_${u.id}" style="font-size:.85rem;color:var(--muted)"></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
         <button class="btn sm ghost" id="stemModelBtn_${u.id}" onclick="stemShowModel('${u.id}')">🔒 Model answer — post yours first</button>
@@ -18166,7 +18269,8 @@ ROUTES.stemUnit = function(id){
       <h3><span class="stem-stage-n">3</span> 🎨 DESIGN — make it and show it</h3>
       <p style="font-size:.92rem;color:var(--slate)"><b>The brief.</b> ${c.design.brief}</p>
       <div class="field" style="margin-top:10px"><label>Describe your design / artefact (what you made, how it works, what you would improve)</label>
-        <textarea id="stemD_${u.id}" style="min-height:110px" oninput="stemSaveDraft('${u.id}_d','stemD_${u.id}')" placeholder="Describe what your team made…">${esc(dDraft)}</textarea></div>
+        <textarea id="stemD_${u.id}" style="min-height:110px" oninput="stemSaveDraft('${u.id}_d','stemD_${u.id}')" onpaste="return stemNoPaste(event,'stemPasteD_${u.id}')" placeholder="Describe what your team made…">${esc(dDraft)}</textarea>
+        <div id="stemPasteD_${u.id}" class="hidden" style="color:var(--coral-dk);font-size:.82rem;font-weight:700;margin-top:4px">⚠️ Pasting is switched off for this task — please type your own description.</div></div>
       <div class="card" style="margin:10px 0;background:#fbf9ff;border-color:#d9ccf5">
         <p style="margin:0 0 8px;font-size:.9rem"><b>🧩 Work in the official template.</b> Download the PowerPoint, insert your diagram or photo, your hypothesis, results and pitch — then upload the finished file below.</p>
         <button class="btn sm" onclick="stemPptTemplate()">📥 Download artefact template (PowerPoint)</button>
@@ -18176,55 +18280,105 @@ ROUTES.stemUnit = function(id){
       <ul class="rubric" id="stemCrit_${u.id}">${c.design.criteria.map((cr,i)=>`<li><input type="checkbox" id="scr_${u.id}_${i}"><label for="scr_${u.id}_${i}">${cr}</label></li>`).join('')}</ul>
     </div>
 
+    <div class="card" style="margin-top:14px;background:#fff8f0;border-color:#f0c48a">
+      <b style="font-size:.9rem;color:var(--ink)">Before you submit — team &amp; integrity (all required):</b>
+      <ul class="rubric" id="stemDecl_${u.id}" style="margin-top:6px">
+        <li><input type="checkbox" id="sdecl_${u.id}_collab"><label for="sdecl_${u.id}_collab">🤝 <b>Collaboration:</b> our team worked together and every member contributed a fair share.</label></li>
+        <li><input type="checkbox" id="sdecl_${u.id}_integrity"><label for="sdecl_${u.id}_integrity">🛡️ <b>Integrity &amp; AI use:</b> this invention is our own work — not copied or plagiarised. Any AI or online help is acknowledged, and we declare no conflict of interest.</label></li>
+        <li><input type="checkbox" id="sdecl_${u.id}_consent"><label for="sdecl_${u.id}_consent">✅ <b>Consent:</b> our parent/guardian consent form has been completed and given to the teacher.</label></li>
+      </ul>
+    </div>
+
     <button class="btn teal" style="width:100%;margin-top:14px" onclick="stemSubmit('${u.id}')">Submit the RWD Challenge →</button>
     <div id="stemResult" style="margin-top:14px"></div>
   </div>`;
   stemUpdateWc(u.id);
 };
 
+/* Short warning beep (Web Audio) used when a learner tries to paste. */
+function stemBeep(){
+  try{
+    const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return;
+    const ctx=stemBeep._ctx||(stemBeep._ctx=new AC());
+    const o=ctx.createOscillator(), g=ctx.createGain();
+    o.type='square'; o.frequency.value=300; g.gain.value=0.07;
+    o.connect(g); g.connect(ctx.destination);
+    o.start(); o.stop(ctx.currentTime+0.18);
+  }catch(e){}
+}
+/* Block pasting into scientist-reasoning / design tasks: beep + red warning. */
+function stemNoPaste(e, warnId){
+  try{ e.preventDefault(); }catch(_){}
+  stemBeep();
+  const w=document.getElementById(warnId);
+  if(w){ w.classList.remove('hidden'); clearTimeout(stemNoPaste._t); stemNoPaste._t=setTimeout(function(){ try{ w.classList.add('hidden'); }catch(_){} }, 4500); }
+  return false;
+}
 function stemSubmit(id){
   const u=findStemUnit(id); if(!u) return; const c=u.challenge;
-  /* READ — auto-mark MCQs */
-  let rScore=0; const rMax=c.read.questions.length; let unanswered=0;
+  const box=document.getElementById('stemResult');
+  /* ---- gather everything first (no marking/reveal until the gate passes) ---- */
+  const nameEl=document.getElementById('stemName_'+id); const projName=(nameEl?nameEl.value:'').trim();
+  const rMax=c.read.questions.length; let unanswered=0;
   c.read.questions.forEach((q,i)=>{
     const qEl=document.querySelector(`.q[data-si="${i}"]`); if(!qEl) return;
-    const sel=qEl.querySelector(`input[name="sq${i}"]:checked`); const chosen=sel? +sel.value : -1;
-    if(chosen===-1) unanswered++;
-    const fb=qEl.querySelector('.feedback'); fb.classList.remove('hidden');
-    qEl.querySelectorAll('.opt').forEach((o,j)=>{ o.classList.remove('correct','wrong'); if(j===q.answer) o.classList.add('correct'); if(j===chosen&&chosen!==q.answer) o.classList.add('wrong'); });
-    if(chosen===q.answer){ rScore++; fb.classList.add('good'); fb.textContent='✓ Correct. '+q.exp; }
-    else { fb.classList.remove('good'); fb.textContent=(chosen===-1?'No answer chosen. ':'Not quite. ')+q.exp; }
+    const sel=qEl.querySelector(`input[name="sq${i}"]:checked`); if(!sel) unanswered++;
   });
-  /* WRITE — words + reasoning language */
   const wEl=document.getElementById('stemW_'+id); const wTxt=wEl?wEl.value:''; const words=stemWordCount(wTxt);
   const hasReason=/\b(because|so |therefore|as a result|which means|this shows)\b/i.test(wTxt);
-  let wScore = words>=80 ? (hasReason?4:3) : words>=40 ? 2 : words>0 ? 1 : 0; const wMax=4;
-  /* DESIGN — description + self-checked criteria */
   const dEl=document.getElementById('stemD_'+id); const dTxt=dEl?dEl.value:''; const dWords=stemWordCount(dTxt);
   const crits=Array.from(document.querySelectorAll('#stemCrit_'+id+' input')).filter(x=>x.checked).length;
   const critMax=c.design.criteria.length;
-  let dScore=(dWords>=30?2:dWords>0?1:0)+Math.round(crits/critMax*4); const dMax=6;
   const fEl=document.getElementById('stemF_'+id); const fname=(fEl&&fEl.files&&fEl.files[0])?fEl.files[0].name:'';
-  /* Weighted total: R 25 · W 35 · D 40 */
+  const chk=k=>{ const el=document.getElementById('sdecl_'+id+'_'+k); return !!(el&&el.checked); };
+  const WMIN=40, DMIN=15;
+  /* ---- required-to-submit gate ---- */
+  const missing=[];
+  if(!projName) missing.push('Give your project / invention a <b>name</b>.');
+  if(!fname) missing.push('<b>Upload</b> your finished template or a photo of your artefact.');
+  if(dWords<DMIN) missing.push(`<b>Describe your design / artefact</b> — at least ${DMIN} words (you have ${dWords}).`);
+  if(unanswered>0) missing.push(`Answer <b>all reading questions</b> — ${unanswered} still unanswered.`);
+  if(words<WMIN) missing.push(`Write your scientific reasoning to the minimum length — <b>${WMIN}+ words</b> (you have ${words}).`);
+  if(crits<1) missing.push('Complete the <b>design self-check</b> — tick what your design honestly achieves.');
+  if(!chk('collab')) missing.push('Tick the <b>Collaboration</b> declaration.');
+  if(!chk('integrity')) missing.push('Tick the <b>Integrity &amp; AI-use</b> declaration (own work · no plagiarism · no conflict of interest).');
+  if(!chk('consent')) missing.push('Tick the <b>parent/guardian consent</b> declaration.');
+  if(missing.length){
+    box.innerHTML=`<div class="card" style="border:2px solid var(--coral);background:#fff5f5">
+      <h3 style="margin-top:0;color:var(--coral-dk)">⛔ Not submitted — please complete the missing parts</h3>
+      <p style="color:var(--coral-dk);font-weight:700;margin:0 0 6px">No certificate is awarded until every item below is done:</p>
+      <ul style="margin:0;padding-left:20px;color:var(--coral-dk);font-weight:600">${missing.map(m=>`<li style="margin:5px 0">${m}</li>`).join('')}</ul>
+    </div>`;
+    try{ box.scrollIntoView({behavior:'smooth'}); }catch(e){}
+    return;
+  }
+  /* ---- all requirements met: mark MCQs, score, save, offer certificate ---- */
+  let rScore=0;
+  c.read.questions.forEach((q,i)=>{
+    const qEl=document.querySelector(`.q[data-si="${i}"]`); if(!qEl) return;
+    const sel=qEl.querySelector(`input[name="sq${i}"]:checked`); const chosen=sel? +sel.value : -1;
+    const fb=qEl.querySelector('.feedback'); fb.classList.remove('hidden');
+    qEl.querySelectorAll('.opt').forEach((o,j)=>{ o.classList.remove('correct','wrong'); if(j===q.answer) o.classList.add('correct'); if(j===chosen&&chosen!==q.answer) o.classList.add('wrong'); });
+    if(chosen===q.answer){ rScore++; fb.classList.add('good'); fb.textContent='✓ Correct. '+q.exp; }
+    else { fb.classList.remove('good'); fb.textContent='Not quite. '+q.exp; }
+  });
+  let wScore = words>=80 ? (hasReason?4:3) : words>=40 ? 2 : 1; const wMax=4;
+  let dScore=(dWords>=30?2:1)+Math.round(crits/critMax*4); const dMax=6;
   const pct=Math.round((rScore/rMax)*25 + (wScore/wMax)*35 + (dScore/dMax)*40);
   const tier = pct>=85?'Outstanding':pct>=65?'At-level':'Emerging';
-  const box=document.getElementById('stemResult');
   const bar=(lab,val,max,col)=>`<div style="margin:6px 0"><div style="display:flex;justify-content:space-between;font-size:.82rem"><b>${lab}</b><span>${val}/${max}</span></div><div style="background:var(--mist);border-radius:6px;height:9px"><div style="width:${Math.round(val/max*100)}%;background:${col};height:9px;border-radius:6px"></div></div></div>`;
   box.innerHTML=`<div class="card" style="border-color:var(--teal)">
     <h3 style="margin-top:0">Mission result: ${pct}% · <span style="color:${pct>=85?'var(--teal-dk)':pct>=65?'#b8860b':'var(--coral-dk)'}">${tier}</span></h3>
+    <p style="font-size:.85rem;color:var(--slate);margin:0 0 8px">Project: <b>${esc(projName)}</b> · 📎 <b>${esc(fname)}</b></p>
     ${bar('📖 Read (25%)',rScore,rMax,'#12a585')}
     ${bar('✍️ Write (35%)',wScore,wMax,'#e6464b')}
     ${bar('🎨 Design (40%)',dScore,dMax,'#8B5CF6')}
     <p style="font-size:.88rem;color:var(--slate);margin:10px 0 0">
-      ${unanswered?`⚠️ ${unanswered} reading question(s) unanswered. `:''}
-      ${words<80?`✍️ Your writing is ${words} words — reach 80+ for full credit. `:''}
-      ${words>=80&&!hasReason?`✍️ Strong length — now add reasoning language (<i>because, therefore, as a result</i>). `:''}
-      ${dWords<30?`🎨 Describe your artefact in a little more detail (30+ words). `:''}
-      ${crits<critMax?`🎨 ${critMax-crits} self-check criteria still unticked — can you improve the design to earn them honestly? `:''}
-      ${pct>=85?'🏅 Outstanding mission — a certificate has been added to My Certificates.':'A certificate for this attempt has been saved — you can improve and resubmit any time.'}
-      ${fname?`<br>📎 Attached: <b>${esc(fname)}</b>`:''}
+      ${words>=80&&!hasReason?`✍️ Strong length — add reasoning language (<i>because, therefore, as a result</i>) next time for full marks. `:''}
+      ${crits<critMax?`🎨 ${critMax-crits} self-check criteria still unticked — improve the design to earn them honestly. `:''}
+      A certificate for this attempt has been saved — you can improve and resubmit any time.
     </p><div style="margin-top:12px"><button class="btn sm" onclick="stemCert('${id}',${pct})">🏅 Download mission certificate (PDF)</button></div></div>`;
-  try{ saveResult({date:Date.now(), name:SESSION?SESSION.name:'', class:SESSION?SESSION.class:'', skill:'STEM·STREAM', activity:u.title, score:pct, max:100, percent:pct, words:words, detail:`R ${rScore}/${rMax} · W ${wScore}/${wMax} · D ${dScore}/${dMax}${fname?' · file: '+fname:''}`}); }catch(e){}
+  try{ saveResult({date:Date.now(), name:SESSION?SESSION.name:'', class:SESSION?SESSION.class:'', skill:'STEM·STREAM', activity:u.title+' — '+projName, score:pct, max:100, percent:pct, words:words, detail:`Project: ${projName} · R ${rScore}/${rMax} · W ${wScore}/${wMax} · D ${dScore}/${dMax} · file: ${fname} · declarations: collaboration+integrity+consent`}); }catch(e){}
   try{ box.scrollIntoView({behavior:'smooth'}); }catch(e){}
 }
 
@@ -20510,20 +20664,32 @@ function ylStemFinish(id){
   const res=document.getElementById('ylsResult_'+id);
   const plan=(d.plan||'').trim();
   const planWords=plan? plan.split(/\s+/).filter(Boolean).length : 0;
-  if(planWords<15){
-    if(res) res.innerHTML='<div class="feedback" style="border-color:#F5A301">\u270D\uFE0F Almost there! Write a few more sentences in <b>4 \u00b7 Make it</b> \u2014 tell me what you made and who it helps (about 15 words).</div>';
+  const f=getDeck('ylstem_'+id).file;
+  const ans=d.ans||{};
+  const unanswered=u.quiz.filter((q,i)=> ans[i]==null).length;
+  const own=document.getElementById('ylsdecl_'+id+'_own');
+  const home=document.getElementById('ylsdecl_'+id+'_home');
+  /* ---- required-to-finish gate: no certificate until every part is done ---- */
+  const missing=[];
+  if(!f) missing.push('\uD83D\uDCE4 <b>Upload</b> your slides, a photo of your model, or your drawing.');
+  if(planWords<15) missing.push('\u270D\uFE0F Write a little more in <b>Tell me about your invention</b> (about 15 words).');
+  if(unanswered>0) missing.push('\uD83D\uDCD6 Answer <b>all the check questions</b> \u2014 '+unanswered+' still need an answer.');
+  if(!(own&&own.checked)) missing.push('\uD83E\uDD1D Tick: this is our <b>own work</b> and we worked together.');
+  if(!(home&&home.checked)) missing.push('\uD83C\uDFE0 Tick: a grown-up at home <b>knows about my project</b>.');
+  if(missing.length){
+    if(res) res.innerHTML='<div class="feedback" style="border:2px solid var(--coral);background:#fff5f5;color:var(--coral-dk)"><b>\u26D4 Not finished yet \u2014 no certificate until these are done:</b><ul style="margin:6px 0 0;padding-left:20px">'+missing.map(m=>'<li style="margin:4px 0">'+m+'</li>').join('')+'</ul></div>';
+    try{ res.scrollIntoView({behavior:'smooth'}); }catch(e){}
     return;
   }
   const chal=Array.from(document.querySelectorAll('.ylsChal_'+id));
   const chalDone=chal.filter(c=>c.checked).length;
   let correct=0; u.quiz.forEach((q,i)=>{ if(d.ans[i]===q.answer) correct++; });
   const score=Math.round((correct/u.quiz.length)*60)+40;
-  const f=getDeck('ylstem_'+id).file;
   if(typeof SESSION!=='undefined' && SESSION && SESSION.role==='student'){
     try{
       saveResult({date:Date.now(), name:SESSION.name, class:SESSION.class, code:SESSION.code, id:SESSION.id,
         skill:'Foundational', activity:'STEM\u00b7STREAM \u2014 '+u.title,
-        detail:'Read \u2192 Check \u2192 Puzzle \u2192 How it happened \u2192 Connect \u2192 Make \u00b7 inventor: '+u.who+' \u00b7 '+correct+'/'+u.quiz.length+' check questions \u00b7 puzzle challenges solved: '+chalDone+'/'+chal.length+' \u00b7 made: '+u.make.title+(f?' \u00b7 file: '+f.name:''),
+        detail:'Read \u2192 Check \u2192 Puzzle \u2192 How it happened \u2192 Connect \u2192 Make \u00b7 inventor: '+u.who+' \u00b7 '+correct+'/'+u.quiz.length+' check questions \u00b7 puzzle challenges solved: '+chalDone+'/'+chal.length+' \u00b7 made: '+u.make.title+(f?' \u00b7 file: '+f.name:'')+' \u00b7 own-work+consent declared',
         words:planWords, score:score, max:100, percent:score});
     }catch(e){}
   }
@@ -20611,6 +20777,12 @@ ROUTES.ylStemUnit=function(id){
       <h1 style="margin:6px 0 2px;color:#fff;font-size:1.75rem">${u.title}</h1>
       <p style="margin:0 0 4px;font-weight:700;opacity:.95">The inventor: ${esc(u.who)}</p>
       <p style="margin:0;opacity:.95;max-width:720px"><i>${u.hook}</i></p>
+    </div>
+
+    <div class="card" style="margin-top:12px;border-left:5px solid var(--amber);background:#fff8f0">
+      <h3 style="font-size:1rem;margin:0 0 6px">🤝 Team up first!</h3>
+      <p style="font-size:.9rem;color:var(--slate);margin:0 0 8px">This is a <b>team mission</b> — share the jobs (<b>reader · writer · maker · presenter</b>) so everyone helps. Ask a grown-up to <b>fill in the consent form</b> and give it to your teacher together with your project.</p>
+      <button class="btn sm" onclick="stemConsentForm('${escq(u.title)}')">📄 Download parent/guardian consent form (PDF)</button>
     </div>
 
     <div class="card" style="margin-top:12px;background:linear-gradient(90deg,#fff6dc,#fdf0f6);border-color:#f0c48a">
@@ -20763,7 +20935,16 @@ ROUTES.ylStemUnit=function(id){
     <div class="card" style="margin-top:12px">
       <b style="font-size:.95rem">\u270D\uFE0F Tell me about your invention</b>
       <p style="margin:4px 0 8px;font-size:.86rem;color:var(--muted)">Starters: <i>My invention is called\u2026</i> \u00b7 <i>It helps\u2026</i> \u00b7 <i>It helps them by\u2026</i> \u00b7 <i>My first try\u2026 so I changed\u2026</i></p>
-      <textarea id="ylsPlan_${u.id}" class="yl-in" style="width:100%;min-height:110px" placeholder="What did you make? Who does it help? What did you change to make it better?" oninput="ylStemField('${u.id}','plan','ylsPlan_${u.id}')">${esc(d.plan||'')}</textarea>
+      <textarea id="ylsPlan_${u.id}" class="yl-in" style="width:100%;min-height:110px" placeholder="What did you make? Who does it help? What did you change to make it better?" oninput="ylStemField('${u.id}','plan','ylsPlan_${u.id}')" onpaste="return stemNoPaste(event,'ylsPasteW_${u.id}')">${esc(d.plan||'')}</textarea>
+      <div id="ylsPasteW_${u.id}" class="hidden" style="color:var(--coral-dk);font-size:.82rem;font-weight:700;margin-top:4px">⚠️ Pasting is switched off — please type it in your own words.</div>
+    </div>
+
+    <div class="card" style="margin-top:12px;background:#fff8f0;border-color:#f0c48a">
+      <b style="font-size:.92rem">Before you finish (please tick):</b>
+      <ul class="rubric" id="ylsDecl_${u.id}" style="margin-top:6px">
+        <li><input type="checkbox" id="ylsdecl_${u.id}_own"><label for="ylsdecl_${u.id}_own">🤝 We worked together and this is <b>our own work</b> — we did not copy it.</label></li>
+        <li><input type="checkbox" id="ylsdecl_${u.id}_home"><label for="ylsdecl_${u.id}_home">🏠 A grown-up at home <b>knows about my project</b> (consent given).</label></li>
+      </ul>
     </div>
 
     <div class="card" style="margin-top:12px;background:#f3edfe;border-color:#d9cffb">
