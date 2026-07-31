@@ -13638,12 +13638,11 @@ function injectHomeSidebar(){
 function injectTeacherBar(){
   const wrap=document.querySelector('#app .wrap'); if(!wrap) return;
   const bar=document.createElement('div'); bar.className='mini-bar';
+  const pubInits=(typeof getInits==='function'?getInits().filter(function(i){return i.published;}):[]);
   bar.innerHTML = '<div class="rail-head">⚡ <b>Quick moves</b></div>'
-    + '<button class="qm" onclick="openBarPanel(\'inits\')"><span class="qm-em">🚀</span><span>Initiatives</span>'+(pubInits.length?' <small class="qm-ct">('+pubInits.length+')</small>':'')+'<i class="qm-arr">❯</i></button>'
-    + '<button class="qm" onclick="go(\'vocab\')"><span class="qm-em">📚</span><span>Vocabulary Bank</span><i class="qm-arr">❯</i></button>'
+    + '<button class="qm" onclick="go(\'waspkTeacher\')"><span class="qm-em">🎤</span><span>Create Talkabout prompts</span><i class="qm-arr">❯</i></button>'
     + '<button class="qm" onclick="go(\'exams\')"><span class="qm-em">🎓</span><span>Exams &amp; Quizzes</span><i class="qm-arr">❯</i></button>'
-    + '<button class="qm" onclick="go(\'mycerts\')"><span class="qm-em">🏅</span><span>My Certificates</span><i class="qm-arr">❯</i></button>'
-    + '<button class="qm" onclick="goAchieveTrack()"><span class="qm-em">🏆</span><span>My Achievement Log</span><i class="qm-arr">❯</i></button>'
+    + '<button class="qm" onclick="openBarPanel(\'inits\')"><span class="qm-em">🚀</span><span>Initiatives</span>'+(pubInits.length?' <small class="qm-ct">('+pubInits.length+')</small>':'')+'<i class="qm-arr">❯</i></button>'
     + '<button class="qm" onclick="go(\'toolsRes\')"><span class="qm-em">🧰</span><span>Tools &amp; Resources</span><i class="qm-arr">❯</i></button>'
     + '<button class="qm" onclick="go(\'align\')"><span class="qm-em">🎯</span><span>Aligned Practice</span><i class="qm-arr">❯</i></button>';
   const st=wrap.querySelector('.section-title');
@@ -13937,19 +13936,14 @@ function injectStudentBar(){
   const lk=k=>gateOpen(k)?'':' <span class="mb-lock">🔒</span>';
   const pubInits=getInits().filter(i=>i.published);
   const bar=document.createElement('div'); bar.className='mini-bar student';
-  bar.innerHTML = `
-    <span class="mb-title">Quick moves</span>
-    <button class="chip" onclick="go('readingCourse')">📖 Reading Course${lk('readCourse')}</button>
-    <button class="chip" onclick="go('writingCourse')">✍️ Writing Course${lk('writeCourse')}</button>
-    <button class="chip" onclick="go('dstudio')">🎨 Design Studio${lk('design')}</button>
-    <button class="chip" onclick="go('stemlab')">🚀 STEM·STREAM Lab${lk('stem')}</button>
-    <button class="chip" onclick="go('exams')">🎓 Exams & Quizzes${lk('exams')}</button>
-    <button class="chip" onclick="go('articleaday')">📰 Article-A-Day${lk('aad')}</button>
-    <button class="chip" onclick="go('typing')">⌨️ Typing</button>
-    <button class="chip" onclick="go('vocab')">📚 Vocab Log${(function(){try{var n=myVocab().length;return n?' ('+n+')':'';}catch(e){return '';}})()}</button>
-    <button class="chip" onclick="go('mycerts')">🏅 My certificates</button>
-    <button class="chip" onclick="goAchieveTrack()" title="Jump to my achievements">🏆 Achieve Track</button>
-    <button class="chip${pubInits.length?' chip-hot':''}" onclick="openBarPanel('inits')">🚀 Initiatives${pubInits.length?' ('+pubInits.length+')':''}</button>`;
+  bar.innerHTML = '<div class="rail-head">⚡ <b>Quick moves</b></div>'
+    + '<button class="qm" onclick="openBarPanel(\'inits\')"><span class="qm-em">🚀</span><span>Initiatives</span>'+(pubInits.length?' <small class="qm-ct">('+pubInits.length+')</small>':'')+'<i class="qm-arr">❯</i></button>'
+    + '<button class="qm" onclick="go(\'vocab\')"><span class="qm-em">📚</span><span>Vocabulary Bank</span><i class="qm-arr">❯</i></button>'
+    + '<button class="qm" onclick="go(\'exams\')"><span class="qm-em">🎓</span><span>Exams &amp; Quizzes</span><i class="qm-arr">❯</i></button>'
+    + '<button class="qm" onclick="go(\'mycerts\')"><span class="qm-em">🏅</span><span>My Certificates</span><i class="qm-arr">❯</i></button>'
+    + '<button class="qm" onclick="goAchieveTrack()"><span class="qm-em">🏆</span><span>My Achievement Log</span><i class="qm-arr">❯</i></button>'
+    + '<button class="qm" onclick="go(\'toolsRes\')"><span class="qm-em">🧰</span><span>Tools &amp; Resources</span><i class="qm-arr">❯</i></button>'
+    + '<button class="qm" onclick="go(\'align\')"><span class="qm-em">🎯</span><span>Aligned Practice</span><i class="qm-arr">❯</i></button>';
   const row=document.querySelector('#app .wk-row');
   if(row){ row.appendChild(bar); } else { wrap.insertAdjacentElement('afterbegin', bar); }
 }
@@ -20974,6 +20968,60 @@ function ylWeekRailHTML(){
     + '<div class="rail-daily"><b>🔁 Every day:</b> spelling · typing · talkabout · writeabout · 🔊 read-to-me</div>'
     + '<p class="rail-foot">Tap a week to open it. Do a little each day — no rush!</p>';
 }
+/* ===== Foundational diagnostic checkpoints (Grades 5–8) — data ===== */
+const YL_DIAG = {
+  start: {
+    label:"Start of year",
+    when:"Do this in your first week",
+    passage:{ title:"The New Library",
+      text:"Maya opened the door of her new school library. Tall shelves stood in neat rows, and sunlight fell across a soft reading rug. A friendly librarian, Mr. Odeh, waved her over. Every reader finds a home here, he said warmly. Maya chose a book about deep-sea animals, sat by the window, and began to read. For the first time all week, she felt calm." },
+    mcq:[
+      { skill:"Reading", q:"Where does the story take place?", o:["In a school library","On a fishing boat","In a science lab","At a bus stop"], a:0 },
+      { skill:"Reading", q:"How does Maya feel by the end of the story?", o:["Angry","Calm","Bored","Afraid"], a:1 },
+      { skill:"Vocabulary", q:"In neat rows, the word neat most nearly means…", o:["messy","tidy","empty","heavy"], a:1 },
+      { skill:"Grammar", q:"Choose the correct sentence.", o:["She don't like loud rooms.","She doesn't likes loud rooms.","She doesn't like loud rooms.","She not like loud rooms."], a:2 },
+      { skill:"Grammar", q:"Which word is the verb in: Maya chose a book.", o:["Maya","chose","book","a"], a:1 },
+      { skill:"Language use", q:"Which greeting best fits a message to your teacher?", o:["Yo!","Hey you,","Dear Mr. Odeh,","sup"], a:2 }
+    ],
+    scenario:{ title:"A message to your teacher",
+      setup:"Your teacher wants to get to know you at the start of the year.",
+      prompts:["Introduce yourself in two or three sentences.","Describe one thing you like to read and say why.","Write one goal you have for English this year."] }
+  },
+  middle: {
+    label:"Mid-year",
+    when:"Do this in the middle of the year",
+    passage:{ title:"Why Bees Matter",
+      text:"Bees are small, but they do a big job. As they fly from flower to flower, they carry a fine dust called pollen. This helps plants make seeds and fruit. Without bees, many of the foods we love — apples, berries, and even chocolate — would be much harder to grow. That is why scientists ask everyone to plant flowers and protect these busy helpers." },
+    mcq:[
+      { skill:"Reading", q:"What job do bees do as they visit flowers?", o:["They carry pollen","They dig holes","They build nests in trees","They scare birds"], a:0 },
+      { skill:"Reading", q:"Why do scientists ask people to plant flowers?", o:["To make gardens look nice only","To give bees food and help them","To keep bees away","To grow more grass"], a:1 },
+      { skill:"Vocabulary", q:"A fine dust called pollen — here fine means…", o:["excellent","very small","expensive","healthy"], a:1 },
+      { skill:"Grammar", q:"Choose the correct plural: one bee, two ___.", o:["bees","bee's","beies","beez"], a:0 },
+      { skill:"Grammar", q:"Pick the sentence with correct punctuation.", o:["Bees are small but they work hard","Bees are small, but they work hard.","bees are small but they work hard.","Bees are small but, they work hard"], a:1 },
+      { skill:"Language use", q:"Which word shows a result? It rained, ___ the match was cancelled.", o:["but","so","or","although"], a:1 }
+    ],
+    scenario:{ title:"Save the Bees poster",
+      setup:"Your class is making posters to help bees.",
+      prompts:["Write one sentence explaining why bees are important.","Give two things people can do to help bees.","Write a short slogan for your poster."] }
+  },
+  final: {
+    label:"End of year",
+    when:"Do this near the end of the year",
+    passage:{ title:"The Great Book Swap",
+      text:"At the end of the year, Room 6 held a Book Swap. Every student brought one book they had finished and loved. They wrote a short note inside the cover for the next reader. Then they placed all the books on a long table and chose a new one to take home for the holidays. A good book is even better when it is shared, their teacher smiled." },
+    mcq:[
+      { skill:"Reading", q:"What did each student bring to the swap?", o:["A new pen","A book they had finished","A poster","A snack"], a:1 },
+      { skill:"Reading", q:"What did students write inside the cover?", o:["Their homework","A note to the next reader","A test answer","Their address"], a:1 },
+      { skill:"Vocabulary", q:"A book is even better when it is shared. Shared means…", o:["hidden","given to others too","thrown away","sold"], a:1 },
+      { skill:"Grammar", q:"Choose the past tense: Every student ___ one book.", o:["bring","brings","brought","bringing"], a:2 },
+      { skill:"Grammar", q:"Which is a complete sentence?", o:["Because the holidays.","Chose a new book.","They chose a new book.","Running to the table."], a:2 },
+      { skill:"Language use", q:"Which word best replaces good to sound stronger? It was a good story.", o:["nice","okay","gripping","fine"], a:2 }
+    ],
+    scenario:{ title:"Your book recommendation",
+      setup:"Recommend a book to next year's class.",
+      prompts:["Name a book you enjoyed and who wrote it (or make one up).","Write two sentences about why you liked it.","Finish this sentence: You should read this book because…"] }
+  }
+};
 function ylCkBtn(stage, label){
   var locked = (typeof SESSION!=='undefined' && SESSION && SESSION.role==='student') && !gateOpen('ylDiag:'+stage);
   if(locked) return '<button disabled title="Locked — your teacher opens this later">'+label+' 🔒</button>';
@@ -22738,6 +22786,23 @@ const WASPK_VID_CATS = (function(){
   const mk=(id,emoji,title,yt,caption)=>({id:id,kind:'video',emoji:emoji,title:title,youtube:yt,caption:caption});
   const cat=(o)=>{ o.prompts.forEach(p=>{ p.write=o._w; p.speak=o._s; }); return o; };
   return [
+    cat({ key:'v_more', name:'More Videos · Talkabout', emoji:'🎬', grad:['#5B8DEF','#8B5CF6'], scene:'imagine',
+      _w:'Watch the video once — twice if you need. In your own words, retell what happens or what the speaker says: the main idea, the turning point, and how it ends. Then write what you think about it: do you agree, and why? Connect it to your own life, your school, or the wider world.',
+      _s:'Retell the video in your own words, then give your opinion out loud: what is its main message, do you agree, and how does it connect to you or the people around you?',
+      prompts:[
+        mk('vmore1','🎓','I Sued the School System','https://www.youtube.com/watch?v=dqTTojTija8','A viral spoken-word film that puts the school system on trial.'),
+        mk('vmore2','🤖','Can We Auto-Correct Humanity?','https://www.youtube.com/watch?v=dRl8EIhrQjQ','Prince Ea asks what our screens are doing to how we connect.'),
+        mk('vmore3','🌱','The Greater the Challenge, the Greater the Growth','https://www.youtube.com/watch?v=IIDrG9J4I_8','A motivational short for the moment right before you give up.'),
+        mk('vmore4','🌍','Dear Future Generations: Sorry','https://www.youtube.com/watch?v=eRLJscAlk1M','An apology to the future about how we treat the planet.'),
+        mk('vmore5','🚪','I Quit — A Happier Life','https://www.youtube.com/watch?v=FonBwwDBxN4','What one person chose to give up in order to live more happily.'),
+        mk('vmore6','💼','Why Most People Hate Their Jobs','https://www.youtube.com/watch?v=lKkmf4BmP8M','A hard-truth look at work, meaning and money.'),
+        mk('vmore7','🧑‍💼','Boss vs Leader','https://www.youtube.com/watch?v=LrVNTZ6ORm8','An employee teaches the boss the difference between a boss and a leader.'),
+        mk('vmore8','🗣️','Don’t Let Anyone Decide Your Future','https://www.youtube.com/watch?v=HjnKRGNvTGI','A stuttering student proves a harsh teacher wrong.'),
+        mk('vmore9','🚛','The Garbage Truck Story','https://www.youtube.com/watch?v=XxLyR78qz5Q','An angry passenger learns why some people are like garbage trucks.'),
+        mk('vmore10','🎯','Student vs Teacher — The Future Is Now','https://www.youtube.com/watch?v=H4xH8sw0Eh8','A student asks for the support they need to chase a dream.'),
+        mk('vmore11','🥋','Karate Master Teaches a Disabled Boy','https://www.youtube.com/watch?v=WvUrhe01z8w','A boy’s biggest weakness becomes his biggest strength.'),
+        mk('vmore12','🧑‍🏫','With a Piece of Chalk','https://www.youtube.com/watch?v=Z8cHNkuIc24','A JuBaFilms short on bullying, a hard home life, and a teacher who sees.')
+      ]}),
     cat({ key:'v_belief', name:'Belief in Self · Shorts', emoji:'💪', grad:['#3a9d8a','#2c6e63'], scene:'imagine',
       _w:'Watch the short once. Then retell what happens — the beginning, the turning point, and the ending. What obstacle did the character face, and what helped them keep going?',
       _s:'Tell the story of this short in your own words, then say what it made you feel — and one time you kept going when something was hard.',
@@ -23330,7 +23395,9 @@ ROUTES.waspkCats = function(){
     if(!cats.length) return '';
     const total = cats.reduce((n,c)=>n+c.prompts.length,0);
     const multi = cats.length>1;
-    const body = cats.map(c=>{
+    const body = (t.kind==='video')
+      ? `<div class="wa-grid wa-grid-sm">${cats.reduce((a,c)=>a.concat(c.prompts.map(p=>`<div class="wa-tile" onclick="go('waspkDo','${p.id}')">${waspkTileVisual(waspkVO({p,c}))}${waspkStatusBadge(p.id,true)}</div>`)),[]).join('')}</div>`
+      : cats.map(c=>{
       if(t.kind==='debate' || t.kind==='puzzle'){
         const bars = c.prompts.map(p=>{
           const col = WASPK_BAR_PALETTE[barI++ % WASPK_BAR_PALETTE.length];
