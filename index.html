@@ -23478,6 +23478,10 @@ function waspkRealCard(sc, col){
   const inf=sc.inf.map(l=>waspkDiLine(sc,l)).join('');
   const fml=sc.fml.map(l=>waspkDiLine(sc,l)).join('');
   const drop=`<select class="di-drop" onchange="waspkSaySel(this)"><option value="">🔊 Hear a handy expression…</option>${sc.useful.map(u=>`<option>${esc(u)}</option>`).join('')}</select>`;
+  const _ytQ = encodeURIComponent('English conversation role play — ' + (sc.title||'') + ' — useful phrases & vocabulary');
+  const _ytUrl = 'https://www.youtube.com/results?search_query=' + _ytQ;
+  const ytBtn = '<a class="rl-yt" href="'+_ytUrl+'" target="_blank" rel="noopener" title="Watch a short video for this situation" aria-label="Watch a short video: '+esc(sc.title)+'" style="display:inline-flex;align-items:center;justify-content:center;padding:3px 6px;background:#fff;border:1.5px solid #E4B62C;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.15);line-height:0;cursor:pointer">'
+    +'<svg viewBox="0 0 68 48" width="52" height="37" aria-hidden="true"><rect x="1" y="1" width="66" height="46" rx="12" fill="#E4B62C" stroke="#c99700" stroke-width="1.5"/><path d="M27 14 L27 34 L46 24 Z" fill="#fff"/></svg></a>';
   return `<div class="rl-card" style="--bar:${col}">
     <div class="rl-head"><span class="rl-ic">${sc.emoji}</span><h3>${esc(sc.title)}</h3></div>
     <p class="rl-line"><b>You:</b> ${esc(sc.role)}</p>
@@ -23496,7 +23500,7 @@ function waspkRealCard(sc, col){
       <p class="di-hint di-fml-h" hidden><b>Written:</b> full forms, complete sentences, polite modals (could, would).</p>
     </div>
     ${drop}
-    <button type="button" class="rl-go" onclick="go('waspkDo','${sc.id}')">🎤 Practise &amp; record →</button>
+    <div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap">${ytBtn}<button type="button" class="rl-go" style="margin-top:0" onclick="go('waspkDo','${sc.id}')">🎤 Practise &amp; record →</button></div>
   </div>`;
 }
 ROUTES.waspkReal = function(){
@@ -23698,11 +23702,13 @@ function waspkPromptBody(p, mode){
 /* --- WINDOW 1: Write About This (10-min countdown) --- */
 function waspkStepWrite(){
   const vo=WASPK_CUR.vo, p=WASPK_CUR.prompt;
-  const back = WASPK_CUR.custom ? `go('waspkCreate')` : `go('waspkCats')`;
+  const isReal = (typeof WASPK_REAL!=='undefined') && WASPK_REAL.some(function(s){ return s.id===WASPK_CUR.promptId; });
+  const back = WASPK_CUR.custom ? `go('waspkCreate')` : (isReal ? `go('waspkReal')` : `go('waspkCats')`);
+  const backLabel = isReal ? 'Real-life situations' : 'Prompts';
   const saved = !!WASPK_CUR.saved;
   app().innerHTML=`
   <div class="wrap screen">
-    <button class="back" onclick="${back}">← Prompts</button>
+    <button class="back" onclick="${back}">← ${backLabel}</button>
     ${waspkProgress(1)}
     <div class="wa-win">
       ${waspkVisual(vo,true)}
