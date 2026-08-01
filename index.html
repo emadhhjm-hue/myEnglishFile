@@ -15956,6 +15956,12 @@ function aadSubmitArticle(auto){
   if(!_aadCurrent) return;
   const id=_aadCurrent.art.id;
   const i1=(val('aad_idea1')||'').trim(), i2=(val('aad_idea2')||'').trim();
+  if(!auto && (!i1 || !i2)){
+    aadIntegrityWarn('Please add <b>both</b> ideas under \u201cAdd two ideas to your own knowledge\u201d before you submit \u2014 write two things this article added to what you know.');
+    const _f = !i1 ? document.getElementById('aad_idea1') : document.getElementById('aad_idea2');
+    if(_f){ try{ _f.focus(); }catch(e){} }
+    return;
+  }
   const filled=[i1,i2].filter(Boolean);
   const pct = filled.length===2?100 : filled.length===1?50 : 0;
 
