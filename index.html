@@ -1596,10 +1596,11 @@ const Store = {
 };
 function getResults(){ return Store.get("ican_results")||[]; }
 function getCodes(){ const stored=Store.get("ican_codes")||[]; return Array.from(new Set([...(CONFIG.classCodes||[]), ...stored])); }
+const CERT_PASS = 60;   /* a certificate is only awarded when the student actually passes (>= this %) */
 function saveResult(r){
   const a=getResults(); a.push(r); Store.set("ican_results",a); cloudSave(r);
   try{
-    if(SESSION && SESSION.role==='student' && !r.noCert && typeof r.max==='number' && r.max>0 && typeof r.percent==='number'){
+    if(SESSION && SESSION.role==='student' && !r.noCert && typeof r.max==='number' && r.max>0 && typeof r.percent==='number' && r.percent>=CERT_PASS){
       mintCert({skill:r.skill, activity:r.activity, score:r.score, max:r.max, percent:r.percent, detail:r.detail, ideas:r.ideas, words:r.words});
     }
   }catch(e){}
@@ -4213,11 +4214,8 @@ function rcSpellBee(id){
 }
 function rcTypeThis(id){
   const f=(typeof findRc==='function')?findRc(id):null; if(!f||!f.lesson){ return; }
-  const tmp=document.createElement('div'); tmp.innerHTML=(f.lesson.text||'');
-  const text=(tmp.textContent||tmp.innerText||'').replace(/\s+/g,' ').trim();
-  if(!text){ alert('This text has no readable content to type.'); return; }
-  if(typeof renderTypingScreen!=='function'){ return; }
-  renderTypingScreen({ id:'rctype_'+id, title:(f.lesson.title||'Reading text'), genre:'Reading Course', level:'read \u0026 type', text:text }, null, 0);
+  if(typeof aadTypePractice==='function'){ aadTypePractice(f.lesson.text||'', f.lesson.title||'Reading text'); }
+  else { alert('Typing practice is unavailable right now.'); }
 }
 function findSkill(id){ return RSKILLS.find(x=>x.id===id) || null; }
 function rcStrandSkills(k){ return RSKILLS.filter(sk=>sk.strand===k); }
@@ -6880,19 +6878,19 @@ function rdZoomText(targetId){
 }
 /* Jump the learner straight to "My Achievements Track" (loading the page first
    when they are somewhere else). */
-function goAchieveTrack(){
-  const find=()=>Array.from(document.querySelectorAll('#app h1, #app h2, #app h3'))
-                 .find(h=>/My Achievements Track/i.test(h.textContent||''));
-  const hit=find();
-  if(hit){ try{ hit.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){ hit.scrollIntoView(); } return; }
-  try{ go('dashboard'); }catch(e){}
-  let tries=0;
-  const t=setInterval(()=>{
-    const h=find();
-    if(h){ clearInterval(t); try{ h.scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){ h.scrollIntoView(); } }
-    else if(++tries>12){ clearInterval(t); }
-  },120);
-}
+function goAchieveTrack(){ try{ go('myachieve'); }catch(e){} }
+ROUTES.myachieve = function(){
+  try{ if(typeof waspkStopRec==='function') waspkStopRec(); }catch(e){}
+  const body = (typeof myResultsTable==='function') ? myResultsTable() : '<p class="note">No log available yet.</p>';
+  app().innerHTML = ''
+    + '<div class="wrap screen">'
+    +   '<button class="back" onclick="go(\'dashboard\')">\u2190 Back</button>'
+    +   '<h1 style="font-size:2rem">🏆 My Achievement Log</h1>'
+    +   '<p style="color:var(--muted);max-width:680px">Every activity you complete is saved here \u2014 with your score, a downloadable answer sheet, and any teacher feedback. Your printable awards live in <a onclick="go(\'mycerts\')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">🏅 My Certificates</a>.</p>'
+    +   body
+    + '</div>';
+  try{ window.scrollTo(0,0); }catch(e){}
+};
 function toggleA11y(){ document.getElementById('a11yPanel').classList.toggle('hidden'); }
 function toggleClassBody(cls,btn){ document.body.classList.toggle(cls); const b=document.getElementById(btn); if(b)b.classList.toggle('on'); }
 let HL=false;
@@ -7500,6 +7498,8 @@ function rcDone(){ return (Store.get("ican_rc_done")||{})[sid()] || []; }
 function markRcDone(id){ const all=Store.get("ican_rc_done")||{}; const arr=all[sid()]||[]; if(!arr.includes(id)){ arr.push(id); all[sid()]=arr; Store.set("ican_rc_done",all); } }
 function gradeRc(id){
   const f=findRc(id); const l=f.lesson;
+  let _un=0; RC_STATE.mcqs.forEach(function(q,i){ if(!document.querySelector('#rcMcq .q[data-i="'+i+'"] input[name="rmc'+i+'"]:checked')) _un++; });
+  if(_un>0){ const _rr=document.getElementById('rcResult'); if(_rr){ _rr.innerHTML=quizAnswerFirstHTML(_un); try{_rr.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){} } return; }
   let correct=0;
   RC_STATE.mcqs.forEach((q,i)=>{
     const qEl=document.querySelector(`#rcMcq .q[data-i="${i}"]`); const fb=qEl.querySelector('.feedback');
@@ -7554,13 +7554,17 @@ function saveRc(id){
   let correct=0; l.mcqs.forEach((q,i)=>{ const sel=document.querySelector(`#rcMcq .q[data-i="${i}"] input:checked`); if(sel&&+sel.value===q.answer)correct++; });
   const mpct=Math.round(correct/l.mcqs.length*100);
   const selfGot=Object.values(RC_STATE.selfMarks).reduce((a,b)=>a+b,0), selfMax=l.selfcheck.length*2;
-  markRcDone(id);
+  const passed = mpct >= CERT_PASS;
+  if(passed) markRcDone(id);
   if(SESSION&&SESSION.role==="student"){
     saveResult({date:Date.now(), name:SESSION.name, class:SESSION.class, code:SESSION.code, id:SESSION.id,
       skill:"Reading Course", activity:`${l.title} (${f.level.label})`, score:correct, max:l.mcqs.length, percent:mpct,
       detail:`${f.skill.name} · MCQ ${correct}/${l.mcqs.length}; self-assessed ${selfGot}/${selfMax}`});
   }
-  document.getElementById('rcResult').insertAdjacentHTML('beforeend', `<p class="note" style="margin-top:10px">Saved ✓ — your score and self-assessment are recorded. Now build your 4-slide deck from this text.</p>`);
+  const rcMsg = passed
+    ? 'Saved \u2713 \u2014 lesson complete. Your score is recorded and your certificate is now in \ud83c\udfc5 My Certificates. Next, build your 4-slide deck from this text.'
+    : 'Saved \u2713 \u2014 your attempt is recorded, but you need at least '+CERT_PASS+'% on the comprehension questions to complete this lesson and earn a certificate. Review the answers above, then reopen the lesson to try again.';
+  document.getElementById('rcResult').insertAdjacentHTML('beforeend', '<p class="note" style="margin-top:10px">'+rcMsg+'</p>');
 }
 
 /* =========================================================================
@@ -9551,7 +9555,7 @@ function renderTypingScreen(t, work, partIndex){
        <div class="ty-focus" id="tyFocus"></div>
        <div class="ty-typerow">
          <div class="ty-keywrap"><div class="ty-key" id="tyKey">·</div><span class="ty-keylab">Type this</span></div>
-         <textarea id="tyInput" class="type-input" rows="3" oninput="typingInput()" placeholder="Click here and start typing…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+         <textarea id="tyInput" class="type-input" rows="3" oninput="typingInput()" placeholder="Click here and start typing…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" onpaste="return typeNoPaste(event)" ondrop="return typeNoPaste(event)"></textarea>
        </div>
        <div style="margin-top:10px"><button class="btn ghost sm" onclick="${restart}">↻ Restart</button></div>
      </div>
@@ -16018,6 +16022,13 @@ function aadSubmitArticle(auto){
    word was wrong). A count-up timer runs from the first keystroke, and the
    text auto-scrolls to keep the current word in view. */
 let _aadType = null;
+function flashTypeWarn(msg){
+  let t=document.getElementById('typeWarnToast');
+  if(!t){ t=document.createElement('div'); t.id='typeWarnToast'; t.style.cssText='position:fixed;left:50%;top:18px;transform:translateX(-50%);z-index:99999;background:#B4231F;color:#fff;font-weight:700;padding:10px 16px;border-radius:10px;box-shadow:0 8px 26px rgba(0,0,0,.28);font-size:.92rem;max-width:90vw;text-align:center;opacity:0;transition:opacity .18s;pointer-events:none'; document.body.appendChild(t); }
+  t.textContent='\u26a0\ufe0f '+msg; t.style.opacity='1';
+  clearTimeout(t._to); t._to=setTimeout(function(){ t.style.opacity='0'; }, 2400);
+}
+function typeNoPaste(e){ try{ e.preventDefault(); }catch(_){} flashTypeWarn('Please type it yourself \u2014 copy \u0026 paste is turned off for typing practice.'); return false; }
 
 function aadTypePlainText(html){
   // Reuse the shared HTML→text helper, then normalise fancy punctuation so the
@@ -16028,21 +16039,22 @@ function aadTypePlainText(html){
   return t.replace(/\s+/g,' ').trim();
 }
 
-function aadTypePractice(){
+function aadTypePractice(srcHtml, ttlArg){
   const cur = _aadCurrent;
-  const text = cur && cur.art ? aadTypePlainText(cur.art.text) : '';
+  const hasSrc = (typeof srcHtml==='string' && srcHtml.trim().length>0);
+  const text = hasSrc ? aadTypePlainText(srcHtml) : (cur && cur.art ? aadTypePlainText(cur.art.text) : '');
   const words = text.split(' ').filter(Boolean);
-  if(!words.length){ alert('There is no text to type for this article.'); return; }
+  if(!words.length){ alert('There is no text to type here.'); return; }
   _aadType = { words, idx:0, wrong:0, typedChars:0, correctChars:0, startTs:0, timer:null, done:false };
 
   let m = document.getElementById('twOverlay');
   if(!m){ m=document.createElement('div'); m.id='twOverlay'; m.className='tw-overlay'; document.body.appendChild(m); }
-  const title = cur && cur.art ? cur.art.title : 'Article';
+  const title = hasSrc ? (ttlArg||'Reading text') : (cur && cur.art ? cur.art.title : 'Article');
   const wordSpans = words.map((w,i)=>'<span class="tw-w'+(i===0?' cur':'')+'" id="tw'+i+'">'+esc(w)+'</span>').join(' ');
   m.innerHTML =
     '<div class="tw-box" role="dialog" aria-label="Typing practice">'+
       '<div class="tw-head">'+
-        '<h3>⌨️ Type this article — '+esc(title)+'</h3>'+
+        '<h3>⌨️ Type this — '+esc(title)+'</h3>'+
         '<div class="tw-stat">⏱ <span id="twTimer">0:00</span></div>'+
         '<div class="tw-stat"><b id="twProg">0</b>/'+words.length+' words</div>'+
         '<div class="tw-stat"><span id="twAcc">100</span>% acc</div>'+
@@ -16052,7 +16064,7 @@ function aadTypePractice(){
       '<div class="tw-text" id="twText">'+wordSpans+'</div>'+
       '<div class="tw-done-note" id="twDone" style="display:none"></div>'+
       '<div class="tw-foot">'+
-        '<input class="tw-input" id="twInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Start typing here…" oninput="aadTypeInput(event)" onkeydown="aadTypeKey(event)">'+
+        '<input class="tw-input" id="twInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Start typing here…" oninput="aadTypeInput(event)" onkeydown="aadTypeKey(event)" onpaste="return typeNoPaste(event)" ondrop="return typeNoPaste(event)">'+
         '<button class="btn ghost sm" onclick="aadTypeRestart()">↺ Restart</button>'+
         '<button class="btn ghost sm" onclick="closeAadType()">Close</button>'+
       '</div>'+
@@ -20119,6 +20131,18 @@ function ylPrint(title,inner){
   '<p class="meta" style="margin-top:24px">© iCAN Academy — Read it. Write it. Design it.</p><button onclick="window.print()">🖨️ Print / Save as PDF</button></body></html>');
   w.document.close();
 }
+function quizAnswerFirstHTML(miss){ return '<div class="feedback" style="background:#fdecec;border:1.5px solid #E6464B;color:#B4231F;font-weight:700;padding:11px 15px;border-radius:10px">\u26a0\ufe0f Please answer all the questions first'+(miss?' \u2014 '+miss+' still to go':'')+'. Then tap \u201cCheck my answers\u201d.</div>'; }
+function ylUnanswered(rootId, ext){
+  const root=document.getElementById(rootId); if(!root) return 0;
+  let miss=0;
+  root.querySelectorAll('.q[data-a]').forEach(function(q){
+    if(q.classList.contains('ylgap')){ const inp=q.querySelector('input.yl-in'); if(!inp || !(inp.value||'').trim()) miss++; }
+    else { if(!q.querySelector('input:checked')) miss++; }
+  });
+  root.querySelectorAll('.q[data-tf]').forEach(function(q){ if(!q.querySelector('input:checked')) miss++; });
+  if(ext){ const sa=document.getElementById('ylShort'); if(!sa || !(sa.value||'').trim()) miss++; }
+  return miss;
+}
 function ylMcqHTML(pref,items){ return items.map((m,i)=>'<div class="q" data-a="'+m.a+'"><b>'+(i+1)+'. '+m.q+'</b>'+m.o.map((o,j)=>'<label class="opt"><input type="radio" name="'+pref+i+'" value="'+j+'"><span>'+o+'</span></label>').join('')+'<div class="feedback hidden"></div></div>').join(''); }
 function ylGapHTML(pref,items){ return items.map((g,i)=>'<div class="q ylgap" data-a="'+esc(g.a.join('|'))+'"><b>'+g.s.replace('___','<input class="yl-in" id="'+pref+i+'" autocomplete="off">')+'</b><div class="feedback hidden"></div></div>').join(''); }
 let YL_SHEET=[];
@@ -21451,6 +21475,11 @@ function ylCReadBee(id){
   YL_BEE={r:{title:x.title},list:list.slice(0,8),i:0,attempt:1,score:0,timer:null,left:20}; ylBeeRender();
 }
 function ylReaderDict(){ const w=prompt('Look up a word on vocabulary.com:'); if(w&&w.trim()) window.open('https://www.vocabulary.com/dictionary/'+encodeURIComponent(w.trim()),'_blank','noopener'); }
+function ylTypeThis(id, ext){
+  const r=(typeof YL_READERS!=='undefined')?YL_READERS.find(function(x){return x.id===id;}):null; if(!r){ return; }
+  const v=ext?r.ext:r.std; if(!v||!v.text){ alert('There is no text to type here.'); return; }
+  if(typeof aadTypePractice==='function'){ aadTypePractice(v.text, r.title||'Reading text'); }
+}
 ROUTES.ylReader=function(compound){
   const [id, mode] = String(compound||'').split(':');
   const r=YL_READERS.find(x=>x.id===id); if(!r){go('ylReading');return;}
@@ -21469,7 +21498,7 @@ ROUTES.ylReader=function(compound){
       <button class="btn sm ${ext?'':'ghost'}" onclick="go('ylReader','${r.id}:ext')">\ud83d\udcda Extended text</button>
       <button class="btn sm" style="background:#F5A301;color:#3a2a00" onclick="ylSpellBee('${r.id}')">\ud83d\udc1d Spelling Bee</button>
     </div>
-    ${readerBar('ylTxt', `<button class="btn ghost sm" onclick="ylReaderDict()">\ud83d\udcd6 Dictionary</button> <button class="btn ghost sm" onclick="ylPrintReader('${r.id}','${ext?'ext':'std'}')">\ud83d\udda8\ufe0f Print / PDF</button>`, {dict:false, hl:false})}
+    ${readerBar('ylTxt', `<button class="btn ghost sm" onclick="ylReaderDict()">\ud83d\udcd6 Dictionary</button> <button class="btn ghost sm" onclick="ylTypeThis('${r.id}',${ext?'true':'false'})" title="Type this text">\u2328\ufe0f Type this</button> <button class="btn ghost sm" onclick="ylPrintReader('${r.id}','${ext?'ext':'std'}')">\ud83d\udda8\ufe0f Print / PDF</button>`, {dict:false, hl:false})}
     <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;margin-top:8px">
       <div style="flex:1;min-width:300px">
         <div class="card stem-visual">${r.scene}<div class="stem-vis-cap">\ud83d\udc46 Tap any word below to hear it \u2014 words with a dotted line also show their meaning.</div></div>
@@ -21491,6 +21520,8 @@ ROUTES.ylReader=function(compound){
 };
 function ylReaderSubmit(id,mode){
   const r=YL_READERS.find(x=>x.id===id); const ext=mode==='ext';
+  const _miss=ylUnanswered('ylQuiz', ext);
+  if(_miss>0){ const _rs=document.getElementById('ylRes'); if(_rs){ _rs.innerHTML=quizAnswerFirstHTML(_miss); try{_rs.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){} } return; }
   YL_SHEET=[]; const a=ylCheckSet('ylQuiz'); const t=ext?ylCheckTF('ylQuiz'):{s:0,m:0};
   let s=a.s+t.s, m=a.m+t.m, extra='';
   if(ext){ const w=stemWordCount(val('ylShort')); m+=2; if(w>=30){s+=2; extra=' · short answer ✓ ('+w+' words)';} else if(w>0){s+=1; extra=' · short answer: aim for 30+ words (you have '+w+')';} else extra=' · short answer missing'; }
@@ -21524,7 +21555,10 @@ ROUTES.ylMM=function(id){
   </div>`;
 };
 function ylMMSubmit(id){
-  const m=YL_MM.find(x=>x.id===id); YL_SHEET=[]; const r=ylCheckSet('ylQuiz'); const pct=Math.round(r.s/r.m*100);
+  const m=YL_MM.find(x=>x.id===id);
+  const _miss=ylUnanswered('ylQuiz', false);
+  if(_miss>0){ const _rs=document.getElementById('ylRes'); if(_rs){ _rs.innerHTML=quizAnswerFirstHTML(_miss); try{_rs.scrollIntoView({behavior:'smooth',block:'center'});}catch(e){} } return; }
+  YL_SHEET=[]; const r=ylCheckSet('ylQuiz'); const pct=Math.round(r.s/r.m*100);
   document.getElementById('ylRes').innerHTML='<div class="scorebox"><div class="big">'+(pct>=80?'🌟':'👍')+'</div><div>'+r.s+'/'+r.m+' — multimodal detective!</div></div>';
   if(SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Multimodal: '+m.title,score:r.s,max:r.m,percent:pct,sheet:YL_SHEET.slice(),detail:m.obj}); }catch(e){} }
 }
