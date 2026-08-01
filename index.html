@@ -5508,7 +5508,7 @@ const ROUTES = {
       <p style="color:var(--muted);font-size:.9rem;margin-top:0">Write your answers. When you submit, a model answer with justification appears and you give yourself a fair mark.</p>
       <div id="rcSelf"></div>
 
-      <button class="btn teal" id="rcSubmit" onclick="gradeRc('${id}')">Submit & self-check</button>
+      ${certPassNote()}<button class="btn teal" id="rcSubmit" onclick="gradeRc('${id}')">Submit & self-check</button>
       <div id="rcResult"></div>
 
       <div class="card hidden" id="rcDesign" style="margin-top:20px;border-color:var(--coral)">
@@ -15822,7 +15822,7 @@ function openAadArticle(id){
 
       <div class="aad-know-box" id="aadKnowBox">
         <h4>🧠 Add two ideas to your own knowledge</h4>
-        <p class="aad-vocab-hint">Write two things this article added to what you know. Submitting both scores 100%.</p>
+        <p class="aad-vocab-hint">Write two things this article added to what you know. Submitting both scores 100%.</p>${certPassNote()}
         <div class="ed-field"><label>Idea 1 — I now know that …</label>
           <input id="aad_idea1" placeholder="I now know that ____." value="${prev&&prev.facts?esc(prev.facts[0]||''):''}"></div>
         <div class="ed-field"><label>Idea 2 — I also learned that …</label>
@@ -20138,6 +20138,7 @@ function ylPrint(title,inner){
   w.document.close();
 }
 function quizAnswerFirstHTML(miss){ return '<div class="feedback" style="background:#fdecec;border:1.5px solid #E6464B;color:#B4231F;font-weight:700;padding:11px 15px;border-radius:10px">\u26a0\ufe0f Please answer all the questions first'+(miss?' \u2014 '+miss+' still to go':'')+'. Then tap \u201cCheck my answers\u201d.</div>'; }
+function certPassNote(){ return '<div class="note" style="background:#fff8e6;border:1px solid #F5A301;color:#7a4f00;border-radius:10px;padding:9px 13px;margin:10px 0;font-size:.86rem">🏅 <b>Certificate goal:</b> score at least '+CERT_PASS+'% to earn a certificate for this activity. If you score lower, your attempt is still saved and you can simply try again.</div>'; }
 function ylUnanswered(rootId, ext){
   const root=document.getElementById(rootId); if(!root) return 0;
   let miss=0;
@@ -21243,6 +21244,8 @@ ROUTES.ylhub=function(){
       <button class="btn sm ghost" onclick="ylDictGo()">📖 Dictionary ↗</button>
       
       <button class="btn sm ghost" onclick="go('typing','yl')">⌨️ Typing lessons</button>
+      <button class="btn sm ghost" onclick="go('mycerts')">🏅 My Certificates</button>
+      <button class="btn sm ghost" onclick="go('myachieve')">🏆 My Achievement Log</button>
       <button class="btn sm teal" onclick="ylLessonPlanDoc()">📥 Teacher lesson plan (Word)</button>
       <span style="font-size:.78rem;color:var(--muted)">Affordances everywhere: 🔊 read-to-me · A± zoom · tap any word to hear it &amp; see its meaning</span>
     </div>
@@ -21389,7 +21392,7 @@ function ylBeeRender(){
     +(sent?'<div style="font-style:italic;color:var(--muted);margin-bottom:8px">\u201c'+esc(sent)+'\u201d</div>':'')
     +'<input id="ylBeeInput" class="yl-in" style="width:100%;font-size:1.1rem" autocomplete="off" placeholder="type the word\u2026" onkeydown="if(event.key===\'Enter\')ylBeeCheck(false)">'
     +'<div id="ylBeeFb" class="feedback" style="margin-top:6px"></div>'
-    +'<button class="btn" style="margin-top:10px" onclick="ylBeeCheck(false)">Check \u2713</button>';
+    +'<button class="btn" style="margin-top:10px" onclick="ylBeeCheck(false)">Check \u2713</button>'+(YL_BEE.i===0?'<div class="note" style="background:#fff8e6;border:1px solid #F5A301;color:#7a4f00;border-radius:10px;padding:8px 12px;margin-top:10px;font-size:.82rem">🏅 Score at least '+CERT_PASS+'% across the words to earn a spelling certificate.</div>':'');
   const inp=document.getElementById('ylBeeInput'); if(inp) inp.focus();
   ylBeeStartTimer(); ylBeeSpeak();
 }
@@ -21516,6 +21519,7 @@ ROUTES.ylReader=function(compound){
           ${ext?ylTFNG('yt',v.tfng):''}
           ${ext?`<div class="field"><label>\u270d\ufe0f Short answer \u2014 ${v.short.q}</label><textarea id="ylShort" style="min-height:90px" oninput="document.getElementById('ylSw').textContent=stemWordCount(this.value)+' words (target 30\u201350)'"></textarea><div id="ylSw" style="font-size:.82rem;color:var(--muted)"></div></div>`:''}
         </div>
+        ${certPassNote()}
         <button class="btn" onclick="ylReaderSubmit('${r.id}','${ext?'ext':'std'}')">Check my answers \u2192</button>
         <div id="ylRes" style="margin-top:12px"></div>
         <div class="yl-gamecard"><b>\ud83c\udfae You made it \u2014 game time!</b><p style="margin:4px 0 8px;font-size:.88rem">Every practice ends with play. Your game opens in its own big window.</p><button class="btn sm" style="background:#fff;color:var(--ink)" onclick="ylGame('${r.game}','${r.id}')">Play ${({catch:'Word Catch \ud83e\udee7',match:'Memory Match \ud83c\udccf',order:'Sentence Builder \ud83e\udde9',pop:'Spelling Balloons \ud83c\udf88'})[r.game]} \u2192</button></div>
