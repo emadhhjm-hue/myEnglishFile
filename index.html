@@ -4211,6 +4211,14 @@ function rcSpellBee(id){
   const list=f.lesson.vocab.map(v=>({word:(v[0]||'').toLowerCase().trim(), def:v[1]||''})).filter(x=>x.word.length>=4);
   beeStart(f.lesson.title||'Reading text','Reading Course',list);
 }
+function rcTypeThis(id){
+  const f=(typeof findRc==='function')?findRc(id):null; if(!f||!f.lesson){ return; }
+  const tmp=document.createElement('div'); tmp.innerHTML=(f.lesson.text||'');
+  const text=(tmp.textContent||tmp.innerText||'').replace(/\s+/g,' ').trim();
+  if(!text){ alert('This text has no readable content to type.'); return; }
+  if(typeof renderTypingScreen!=='function'){ return; }
+  renderTypingScreen({ id:'rctype_'+id, title:(f.lesson.title||'Reading text'), genre:'Reading Course', level:'read \u0026 type', text:text }, null, 0);
+}
 function findSkill(id){ return RSKILLS.find(x=>x.id===id) || null; }
 function rcStrandSkills(k){ return RSKILLS.filter(sk=>sk.strand===k); }
 function rcCustom(){ return mergedCustom('reading'); }
@@ -5490,7 +5498,7 @@ const ROUTES = {
         <ol class="skill-how">${sk.how.map(h=>`<li>${h}</li>`).join('')}</ol>
         <div class="skill-trap">⚠️ <b>Watch out.</b> ${sk.trap}</div>
       </details>
-      ${readerBar('rcText', `${l.vocab&&l.vocab.length?`<button class="btn sm" style="background:#F5A301;color:#3a2a00" onclick="rcSpellBee('${id}')" title="Spell this text's key words">🐝 Spelling Bee</button>`:''}<button class="btn ghost sm" onclick="wsReadingCourse('${id}')">📄 Worksheet (PDF)</button>`)}
+      ${readerBar('rcText', `${l.vocab&&l.vocab.length?`<button class="btn sm" style="background:#F5A301;color:#3a2a00" onclick="rcSpellBee('${id}')" title="Spell this text's key words">🐝 Spelling Bee</button>`:''}<button class="btn ghost sm" onclick="rcTypeThis('${id}')" title="Type this text in the Typing Tutor">⌨️ Type this</button><button class="btn ghost sm" onclick="wsReadingCourse('${id}')">📄 Worksheet (PDF)</button>`)}
       <div class="passage" id="rcText" data-dict>${l.text}</div>
       ${rcWordListHTML(l)}
 
@@ -7311,11 +7319,7 @@ function beePickLaunch(){
   if(list.length<3){ alert('Choose at least three words first \u2014 tap a word in the reading, then press \u201c+ Spelling list\u201d.'); return; }
   if(typeof beeStart==='function') beeStart('My chosen words','My selection', list);
 }
-function beePickBtnHTML(word, def){
-  return '<button class="btn sm" style="background:#F5A301;border-color:#F5A301;color:#15183A" '+
-    'title="Add this word to my own spelling list" '+
-    'onclick="dictAddToBee(\''+escq(word)+'\',\''+escq(def||'')+'\',this)">+ Spelling list</button>';
-}
+function beePickBtnHTML(word, def){ return ''; /* "+ Spelling list" removed — redundant with + Bank */ }
 
 function dictBank(word, def, btn){
   try{
@@ -9064,6 +9068,20 @@ function drawWordCloud(x, W, H, label, alpha, inset){
 function drawCertMotif(x, W, H, label, alpha){
   const kind = certMotifKind(label);
   if(kind === 'book' || kind === 'quill') return kind;   // no open-book or pen-and-ink (quill) motif on certificates
+  if(kind === 'palette'){   // Design → no oval palette; a distinctive "Design \u21ba" mark (Design as a Core Literacy, RWD loop)
+    x.save();
+    x.beginPath(); x.rect(74,74,W-148,H-148); x.clip();
+    x.globalAlpha=0.05; x.fillStyle='#8B5CF6';
+    x.font="italic 800 26px 'Fraunces',Georgia,serif"; x.textAlign="center"; x.textBaseline="middle";
+    let row=0;
+    for(let yy=96; yy<H-70; yy+=76){
+      const off=(row%2)*125;
+      for(let xx=40; xx<W+120; xx+=250){ x.save(); x.translate(xx+off, yy); x.rotate(-Math.PI/9); x.fillText("Design \u21ba", 0, 0); x.restore(); }
+      row++;
+    }
+    x.restore(); x.globalAlpha=1;
+    return kind;
+  }
   const r = H*0.30;
   x.save();
   x.beginPath(); x.rect(52, 52, W - 104, H - 104); x.clip();
@@ -9205,7 +9223,7 @@ function makeCertificate(o){
               :                          {a:"#2b5fa6",b:"#9bbdee",ink:"#10294d",seal:"#2b5fa6",soft:"#e8f0fb"};
   let _wmSrc=(o.skill||o.title||'').toString();
   let _wm=_wmSrc.split(/\s[·—–:|-]\s/)[0].replace(/\s+\d+$/,'').replace(/\s+[IVXLC]+$/,'').trim()||'iCAN';
-  return drawCert({motif:(o.skill||o.title||''), watermark:_wm, variant:o.variant||'', serial:certSerial({name:o.name, skill:(o.skill||o.title), activity:o.title, percent:o.percent, dateMs:Date.now()}), band:o.band.toUpperCase(), subtitle:"Certificate of Achievement", name:o.name||"Student",
+  return drawCert({motif:(o.skill||o.title||''), watermark:_wm, variant:o.variant||'', serial:certSerial({name:o.name, skill:(o.skill||o.title), activity:o.title, percent:o.percent, dateMs:Date.now()}), band:o.band.toUpperCase(), subtitle:(/design/i.test((o.skill||'')+' '+(o.title||''))?"Design \u2014 a Core Literacy":"Certificate of Achievement"), name:o.name||"Student",
     line1:"has successfully completed", titleText:o.title||"an iCAN activity",
     statText:`Score  ${o.percent}%   ·   ${o.score}/${o.max}`, date:o.date||new Date().toLocaleDateString(), theme});
 }
