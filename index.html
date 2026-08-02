@@ -1267,6 +1267,20 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .idb-h b{color:#5a1fa0}
 .idb-say{border:none;background:transparent;cursor:pointer;font-size:1rem;line-height:1}
 .idb-card p{margin:4px 0 0;font-size:.86rem;color:var(--muted);line-height:1.4}
+.di-collapse.quiz>summary{background:#eef7f3;border-color:#a9e0d0;color:#0c6b53}
+.di-collapse.quiz>summary::before{color:#0c6b53}
+.quiz-pad{border:1px solid var(--line);border-top:none;border-radius:0 0 10px 10px;padding:10px 12px}
+.quiz-q{margin:0 0 6px;font-size:.88rem;color:var(--ink)}
+.quiz-lines{margin:6px 0;padding-left:20px;font-size:.88rem;line-height:1.55}
+.quiz-lines li{margin:3px 0}
+.quiz-ans{margin-top:8px}
+.quiz-ans>summary{cursor:pointer;color:#0c6b53;font-weight:700;font-size:.85rem;list-style:none}
+.quiz-ans>summary::-webkit-details-marker{display:none}
+.rl-teach{margin:10px 0 0;padding:9px 12px;background:#fff7e6;border:1px dashed #E08A2B;border-radius:10px;font-size:.85rem;color:#7a4f00;line-height:1.5}
+.gap{display:inline-block;min-width:66px;border-bottom:2px solid #0c6b53;color:#0c6b53;font-weight:700;text-align:center;padding:0 4px}
+.quiz-bank{margin:4px 0 8px;font-size:.85rem;color:var(--ink)}
+.qb{display:inline-block;background:#eef7f3;border:1px solid #a9e0d0;border-radius:20px;padding:2px 10px;margin:2px 4px 2px 0;font-weight:600;color:#0c6b53;font-size:.82rem}
+.quiz-ans-list{margin:6px 0;padding-left:20px;font-size:.86rem;line-height:1.5}
 .rl-hl{margin:8px 0 2px;font-size:.9rem;color:#1a5fb4;line-height:1.9}
 .rl-hl>b{color:#15183A}
 .rl-hl-i{display:inline-block;background:#e8f0fc;color:#1a5fb4;border:1px solid #bcd6f5;border-radius:20px;padding:2px 10px;margin:2px 5px 2px 0;font-weight:600;font-size:.82rem;cursor:help}
@@ -23386,7 +23400,22 @@ const WASPK_REAL = [
     fml:[[1,'Did you see that video?'],[0,'Yes — to be honest, it was very funny.'],[1,'I know, right! Not going to lie, I watched it about five times.'],[0,'Same here. By the way, could you message me the link privately?'],[1,'Sent! For your information, there is a second part as well.']],
     inf:[[1,'did u see that vid?? 😂'],[0,'omg yes, tbh it was so funny'],[1,'ikr! ngl i watched it like 5x'],[0,'same 😅 btw dm me the link?'],[1,'sent! fyi theres a part 2 too']],
     idioms:[['vid','video'],['omg','oh my goodness'],['tbh','to be honest'],['ikr','I know, right!'],['ngl','not gonna lie'],['btw','by the way'],['dm','send a direct (private) message'],['fyi','for your information'],['imo','in my opinion']],
-    statement:'You and a friend are chatting on social media about a video. Decode the abbreviations, then rewrite the conversation in full, clear English — and try saying it aloud.'}
+    statement:'You and a friend are chatting on social media about a video. Decode the abbreviations, then rewrite the conversation in full, clear English — and try saying it aloud.'},
+  {id:'real_teens', group:'social', emoji:'🎧', title:'Teen Talk (Slang)', role:"A partner is a friend; you chat about music.", goal:'Decode teen slang, then rewrite the chat in standard English.', useful:['no cap = honestly / no lie','lowkey = a little / secretly','bet = okay, sure','it slaps = it’s really good'], who:['You','Friend'],
+    fml:[[1,'That new song is honestly really good.'],[0,'For real! I have played it all day.'],[1,'Great — could you send it? My playlist needs improving.'],[0,'Sent. It has a wonderful feel to it.'],[1,'Nice one. You always have the best taste, honestly.']],
+    inf:[[1,'yo that new song lowkey slaps 🔥'],[0,'no cap! been on repeat all day fr'],[1,'bet, send it? my playlist needs a glow-up 😭'],[0,'sent lol, it’s such a vibe'],[1,'W 😎 you always got the best taste ngl']],
+    idioms:[['lowkey','a little / secretly'],['it slaps','it is really good (esp. music)'],['no cap','honestly; no lie'],['fr','for real'],['bet','okay; sure'],['glow-up','a big improvement'],['a vibe','a nice feeling or mood'],['W','a win; something good'],['ngl','not gonna lie']],
+    statement:'You and a friend are chatting in teen slang about music. Work out what each slang word means, then rewrite the whole chat in clear, standard English.'},
+  {id:'real_gaming', group:'social', emoji:'🎮', title:'Gaming Voice-Chat (Slang)', role:"A partner is your teammate; you talk during a game.", goal:'Decode gaming slang, then say it in full everyday English.', useful:['GG = good game','AFK = away from keyboard','clutch = win under pressure','respawn = come back after losing a life'], who:['You','Teammate'],
+    fml:[[1,'I have very little health left — I need backup!'],[0,'On my way! Cover me and I will try to win this under pressure.'],[1,'Great, that was an impressive win! Good game.'],[0,'Good game, well played. I will be right back — away for two minutes.'],[1,'No problem, I will defend our position.']],
+    inf:[[1,'yo I’m low hp, need backup!'],[0,'omw! cover me, I’ll clutch this 💪'],[1,'nice, that was so clutch! gg'],[0,'ggwp 😎 brb, afk 2 mins'],[1,'np, I’ll hold the point']],
+    idioms:[['hp','health points (your life bar)'],['omw','on my way'],['clutch','win in a high-pressure moment'],['gg','good game'],['ggwp','good game, well played'],['brb','be right back'],['afk','away from keyboard'],['np','no problem'],['hold the point','defend a position']],
+    statement:'You and a teammate are talking on voice-chat during a game. Decode the gaming slang, then say the same thing in full, everyday English.'},
+  {id:'real_workmsg', group:'work', emoji:'💼', title:'Workplace Messaging (Formal)', role:"A partner is your manager; you message about a report.", goal:'Decode workplace shortcuts, then rewrite the exchange as a polite, full message.', useful:['EOD = end of day','ASAP = as soon as possible','FYI = for your information','LMK = let me know'], who:['You','Manager'],
+    fml:[[1,'Hello. Could you please send the report by the end of the day?'],[0,'Certainly. For your information, I am working from home today, but I will have it ready as soon as possible.'],[1,'Thank you. Please let me know if you run into any problems.'],[0,'I will. I will get back to you once it is finished.'],[1,'Perfect, thank you. Let us have a quick meeting tomorrow.']],
+    inf:[[1,'Hi — can you send the report EOD?'],[0,'Sure! FYI I’m WFH today, but I’ll have it ready ASAP.'],[1,'Great. LMK if you hit any blockers.'],[0,'Will do — I’ll circle back once it’s done.'],[1,'Perfect, thanks. Let’s touch base tomorrow.']],
+    idioms:[['EOD','end of day'],['FYI','for your information'],['WFH','working from home'],['ASAP','as soon as possible'],['LMK','let me know'],['blockers','problems that stop progress'],['circle back','return to a topic later'],['touch base','have a brief chat or meeting']],
+    statement:'You are messaging a manager at work. Notice how professional messaging still uses abbreviations, but stays polite. Decode them, then rewrite the exchange as a full, courteous message.'}
 ].map(s => Object.assign(s, { kind:'debate', caption:'Real-life scenario · '+s.title, write:WA_RW, speak:WA_RS }));
 /* register scenarios so the normal Write → Speak → Publish flow can open them */
 WASPK_REAL.forEach(p => { WASPK_INDEX[p.id] = { p:p, c:WASPK_REAL_CAT }; });
@@ -23835,7 +23864,30 @@ ROUTES.waspkHelp = function(){
 
 /* ===== REAL-LIFE TALK (scenario role-plays) ============================= */
 function waspkDiLine(sc, li, hi){ const s=li[0], txt=li[1]; const body=(hi&&hi.length&&typeof waspkHiText==='function')?waspkHiText(txt,hi):esc(txt); return `<div class="di-line di-${s?'b':'a'}"><span class="di-who">${esc(sc.who[s]||'')}</span><span class="di-txt">${body}</span><button type="button" class="di-say" onclick="waspkSayEl(this)" title="Hear this line">🔊</button></div>`; }
+function waspkGapQuiz(sc){
+  const idioms=(sc.idioms||[]).map(x=>x[0]);
+  if(!idioms.length) return '';
+  let n=0; const answers=[]; const used=[];
+  const lines=sc.inf.map(l=>{
+    let txt=esc(l[1]);
+    idioms.forEach(phr=>{
+      if(used.indexOf(phr)>-1) return;
+      const rx=new RegExp('\\b('+phr.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')\\b','i');
+      if(rx.test(txt)){ n++; answers.push([n,phr]); used.push(phr); txt=txt.replace(rx,'<span class="gap">＿＿ ('+n+')</span>'); }
+    });
+    return '<li><b>'+esc(sc.who[l[0]]||'')+':</b> '+txt+'</li>';
+  }).join('');
+  if(!answers.length) return '';
+  const bank=answers.map(a=>a[1]).slice().sort(function(){return 0.5-Math.random();});
+  return '<details class="di-collapse quiz"><summary>🧠 QUIZ ME! — fill the gaps (exit ticket)</summary>'
+    +'<div class="quiz-pad"><p class="quiz-q">Copy this chat into your notebook and fill each gap with the right idiom you learned.</p>'
+    +'<div class="quiz-bank"><b>Word bank:</b> '+bank.map(function(b){return '<span class="qb">'+esc(b)+'</span>';}).join(' ')+'</div>'
+    +'<ol class="quiz-lines">'+lines+'</ol>'
+    +'<details class="quiz-ans"><summary>✅ Check your answers</summary><ol class="quiz-ans-list">'+answers.map(function(a){return '<li><b>('+a[0]+')</b> '+esc(a[1])+'</li>';}).join('')+'</ol></details>'
+    +'</div></details>';
+}
 function waspkRealCard(sc, col){
+  const isT=(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='teacher');
   const inf=sc.inf.map(l=>waspkDiLine(sc,l,sc.idioms)).join('');
   const fml=sc.fml.map(l=>waspkDiLine(sc,l)).join('');
   const drop=`<select class="di-drop" onchange="waspkSaySel(this)"><option value="">🔊 Hear a handy expression…</option>${sc.useful.map(u=>`<option>${esc(u)}</option>`).join('')}</select>`;
@@ -23861,6 +23913,7 @@ function waspkRealCard(sc, col){
       <p class="di-hint di-inf-h"><b>Spoken:</b> short forms (I'm, don't), fillers (yeah, well), relaxed grammar.</p>
       <p class="di-hint di-fml-h" hidden><b>Written:</b> full forms, complete sentences, polite modals (could, would).</p>
     </div></details>${sc.idioms&&sc.idioms.length?`<details class="di-collapse idi"><summary>💡 Idioms in this chat</summary><ul class="idi-list">${sc.idioms.map(x=>`<li><b>${esc(x[0])}</b> — ${esc(x[1])}</li>`).join('')}</ul></details>`:''}
+    ${waspkGapQuiz(sc)}${isT?`<p class="rl-teach"><b>👩‍🏫 Teacher note:</b> Use QUIZ ME! as a quick exit ticket — students copy the Spoken chat into their notebooks and fill each gap with the right idiom from the word bank, then self-check. Elicit meanings from 💡 Idioms in this chat and have pairs act the chat out.</p>`:''}
     ${drop}
     <div style="display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap">${ytBtn}<button type="button" class="rl-go" style="margin-top:0" onclick="go('waspkDo','${sc.id}')">🎤 Practise &amp; record →</button></div>
   </div>`;
