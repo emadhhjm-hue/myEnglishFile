@@ -4662,9 +4662,10 @@ const ROUTES = {
             <p style="font-size:.85rem;color:var(--slate);margin:8px 0">${e.vocab.length} vocab · ${e.grammar.length} grammar · ${e.readingA.questions.length+e.readingB.questions.length} reading · 1 essay · ⏱ 40 min</p>
             <button class="btn" onclick="go('examTest','${i}')">Start exam →</button>
             <button class="btn ghost sm" style="margin-top:8px" onclick="wsExam(EXAMS[${i}],'exam-${i+1}')">📄 Paper version (PDF)</button>
-          </div>`).join('')}
+          </div>`).join('')}${(typeof customExamCards==='function'?customExamCards():'')}
       </div>
-      <p class="note" style="margin-top:16px">More exam sets (of varying difficulty) will be added here — each one automatically gets its timer, certificate and printable worksheet.</p>
+      ${(SESSION&&SESSION.role==='teacher')?`<button class="btn teal" style="margin-top:14px" onclick="go('examBuilder')">➕ Create a new exam / quiz</button>`:''}
+      <p class="note" style="margin-top:16px">${(SESSION&&SESSION.role==='teacher')?'Use ➕ Create a new exam / quiz to build your own — it appears here for students with its timer, certificate and printable worksheet.':'More exam sets will be added here — each one automatically gets its timer, certificate and printable worksheet.'}</p>
     </div>`;
   },
   examTest(i){ runExam(EXAMS[+i], {key:'exam_'+i, minutes:40, backRoute:'exams', skill:'Full exam', cert:true}); },
@@ -8677,6 +8678,105 @@ function startCountdown(minutes, onZero){
 }
 
 /* ---- generic exam runner (used by diagnostic and full-length exams) ---- */
+/* ===== TEACHER EXAM / QUIZ BUILDER ===== */
+function customExams(){ try{ return Store.get('ican_custom_exams', []) || []; }catch(e){ return []; } }
+function saveCustomExamsArr(a){ try{ Store.set('ican_custom_exams', a); }catch(e){} }
+function cxParseMC(txt){
+  return (txt||'').split('\n').map(function(l){return l.trim();}).filter(Boolean).map(function(l){
+    var p=l.split('|').map(function(x){return x.trim();});
+    if(p.length<5) return null;
+    var letter=(p[4]||'a').toLowerCase()[0];
+    var ans={a:0,b:1,c:2}[letter]; if(ans===undefined) ans=0;
+    return MC(p[0],[p[1],p[2],p[3]],ans,p[5]||'');
+  }).filter(Boolean);
+}
+function cxParas(txt){ return (txt||'').split('\n').map(function(l){return l.trim();}).filter(Boolean).map(function(l){return '<p>'+esc(l)+'</p>';}).join(''); }
+function cxLines(txt){ return (txt||'').split('\n').map(function(l){return l.trim();}).filter(Boolean); }
+function buildCustomExam(o){
+  var readQ=cxParseMC(o.readTxt);
+  var exam={ id:o.id||('cx'+Date.now()), custom:true, label:o.label, level:o.level||'Custom', topic:o.topic||'Teacher-made',
+    vocab:cxParseMC(o.vocabTxt), grammar:cxParseMC(o.grammarTxt),
+    readingA:{ topic:(o.rTopic||o.topic||'Reading'), title:(o.rTitle||'Reading text'), text:(cxParas(o.passage)||'<p>(No passage.)</p>'), questions:readQ },
+    readingB:{ topic:'', genre:'', title:'', text:'', questions:[] },
+    writing:{ prompt:(o.essay||'Write a short response.'), points:cxLines(o.points), tips:cxLines(o.tips).length?cxLines(o.tips):['Plan briefly before you write.','Write in clear paragraphs.','Check your spelling, grammar and punctuation.'], minWords:(parseInt(o.minWords,10)||150) },
+    minutes:(parseInt(o.minutes,10)||40) };
+  return exam;
+}
+ROUTES.examBuilder = function(id){
+  if(!(SESSION && SESSION.role==='teacher')){ go('exams'); return; }
+  var ex = id ? customExams().find(function(x){return x.id===id;}) : null;
+  var g=function(k,d){ return ex? (function(){
+    if(k==='vocabTxt') return ex.vocab.map(cxToLine).join('\n');
+    if(k==='grammarTxt') return ex.grammar.map(cxToLine).join('\n');
+    if(k==='readTxt') return ex.readingA.questions.map(cxToLine).join('\n');
+    if(k==='passage') return ex.readingA.text.replace(/<\/p>/g,'\n').replace(/<[^>]+>/g,'').trim();
+    if(k==='points') return (ex.writing.points||[]).join('\n');
+    if(k==='label') return ex.label; if(k==='level') return ex.level; if(k==='topic') return ex.topic;
+    if(k==='rTitle') return ex.readingA.title; if(k==='essay') return ex.writing.prompt;
+    if(k==='minWords') return ex.writing.minWords; if(k==='minutes') return ex.minutes;
+    return d;
+  })() : d; };
+  var ta=function(id,ph,val,rows){ return '<textarea id="'+id+'" rows="'+(rows||3)+'" placeholder="'+esc(ph)+'" style="width:100%;box-sizing:border-box;padding:9px 11px;border:1.5px solid var(--line);border-radius:9px;font:inherit;resize:vertical">'+esc(val||'')+'</textarea>'; };
+  var inp=function(id,ph,val,w){ return '<input id="'+id+'" placeholder="'+esc(ph)+'" value="'+esc(val==null?'':(''+val))+'" style="'+(w||'width:100%')+';box-sizing:border-box;padding:9px 11px;border:1.5px solid var(--line);border-radius:9px;font:inherit">'; };
+  var fmt='<div style="background:#eef4ff;border:1px solid #cfe0fb;border-radius:10px;padding:10px 12px;font-size:.84rem;color:#274b7a;margin:6px 0 10px">One question per line, using bars <b>|</b> :<br><code>Question | option A | option B | option C | correct letter (a/b/c) | Why (optional)</code><br>Example: <code>A ____ is a testable idea. | opinion | hypothesis | summary | b | A hypothesis is testable.</code></div>';
+  app().innerHTML = ''
+    +'<div class="wrap screen">'
+    +'<button class="back" onclick="go(\'exams\')">← Exams & Quizzes</button>'
+    +'<h1 style="font-size:2rem">📝 '+(ex?'Edit exam / quiz':'Create an exam / quiz')+'</h1>'
+    +'<p style="color:var(--muted);max-width:720px">Fill this template to build a full-length exam or a short quiz. Add as many or as few questions as you like — leave a section blank to skip it. It is saved to the students’ <b>Exams & Quizzes</b> section with its own timer, certificate and printable worksheet.</p>'
+    +'<div class="card" style="padding:16px;margin-top:12px"><div style="display:grid;gap:10px">'
+    +'<label><b>Title</b> '+inp('cxLabel','e.g. Unit 3 Quiz · Environment',g('label'))+'</label>'
+    +'<div style="display:flex;gap:10px;flex-wrap:wrap"><label style="flex:1;min-width:140px"><b>Level</b> '+inp('cxLevel','e.g. Core / Challenge',g('level','Core'))+'</label>'
+    +'<label style="flex:1;min-width:140px"><b>Topic</b> '+inp('cxTopic','e.g. Science · Health',g('topic'))+'</label>'
+    +'<label style="flex:0 0 90px"><b>Minutes</b> '+inp('cxMinutes','40',g('minutes',40))+'</label></div>'
+    +'<hr style="border:none;border-top:1px solid var(--line);margin:4px 0">'
+    +'<label><b>1 · Vocabulary questions</b></label>'+fmt+ta('cxVocab','Vocabulary MCQs, one per line…',g('vocabTxt'),3)
+    +'<label style="margin-top:6px"><b>2 · Grammar questions</b></label>'+ta('cxGrammar','Grammar MCQs, one per line…',g('grammarTxt'),3)
+    +'<label style="margin-top:6px"><b>3 · Reading — passage</b></label>'+ta('cxPassage','Paste the reading text here (one paragraph per line)…',g('passage'),5)
+    +'<label>'+inp('cxRTitle','Reading title (optional)',g('rTitle'))+'</label>'
+    +'<label><b>Reading questions</b></label>'+ta('cxRead','Reading comprehension MCQs, one per line…',g('readTxt'),3)
+    +'<label style="margin-top:6px"><b>4 · Writing — essay prompt</b></label>'+ta('cxEssay','Write the essay question here…',g('essay'),2)
+    +'<div style="display:flex;gap:10px;flex-wrap:wrap"><label style="flex:1;min-width:180px">Points to address (one per line, optional) '+ta('cxPoints','',g('points'),2)+'</label>'
+    +'<label style="flex:0 0 120px">Target words '+inp('cxMinWords','150',g('minWords',150))+'</label></div>'
+    +'</div>'
+    +'<div id="cxMsg" style="margin:12px 0 0;min-height:20px"></div>'
+    +'<button class="btn" style="width:100%;margin-top:12px;padding:12px;font-size:1rem" onclick="examBuilderSave('+(ex?('\''+ex.id+'\''):'')+')">💾 '+(ex?'Save changes':'Create & assign to students')+' →</button>'
+    +'</div></div>';
+  window.scrollTo(0,0);
+};
+function cxToLine(m){ var L=['a','b','c']; return [m.q, (m.options[0]||''), (m.options[1]||''), (m.options[2]||''), L[m.answer]||'a', m.exp||''].join(' | '); }
+function examBuilderSave(id){
+  var o={ id:id||null, label:(val('cxLabel')||'').trim(), level:(val('cxLevel')||'').trim(), topic:(val('cxTopic')||'').trim(),
+    minutes:val('cxMinutes'), vocabTxt:val('cxVocab'), grammarTxt:val('cxGrammar'),
+    passage:val('cxPassage'), rTitle:val('cxRTitle'), readTxt:val('cxRead'),
+    essay:(val('cxEssay')||'').trim(), points:val('cxPoints'), minWords:val('cxMinWords') };
+  var m=document.getElementById('cxMsg');
+  var nQ=cxParseMC(o.vocabTxt).length+cxParseMC(o.grammarTxt).length+cxParseMC(o.readTxt).length;
+  if(!o.label){ if(m) m.innerHTML='<span style="color:#B4231F;font-weight:600">⚠️ Please give the exam a title.</span>'; return; }
+  if(nQ===0 && !o.essay){ if(m) m.innerHTML='<span style="color:#B4231F;font-weight:600">⚠️ Add at least one question, or an essay prompt.</span>'; return; }
+  var exam=buildCustomExam(o);
+  var arr=customExams(); var i=arr.findIndex(function(x){return x.id===exam.id;});
+  if(i>-1) arr[i]=exam; else arr.push(exam);
+  saveCustomExamsArr(arr);
+  if(m) m.innerHTML='<span style="color:#0c6b53;font-weight:600">✅ Saved. It now appears in the students’ Exams & Quizzes section.</span>';
+  setTimeout(function(){ go('exams'); }, 800);
+}
+function deleteCustomExam(id){ if(!confirm('Delete this exam for everyone?')) return; saveCustomExamsArr(customExams().filter(function(x){return x.id!==id;})); go('exams'); }
+function examTestCustom(id){ var ex=customExams().find(function(x){return x.id===id;}); if(!ex){ go('exams'); return; } runExam(ex, {key:'cxexam_'+id, minutes:(ex.minutes||40), backRoute:'exams', skill:'Exam', cert:true}); }
+function customExamCards(){
+  var arr=customExams(); if(!arr.length) return '';
+  var isT=(SESSION && SESSION.role==='teacher');
+  return arr.map(function(e){
+    var nR=(e.readingA.questions.length)+(e.readingB.questions.length);
+    return '<div class="card"><div class="meta" style="margin-bottom:4px">'+esc(e.level)+' · '+esc(e.topic)+' <span style="background:#eef7f3;color:#0c6b53;border:1px solid #a9e0d0;border-radius:20px;padding:1px 8px;font-size:.7rem;font-weight:700">Teacher-made</span></div>'
+      +'<h3 style="font-size:1.25rem">'+esc(e.label)+'</h3>'
+      +'<p style="font-size:.85rem;color:var(--slate);margin:8px 0">'+e.vocab.length+' vocab · '+e.grammar.length+' grammar · '+nR+' reading · '+(e.writing&&e.writing.prompt?'1 essay · ':'')+'⏱ '+(e.minutes||40)+' min</p>'
+      +'<button class="btn" onclick="examTestCustom(\''+e.id+'\')">Start exam →</button>'
+      +'<button class="btn ghost sm" style="margin-top:8px" onclick="wsExam(customExams().find(function(x){return x.id===\''+e.id+'\';}),\''+e.id+'\')">📄 Paper version (PDF)</button>'
+      +(isT?'<div style="margin-top:8px;display:flex;gap:8px"><button class="btn ghost sm" onclick="go(\'examBuilder\',\''+e.id+'\')">✏️ Edit</button><button class="btn ghost sm" style="color:#B4231F" onclick="deleteCustomExam(\''+e.id+'\')">🗑 Delete</button></div>':'')
+      +'</div>';
+  }).join('');
+}
 function runExam(ex, ctx){
   ex = shuffleExam(ex);
   CURRENT_EXAM={ex,ctx}; clearExamTimer();
@@ -8699,8 +8799,7 @@ function runExam(ex, ctx){
      <div id="examReading">
        <div class="card"><div class="meta" style="margin-bottom:4px">Part A · ${ex.readingA.topic}</div><h3 style="font-size:1.15rem;margin:0 0 8px">${ex.readingA.title}</h3>${ex.readingA.text}</div>
      ${qh(ex.readingA.questions,'d_ra_')}
-       <div class="card"><div class="meta" style="margin-bottom:4px">Part B · ${ex.readingB.topic} · ${ex.readingB.genre}</div><h3 style="font-size:1.15rem;margin:0 0 8px">${ex.readingB.title}</h3>${ex.readingB.text}</div>
-     ${qh(ex.readingB.questions,'d_rb_')}
+       ${(ex.readingB&&ex.readingB.text)?`<div class="card"><div class="meta" style="margin-bottom:4px">Part B · ${ex.readingB.topic} · ${ex.readingB.genre}</div><h3 style="font-size:1.15rem;margin:0 0 8px">${ex.readingB.title}</h3>${ex.readingB.text}</div>${qh(ex.readingB.questions,'d_rb_')}`:''}
      </div>
      ${sec('4 · Writing','Plan briefly, then write your essay in the box.')}
      <div class="card"><p style="font-weight:600;margin:0 0 12px">${ex.writing.prompt}</p>
