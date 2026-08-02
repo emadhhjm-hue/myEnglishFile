@@ -4229,7 +4229,6 @@ function rcWordListHTML(l){
         <div style="flex:1"><b>${esc(v[0])}</b><div style="font-size:.86rem;color:var(--muted)">${esc(v[1])}</div></div>
         <button class="btn ghost sm" onclick="speak('${escq(v[0])}')" title="Hear it">🔊</button>
         <button class="btn ghost sm" onclick="bankWord('${escq(v[0])}','${escq(v[1])}',this)" title="Save to your Vocabulary Log">+ Bank</button>
-        ${beePickBtnHTML(v[0], v[1])}
       </div>`).join('')}
     </div>
   </div>`;
@@ -7358,7 +7357,11 @@ function beePickLaunch(){
   if(list.length<3){ alert('Choose at least three words first \u2014 tap a word in the reading, then press \u201c+ Spelling list\u201d.'); return; }
   if(typeof beeStart==='function') beeStart('My chosen words','My selection', list);
 }
-function beePickBtnHTML(word, def){ return ''; /* "+ Spelling list" removed — redundant with + Bank */ }
+function beePickBtnHTML(word, def){
+  return '<button class="btn sm" style="background:#F5A301;border-color:#F5A301;color:#15183A" '+
+    'title="Add this word to my own spelling list" '+
+    'onclick="dictAddToBee(\''+escq(word)+'\',\''+escq(def||'')+'\',this)">+ Spelling list</button>';
+}
 
 function dictBank(word, def, btn){
   try{
