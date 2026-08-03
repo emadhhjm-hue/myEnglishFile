@@ -1273,6 +1273,11 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .lu-lockbtn{flex:0 0 auto;align-self:center;border:1.5px solid #cbd2dd;background:#f4f6f9;color:#2b5fa6;border-radius:9px;padding:6px 10px;font-size:.76rem;font-weight:700;cursor:pointer;white-space:nowrap}
 .lu-lockbtn.is-locked{border-color:#E6464B;background:#fdecec;color:#B4231F}
 .lu-row.lu-locked{opacity:.6;filter:grayscale(.35)}
+.lu-bulkbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;background:#15183A;color:#fff;border-radius:12px;padding:10px 14px;margin:0 0 14px;font-size:.85rem}
+.lu-bulk-lbl{font-weight:600;opacity:.92;margin-right:auto;white-space:nowrap}
+.lu-bulk-btn{border:none;border-radius:20px;padding:7px 14px;font-weight:700;font-size:.82rem;cursor:pointer;white-space:nowrap}
+.lu-bulk-btn.lock{background:#E6464B;color:#fff}
+.lu-bulk-btn.open{background:#0FA98B;color:#fff}
 .di-collapse.quiz>summary{background:#eef7f3;border-color:#a9e0d0;color:#0c6b53}
 .di-collapse.quiz>summary::before{color:#0c6b53}
 .quiz-pad{border:1px solid var(--line);border-top:none;border-radius:0 0 10px 10px;padding:10px 12px}
@@ -4403,6 +4408,35 @@ const app = () => document.getElementById('app');
 let LEVEL = "standard"; // or "scaffolded"
 let CURRENT_SCREEN = "home", CURRENT_ARG = null;
 
+function bulkLockPage(v){
+  try{
+    var btns=document.querySelectorAll('[onclick*="toggleLessonLock("]');
+    var g=lessonLocks();
+    btns.forEach(function(b){
+      var m=(b.getAttribute('onclick')||'').match(/toggleLessonLock\('([^']+)'\)/);
+      if(m){ if(v) g[m[1]]=true; else delete g[m[1]]; }
+    });
+    Store.set('ican_lesson_locks',g);
+    if(typeof CURRENT_SCREEN!=='undefined'&&CURRENT_SCREEN) go(CURRENT_SCREEN, (typeof CURRENT_ARG!=='undefined'?CURRENT_ARG:undefined));
+  }catch(e){}
+}
+function maybeInjectBulkLock(){
+  try{
+    var old=document.getElementById('luBulkBar'); if(old&&old.parentNode) old.parentNode.removeChild(old);
+    if(!(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='teacher')) return;
+    var btns=document.querySelectorAll('[onclick*="toggleLessonLock("]');
+    if(!btns || btns.length<2) return;
+    var locked=0; btns.forEach(function(b){ if((b.className||'').indexOf('is-locked')>-1) locked++; });
+    var bar=document.createElement('div'); bar.id='luBulkBar'; bar.className='lu-bulkbar';
+    bar.innerHTML='<span class="lu-bulk-lbl">🔒 '+btns.length+' lessons on this page · '+locked+' locked</span>'
+      +'<button class="lu-bulk-btn lock" onclick="bulkLockPage(true)">🔒 Lock all</button>'
+      +'<button class="lu-bulk-btn open" onclick="bulkLockPage(false)">🔓 Open all</button>';
+    var node=btns[0];
+    while(node && node.parentNode && node.parentNode!==document.body && !(node.parentNode.classList && (node.parentNode.classList.contains('wrap')||node.parentNode.classList.contains('screen')))) node=node.parentNode;
+    if(node && node.parentNode && node.parentNode!==document.body){ node.parentNode.insertBefore(bar, node); }
+    else { var wrap=document.querySelector('.wrap'); if(wrap) wrap.insertBefore(bar, wrap.firstChild); else document.body.appendChild(bar); }
+  }catch(e){}
+}
 function go(screen, arg){
   CURRENT_SCREEN = screen; CURRENT_ARG = arg;
   stopSpeak(); turnOffHighlighter(); clearSpellTimer(); clearExamTimer(); window.scrollTo(0,0);
@@ -4421,6 +4455,7 @@ function go(screen, arg){
   if(typeof injectBars==='function') injectBars(screen);
   if(typeof lockAllItems==='function') requestAnimationFrame(lockAllItems);
   requestAnimationFrame(positionKnobs);
+  if(typeof maybeInjectBulkLock==='function') maybeInjectBulkLock();
 }
 function positionKnobs(){
   document.querySelectorAll('.level-slider').forEach(sl=>{
