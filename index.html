@@ -722,6 +722,7 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .hub-foot{text-align:center; color:#fff3e2; font-size:.82rem; margin-top:6px; font-weight:500; text-shadow:0 1px 4px rgba(0,0,0,.6)}
 .hub-bee{ filter: drop-shadow(0 0 9px rgba(255,210,63,.7)); transform-box: fill-box; transform-origin: center; animation: beePulse 2.6s ease-in-out infinite}
 .hub-wa{ filter: drop-shadow(0 0 9px rgba(242,166,255,.8)); transform-box: fill-box; transform-origin: center; animation: beePulse 2.6s ease-in-out infinite}
+.hub-flash{ filter: drop-shadow(0 0 9px rgba(255,255,255,.6)); transform-box: fill-box; transform-origin: center; animation: beePulse 2.6s ease-in-out infinite}
 @keyframes beePulse{ 0%,100%{ transform: scale(1) } 50%{ transform: scale(1.06) } }
 .hub-ray{ pointer-events:none }
 .hub-core-glow{ transform-box: view-box; transform-origin: 450px 260px; animation: corePulse 3.6s ease-in-out infinite }
@@ -1267,6 +1268,11 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .idb-h b{color:#5a1fa0}
 .idb-say{border:none;background:transparent;cursor:pointer;font-size:1rem;line-height:1}
 .idb-card p{margin:4px 0 0;font-size:.86rem;color:var(--muted);line-height:1.4}
+.lu-rowwrap{display:flex;align-items:stretch;gap:8px}
+.lu-rowwrap .lu-row{flex:1}
+.lu-lockbtn{flex:0 0 auto;align-self:center;border:1.5px solid #cbd2dd;background:#f4f6f9;color:#2b5fa6;border-radius:9px;padding:6px 10px;font-size:.76rem;font-weight:700;cursor:pointer;white-space:nowrap}
+.lu-lockbtn.is-locked{border-color:#E6464B;background:#fdecec;color:#B4231F}
+.lu-row.lu-locked{opacity:.6;filter:grayscale(.35)}
 .di-collapse.quiz>summary{background:#eef7f3;border-color:#a9e0d0;color:#0c6b53}
 .di-collapse.quiz>summary::before{color:#0c6b53}
 .quiz-pad{border:1px solid var(--line);border-top:none;border-radius:0 0 10px 10px;padding:10px 12px}
@@ -4210,13 +4216,27 @@ function rcUnitDone(u){
 }
 /* Shared vertical lesson row — used by both courses.
    o: {unitN, lessonN, icon, name, strap, colour, meta, done, onclick} */
+/* ===== per-lesson Lock/Unlock (teacher) — defaults to OPEN, locking is opt-in ===== */
+function lessonLocks(){ try{ return Store.get('ican_lesson_locks')||{}; }catch(e){ return {}; } }
+function lessonLocked(id){ return !!lessonLocks()[id]; }
+function setLessonLock(id,v){ const g=lessonLocks(); if(v)g[id]=true; else delete g[id]; try{ Store.set('ican_lesson_locks',g); }catch(e){} }
+function toggleLessonLock(id){ setLessonLock(id,!lessonLocked(id)); try{ if(typeof CURRENT_SCREEN!=='undefined'&&CURRENT_SCREEN) go(CURRENT_SCREEN); }catch(e){} }
+function lessonLockedMsg(){ alert('🔒 This lesson is locked by your teacher for now. Please try another one, or check back later.'); }
+function lessonLockScreen(back){ app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\''+(back||'dashboard')+'\')">← Back</button><div class="card" style="text-align:center;padding:34px 20px"><div style="font-size:2.6rem">🔒</div><h2 style="margin:6px 0">Locked for now</h2><p style="color:var(--muted);max-width:420px;margin:0 auto">Your teacher has locked this lesson. Please try another one, or check back later.</p></div></div>'; try{window.scrollTo(0,0);}catch(e){} }
 function luRow(o){
-  return `<button class="lu-row${o.done?' lu-done':''}" style="--sk:${o.colour||'#888'}" onclick="${o.onclick}">
-    <span class="lu-ic">${o.icon||'📘'}</span>
+  const isT=(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='teacher');
+  const locked=o.lockId?lessonLocked(o.lockId):false;
+  const stLock=locked&&!isT;
+  const rowBtn=`<button class="lu-row${o.done?' lu-done':''}${stLock?' lu-locked':''}" style="--sk:${o.colour||'#888'}" onclick="${stLock?'lessonLockedMsg()':o.onclick}">
+    <span class="lu-ic">${stLock?'🔒':(o.icon||'📘')}</span>
     <span class="lu-txt"><span class="lu-lab">Lesson ${o.unitN}-${o.lessonN}: ${o.name}</span><span class="lu-dash">—</span><span class="lu-strap">${o.strap||''}</span></span>
     ${o.done?'<span class="lu-tick">✓</span>':''}
     <span class="lu-time">${o.meta||''}</span>
   </button>`;
+  if(o.lockId&&isT){
+    return `<div class="lu-rowwrap">${rowBtn}<button class="lu-lockbtn${locked?' is-locked':''}" onclick="toggleLessonLock('${o.lockId}')" title="${locked?'Locked for students — tap to unlock':'Open to students — tap to lock'}">${locked?'🔒 Locked':'🔓 Open'}</button></div>`;
+  }
+  return rowBtn;
 }
 /* ---- Reading Course: word list + Spelling Bee (any text carrying a vocab: [[word,def],…] list) ---- */
 function rcWordListHTML(l){
@@ -4553,12 +4573,6 @@ const ROUTES = {
             <radialGradient id="flareDesign" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#d8c8ff" stop-opacity="0.85"/><stop offset="42%" stop-color="#8B5CF6" stop-opacity="0.34"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></radialGradient>
             <radialGradient id="flareSun" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fffbe6" stop-opacity="0.97"/><stop offset="34%" stop-color="#ffd23f" stop-opacity="0.6"/><stop offset="100%" stop-color="#ffd23f" stop-opacity="0"/></radialGradient>
           </defs>
-          <path d="M110 235 C 260 175, 640 175, 790 235" fill="none" stroke="url(#ribbonGrad)" stroke-width="34" stroke-linecap="round" opacity="0.5"/>
-          <g stroke="rgba(255,255,255,.22)" stroke-width="1.4" fill="none">
-            <line x1="450" y1="260" x2="155" y2="128"/><line x1="450" y1="260" x2="745" y2="128"/>
-            <line x1="450" y1="260" x2="120" y2="344"/><line x1="450" y1="260" x2="780" y2="344"/>
-            <path d="M155 128 L745 128 L780 344 L450 566 L120 344 Z"/>
-          </g>
           <g class="hub-c" onclick="go('readingCourse')">
             <circle cx="340" cy="192" r="136" fill="rgba(18,165,133,.82)"/>
             <text x="280" y="152" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-weight="700" font-size="33">Read</text>
@@ -4585,7 +4599,8 @@ const ROUTES = {
             const wrapMap = {spellType:['Spelling &','Typing'],exams:['Exams &','Quizzes'],stemlab:['STEM·','STREAM']};
             const wr = wrapMap[r];
             const iconY = wr ? cy-(big?15:13) : cy-(big?9:7);
-            const shine = !bee && !wa;
+            const flash = (r==='grammar'||r==='articleaday'||r==='stemlab');
+            const shine = !bee && !wa && !flash;
             const sdur = (2.8+idx*0.35).toFixed(1);
             const halo = shine?`<circle cx="${cx}" cy="${cy}" r="${rad}" fill="url(#satShine)" opacity="0.5"><animate attributeName="r" values="${rad};${rad+20};${rad}" dur="${sdur}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0.08;0.7" dur="${sdur}s" repeatCount="indefinite"/></circle>`:'';
             const labelBlock = wa
@@ -4596,7 +4611,7 @@ const ROUTES = {
                  <text x="${cx}" y="${cy+(big?29:31)}" text-anchor="middle" fill="#ffffff" font-family="Fraunces,serif" font-size="${big?14:15}" font-weight="800">${wr[1]}</text>`
               : `<text x="${cx}" y="${cy+(big?18:22)}" text-anchor="middle" fill="#ffffff" font-size="${labSize}" font-weight="700">${lab}</text>
                  ${sub?`<text x="${cx}" y="${cy+(big?34:38)}" text-anchor="middle" fill="#ffe39a" font-size="10.5" font-weight="700" letter-spacing="0.02em">${sub}</text>`:''}`;
-            return `<g class="hub-s${bee?' hub-bee':''}${stem?' hub-stem':''}${wa?' hub-wa':''}" onclick="go('${r}')">
+            return `<g class="hub-s${bee?' hub-bee':''}${stem?' hub-stem':''}${wa?' hub-wa':''}${flash?' hub-flash':''}" onclick="go('${r}')">
             ${halo}<circle cx="${cx}" cy="${cy}" r="${rad}" fill="${fill}" stroke="${strk}" stroke-width="${big?'4':'2.5'}"/>
             <text x="${cx}" y="${iconY}" text-anchor="middle" font-size="${big?32:(r==='articleaday'?24:27)}">${ic}</text>
             ${labelBlock}</g>`; }).join('')}
@@ -4910,6 +4925,7 @@ const ROUTES = {
         if(orph.length) sets.push({id:"ms_other", name:"Other scripts", sk:"#64748b", task:"Various prompts.",
           note:"Scripts not yet grouped under a prompt set.", ids:orph.map(m=>m.id)});
         const rows=sets.map((set,si)=>{
+          const _isT=(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='teacher'); const _mjL=lessonLocked(set.id); const _mjSt=_mjL&&!_isT;
           const scripts=markSetScripts(set)
             .map(m=>({m:m, t:markTotal(m.scores)||0, z:!!m.zero}))
             .sort((a,b)=>b.t-a.t);
@@ -4920,13 +4936,14 @@ const ROUTES = {
             <div class="lu-prompt-head">
               <span class="lu-lab">Lesson 1-${si+1}: ${set.name}</span>
               <span class="lu-range">${scripts.length} response${scripts.length===1?'':'s'} · ${range}</span>
+              ${_isT?`<button class="lu-lockbtn${_mjL?' is-locked':''}" onclick="toggleLessonLock('${set.id}')" title="${_mjL?'Locked — tap to unlock':'Open — tap to lock'}">${_mjL?'🔒 Locked':'🔓 Open'}</button>`:''}
             </div>
             <div class="lu-task"><b>The prompt \u2014 every script below answers this:</b><br>${set.task}</div>
             <p style="font-size:.82rem;color:var(--muted);margin:0 0 10px">${set.note}</p>
             <div class="lu-subs">${scripts.map((s,i)=>{
               const bd=markBandColour(s.t,s.z);
               const rb=rebuildState(s.m);
-              return `<button class="lu-sub" style="--bd:${bd}" onclick="go('markTask','${s.m.id}')">
+              return `<button class="lu-sub${_mjSt?' lu-locked':''}" style="--bd:${bd}" onclick="${_mjSt?'lessonLockedMsg()':`go('markTask','${s.m.id}')`}">
                 <span class="lu-script">Script ${SCRIPT_LETTERS[i]||(i+1)}</span>
                 <span class="lu-mark">${s.z?'0/25':s.t+'/25'}</span>
                 <span class="lu-desc">${s.m.title}</span>
@@ -4945,21 +4962,21 @@ const ROUTES = {
         'Good writing starts as good thinking. Read a short text, work out what is implied, and back your reading with evidence from the page — the habit every body paragraph depends on.',
         INFER.map((t,i)=>luRow({unitN:2, lessonN:i+1, icon:'🔎', name:t.title,
           strap:'Inference + evidence', colour:'#0E7C7B', done:false,
-          meta:'I'+(i+1), onclick:`go('inferTask','${t.id}')`}))
+          meta:'I'+(i+1), lockId:t.id, onclick:`go('inferTask','${t.id}')`}))
       )}
 
       ${unit(3,'🍪','Shape an Opinion · OREO','#B45309',
         'Turn a position into a tight paragraph: Opinion · Reason · Example · Opinion restated. This is the smallest complete unit of argument, and the spine of every essay body paragraph.',
         OREO.map((t,i)=>luRow({unitN:3, lessonN:i+1, icon:'🍪', name:t.title,
           strap:'OREO paragraph', colour:'#B45309', done:false,
-          meta:'O'+(i+1), onclick:`go('oreoTask','${t.id}')`}))
+          meta:'O'+(i+1), lockId:t.id, onclick:`go('oreoTask','${t.id}')`}))
       )}
 
       ${unit(4,'✏️','Repair &amp; Refine · Revise &amp; Edit','#8B5CF6',
         'Now put all three to work. Rewrite a flawed response so that it scores well, get feedback against the rubric, then — and only then — compare it with a corrected model.',
         REVISE.map((t,i)=>luRow({unitN:4, lessonN:i+1, icon:'✏️', name:t.title,
           strap:t.level+' · '+t.minWords+'+ words', colour:'#8B5CF6', done:false,
-          meta:'R'+(i+1), onclick:`go('reviseTask','${t.id}')`}))
+          meta:'R'+(i+1), lockId:t.id, onclick:`go('reviseTask','${t.id}')`}))
       )}
 
       <p class="note" style="margin-top:16px">Teachers: more excerpts and model answers can be added to the <code>MARKING</code>, <code>INFER</code> and <code>OREO</code> lists (see the project reference). The marking rubric is the official EoT writing rubric.</p>
@@ -5223,7 +5240,7 @@ const ROUTES = {
             const sp=wcSkillDone(sk);
             return luRow({unitN:u.n, lessonN:i+1, icon:sk.icon, name:sk.name, strap:sk.strap,
               colour:sk.colour, done:sp.total>0&&sp.done===sp.total,
-              meta:sp.done+'/'+sp.total+' task'+(sp.total===1?'':'s'), onclick:`go('wcSkill','${sk.id}')`});
+              meta:sp.done+'/'+sp.total+' task'+(sp.total===1?'':'s'), lockId:sk.id, onclick:`go('wcSkill','${sk.id}')`});
           }).join('')}</div>
         </div>`;
       }).join('')}
@@ -5451,7 +5468,7 @@ const ROUTES = {
             const sp=rcSkillDone(sk);
             return luRow({unitN:u.n, lessonN:i+1, icon:sk.icon, name:sk.name, strap:sk.strap,
               colour:sk.colour, done:sp.total>0&&sp.done===sp.total,
-              meta:sp.done+'/'+sp.total+' texts', onclick:`go('rcSkill','${sk.id}')`});
+              meta:sp.done+'/'+sp.total+' texts', lockId:sk.id, onclick:`go('rcSkill','${sk.id}')`});
           }).join('')}</div>
         </div>`;
       }).join('')}
@@ -5468,6 +5485,7 @@ const ROUTES = {
   },
   rcSkill(id){
     const sk=findSkill(id); if(!sk){ go('readingCourse'); return; }
+    if(typeof lessonLocked==='function'&&lessonLocked(id)&&SESSION&&SESSION.role==='student'){ lessonLockScreen('readingCourse'); return; }
     const done=rcDone(); const p=rcSkillDone(sk);
     const tier=RC_TIER;
     const texts=rcTierTexts(sk,tier).filter(rcGenreOk);
@@ -5605,7 +5623,7 @@ const ROUTES = {
         ${skills.map(sk=>rcSkillLessons(sk).map(l=>`<div class="lesson-row">
             <div><div class="t">${esc(l.title)}<span class="g-tag ${rcGenreOf(l)==='Fiction'?'fiction':'nonfiction'}">${rcGenreOf(l)}</span> ${deckDone(l.id)?'<span class="badge-done">✓ deck complete</span>':(deckStarted(l.id)?'<span class="genre-tag">in progress</span>':'')}</div>
             <div class="ty">${sk.icon} ${esc(sk.name)} · ${esc(l.design.slice(0,110))}${l.design.length>110?'…':''}</div></div>
-            <button class="btn sm" onclick="go('deck','${l.id}')">${deckStarted(l.id)?'Continue':'Design'} →</button>
+            <button class="btn sm" onclick="go('deck','${l.id}')">${deckStarted(l.id)?'Continue':'Design'} →</button>${luLessonTeacherBtn(l.id)}
           </div>`).join('')).join('')}
         </div>`;
       }).join('')}
@@ -5614,6 +5632,7 @@ const ROUTES = {
   deck(lessonId){
     const f=findRc(lessonId);
     if(!f){ go('dstudio'); return; }
+    if(typeof lessonLocked==='function'&&lessonLocked(lessonId)&&typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ lessonLockScreen('dstudio'); return; }
     const {lesson:l, skill:sk}=f;
     const d=getDeck(lessonId);
     app().innerHTML = `
@@ -19584,11 +19603,16 @@ function ylExamSubmit(id){
   if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ try{ saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,skill:'Foundational',activity:'Exam — '+ex.title,score:s,max:m,percent:pct,sheet:YL_SHEET.slice(),essay:(val('ylExamWrite')||''),detail:'Grade '+ex.grade+' · reading/grammar/vocab + writing'}); }catch(e){} }
 }
 
+function luLessonTeacherBtn(id){
+  if(!(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='teacher')) return '';
+  const locked=lessonLocked(id);
+  return '<button class="lu-lockbtn'+(locked?' is-locked':'')+'" style="margin-left:6px" onclick="event.stopPropagation();toggleLessonLock(\''+id+'\')" title="'+(locked?'Locked for students — tap to unlock':'Open to students — tap to lock')+'">'+(locked?'🔒 Locked':'🔓 Open')+'</button>';
+}
 ROUTES.ylReading=function(){
   try{speechSynthesis.cancel();}catch(e){}
   const groups=[['A','Level A \u00b7 A1\u2013A2','emerging readers'],['B','Level B \u00b7 B1\u2013B2','developing readers'],['C','Level C \u00b7 C1\u2013C2','confident readers']];
   const rowOf=r=>{ const m=r.meta||{}; const sub=m.genre?('\ud83d\udcd6 '+esc(m.genre)+' \u00b7 '+esc(m.lexile||'')+' \u00b7 '+esc(m.skill||'')):('\ud83c\udfaf '+esc(r.obj));
-    return '<div class="item-row" style="align-items:center"><div style="font-size:1.9rem">'+r.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+r.lv+'">'+r.lv+'</span> <b>'+esc(r.title)+'</b><div class="meta">'+sub+' '+(typeof doneTag==='function'?doneTag('Foundational',r.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylReader\',\''+r.id+'\')">Open \u2192</button></div>'; };
+    return '<div class="item-row" style="align-items:center"><div style="font-size:1.9rem">'+r.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+r.lv+'">'+r.lv+'</span> <b>'+esc(r.title)+'</b><div class="meta">'+sub+' '+(typeof doneTag==='function'?doneTag('Foundational',r.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylReader\',\''+r.id+'\')">Open \u2192</button>'+luLessonTeacherBtn(r.id)+'</div>'; };
   const secs=groups.map(gr=>{ const lv=gr[0]; const rows=YL_READERS.filter(r=>r.lv===lv).map(rowOf).join('');
     return rows?('<h2 class="stem-h2" style="margin-top:18px">'+gr[1]+' <span style="font-weight:400;color:var(--muted);font-size:.95rem">\u2014 '+gr[2]+'</span></h2><div class="grid c2">'+rows+'</div>'):''; }).join('');
   app().innerHTML=`
@@ -19604,7 +19628,7 @@ ROUTES.ylReading=function(){
 ROUTES.ylWriting=function(){
   try{speechSynthesis.cancel();}catch(e){}
   const labelOf={'5–6':'Grade 5–6','7':'Grade 7','8':'Grade 8'}; const bands=['5–6','7','8'];
-  const rowOf=x=>'<div class="item-row" style="align-items:center"><div style="font-size:1.6rem">✍️</div><div style="flex:1"><span class="mz-gpill" style="background:'+mzGradeColor(x.band)+'">'+labelOf[x.band]+'</span> <span class="genre-tag">'+esc(x.field)+'</span> <b>'+esc(x.title)+'</b><div class="meta">'+esc(x.prompt)+' '+(typeof doneTag==='function'?doneTag('Foundational','Writing — '+x.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylWriteRun\',\''+x.id+'\')">Write →</button></div>';
+  const rowOf=x=>'<div class="item-row" style="align-items:center"><div style="font-size:1.6rem">✍️</div><div style="flex:1"><span class="mz-gpill" style="background:'+mzGradeColor(x.band)+'">'+labelOf[x.band]+'</span> <span class="genre-tag">'+esc(x.field)+'</span> <b>'+esc(x.title)+'</b><div class="meta">'+esc(x.prompt)+' '+(typeof doneTag==='function'?doneTag('Foundational','Writing — '+x.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylWriteRun\',\''+x.id+'\')">Write →</button>'+luLessonTeacherBtn(x.id)+'</div>';
   const secs=bands.map(b=>{ const rows=YL_WRITE.filter(x=>x.band===b).map(rowOf).join(''); return rows?'<h3 style="margin:16px 0 6px"><span class="mz-gpill" style="background:'+mzGradeColor(b)+'">'+labelOf[b]+'</span></h3><div class="grid c2">'+rows+'</div>':''; }).join('');
   app().innerHTML=MZ_STYLE+`
   <div class="wrap screen">
@@ -19620,6 +19644,7 @@ const YLW_PEER=['I answered all three points.','Every sentence has a capital let
 const YLW_TRANS=['First','Firstly','Then','Next','After that','Finally','However','Therefore','For example','Because','so that','so','In my opinion','As a result','Although','also','moreover'];
 function ylwHi(t,vocab){ let s=esc(t); (YLW_TRANS||[]).forEach(w=>{ try{ s=s.replace(new RegExp('\\b('+w+')\\b','g'),'<span style="color:#E6464B;font-weight:600">$1</span>'); }catch(e){} }); (vocab||[]).forEach(w=>{ try{ s=s.replace(new RegExp('\\b('+w+')\\b','gi'),'<b>$1</b>'); }catch(e){} }); return s; }
 ROUTES.ylWriteRun=function(id){
+  if(typeof lessonLocked==='function'&&lessonLocked(id)&&typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ lessonLockScreen('ylWriting'); return; }
   const x=YL_WRITE.find(w=>w.id===id); if(!x){go('ylWriting');return;}
   try{speechSynthesis.cancel();}catch(e){}
   const labelOf={'5\u20136':'Grade 5\u20136','7':'Grade 7','8':'Grade 8'};
@@ -19814,7 +19839,7 @@ ROUTES.ylDesign=function(){
   try{speechSynthesis.cancel();}catch(e){}
   const groups=[['A','Level A \u00b7 A1\u2013A2','emerging readers'],['B','Level B \u00b7 B1\u2013B2','developing readers'],['C','Level C \u00b7 C1\u2013C2','confident readers']];
   const rowOf=r=>{ const brief=YL_DESIGN_BRIEFS[r.id]||('Design an artefact from “'+esc(r.title)+'”.'); const plain=brief.replace(/<[^>]+>/g,'');
-    return '<div class="item-row" style="align-items:center"><div style="font-size:1.9rem">'+r.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+r.lv+'">'+r.lv+'</span> <b>'+esc(r.title)+'</b> '+(typeof doneTag==='function'?doneTag('Foundational','Design — '+r.title):'')+'<div class="meta">🎨 '+esc(plain.slice(0,120))+(plain.length>120?'…':'')+'</div></div><button class="btn sm" onclick="go(\'ylDesignFrom\',\''+r.id+'\')">'+(ylDesignStarted(r.id)?'Continue':'Design')+' →</button></div>'; };
+    return '<div class="item-row" style="align-items:center"><div style="font-size:1.9rem">'+r.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+r.lv+'">'+r.lv+'</span> <b>'+esc(r.title)+'</b> '+(typeof doneTag==='function'?doneTag('Foundational','Design — '+r.title):'')+'<div class="meta">🎨 '+esc(plain.slice(0,120))+(plain.length>120?'…':'')+'</div></div><button class="btn sm" onclick="go(\'ylDesignFrom\',\''+r.id+'\')">'+(ylDesignStarted(r.id)?'Continue':'Design')+' →</button>'+luLessonTeacherBtn(r.id)+'</div>'; };
   const secs=groups.map(gr=>{ const lv=gr[0]; const rows=YL_READERS.filter(r=>r.lv===lv).map(rowOf).join('');
     return rows?('<h2 class="stem-h2" style="margin-top:18px">'+gr[1]+' <span style="font-weight:400;color:var(--muted);font-size:.95rem">\u2014 '+gr[2]+'</span></h2><div class="grid c2">'+rows+'</div>'):''; }).join('');
   app().innerHTML=`
@@ -19830,6 +19855,7 @@ ROUTES.ylDesign=function(){
   </div>`;
 };
 ROUTES.ylDesignFrom=function(rid){
+  if(typeof lessonLocked==='function'&&lessonLocked(rid)&&typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ lessonLockScreen('ylDesign'); return; }
   try{speechSynthesis.cancel();}catch(e){}
   const r=ylDesignItem(rid); if(!r){ go('ylDesign'); return; }
   const d=ylDesignGet(r.id);
@@ -21343,11 +21369,11 @@ function ylHubMap(){
   const wrapMap={ylStem:['STEM·','STREAM'],ylExams:['Exams &','Quizzes']};
   const satSvg=sats.map(([r,ic,lab,cx,cy],idx)=>{
     const rad=58, wr=wrapMap[r], iconY=wr?cy-14:cy-7, sdur=(2.8+idx*0.4).toFixed(1);
-    const halo=`<circle cx="${cx}" cy="${cy}" r="${rad}" fill="url(#ylSatShine)" opacity="0.5"><animate attributeName="r" values="${rad};${rad+18};${rad}" dur="${sdur}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.7;0.08;0.7" dur="${sdur}s" repeatCount="indefinite"/></circle>`;
+    const halo='';
     const label=wr
       ? `<text x="${cx}" y="${cy+12}" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-size="14" font-weight="800">${wr[0]}</text><text x="${cx}" y="${cy+30}" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-size="14" font-weight="800">${wr[1]}</text>`
       : `<text x="${cx}" y="${cy+20}" text-anchor="middle" fill="#fff" font-size="17" font-weight="700">${lab}</text>`;
-    return `<g class="hub-s" onclick="go('${r}')">${halo}<circle cx="${cx}" cy="${cy}" r="${rad}" fill="#13322c" stroke="rgba(255,255,255,.8)" stroke-width="2.5"/><text x="${cx}" y="${iconY}" text-anchor="middle" font-size="27">${ic}</text>${label}</g>`;
+    return `<g class="hub-s hub-flash" onclick="go('${r}')">${halo}<circle cx="${cx}" cy="${cy}" r="${rad}" fill="#13322c" stroke="rgba(255,255,255,.8)" stroke-width="2.5"/><text x="${cx}" y="${iconY}" text-anchor="middle" font-size="27">${ic}</text>${label}</g>`;
   }).join('');
   return `<svg class="hub-map" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg" font-family="Lexend,system-ui,sans-serif">
     <defs>
@@ -21358,7 +21384,6 @@ function ylHubMap(){
       <radialGradient id="flareWrite" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#ffc9cb" stop-opacity="0.85"/><stop offset="42%" stop-color="#e6464b" stop-opacity="0.34"/><stop offset="100%" stop-color="#e6464b" stop-opacity="0"/></radialGradient>
       <radialGradient id="flareDesign" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#d8c8ff" stop-opacity="0.85"/><stop offset="42%" stop-color="#8B5CF6" stop-opacity="0.34"/><stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/></radialGradient>
     </defs>
-    <g stroke="rgba(255,255,255,.28)" stroke-width="1.4" fill="none"><line x1="450" y1="256" x2="132" y2="296"/><line x1="450" y1="256" x2="768" y2="296"/><line x1="450" y1="256" x2="450" y2="532"/><path d="M132 296 L768 296 L450 532 Z"/></g>
     <g class="hub-c" onclick="go('ylReading')"><circle cx="348" cy="196" r="132" fill="rgba(18,165,133,.82)"/><text x="290" y="158" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-weight="700" font-size="32">Read</text><text x="290" y="179" text-anchor="middle" fill="#eafff7" font-size="13">to discover</text></g>
     <g class="hub-c" onclick="go('ylWriting')"><circle cx="552" cy="196" r="132" fill="rgba(230,70,75,.82)"/><text x="610" y="158" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-weight="700" font-size="32">Write</text><text x="610" y="179" text-anchor="middle" fill="#ffeceb" font-size="13">to explain</text></g>
     <g class="hub-c" onclick="go('ylDesign')"><circle cx="450" cy="356" r="132" fill="rgba(139,92,246,.82)"/><text x="450" y="420" text-anchor="middle" fill="#fff" font-family="Fraunces,serif" font-weight="700" font-size="32">Design</text><text x="450" y="441" text-anchor="middle" fill="#f1eaff" font-size="13">to build</text></g>
@@ -21542,7 +21567,7 @@ function ylBeeRender(){
 function ylCReadListHTML(){
   if(typeof YL_CREAD==='undefined'||!YL_CREAD.length) return '';
   const groups=[['A','Level A \u00b7 A1\u2013A2','#3a9d8a'],['B','Level B \u00b7 B1\u2013B2','#5B8DEF'],['C','Level C \u00b7 C1\u2013C2','#8B5CF6']];
-  const card=x=>'<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">'+x.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+x.lv+'">'+x.lv+'</span> <span class="genre-tag">'+esc(x.unit)+'</span> <b>'+esc(x.title)+'</b><div class="meta"> '+esc(x.meta.genre)+' \u00b7 '+esc(x.meta.lexile)+' \u00b7 '+esc(x.meta.skill)+' '+(typeof doneTag==="function"?doneTag("Foundational","Reading \u2014 "+x.title):"")+'</div></div><button class="btn sm" onclick="go(\'ylCReadRun\',\''+x.id+'\')">Open \u2192</button></div>';
+  const card=x=>'<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">'+x.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+x.lv+'">'+x.lv+'</span> <span class="genre-tag">'+esc(x.unit)+'</span> <b>'+esc(x.title)+'</b><div class="meta"> '+esc(x.meta.genre)+' \u00b7 '+esc(x.meta.lexile)+' \u00b7 '+esc(x.meta.skill)+' '+(typeof doneTag==="function"?doneTag("Foundational","Reading \u2014 "+x.title):"")+'</div></div><button class="btn sm" onclick="go(\'ylCReadRun\',\''+x.id+'\')">Open \u2192</button>'+luLessonTeacherBtn(x.id)+'</div>';
   let out='<h2 class="stem-h2" style="margin-top:20px"> Reading for the World <span style="font-weight:400;color:var(--muted);font-size:.92rem">\u2014 full-apparatus readings, each with a design task</span></h2>';
   groups.forEach(g=>{ const items=YL_CREAD.filter(x=>x.lv===g[0]); if(!items.length) return; out+='<h3 class="sub" style="margin-top:12px;border-left:4px solid '+g[2]+';padding-left:8px">'+g[1]+'</h3><div class="grid c2">'+items.map(card).join('')+'</div>'; });
   return out;
@@ -21551,6 +21576,7 @@ let YL_CTIMER=null, YL_CT0=0;
 const CREAD_TOPIC={c1:'pearl diving Persian Gulf history',c2:'The Honest Woodcutter fable',c3:'The Tale of the Bamboo Cutter Kaguya',c4:'the water cycle for kids',c5:'Androcles and the Lion story',c6:'falconry United Arab Emirates',c7:'The Nightingale Hans Christian Andersen',c8:'biometrics fingerprint scanner',c9:'Mars planet exploration',c10:'How the Camel Got His Hump Kipling',b1:'camel desert adaptation',b2:'The Lion and the Mouse Aesop fable',b3:'why bees are important pollination',b4:'the Moon facts for kids',b5:'The Tortoise and the Hare fable',b6:'falaj irrigation channel Oman UAE',b7:'helpful robots technology',b8:'why the body needs water health',b9:'The Ant and the Grasshopper fable',b10:'the Sun star facts for kids'};
 function ylCReadTick(){ const el=document.getElementById('creadTimer'); if(!el) return; const s=Math.floor((Date.now()-YL_CT0)/1000); el.textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
 ROUTES.ylCReadRun=function(id){
+  if(typeof lessonLocked==='function'&&lessonLocked(id)&&typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ lessonLockScreen('ylReading'); return; }
   const x=YL_CREAD.find(r=>r.id===id); if(!x){go('ylReading');return;}
   try{speechSynthesis.cancel();}catch(e){}
   YL_GLOSS={}; (x.gloss||[]).forEach(g=>{YL_GLOSS[g[0]]=g[1];});
@@ -21634,6 +21660,7 @@ function ylTypeThis(id, ext){
 }
 ROUTES.ylReader=function(compound){
   const [id, mode] = String(compound||'').split(':');
+  if(typeof lessonLocked==='function'&&lessonLocked(id)&&typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'){ lessonLockScreen('ylReading'); return; }
   const r=YL_READERS.find(x=>x.id===id); if(!r){go('ylReading');return;}
   try{speechSynthesis.cancel();}catch(e){}
   YL_GLOSS=r.gloss||{};
