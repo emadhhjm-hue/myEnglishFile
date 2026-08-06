@@ -14294,12 +14294,24 @@ function gateKeyOfNav(screen, arg){
 function gateOpen(k){
   const g = gates();
   if(k==='ylDiag:start' || k==='diag:pre') return g[k] !== false;  // start-of-year open by default
+  /* The Foundational Course is now a student's whole world from the moment they
+     choose "Junior student" at login — there is no main dashboard to fall back to
+     for them. So, unlike other modules, it defaults OPEN; a teacher can still lock
+     it explicitly if they want to hold it back for a class. */
+  if(k==='yl') return g[k] !== false;
   return !!g[k];
 }
 function setGate(k,v){ const g=gates(); g[k]=!!v; Store.set('ican_gates',g); paintGates(); if(CURRENT_SCREEN==='dashboard') injectBars('dashboard'); }
 function setAllGates(v){ const g={}; gateDefs().forEach(d=>g[d.key]=!!v); Store.set('ican_gates',g); paintGates(); }
 function gateLabel(k){ const d=gateDefs().find(d=>d.key===k); return d? d.icon+' '+d.label : 'this activity'; }
 function renderLocked(k){
+  /* A locked Foundational Course has no "dashboard" to send a Junior student
+     back to — that's the Senior hub, which would just re-mix the two courses
+     we deliberately split apart. Offer "Switch course" there instead. */
+  const isYl = (k==='yl' || k.indexOf('ylDiag')===0);
+  const escapeBtn = isYl
+    ? `<button class="btn dark" onclick="showStageChoice()">🔄 Switch course</button>`
+    : `<button class="btn dark" onclick="go('dashboard')">← Back to my dashboard</button>`;
   app().innerHTML = `
   <div class="wrap screen"><div class="card locked-card">
     <div class="locked-ic">🔒</div>
@@ -14308,7 +14320,7 @@ function renderLocked(k){
     Your teacher activates activities step by step, so you can focus on what matters now instead of facing everything at once.
     Check back soon — or ask your teacher when it opens.</p>
     <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <button class="btn dark" onclick="go('dashboard')">← Back to my dashboard</button>
+      ${escapeBtn}
       <button class="btn ghost" onclick="go('typing')">⌨️ Practise typing (always open)</button>
     </div>
   </div></div>`;
