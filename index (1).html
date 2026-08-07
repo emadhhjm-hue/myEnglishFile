@@ -1221,37 +1221,6 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .dst-grid b{display:block;font-size:.82rem;color:#5c3d9e;margin-bottom:2px}
 .dst-grid p{margin:0;font-size:.86rem;line-height:1.4;color:var(--ink)}
 .dst-tools{margin:4px 0 0;padding-left:18px;font-size:.86rem;line-height:1.6}
-
-/* ---------------- Reading Course: embedded video + transcript + quiz block ---------------- */
-.rc-vid-card{margin:16px 0;border-radius:14px;overflow:hidden;box-shadow:0 8px 22px -10px rgba(21,24,58,.35);border:1px solid #0b2130}
-.rc-vid-thumb{position:relative;background:radial-gradient(circle at 30% 30%,#123047,#0a1622 72%);height:180px;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden}
-.rc-vid-thumb::before{content:'';position:absolute;inset:14px;border:1.5px solid #2dd4f0;border-radius:10px;opacity:.55;
-  clip-path:polygon(0 18%,18% 0,100% 0,100% 82%,82% 100%,0 100%)}
-.rc-vid-thumb::after{content:'';position:absolute;top:14px;right:14px;width:34px;height:8px;background:repeating-linear-gradient(90deg,#2dd4f0 0 3px,transparent 3px 6px);opacity:.7}
-.rc-vid-play{position:relative;z-index:2;width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.5);
-  display:flex;align-items:center;justify-content:center;color:#fff;font-size:1.4rem;transition:transform .15s}
-.rc-vid-thumb:hover .rc-vid-play{transform:scale(1.08);background:rgba(255,255,255,.22)}
-.rc-vid-cap{position:absolute;z-index:2;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;font-weight:800;letter-spacing:.06em;font-size:.85rem;
-  text-align:center;text-shadow:0 2px 8px rgba(0,0,0,.5);pointer-events:none;max-width:80%}
-.rc-vid-dur{position:absolute;left:12px;bottom:10px;z-index:2;background:rgba(0,0,0,.55);color:#fff;font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:6px}
-.rc-vid-bar{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff;border:none;border-top:1px solid #eee;
-  padding:12px 16px;font-weight:800;font-size:.94rem;color:var(--ink);cursor:pointer;text-align:left}
-.rc-vid-bar:hover{background:#f7f7fb}
-.rc-vid-chev{transition:transform .18s;color:var(--muted);font-size:1.1rem}
-.rc-vid-panel{background:#fff;padding:0 16px;overflow:hidden;max-height:none}
-.rc-vid-panel.hidden{display:none}
-.rc-vid-transcript{padding:12px 0 6px;font-size:.9rem;line-height:1.6;color:var(--slate,#3A3F58);border-top:1px dashed var(--line,#ddd)}
-.rc-vid-quiz{padding:10px 0 16px;border-top:1px dashed var(--line,#ddd);margin-top:6px}
-.rc-vid-quiz>b{display:block;margin-bottom:8px;font-size:.92rem}
-.rc-vid-quiz .btn{margin-top:6px}
-.rc-vid-score{margin-top:8px;font-weight:800}
-.rc-vid-overlay{position:fixed;inset:0;background:rgba(8,10,26,.72);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px}
-.rc-vid-modal{background:#0b0f1e;border-radius:14px;max-width:820px;width:100%;overflow:hidden;box-shadow:0 24px 60px -10px rgba(0,0,0,.6)}
-.rc-vid-modal-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;color:#fff;font-size:.92rem}
-.rc-vid-close{background:rgba(255,255,255,.12);border:none;color:#fff;border-radius:8px;width:30px;height:30px;font-size:1rem;cursor:pointer}
-.rc-vid-close:hover{background:rgba(255,255,255,.22)}
-.rc-vid-frame-wrap{position:relative;width:100%;padding-top:56.25%}
-.rc-vid-frame-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 </style>
 <style id="waspk-css">
 /* =========================================================================
@@ -1309,6 +1278,31 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .lu-bulk-btn{border:none;border-radius:20px;padding:7px 14px;font-weight:700;font-size:.82rem;cursor:pointer;white-space:nowrap}
 .lu-bulk-btn.lock{background:#E6464B;color:#fff}
 .lu-bulk-btn.open{background:#0FA98B;color:#fff}
+.vidpop-ov{position:fixed;inset:0;background:rgba(9,12,30,.75);display:none;align-items:center;justify-content:center;z-index:10000;padding:20px}
+.vidpop-box{background:#0b0e1a;border-radius:16px;max-width:860px;width:100%;padding:14px;position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.vidpop-x{position:absolute;top:-14px;right:-14px;width:36px;height:36px;border-radius:50%;border:none;background:#fff;color:#15183A;font-size:1rem;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.vidpop-title{color:#fff;font-weight:700;margin:2px 4px 10px;font-size:1rem}
+.vidpop-frame{position:relative;padding-top:56.25%;border-radius:10px;overflow:hidden}
+.vidpop-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.mvb{margin:18px 0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff}
+.mvb-play{display:block;width:100%;border:none;cursor:pointer;position:relative;min-height:148px;background:linear-gradient(135deg,#0f2547,#0a4b6e);background-size:cover;background-position:center;color:#fff;text-align:left;padding:18px 16px}
+.mvb-tri{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.92);color:#0a4b6e;font-size:1.1rem;margin-bottom:42px}
+.mvb-cap{display:block;font-weight:800;font-size:1.05rem;text-shadow:0 1px 6px rgba(0,0,0,.5)}
+.mvb-dur{position:absolute;bottom:12px;right:14px;background:rgba(0,0,0,.6);color:#fff;border-radius:6px;padding:2px 8px;font-size:.8rem;font-weight:700}
+.mvb-tr>summary{cursor:pointer;list-style:none;font-weight:700;color:#15183A;padding:11px 14px;background:#f3f6fb;border-top:1px solid var(--line)}
+.mvb-tr>summary::-webkit-details-marker{display:none}
+.mvb-tr>summary::before{content:'\25b8  ';color:#2b5fa6}
+.mvb-tr[open]>summary::before{content:'\25be  '}
+.mvb-trbody{padding:12px 16px;font-size:.92rem;line-height:1.6;color:#333;border-top:1px solid var(--line)}
+.mvb-quiz{padding:12px 16px 16px;border-top:1px dashed var(--line);background:#fbfcfe}
+.mvb-quiz h4{margin:0 0 10px;font-size:.95rem;color:#15183A}
+.mlq{margin:0 0 14px}.mlq-q{font-weight:600;margin:0 0 8px}
+.mlq-opts{display:flex;flex-direction:column;gap:6px}
+.mlq-opt{text-align:left;border:1.5px solid var(--line);background:#fff;border-radius:9px;padding:9px 12px;font:inherit;cursor:pointer}
+.mlq-opt:hover:not(:disabled){border-color:#2b5fa6}
+.mlq-opt.right{background:#e8f7f2;border-color:#0c8a72;color:#0c6b53;font-weight:700}
+.mlq-opt.wrong{background:#fdecec;border-color:#E6464B;color:#B4231F}
+.mlq-exp{margin:8px 0 0;font-size:.86rem;color:#0c6b53;background:#eef7f3;border-radius:8px;padding:8px 10px}
 .di-collapse.quiz>summary{background:#eef7f3;border-color:#a9e0d0;color:#0c6b53}
 .di-collapse.quiz>summary::before{color:#0c6b53}
 .quiz-pad{border:1px solid var(--line);border-top:none;border-radius:0 0 10px 10px;padding:10px 12px}
@@ -3677,7 +3671,7 @@ const RSKILLS = [
     ]
   }
 },
-{ n:20, id:"process", strand:"info", icon:"⚙️", name:"Reading processes & diagrams", strap:"Stages · cycles · flow · cause and effect", colour:"#15803D",
+{ n:20, id:"process", strand:"info", icon:"⚙️", name:"Reading processes &amp; diagrams", strap:"Stages · cycles · flow · cause and effect", colour:"#15803D",
   what:"A process text explains <b>how something happens, in order</b>. Its meaning lives in arrows, numbered stages, loops and conditions — not in adjectives. The commonest test question is not <i>what happens?</i> but <i>what happens if you change one stage</i>, and only the diagram can answer that.",
   how:["Find the entry point and the exit. If there is no exit, you are reading a cycle, and a cycle has no end to summarise — only a loop to describe.","Follow the arrows, not the layout. Diagrams are drawn to fit a page; the sequence may not run left to right.","Look for the decision points — anywhere the path splits, a condition is being applied. Name the condition.","Test the diagram against the prose. Where they disagree, the diagram is usually right and the prose is usually older."],
   trap:"A feedback loop is not a repetition. If a stage sends output back to an earlier stage, the process changes itself each time round — and a summary that lists the stages in order has described the shape of the diagram while missing its entire point.",
@@ -3718,7 +3712,7 @@ const RSKILLS = [
     ]
   }
 },
-{ n:21, id:"directions", strand:"info", icon:"🧭", name:"Directions & wayfinding", strap:"Maps · routes · giving and following", colour:"#0D9488",
+{ n:21, id:"directions", strand:"info", icon:"🧭", name:"Directions &amp; wayfinding", strap:"Maps · routes · giving and following", colour:"#0D9488",
   what:"Directions are a text with a job: someone must be able to <b>act</b> on them, once, without you there. Reading them means holding a map and a sequence in your head at the same time — and noticing that the two often disagree. Writing them means knowing what your reader can see from where they are standing.",
   how:["Locate yourself first. Find the start marker, the north arrow and the scale before you read a single instruction.","Turn distances into landmarks. 'After 400 m' is useless at speed; 'immediately after the mosque' is not. Good directions are anchored to what the eye will meet.","Check every turn against the map. A route description that says 'left' where the map shows a right-hand exit is a text that has been edited and not re-walked.","Count the decision points, not the metres. A route with one turn is short even if it is long."],
   trap:"Directions written by someone who knows the way are almost always wrong in the same place: at the point the writer stopped needing to think. That is where the landmark disappears and the instruction becomes 'then it's obvious'.",
@@ -4214,368 +4208,112 @@ const RSKILLS = [
         design:"Design Mr Spugg's own war memorial, as he would commission it, listing his sacrifices in his own words. The design must let a viewer see through it without a single line of commentary.", designId:null }
     ]
   }
-},
+}
+,
+/* ---------------- UNIT 4 · MEDIA LITERACY (BBC Bitesize "Solve the Story") ---------------- */
+{ n:1, id:"ml_glitch", strand:"info", icon:"🕵️", name:"When a video lies", strap:"Deepfakes · edited media · reverse image search", colour:"#E0403F",
+  what:"Working out whether an image or video is real, edited, or completely fake — before you believe it or share it.",
+  how:["Look for the tell-tale signs of editing: odd lighting, blurred edges, hands and teeth that look wrong, audio that does not match the mouth.","Ask where it came from. Run a reverse image search to find the original.","Pause before you share. A fake spreads fastest through people who felt something and reposted."],
+  trap:"Looking real is not evidence. Modern AI can fake a face and a voice — realism is exactly what a good fake is built to have.",
+  levels:{ standard:[
+    { id:"mlg1", title:"The Glitch: when a video lies", genre:"Non-fiction", field:"Media literacy · manipulated media", register:"Neutral", type:"Explainer · multimodal", words:210,
+      vocab:[["deepfake","a fake image, audio or video made with AI to look real"],["manipulated","changed or edited to mislead"],["verify","to check that something is true"],["reverse image search","searching the internet using a picture instead of words"]],
+      mcqs:[
+        {type:"mcq", q:"What is the writer's main point about edited videos?", options:["Editing tools are far too expensive for most ordinary people.","Check them before you believe them.","A video can only ever harm a person who is already famous.","Manipulated clips are always simple to spot at a glance."], answer:1, exp:"The text argues for pausing to verify — not for trusting how real something looks."},
+        {type:"mcq", q:"Why does a reverse image search help?", options:["It permanently deletes the fake picture from the internet.","It makes your phone run noticeably faster than before.","It can reveal where a picture first came from.","It proves that absolutely every image online is fake."], answer:2, exp:"It traces an image back to its earliest source, exposing reused or edited pictures."},
+        {type:"mcq", q:"Why do fakes spread so fast, according to the text?", options:["People repost from emotion before checking.","Social platforms secretly pay users to share every clip.","Fake videos can only ever be posted late at night.","They are shared exclusively by automated bot accounts."], answer:0, exp:"A strong feeling plus a quick tap is how a fake travels — the central warning."}],
+      selfcheck:[
+        {q:"In your own words, explain the difference between a video that looks real and a video that has been verified as real.", model:"Looking real is only about appearance, and AI is built to look real. Verified means checked against evidence — for example, tracing the original through a reverse image search."},
+        {q:"Describe one clip you have seen online that you now think you should have checked first. What would you check, and how?", model:"A strong answer names a specific clip, then names a concrete check: the original source, who first posted it, or visible signs of editing."}],
+      design:"Design a pocket-sized 'Spot the Fake' card for a younger student: four quick visual signs that a video or photo might be edited, in clear icons and short phrases.",
+      text:'<p>One skate trick. One video. One big problem. When Misha lands a trick at the skatepark, her friends film it — until an <b>edited</b> version suddenly appears online, showing something that never happened. Misha did not do the thing the video claims. But it looks real, and it is spreading.</p><p>This is the danger of <b>manipulated media</b>. Editing tools and AI can now change faces, voices and actions so smoothly that our eyes are fooled. A <b>deepfake</b> does not have to be perfect — it only has to be believable for the few seconds it takes someone to react and share.</p>'
+        + mediaVideoBlock({ ytId:'dVa-00GYHas', title:'Watch: Deepfake — a brief history of unreliable images', dur:'6:10',
+            transcript:'<p><b>What the video covers:</b> pictures and video have never been perfectly trustworthy — from staged photographs a century ago to modern AI deepfakes that can put words into the mouth of a real person. Because a face and a voice can now be faked convincingly, the video argues we should judge a clip by its source and evidence, not by how real it looks.</p>',
+            quiz:[
+              {q:"According to the video, realistic-looking images are —", options:["always completely safe to believe and to share","not new; pictures have long been altered","only ever faked by large technology firms","impossible to make without a film studio"], answer:1, exp:"Image manipulation is old — looking real has never guaranteed being true."},
+              {q:"A deepfake is dangerous mainly because it can —", options:["make a real person appear to say things","only be opened by expert programmers","be created without using any electricity","never be posted on social platforms"], answer:0, exp:"It can fabricate a convincing false record of a real person."},
+              {q:"The video suggests you should judge a clip by —", options:["how polished and realistic it looks to you","the number of likes and reshares it has","its source and the evidence behind it","whether a close friend sent it to you"], answer:2, exp:"Source and evidence matter more than surface realism."}] })
+        + '<p>Before you believe the video of Misha, ask the media-literacy questions: <i>Where did this first appear? Who benefits if I believe it? Does anything look edited?</i> Then use the BBC guide to run a reverse image search on the source picture.</p>'
+        + '<p style="margin-top:6px"><b>Go deeper (BBC Bitesize):</b> <a href="https://www.bbc.co.uk/bitesize/articles/zfw9ywx" target="_blank" rel="noopener">How to do a reverse image search →</a></p>'
+        + '<p style="font-size:.8rem;color:#888;border-top:1px solid #eee;padding-top:8px;margin-top:14px">Adapted for classroom reading from BBC Bitesize — <i>Solve the Story</i> (Other Side of the Story), Episode 1: The Glitch. Source: <a href="https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr" target="_blank" rel="noopener">bbc.co.uk/bitesize</a>.</p>' } ], advanced:[] } },
 
-/* ---------------- 23 · DEEPFAKES & MANIPULATED MEDIA ---------------- */
-{ n:23, id:"deepfake", strand:"info", icon:"🕵️", name:"Deepfakes & manipulated media", strap:"When the video doesn't match what really happened", colour:"#DC2626",
-  what:"Video and images can now be edited — or generated by AI — to show something that never happened: a face swapped onto another body, words a person never said, a clip cut and reordered to change the story. A manipulated video rarely announces itself. It has to be checked.",
-  how:["Check the small details first — hands, shadows, lighting and timestamps are still where most fakes fall apart.","Run a reverse image search on a still frame to see where else it has appeared, and when.","Ask who benefits if the video is believed, and who has not been allowed to give their own account.","Look for corroboration outside the video itself — a second angle, a named witness, an official record — before you trust it."],
-  trap:"'It looks real' is not evidence. Looking real is the only job a convincing fake is designed to do.",
-  levels:{
-    standard:[
-      { id:"rk23s1", title:"The clip that wasn't quite right", genre:"Non-fiction", field:"Media literacy · misinformation", register:"Informal", type:"Narrative account", words:225,
-        vocab:[["circulating","being passed around and shared widely"],["deliberate","done on purpose, intentionally"],["timestamp","a record of the exact time something happened or was recorded"],["reverse image search","a tool that searches the internet using a picture instead of words"],["footage","recorded video of an event"]],
-        text:"<p>Nadia scored the winning basket on Thursday, and by Friday morning half the school had seen a different video: Nadia, shoving Farah to the ground before the shot, deliberate and ugly, eleven seconds long.</p><p>Except Nadia never shoved anyone. She remembered the moment clearly — she had reached for the ball, Farah had slipped on her own, and the referee had waved play on. What was circulating online was her real jump for the ball, with three frames removed and the order reversed, so the fall now landed at exactly the wrong moment.</p><p>Her cousin Sami noticed something the video's four hundred comments had missed: Nadia's shadow pointed the wrong way for the time printed in the corner. He saved a single frame and ran a reverse image search. It matched the school's own livestream, recorded eleven minutes earlier than the caption claimed.</p>" + rcVidBlock({
-          id:"rk23s1vid", title:"How to do a reverse image search", duration:"2:12", caption:"REVERSE IMAGE SEARCH",
-          youtubeId:"REPLACE_WITH_YOUR_YOUTUBE_ID",
-          transcript:"<p>You can perform a reverse image search on Google Images by pressing the camera icon next to the search bar. Drag in a photo, or paste an image link, and Google shows you where else that picture has appeared online — and when.</p><p>Reverse image searches are useful for finding the original source of a photo, checking whether a profile picture is real, and spotting reused or edited images in a viral post.</p>",
-          quiz:[
-            {q:"What does a reverse image search actually tell you?", options:["Whether the person in the photo is lying","Where else that image has appeared online, and when","The camera model used to take it","The exact GPS coordinates and location it was originally taken at"], answer:1, exp:"It traces the picture to every other place it has appeared — which is how Sami found the original, earlier livestream."},
-            {q:"Which icon starts a reverse image search on Google Images?", options:["The camera icon next to the search bar","The share icon","The microphone icon at the bottom of the screen","The three-dot menu"], answer:0, exp:"Pressing the camera icon lets you upload or paste an image instead of typing words."},
-            {q:"If a search finds the same photo posted a year earlier in a completely different context, what does that suggest?", options:["The new caption is probably completely accurate and trustworthy","Nothing useful at all","The image may be old or reused, not what the new caption claims","The photo must have been staged"], answer:2, exp:"An earlier, differently-captioned appearance of the same image is a strong sign the current caption is misusing it."}
-          ]
-        }) + "<p>The clip was not made with sophisticated software. It was cut on a phone in about four minutes, by someone who wanted a reaction — and got one, because nobody checked the timestamp before they shared it.</p><div style='border-top:1px solid #e5e5e5;margin-top:14px;padding-top:8px;font-size:.85rem;color:#555'><b>Go further:</b> This lesson is inspired by BBC Bitesize's <i>Solve the Story</i> series on media literacy. Watch the real episodes and how-to guides — including reverse image searches — at <a href='https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr' target='_blank' rel='noopener'>bbc.co.uk/bitesize — Solve the Story</a>.</div>",
-        mcqs:[
-          {q:"What was actually changed in the video?", options:["Nothing — it was completely genuine","Three frames were removed and reordered","The whole clip was AI-generated from scratch","The players' faces were swapped"], answer:1, exp:"A low-tech cut, not a synthetic fake — three frames removed and the sequence reversed so the fall landed at the wrong moment."},
-          {q:"How did Sami first suspect the video was edited?", options:["He asked Nadia directly","A mutual friend had already told him the video was fake","The shadow direction didn't match the timestamp","The video had too many views"], answer:2, exp:"A physical inconsistency — the shadow — contradicted the caption's claimed time. Small physical details are often the first clue."},
-          {q:"What did the reverse image search prove?", options:["That Nadia was lying","That the footage came from the school livestream, filmed earlier","That Farah had edited the clip using professional video software","Nothing useful"], answer:1, exp:"It traced the frame to its true source and true time — exactly what a reverse image search is for."},
-          {q:"What does the story suggest about who creates misleading videos?", options:["Only the most skilled hackers with expensive professional software can do it","Simple edits by ordinary people can be just as damaging","AI is always involved","Misleading videos are rare"], answer:1, exp:"The edit took four minutes on a phone. The real damage came from four hundred people sharing it unchecked."}
-        ],
-        selfcheck:[
-          {q:"Four hundred comments never noticed the shadow, but Sami did in minutes. What does this suggest about how most people watch video online — and what would change it?", model:"A possible answer tours around: most viewers react to the story's emotional payoff rather than checking physical consistency, and they share on that first reaction. Checking takes seconds but requires a habit of pausing before reacting — treating a dramatic video as a claim to test, not a fact to pass on."},
-          {q:"Suggest two checks Sami could have used besides the reverse image search, and explain what each would test.", model:"A possible answer tours around: checking whether the posting account was new with no history (suggesting it existed to spread this one clip); asking the school or Farah directly for their account of Thursday's game. Each test compares the claim against a source independent of the video itself."}
-        ],
-        design:"Design a one-page 'before you share' checklist for a class group chat, using this story as the worked example. It must fit on one phone screen and work for a video, not only a written claim.", designId:null }
-    ],
-    advanced:[
-      { id:"rk23a1", title:"The uncanny valley of trust", genre:"Non-fiction", field:"Media literacy · synthetic media", register:"Formal", type:"Analytical article", words:320,
-        vocab:[["synthetic","made artificially, not occurring naturally"],["corroborate","to confirm or give supporting evidence for a claim"],["metadata","data that gives information about other data, e.g. when or where a file was made"],["artefact","a small flaw or trace left by a process, here: a technical giveaway in a fake"],["ecosystem","here: the network of accounts, platforms and records a claim moves through"]],
-        text:"<p>Spotting a faked video used to require expertise: uneven skin texture, a blink rate that never quite matched a human eye, ears that failed to move with a jaw. Several of those tells have since been engineered away. The tools that generate a convincing face, or clone a voice from a few seconds of audio lifted from a public post, are now free, fast, and require no technical skill. The uncomfortable conclusion is that <i>looking real</i> has stopped being useful evidence, because looking real is the only job the technology was built to do.</p><p>What has not disappeared is context. A synthetic video still has to travel through a real information ecosystem — an account with a posting history, a platform with metadata, a claim with a timestamp — and that ecosystem leaves traces a generated face cannot fake. A reverse image search cannot tell you whether a face is synthetic, but it can tell you whether an earlier, unedited version of the clip exists elsewhere with a different story attached. An account created the same week a video goes viral, with no other posts, is a stronger signal than any frame inside the video itself.</p>" + rcVidBlock({
-          id:"rk23a1vid", title:"Checking an account before you check the video", duration:"1:58", caption:"SOURCE DISCIPLINE",
-          youtubeId:"REPLACE_WITH_YOUR_YOUTUBE_ID",
-          transcript:"<p>Before trusting a dramatic video, check the account that posted it: when it was created, what else it has posted, and whether its activity looks human. Then ask what independent evidence would exist if the claim were true — a second camera angle, a named witness, a record kept by someone with a reputation to lose.</p><p>A video with no corroboration outside itself is an allegation, not a fact — however convincing it looks.</p>",
-          quiz:[
-            {q:"According to source discipline, what should you check first when a dramatic video appears?", options:["How many views it already has","Whether the account has a genuine posting history","How professionally it is edited","The specific music track used in the background audio"], answer:1, exp:"An account's history — its age, its range of posts, its ordinary activity — is a far stronger signal than anything visible inside the clip."},
-            {q:"What is the strongest form of corroboration for a video claim?", options:["Many people sharing it quickly","A caption that explains the situation clearly and calmly to everyone","A convincing thumbnail","An independent second source, like another angle or a named witness"], answer:3, exp:"Corroboration has to come from outside the video itself — a source that would exist independently if the claim were true."},
-            {q:"Why does the article call delay 'the habit that protects you'?", options:["Because it gives time for independent corroboration to appear or fail to appear", "Because delay always and completely guarantees that a claim is completely false","Because slow videos are always accurate","Because platforms reward patience"], answer:0, exp:"Delay doesn't prove anything by itself — it simply gives corroborating evidence time to surface, which a rushed reaction never allows."}
-          ]
-        }) + "<p>This reframes the skill required. Detecting a fake is not primarily a technical exercise in spotting artefacts — a contest researchers increasingly expect defenders to lose as generation improves. It is an exercise in <b>source discipline</b>: refusing to update your beliefs on the strength of a video alone, and instead asking where else this claim would leave evidence if it were true — a second angle, a named witness, an institution with a reputation to lose. A video that cannot be corroborated by anything outside itself should be treated as an allegation, however convincing the face inside it looks.</p><p>The uncomfortable trade-off is that this discipline is slower than sharing, and slower loses. The habit that actually protects you is therefore not cleverness but delay: waiting long enough, before reacting, for corroboration to arrive — or fail to.</p><div style='border-top:1px solid #e5e5e5;margin-top:14px;padding-top:8px;font-size:.85rem;color:#555'><b>Go further:</b> Watch BBC Bitesize's <i>Solve the Story: The Glitch</i> and its reverse image search guide at <a href='https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr' target='_blank' rel='noopener'>bbc.co.uk/bitesize</a>.</div>",
-        mcqs:[
-          {q:"Why does the writer argue that 'looking real' is no longer useful evidence?", options:["Because all videos are now fake","Because realism is the technology's only design goal","Because cameras have become far less reliable than before","Because AI cannot generate faces convincingly"], answer:1, exp:"If a tool's entire purpose is to look convincing, convincingness tells you nothing about truth — it tells you the tool worked."},
-          {q:"What does a reverse image search actually establish about a suspected deepfake?", options:["Whether the face is synthetic","Whether an earlier or different version of the clip exists elsewhere","The identity of the creator","Whether the video has already been reported to the platform's safety team"], answer:1, exp:"It compares the frame against everything else online — it locates the clip in a wider trail, not inside the pixels themselves."},
-          {q:"Why does the writer redefine the core skill as 'source discipline' rather than spotting technical flaws?", options:["Because technical flaws no longer exist","Because generation technology is expected to keep improving past detection","Because source discipline is much faster than checking every technical artefact","Because platforms remove all fakes automatically"], answer:1, exp:"If detection is a race defenders lose over time, the more durable skill is checking a claim against independent evidence, not the video's surface."},
-          {q:"What should a viewer do with a claim that cannot be corroborated by anything outside the video itself, according to the article?", options:["Share it with a warning label","Treat it as true until disproven","Treat it as an allegation, not a fact","Delete it immediately without telling anyone"], answer:2, exp:"An uncorroborated claim keeps the status of an allegation — believed provisionally, not acted on as settled fact."},
-          {q:"Why does the writer call delay 'the habit that protects you', despite admitting it 'loses' against sharing?", options:["Because delay always guarantees that a story is completely false","Because slowness has no real cost","Because accuracy matters more than the reward for speed","Because platforms penalise fast sharing"], answer:2, exp:"The writer accepts that delay is socially costly — it loses the race to be first — and argues accuracy is worth that cost anyway."}
-        ],
-        selfcheck:[
-          {q:"The article claims detecting deepfakes by spotting technical flaws is 'a contest defenders increasingly expect to lose'. Explain the reasoning, and evaluate whether 'source discipline' avoids the same problem.", model:"A possible answer tours around: as generators improve, the technical artefacts (blinking, ears, skin) that once betrayed a fake get corrected first, so any detection method tied to today's flaws expires. Source discipline shifts the test to something generation technology cannot fabricate — an independent trail of corroborating evidence — so it does not degrade the same way, though a sufficiently coordinated fake (a fabricated account history, a planted second angle) could in principle attack that too."},
-          {q:"'The habit that protects you is not cleverness but delay.' Explain why this is a harder habit to adopt than it sounds, using how social media rewards speed as part of your answer.", model:"A possible answer tours around: platforms and social status both reward being first to share dramatic content, while checking is invisible and unrewarded even when it prevents harm. Delay asks a person to give up a real, immediate reward for a probabilistic, future benefit — being right rather than early — which is a harder trade than it looks on paper."}
-        ],
-        design:"Design a short 'source discipline' protocol — no more than five steps — for a school news account before it reposts any video-based claim. State which single step you would refuse to skip under time pressure, and why.", designId:null }
-    ]
-  }
-},
+{ n:2, id:"ml_noise", strand:"info", icon:"🤖", name:"Bots and the fake crowd", strap:"Bot accounts · fake comments · online pile-ons", colour:"#E6608A",
+  what:"Recognising when the 'crowd' attacking or praising something online is not made of real people at all.",
+  how:["Check the account: when was it created, does it have real posts, is the profile picture reused?","Notice the language — fake comments are often emotional, repetitive, and designed to provoke.","Remember that a flood of comments can be manufactured to change how a real situation feels."],
+  trap:"Numbers feel like truth. A message that 'everyone is saying it' can be a handful of bots posting hundreds of times.",
+  levels:{ standard:[
+    { id:"mln1", title:"The Noise: bots and the fake crowd", genre:"Non-fiction", field:"Media literacy · bots & manipulation", register:"Neutral", type:"Explainer · multimodal", words:205,
+      vocab:[["bot","an automated account run by software, not a person"],["escalate","to grow quickly and become more serious"],["manipulative","designed to control how someone feels or acts"],["credibility","how believable or trustworthy something is"]],
+      mcqs:[
+        {type:"mcq", q:"What does the text suggest about a sudden flood of angry comments?", options:["It is proof beyond doubt that the person is guilty.","It should persuade you to join in straight away.","Some of it may be fake, posted by bots.","It always comes from a person's closest friends."], answer:2, exp:"Sam's suspicion, and the lesson, is that the noise may be manufactured."},
+        {type:"mcq", q:"Which of these is a warning sign of a bot account?", options:["A brand-new account with no real posts.","A profile filled with years of ordinary personal photos.","A verified account with a long and consistent history.","An account that has never once posted a comment."], answer:0, exp:"New accounts, reused pictures and repetitive posting are classic bot signs."},
+        {type:"mcq", q:"Why might someone use bots to pile on a target?", options:["To gently improve the target person's mental health.","To slow the whole social-media platform down on purpose.","To reduce how many comments a post can receive.","To make an opinion look far more popular than it is."], answer:3, exp:"Bots manufacture the appearance of a crowd, pressuring real people to agree."}],
+      selfcheck:[
+        {q:"List three quick checks you could make on an account before trusting what it posts.", model:"Sensible checks include the account's age, whether its posts look like a real person's, and whether the profile picture appears elsewhere in a reverse image search."},
+        {q:"Explain how a small number of bots can make an opinion feel like the view of a huge crowd.", model:"A few automated accounts can post the same message hundreds of times, so the volume looks like agreement and pressures real users to join in."}],
+      design:"Design an infographic that teaches three ways to tell a bot account from a real person — clear icons, and no more than eight words per point.",
+      text:'<p>The fake video of Misha is spreading fast, and the online abuse is growing. Hundreds of comments judge her; some demand she is punished. Misha feels anxious and overwhelmed — but Sam thinks something strange is going on. As they look closer, some of the comments seem oddly similar, and they begin to wonder whether they are from real people at all.</p><p>Many are <b>bots</b>: automated accounts that flood a post to make an opinion look huge. A manufactured crowd can <b>escalate</b> a pile-on and push real people to join in — which is exactly what it is designed to do.</p>'
+        + mediaVideoBlock({ ytId:'q-Y-z6HmRgI', title:'Watch: How to choose your news (TED-Ed)', dur:'4:47',
+            transcript:'<p><b>What the video covers:</b> news now reaches us instantly from countless sources, mixed with opinion and sometimes non-facts. A smart reader slows down, separates fact from opinion, checks who is speaking and why, and looks at more than one source before deciding what to believe.</p>',
+            quiz:[
+              {q:"The video says a smart reader should first —", options:["repost whichever story is the most dramatic one","trust the account that has the most followers online","separate fact from opinion","read only the headline and nothing else at all"], answer:2, exp:"Telling fact from opinion is the reader's first job."},
+              {q:"Why check more than one source?", options:["So one source cannot decide your view.","Because doing so makes the reading take much longer.","Because a single source is always secretly run by a bot.","To track down the funniest possible version of a story."], answer:0, exp:"Cross-checking protects you from one slanted or fake source."},
+              {q:"A flood of identical comments is best treated as —", options:["clear proof that the original story must be true","a good reason to join in with them immediately","a possible sign of coordinated or bot activity","completely irrelevant and never worth noticing"], answer:2, exp:"Repetition at scale is a red flag, not evidence."}] })
+        + '<p>So before you trust the "crowd", check the accounts behind it. A real reaction and a manufactured one can look identical at a glance — the difference is in the pattern.</p>'
+        + '<p style="margin-top:6px"><b>Go deeper (BBC Bitesize):</b> <a href="https://www.bbc.co.uk/bitesize/articles/znbbh4j" target="_blank" rel="noopener">How to identify bot accounts →</a></p>'
+        + '<p style="font-size:.8rem;color:#888;border-top:1px solid #eee;padding-top:8px;margin-top:14px">Adapted for classroom reading from BBC Bitesize — <i>Solve the Story</i> (Other Side of the Story), Episode 2: The Noise. Source: <a href="https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr" target="_blank" rel="noopener">bbc.co.uk/bitesize</a>.</p>' } ], advanced:[] } },
 
-/* ---------------- 24 · BOTS, BIAS &amp; ECHO CHAMBERS ---------------- */
-{ n:24, id:"botcrowd", strand:"info", icon:"🤖", name:"Bots, bias & echo chambers", strap:"When the crowd online isn't really a crowd", colour:"#7C3AED",
-  what:"Not every account is a person, and not every wave of outrage is spontaneous. Bots and coordinated fake accounts can be used to make an opinion look bigger than it is, while algorithms quietly show each of us more of what we already agree with — a bias that feels, from the inside, like simply seeing 'what everyone thinks'.",
-  how:["Look at an account's whole history, not one post — repetition, a brand-new profile, or posting at inhuman speed are stronger signals than any single comment.","Ask whether a story feels emotionally engineered — outrage, fear and disgust spread faster than calm, accurate reporting, which is exactly why bad actors reach for them.","Notice when everyone in your feed seems to agree. That is often the algorithm, not the world.","If you're unsure whether an account is real, the safest response is to block and report, not to argue with it."],
-  trap:"A view is not correct just because it is loud, and it is not popular just because it is everywhere in your feed. Volume online is manufacturable.",
-  levels:{
-    standard:[
-      { id:"rk24s1", title:"Four hundred strangers, same three sentences", genre:"Non-fiction", field:"Media literacy · disinformation", register:"Informal", type:"Narrative account", words:220,
-        vocab:[["coordinated","planned and carried out together, as a group"],["outrage","strong anger, often provoked deliberately"],["provoke","to deliberately cause a strong reaction"],["escalate","to become rapidly more serious or intense"],["moderation","here: the platform staff or systems that review and remove harmful content"]],
-        text:"<p>After the video spread, the comments arrived faster than anyone could read them: hundreds of accounts, all furious, many using strangely similar phrases — 'this cannot go unpunished', 'expose her now' — appearing again and again under slightly different names.</p><p>Sami started scrolling through the accounts themselves instead of the comments. Most had been created that same week. None had a profile picture. Several had posted the identical sentence, word for word, four minutes apart, at 3 a.m.</p><p>Real anger looks messy — typos, disagreement, people arguing with each other about details. This did not. It looked assembled, because it was: a small network of automated or paid accounts, designed to make a rumour look like a verdict, so that real students would see the volume and assume the crowd had already decided.</p>" + rcVidBlock({
-          id:"rk24s1vid", title:"How to identify bot accounts on social media", duration:"1:45", caption:"SPOT THE BOT",
-          youtubeId:"REPLACE_WITH_YOUR_YOUTUBE_ID",
-          transcript:"<p>If you're unsure whether an account is real, check three things: when it was created, what it actually posts, and how natural its activity looks. A profile made this week, with no photo and no history beyond one topic, is a strong warning sign.</p><p>If you're still unsure, the safest response is to block and report rather than argue with it — blocking stops contact, and reporting helps the platform investigate.</p>",
-          quiz:[
-            {q:"Which detail is the strongest sign an account might be fake?", options:["It has a profile photo","It agrees with popular opinions that most people already hold","It was created very recently and only posts about one topic","It has fewer than 100 followers"], answer:2, exp:"A brand-new account with no history beyond a single topic is the classic pattern behind a fake or bot profile."},
-            {q:"What should you do if you're still unsure whether an account is real after checking it?", options:["Argue with it until it responds","Block and report it","Share its posts to warn others","Message it asking if it's a bot"], answer:1, exp:"Blocking and reporting is the safest response — it stops contact and lets the platform investigate properly."},
-            {q:"Why is 'block and report' safer than arguing with a suspected bot?", options:["Bots always reply if provoked","Reporting deletes the account completely and instantly, without any appeal at all","Arguing proves you are right","Blocking stops contact, and reporting lets the platform investigate further"], answer:3, exp:"Arguing gives a bot or troll more material to work with; blocking and reporting is the response that actually reduces harm."}
-          ]
-        }) + "<p>Some real students did join in once the pile-on felt large enough to be safe. That was the design working exactly as intended — manufactured outrage borrowing real people's voices to make itself look larger, and then genuinely becoming larger, because it now was.</p><div style='border-top:1px solid #e5e5e5;margin-top:14px;padding-top:8px;font-size:.85rem;color:#555'><b>Go further:</b> BBC Bitesize's <i>Solve the Story: The Noise</i> covers spotting bot accounts. See it at <a href='https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr' target='_blank' rel='noopener'>bbc.co.uk/bitesize</a>.</div>",
-        mcqs:[
-          {q:"What first made Sami suspicious of the comments?", options:["The number of comments was too high","Some accounts posted identical sentences minutes apart","The comments were all from teachers","No comments used any capital letters or punctuation at all"], answer:1, exp:"Identical wording from different accounts, posted minutes apart, is a strong sign of coordination rather than independent, spontaneous anger."},
-          {q:"Why does the text say 'real anger looks messy'?", options:["Because real people online always disagree loudly with each other about everything","Because genuine reactions vary and argue, unlike scripted, repeated text","Because messy comments are always true","Because anger cannot be expressed online"], answer:1, exp:"Genuine, independent reactions naturally vary in wording and often contradict each other. Uniform, repeated phrasing suggests a script, not spontaneity."},
-          {q:"What was the purpose of the fake accounts, according to the text?", options:["To help Nadia clear her name","To make a rumour look like an already-settled verdict","To advertise a product","To report the video directly to the platform's safety moderators"], answer:1, exp:"The manufactured volume was designed to make the accusation look like a decided fact that real students would simply confirm by joining in."},
-          {q:"What happened once real students joined the pile-on?", options:["The fake accounts were exposed immediately","The outrage became genuinely large, not just manufactured","Everyone immediately stopped commenting and apologised publicly","The video was deleted"], answer:1, exp:"The design succeeded: fake volume created the appearance of consensus, which then attracted real participants and became a genuinely large reaction."}
-        ],
-        selfcheck:[
-          {q:"Explain, in your own words, why manufactured outrage needs real people to eventually join in to succeed.", model:"A possible answer tours around: fake accounts alone cannot punish, exclude or spread a rumour through a real community — only real people's choices to believe and act on it can. The bots' job is only to make the first version of events look already agreed on, so that real people supply the actual social consequences the fake accounts cannot."},
-          {q:"Suggest a rule for checking 'the crowd agrees' online, and explain what it protects against.", model:"A possible answer tours around a rule such as: before treating agreement as evidence, check ten of the agreeing accounts' full histories, not just their comments. This protects against mistaking manufactured volume for genuine, independent consensus, which is the exact confusion the fake accounts were designed to produce."}
-        ],
-        design:"Design a short 'is this a real crowd?' guide for checking whether online agreement is genuine, using at least two checks from this lesson.", designId:null }
-    ],
-    advanced:[
-      { id:"rk24a1", title:"The algorithm didn't lie to you. It just never told you everything.", genre:"Non-fiction", field:"Media literacy · algorithms and bias", register:"Formal", type:"Analytical article", words:315,
-        vocab:[["algorithm","a set of rules a computer system follows to make decisions, e.g. what to show you"],["engagement","here: clicks, likes, comments and time spent — the metric platforms optimise for"],["polarised","split into strongly opposing, increasingly separate positions"],["confirmation bias","the tendency to notice and accept information that supports what you already believe"],["curated","selected and arranged, rather than occurring naturally or completely"]],
-        text:"<p>No recommendation algorithm is designed to make you angry, and none of them 'lie'. Each one is built for a narrower goal: keep you watching, keep you scrolling, keep you coming back. It achieves that goal by learning, from your own behaviour, what you are most likely to react to — and content that provokes outrage, fear or tribal loyalty reliably out-performs content that is calm, balanced and slow to reward. The system did not choose sides. It chose whatever kept the engagement number rising, and in most human populations that content happens to be one-sided.</p><p>The result is a feed that is technically accurate in every individual post and systematically misleading in its overall shape. You are not shown lies; you are shown a curated, unrepresentative sample of the truth, selected for its ability to hold your attention rather than for its ability to inform you. Two students researching the same event, on the same platform, can end up with almost no overlapping information — not because either is being deceived by a single false post, but because each has been shown a different fraction of a much larger, more complicated reality.</p>" + rcVidBlock({
-          id:"rk24a1vid", title:"How algorithms shape what you see", duration:"2:05", caption:"THE FEED ISN'T NEUTRAL",
-          youtubeId:"REPLACE_WITH_YOUR_YOUTUBE_ID",
-          transcript:"<p>A recommendation algorithm isn't trying to inform you evenly — it's trying to keep you watching. It learns what makes you react, and content that provokes strong feelings usually keeps people scrolling longer than calm, balanced reporting does.</p><p>That means two people can see completely different 'versions' of the same story, each individually true, but selected for very different reasons.</p>",
-          quiz:[
-            {q:"What is a recommendation algorithm mainly optimised for, according to this?", options:["Keeping you engaged and coming back","Showing every single viewpoint completely equally","Fact-checking every post","Reducing your screen time"], answer:0, exp:"Engagement — attention and return visits — is the metric the system is built to maximise, not balance or accuracy."},
-            {q:"Why can two people researching the same event end up with very different information?", options:["One of them is being lied to","Only one of them happened to use a genuinely reliable source this time","Search engines are broken","Each is shown a different selected slice of the story, not a false one"], answer:3, exp:"The distortion is in what gets selected and amplified for each person, not in any single false claim."},
-            {q:"Why can't this kind of bias be fixed with a simple fact-check?", options:["Because fact-checkers themselves are simply not trustworthy or reliable at all, ever, under any circumstances","Because the individual claims are often true — the bias is in what's selected and repeated","Because algorithms delete fact-checks","Because nobody reads fact-checks"], answer:1, exp:"A fact-check targets one false statement; an algorithmic echo chamber is built from true statements, selectively amplified, which leaves nothing false to correct."}
-          ]
-        }) + "<p>This matters more than any single fake video, because it cannot be fact-checked away. Fact-checking assumes a discrete, false claim; an algorithmic echo chamber is made of true claims, selectively amplified. The correction is structural, not factual: deliberately seeking sources your own feed would never surface, treating unanimous agreement inside your feed as a signal about the algorithm rather than about the world, and noticing when a topic makes you feel certain unusually fast — because certainty that arrived without effort is often the algorithm's, not yours.</p><div style='border-top:1px solid #e5e5e5;margin-top:14px;padding-top:8px;font-size:.85rem;color:#555'><b>Go further:</b> BBC Bitesize's <i>Solve the Story: The Skew</i> examines bias and algorithms. See <a href='https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr' target='_blank' rel='noopener'>bbc.co.uk/bitesize</a>.</div>",
-        mcqs:[
-          {q:"According to the article, what is a recommendation algorithm actually optimised for?", options:["Political balance","Complete factual accuracy in every single post","Keeping you engaged and returning","Reducing screen time"], answer:2, exp:"The article states the goal is engagement — attention and return visits — not truth or balance, and that outrage-prone content simply performs best against that goal."},
-          {q:"Why does the writer say the feed is 'technically accurate... and systematically misleading'?", options:["Because most individual posts contain outright, deliberate lies about real world events specifically","Because individual posts can be true while the overall selection is unrepresentative","Because algorithms delete true content","Because the feed changes every day"], answer:1, exp:"Each post can be individually true; the distortion comes from which true things are selected and amplified, not from falsehood."},
-          {q:"Why does the article argue that fact-checking cannot fix an algorithmic echo chamber?", options:["Fact-checkers are not trusted","Fact-checking only addresses discrete false claims, not patterns of true ones","Fact-checking is too slow to matter","Algorithms automatically remove every fact-check that gets posted anywhere online"], answer:1, exp:"An echo chamber is built from selectively amplified true claims, so there is no single false statement for a fact-check to target."},
-          {q:"What does the writer suggest 'certainty that arrived without effort' might actually indicate?", options:["That the claim has been thoroughly verified","That the algorithm, not careful reasoning, produced the feeling","That the topic is completely unimportant to absolutely everyone involved","That other people disagree strongly"], answer:1, exp:"Fast, effortless certainty is treated as a warning sign that the feed's selection did the persuading, rather than the user's own evaluation of evidence."},
-          {q:"What kind of correction does the article recommend, and why?", options:["A factual correction, because the claims are false","A structural correction, because the distortion is in selection, not fact","No correction, because the problem cannot be solved","A legal correction enforced through government regulation and courts worldwide"], answer:1, exp:"Because the bias lives in what is selected and amplified rather than in any single fact, the fix has to be a change in habits of seeking information, not a correction of a claim."}
-        ],
-        selfcheck:[
-          {q:"Explain the distinction the article draws between a 'discrete false claim' and 'true claims, selectively amplified' — and why the second is harder to correct.", model:"A possible answer tours around: a false claim can be checked against reality and disproven once. A pattern of true but selectively amplified claims contains nothing false to disprove — the distortion is in proportion and emphasis across many posts, which requires comparing what was shown against everything that could have been shown, a much harder and less visible task."},
-          {q:"The writer argues that noticing when a topic 'makes you feel certain unusually fast' is a useful warning sign. Evaluate this advice — what is its strength, and what is a situation where it might mislead you?", model:"A possible answer tours around: its strength is that it targets the felt experience of being persuaded, which is available to anyone without technical knowledge of algorithms. It might mislead in a case where fast certainty is actually justified — a topic you have long expertise in — so the advice works best as a prompt to check your reasoning, not as proof the reasoning is wrong."}
-        ],
-        design:"Design a short experiment two students could run to test whether their feeds are showing them different 'fractions' of the same story, using this article's argument as your method.", designId:null }
-    ]
-  }
-},
+{ n:3, id:"ml_skew", strand:"info", icon:"📢", name:"Bias and the echo chamber", strap:"Bias · algorithms · echo chambers · influencers", colour:"#2B5FA6",
+  what:"Understanding how the way a story is framed — and the way algorithms feed it to you — shapes what you think and feel.",
+  how:["Notice framing: which words are emotional, what is left out, whose side is told.","Remember the algorithm shows you more of what you react to — an echo chamber, not the whole world.","Ask why an influencer might exaggerate. Drama earns clicks; balance rarely does."],
+  trap:"If everything in your feed agrees with you, that is not proof you are right — it may just be the echo chamber working.",
+  levels:{ standard:[
+    { id:"mls1", title:"The Skew: bias and the echo chamber", genre:"Non-fiction", field:"Media literacy · bias & algorithms", register:"Neutral", type:"Explainer · multimodal", words:200,
+      vocab:[["bias","a one-sided view that unfairly favours something"],["algorithm","a set of rules a platform uses to decide what you see"],["echo chamber","a space where you only hear opinions like your own"],["agenda","a hidden aim behind what someone says or shares"]],
+      mcqs:[
+        {type:"mcq", q:"What is an 'echo chamber'?", options:["A specially built room with unusually good sound.","A feed showing only views you hold.","A brand-new type of automated social-media bot.","A fact-checking tool that verifies news reports."], answer:1, exp:"Algorithms feed you more of what you react to, so opposing views fade out."},
+        {type:"mcq", q:"Why might an influencer post an exaggerated story?", options:["Because calm, balanced posts are banned by platforms.","Because they genuinely dislike their own audience.","Because dramatic content earns more attention.","Because the platform pays extra for longer captions."], answer:2, exp:"Outrage and drama are rewarded by attention, so some creators lean into them."},
+        {type:"mcq", q:"How does bias 'skew' a story?", options:["By deleting the entire story from the internet.","By making the text considerably longer to read.","By adding a full and honest list of sources.","By choosing words that push one feeling."], answer:3, exp:"Framing — word choice and what is included or left out — steers the reader."}],
+      selfcheck:[
+        {q:"Explain, with an example, how two people can see the same event completely differently online.", model:"Because algorithms build each person an echo chamber, two users can be shown opposite selections of posts about one event and each conclude the crowd agrees with them."},
+        {q:"Suggest two things you could do to escape your own echo chamber.", model:"Good answers include deliberately following sources you disagree with, and checking an event across outlets with different viewpoints before forming a judgement."}],
+      design:"Design a two-panel poster showing the same news event framed two opposite ways, then a caption explaining how the word choice changed the feeling.",
+      text:'<p>Just when things cannot seem to get worse, a new video drops from an American gossip channel. Misha is trapped in an endless scroll of hate — but Sam and Aaron notice something is off. Could the influencer be stirring drama on purpose?</p><p>This is <b>bias</b> at work. The way a story is framed — the words chosen, the details left out — changes how it feels. And the <b>algorithm</b> quietly feeds you more of whatever you react to, building an <b>echo chamber</b> where one view drowns out the rest.</p>'
+        + mediaVideoBlock({ ytId:'q-Y-z6HmRgI', title:'Watch: How to choose your news (TED-Ed)', dur:'4:47',
+            transcript:'<p><b>What the video covers:</b> because anyone can publish, the same event can be told in very different ways. The video shows how opinion, emotion and selected facts shape a story, and why comparing sources — and noticing what a source wants from you — protects your judgement.</p>',
+            quiz:[
+              {q:"According to the video, the same event can —", options:["only ever be reported in one single correct way","be framed very differently by different sources","be trusted only when it is genuinely dramatic","never contain any opinion of any kind at all"], answer:1, exp:"Framing means one event can yield many versions."},
+              {q:"An echo chamber is mainly a problem because —", options:["it makes your phone run slower than usual","it hides views you disagree with","it deletes the posts that you have already made","it only ever happens to much older adults"], answer:1, exp:"You stop seeing anything that challenges you."},
+              {q:"The safest response to an emotionally charged post is to —", options:["check who made it and what they might want","share it immediately before you happen to forget","assume it is perfectly balanced and fair","switch your phone off completely and forever"], answer:0, exp:"Consider the source's possible agenda before reacting."}] })
+        + '<p>To read past the skew, look for the pattern across a whole account — not one post. Who do they always praise or attack? Are they trying to inform you, or to provoke you?</p>'
+        + '<p style="margin-top:6px"><b>Go deeper (BBC Bitesize):</b> <a href="https://www.bbc.co.uk/bitesize/articles/z4w79ty" target="_blank" rel="noopener">How to spot hidden agendas online →</a></p>'
+        + '<p style="font-size:.8rem;color:#888;border-top:1px solid #eee;padding-top:8px;margin-top:14px">Adapted for classroom reading from BBC Bitesize — <i>Solve the Story</i> (Other Side of the Story), Episode 3: The Skew. Source: <a href="https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr" target="_blank" rel="noopener">bbc.co.uk/bitesize</a>.</p>' } ], advanced:[] } },
 
-/* ---------------- 25 · PHISHING, DOXXING &amp; DIGITAL FOOTPRINT ---------------- */
-{ n:25, id:"cybersafe", strand:"info", icon:"🔒", name:"Phishing, doxxing & digital footprint", strap:"Staying safe when things turn personal", colour:"#0F766E",
-  what:"Cybersecurity is not only about hackers and passwords. Doxxing (publishing someone's private information without consent) and phishing (tricking someone into handing over personal details) both exploit the same thing: a moment of fear, urgency or curiosity that stops a person from pausing to check.",
-  how:["Check the sender's actual address or account, not just the display name, and be wary of urgent or threatening language designed to make you panic.","Never enter a password or personal detail after clicking a link you weren't expecting — go to the real site directly instead.","Remember that every like, comment, search and post adds to a digital footprint that others, including strangers, can piece together.","If personal information about you or a friend is shared without consent, tell a trusted adult immediately — this is a safety issue, not an embarrassment to hide."],
-  trap:"Scammers and doxxers do not need to be clever. They only need you to react before you think — which is exactly what urgent, emotional messages are designed to produce.",
-  levels:{
-    standard:[
-      { id:"rk25s1", title:"The message from 'the school office'", genre:"Non-fiction", field:"Media literacy · cybersecurity", register:"Informal", type:"Narrative account", words:215,
-        vocab:[["phishing","tricking someone into giving away passwords or personal details online"],["urgency","the quality of needing immediate attention or action"],["legitimate","genuine and lawful; the real thing it claims to be"],["credentials","details, such as a username and password, used to prove identity and log in"],["suspicious","causing a feeling that something may be wrong or dishonest"]],
-        text:"<p>Farah's phone buzzed at 7 a.m.: <i>URGENT — Your school account will be suspended in 1 hour. Verify your login now to avoid losing access: schooI-portal-verify.net</i>. Her stomach dropped. She had a test that morning and needed her account.</p><p>She almost typed her password straight in. Then she noticed the capital I standing in for a lowercase l in 'schooI-portal', and that the real school portal address, saved in her browser, spelled it differently. She checked the sender's actual email address rather than the name shown — it ended in a string of random numbers, nothing like the school's domain.</p><p>She showed her older brother, who pointed out the message's whole design: an emergency, a countdown, a link, and nothing else. That is the shape of almost every phishing attempt, whichever story it wears — a bank, a delivery company, a prize, a school. The urgency is the point. It is built to make you act before the part of your brain that checks addresses gets a chance to switch on.</p>" + rcVidBlock({
-          id:"rk25s1vid", title:"How to spot a phishing message", duration:"1:38", caption:"PHISHING RED FLAGS",
-          youtubeId:"REPLACE_WITH_YOUR_YOUTUBE_ID",
-          transcript:"<p>Phishing messages nearly always share the same shape: an urgent problem, a countdown, and a single link presented as the only fix. Before you click anything, check the sender's real address rather than the name shown, and look for spelling mistakes or odd characters in the web address.</p><p>If in doubt, don't use the message's link at all — go to the real site by typing the address yourself, or through a bookmark you already trust.</p>",
-          quiz:[
-            {q:"What shape do most phishing messages share, whatever story they tell?", options:["A calm, detailed explanation","A request signed by a named person","A long, detailed list of terms and conditions to read","An urgent problem, a countdown, and one link"], answer:3, exp:"The costume changes — a bank, a school, a delivery firm — but the structure of urgency plus a single link stays the same."},
-            {q:"What should you check instead of trusting the sender's display name?", options:["The sender's actual email address or domain","The time the message was sent","The message's font","The number of exclamation marks used throughout the message"], answer:0, exp:"A display name costs nothing to fake; the underlying address or domain is much harder for a scammer to disguise convincingly."},
-            {q:"What is the safest way to check if an account really needs 'urgent verification'?", options:["Click the link in the message immediately without checking it first","Reply asking if it's genuine","Go to the real site directly, without using the message's link","Forward it to a friend for their opinion"], answer:2, exp:"Navigating to the known, real site independently avoids the fake link entirely."}
-          ]
-        }) + "<p>Farah reported the message and logged into the real portal separately, the way she always had. Nothing had actually been suspended.</p><div style='border-top:1px solid #e5e5e5;margin-top:14px;padding-top:8px;font-size:.85rem;color:#555'><b>Go further:</b> BBC Bitesize's <i>Solve the Story</i> series covers phishing and digital footprints in <i>The Doxx</i> and <i>The Truth</i>. See <a href='https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr' target='_blank' rel='noopener'>bbc.co.uk/bitesize</a>.</div>",
-        mcqs:[
-          {q:"What first gave the message away as a phishing attempt?", options:["It arrived at 7 a.m.","A capital I replaced a lowercase l in the fake web address","It mentioned a test","It was sent by her brother pretending to be the school administration"], answer:1, exp:"A near-identical, misspelled domain is a classic phishing technique — designed to look correct at a glance."},
-          {q:"Why does the text call urgency 'the point' of a phishing message?", options:["Because every single school message is always extremely urgent","Because panic stops people from checking details carefully","Because urgent messages are always true","Because it makes the message shorter"], answer:1, exp:"Urgency is designed to trigger action before the recipient's checking instincts activate — that is the mechanism the scam depends on."},
-          {q:"What should Farah have checked instead of trusting the sender's display name?", options:["The time the message was sent","The actual sender email address or domain","The overall length and formatting of the message","The font used"], answer:1, exp:"Display names can be faked easily; the underlying address or domain is much harder for a scammer to disguise convincingly."},
-          {q:"What is the safest way to respond to a message like this, according to the text?", options:["Click the link to check if it's real","Reply asking for more information","Go to the real site directly, without using the message's link","Forward it to several friends and ask for their honest opinion"], answer:2, exp:"Navigating to the known, real site independently avoids the fake link entirely, which is the safest way to verify an account's real status."}
-        ],
-        selfcheck:[
-          {q:"The text says phishing messages 'wear' different stories — a bank, a delivery, a school — but share the same shape. Describe that shape in your own words.", model:"A possible answer tours around: an urgent problem, a tight deadline or countdown, a single link presented as the only solution, and pressure not to think it through. The costume changes; the underlying structure — panic plus a link — stays the same."},
-          {q:"Explain why checking the sender's real address is more reliable than checking the display name, using how phishing messages are typically built.", model:"A possible answer tours around: a display name is just a label the sender can type in freely, so it costs nothing to fake. The underlying email address or domain usually requires registering something the scammer does not control (the real organisation's domain), so mismatches there are much harder to hide."}
-        ],
-        design:"Design a short 'phishing red flags' poster for a school noticeboard, using Farah's message as the worked example.", designId:null }
-    ],
-    advanced:[
-      { id:"rk25a1", title:"What doxxing actually costs", genre:"Non-fiction", field:"Media literacy · online safety", register:"Formal", type:"Analytical article", words:325,
-        vocab:[["doxxing","publishing someone's private information online without their consent, often to intimidate them"],["aggregate","to gather together separate pieces into a combined whole"],["anonymity","the state of not being identifiable by name"],["disproportionate","too large or severe in relation to what caused it"],["recourse","an action taken to deal with or put right a difficult situation"]],
-        text:"<p>Doxxing rarely begins with a single dramatic leak. It usually begins with aggregation: a home-town mentioned in one old post, a school named in another, a face visible in a background of a third, none of it secret on its own, all of it public somewhere. The skill doxxers use is not hacking. It is patience — assembling scattered, harmless-looking fragments into an address, a routine, a way to find someone in person.</p><p>This is why 'I have nothing to hide' misunderstands the risk. The danger is rarely a single embarrassing fact. It is the combination of many ordinary facts, none alarming individually, that together remove the protection anonymity was providing. A person who has never posted anything shameful can still be doxxed, because doxxing does not require wrongdoing — only enough scattered detail to be findable.</p><p>The consequences are also disproportionate to the original dispute in a way that plain online conflict is not. An argument stays online. Doxxing follows a person into their physical life — their door, their workplace, their family — and that shift from digital to physical risk is precisely why platforms and, increasingly, the law treat it as a distinct category of harm rather than an extension of an argument. It converts a disagreement about words into a threat to a body.</p>" + rcVidBlock({
-          id:"rk25a1vid", title:"What a 'combinability audit' actually checks", duration:"2:00", caption:"AUDIT YOUR FOOTPRINT",
-          youtubeId:"REPLACE_WITH_YOUR_YOUTUBE_ID",
-          transcript:"<p>Doxxing rarely relies on one dramatic leak — it's usually built from small, separately harmless details: a school mentioned here, a routine mentioned there, a face visible in a background photo. A combinability audit means checking whether those scattered pieces, put together, could reveal where you actually are.</p><p>If you or a friend is ever targeted this way, reporting it and telling a trusted adult is the correct, proportionate response — not an overreaction.</p>",
-          quiz:[
-            {q:"How does doxxing usually begin, according to this?", options:["With a single hacked account","With small, separately public details combined over time","Only through hacking directly into a person's private accounts","With a stolen password"], answer:1, exp:"The article describes doxxing as usually built from scattered, individually harmless fragments assembled over time, not one dramatic leak."},
-            {q:"What does a 'combinability audit' actually check?", options:["How strong your password is","How many followers you have","Whether scattered public details, put together, could reveal your location or routine","Whether your account has been officially verified by the platform's safety team, in writing"], answer:2, exp:"It checks whether separately harmless posts, combined, would let a stranger locate or identify you."},
-            {q:"What is the correct response if you or a friend is doxxed?", options:["Report it and tell a trusted adult — this is proportionate, not an overreaction","Ignore it until it stops","Argue with whoever posted it","Delete every single social media account you own immediately and permanently, forever"], answer:0, exp:"The article explicitly rejects the idea that reporting and telling an adult is an overreaction once this line has been crossed."}
-          ]
-        }) + "<p>The most useful individual defence is not deleting everything, which is rarely realistic, but auditing what is combinable: checking whether your school, neighbourhood, daily routine and face can be pieced together from things you have posted separately, over years, to different audiences who each saw only a fragment. The second, and more important, defence is knowing that reporting to a platform and telling a trusted adult are not overreactions once this line has been crossed — they are the correct, proportionate response to a threat that has already left the space where 'just ignore it' has ever worked.</p><div style='border-top:1px solid #e5e5e5;margin-top:14px;padding-top:8px;font-size:.85rem;color:#555'><b>Go further:</b> BBC Bitesize's <i>Solve the Story: The Doxx</i> and <i>The Truth</i> follow a doxxing storyline in full. See <a href='https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr' target='_blank' rel='noopener'>bbc.co.uk/bitesize</a>. If you are worried about something happening to you or a friend, Childline (0800 1111 in the UK) offers 24-hour support, and in the UAE you can speak to a school counsellor or trusted adult.</div>",
-        mcqs:[
-          {q:"According to the article, how does doxxing typically begin?", options:["With a single major data breach","With the aggregation of many small, separately public details","Only through hacking a person's accounts","With a formal court order requiring disclosure of private records"], answer:1, exp:"The article describes doxxing as usually built from scattered, individually harmless fragments combined over time, not one dramatic leak."},
-          {q:"Why does the article say 'I have nothing to hide' misunderstands the risk?", options:["Because everyone has something to hide","Because the danger is combination of ordinary facts, not one shameful fact","Because privacy laws simply don't apply to innocent, law-abiding people at all","Because doxxing only targets guilty people"], answer:1, exp:"The article argues the risk comes from assembling many ordinary, non-shameful details into a way to locate someone — wrongdoing is not required."},
-          {q:"Why does the writer treat doxxing as a 'distinct category of harm' rather than just an extension of an online argument?", options:["Because it simply involves a larger number of people arguing online publicly","Because it shifts risk from digital conflict to physical, real-world danger","Because it always involves celebrities","Because it happens on multiple platforms"], answer:1, exp:"The key distinction drawn is the shift from words staying online to a threat reaching a person's physical location and safety."},
-          {q:"What does the article recommend as the 'most useful individual defence'?", options:["Deleting every single social media account you have ever created online","Auditing what personal details could be pieced together across posts","Only posting under a fake name","Never posting online again"], answer:1, exp:"The article recommends checking combinability of scattered posts over full deletion, which it calls unrealistic."},
-          {q:"How does the article frame reporting to a platform and telling a trusted adult after doxxing?", options:["As an overreaction to be avoided","As a last resort only after trying everything else has completely failed","As the correct, proportionate response once the line is crossed","As something only adults should do"], answer:2, exp:"The article explicitly rejects the idea that this response is an overreaction, calling it proportionate to a threat that has moved beyond words."}
-        ],
-        selfcheck:[
-          {q:"Explain, using the article's own reasoning, why deleting old posts is described as 'rarely realistic' rather than recommended as the main defence.", model:"A possible answer tours around: doxxing draws on fragments spread across years, platforms and other people's posts (tags, photos, mentions) that an individual cannot fully control or erase, so complete deletion is not achievable in practice. The article instead recommends auditing combinability — a more realistic, ongoing habit rather than a one-off fix."},
-          {q:"The article argues doxxing 'converts a disagreement about words into a threat to a body'. Explain what work this sentence is doing in the argument as a whole.", model:"A possible answer tours around: the sentence draws a sharp line between two categories usually blurred in casual conversation — online conflict and physical danger — and uses it to justify treating doxxing as a safety issue rather than a social one, which is the basis for the article's claim that reporting it is proportionate rather than an overreaction."}
-        ],
-        design:"Design a short 'combinability audit' checklist someone could use to review what their public posts, tagged photos, and profile details reveal when pieced together.", designId:null }
-    ]
-  }
-},
-
-/* ---------------- 26 · MISINFORMATION VS DISINFORMATION ---------------- */
-{ n:26, id:"factcheck", strand:"info", icon:"⚖️", name:"Misinformation vs disinformation", strap:"Arguing with evidence, not emotion", colour:"#B45309",
-  what:"Misinformation is false information shared by someone who believes it is true. Disinformation is created and shared on purpose to mislead. Both spread fastest on social media — but only one of them can be fixed simply by telling people the facts.",
-  how:["Separate the claim from the feeling. Write down, in one plain sentence, exactly what is being claimed — usually smaller than it felt.","Use a two-step response: identify the false claim clearly, then answer it with solid evidence, not emotion.","Ask whether a mistake could be corrected calmly, or whether the person sharing it benefits from you staying angry — the answer changes what response will actually work.","Remember that staying calm and factual, not louder, is what stops an argument from escalating and helps others see clearly."],
-  trap:"Winning an argument and correcting a belief are not the same thing. Shouting down a false claim can make you feel right while making the other person defend it harder.",
-  levels:{
-    standard:[
-      { id:"rk26s1", title:"Two sentences, one wrong", genre:"Non-fiction", field:"Media literacy · misinformation", register:"Informal", type:"Narrative account", words:210,
-        vocab:[["misinformation","false information shared by someone who believes it is true"],["disinformation","false information created and shared deliberately to mislead"],["escalate","to become rapidly more serious or intense"],["evidence","facts or information that support whether a claim is true"],["retract","to formally take back or withdraw a statement"]],
-        text:"<p>Sam's group chat exploded with a claim: the coach had cut Farah from the team 'because her family complained about Nadia'. It felt certain because a classmate posted it with total confidence, and confidence spreads faster than caution.</p><p>Sam wanted to reply with fury. Instead she typed one sentence, then deleted it, then tried again: 'This isn't right — Farah wasn't cut, she's on the injury list, the coach posted it on the team page this morning.' She added a screenshot of the actual post.</p>" + rcVidBlock({
-          id:"rk26s1vid", title:"How to correct a false claim without making it worse", duration:"1:50", caption:"CORRECT WITH EVIDENCE",
-          youtubeId:"REPLACE_WITH_YOUR_YOUTUBE_ID",
-          transcript:"<p>Misinformation is false information someone believes is true; disinformation is spread on purpose to mislead. Either way, a simple two-step method works best: name the exact false claim, then answer it with solid evidence — a screenshot, a source, a fact.</p><p>Staying calm and specific, rather than angry, makes it easier for others to see the correction clearly.</p>",
-          quiz:[
-            {q:"What is the two-step method for challenging a false claim?", options:["Identify the claim clearly, then answer with solid evidence","Ignore it and wait for it to disappear","Argue loudly and repeatedly until people simply stop replying","Ask everyone involved to apologise"], answer:0, exp:"Naming the exact false claim, then answering it with evidence, is the method the video and Sam's reply both use."},
-            {q:"What is the key difference between misinformation and disinformation?", options:["Misinformation is always more dangerous","Misinformation is believed sincerely; disinformation is spread deliberately to mislead","Disinformation only ever happens on social media platforms specifically and nowhere else","There is no real difference"], answer:1, exp:"Misinformation is a sincere mistake; disinformation is intentional — a distinction that matters for how each is best corrected."},
-            {q:"Why does staying calm work better than anger when correcting someone?", options:["It guarantees they will apologise","It is required by most platforms","It makes the other person feel deeply embarrassed in front of everyone","It removes an easy excuse to argue about tone instead of the facts"], answer:3, exp:"An angry reply gives the other person something to react to besides the evidence; a calm, specific one leaves only the facts to respond to."}
-          ]
-        }) + "<p>Two people apologised and deleted their messages. One person, the original poster, doubled down, insisting their cousin had 'heard it from someone at practice' — a source that, on questioning, turned out to be nobody who had actually spoken to the coach.</p><p>Sam noticed the difference. The two who apologised had believed something false by accident — misinformation, corrected the moment better evidence arrived. The one who doubled down without any new evidence was doing something else: defending a story regardless of whether it was true, because being first and being right had become the same thing to defend.</p><div style='border-top:1px solid #e5e5e5;margin-top:14px;padding-top:8px;font-size:.85rem;color:#555'><b>Go further:</b> BBC Bitesize's <i>Solve the Story: The Truth</i> models exactly this two-step method for challenging false claims. See <a href='https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr' target='_blank' rel='noopener'>bbc.co.uk/bitesize</a>.</div>",
-        mcqs:[
-          {q:"What two-step method did Sam use to respond to the rumour?", options:["Ignore it and hope it disappears","Argue loudly and angrily until people finally stopped talking","Identify the false claim clearly, then give solid evidence","Ask everyone to stop talking about Farah"], answer:2, exp:"Sam named the exact false claim and answered it with a screenshot of the real, verifiable source — evidence, not volume."},
-          {q:"Why does the text describe the two people who apologised as spreading 'misinformation' rather than 'disinformation'?", options:["Because they were students, not adults","Because they believed the false claim was true and corrected it once shown evidence","Because they apologised quickly","Because misinformation is always specifically about sports, games and entertainment topics"], answer:1, exp:"Misinformation is false but sincerely believed; the moment better evidence arrived, they updated their belief — the defining feature of an honest mistake."},
-          {q:"What was suspicious about the original poster's 'source'?", options:["It was the coach directly","It could not be traced to anyone who actually spoke to the coach","It was written down officially","It matched exactly the screenshot that Sam had already posted online"], answer:1, exp:"The claimed source dissolved under questioning into an unverifiable chain — 'a cousin heard from someone' — rather than a real, checkable account."},
-          {q:"What distinguishes the original poster's reaction from the other two, according to the text?", options:["They were angrier","They doubled down without producing any new evidence","They personally apologised to Farah in front of everyone","They had more followers"], answer:1, exp:"The key difference is evidential: two people updated on evidence; the original poster held their position without offering anything to support it."}
-        ],
-        selfcheck:[
-          {q:"Explain why Sam's calm, evidence-based reply worked on two people but not on the original poster.", model:"A possible answer tours around: the two who apologised had no personal stake beyond believing something false, so evidence was enough to change their minds. The original poster had already invested in being the person who broke the news first, so admitting error meant losing status, not just updating a belief — evidence alone cannot fix a problem that isn't really about evidence."},
-          {q:"Suggest why 'staying calm and factual' might work better than anger even when the original rumour is genuinely upsetting.", model:"A possible answer tours around: anger gives the other person something to react to defensively, making it easier for them to argue about tone instead of the actual claim. A calm, specific correction removes that escape route, leaving only the evidence to respond to."}
-        ],
-        design:"Design a two-step 'correcting a rumour' template message that could be copied and adapted for a group chat, based on Sam's approach.", designId:null }
-    ],
-    advanced:[
-      { id:"rk26a1", title:"Why correction sometimes backfires", genre:"Non-fiction", field:"Media literacy · misinformation psychology", register:"Formal", type:"Analytical article", words:310,
-        vocab:[["backfire effect","a documented tendency for a correction to sometimes strengthen, not weaken, a false belief"],["identity-protective","describing reasoning that defends a belief because giving it up would threaten a person's sense of group or self"],["repetition","stating something again, which alone can make it feel more familiar and believable"],["retraction","a public statement withdrawing an earlier claim"],["fluency","here: the ease and speed with which information feels familiar or true"]],
-        text:"<p>The intuitive theory of misinformation is simple: a false belief is a gap in someone's knowledge, and a correction fills the gap. Decades of research complicate this picture. Corrections do work, most of the time, for most claims — but for a narrower set of beliefs tied to identity or group loyalty, a correction can trigger what researchers call the <b>backfire effect</b>: presenting solid evidence against a claim leaves the person's belief in it unchanged, or in some studied cases, stronger.</p><p>The mechanism is not stupidity. It is identity-protective reasoning. If a claim is bound up with 'people like me believe this', a correction is processed less as new information and more as an attack on a group the person belongs to, which recruits the same defensive reasoning people use against any perceived attack. The correction has to overcome not just a factual gap but a motivation to reject the correcting source itself.</p>" + rcVidBlock({
-          id:"rk26a1vid", title:"Why some corrections backfire — and how to fix that", duration:"2:10", caption:"THE BACKFIRE EFFECT",
-          youtubeId:"REPLACE_WITH_YOUR_YOUTUBE_ID",
-          transcript:"<p>Sometimes showing someone solid evidence against a false claim doesn't weaken their belief — it can even strengthen it. This happens when the claim is tied to a group they belong to, so the correction feels like an attack on their identity, not just new information.</p><p>A better approach leads with the true fact first, keeps the correction brief, and replaces the false claim with a clear alternative — rather than repeating the falsehood, which can make it feel more familiar.</p>",
-          quiz:[
-            {q:"What is the 'backfire effect'?", options:["When a correction is shared far more widely than the original claim itself","When nobody responds to a correction","When evidence against a claim leaves belief unchanged or makes it stronger","When a claim turns out to be true after all"], answer:2, exp:"The backfire effect is evidence failing to reduce — and sometimes increasing — belief in the false claim it targets."},
-            {q:"Why does identity-protective reasoning make corrections harder?", options:["Corrections are usually wrong","People simply and honestly don't read corrections carefully enough at all, ever, under any circumstances","People are naturally stubborn","The claim is tied to a group identity, so correcting it feels like a personal attack"], answer:3, exp:"When a claim signals belonging to a group, a correction is processed as an attack on that identity, which triggers defensive reasoning."},
-            {q:"What should an effective correction do first, according to this?", options:["Repeat the false claim clearly","Lead with the true fact before mentioning the false one","Apologise for the confusion","Ask the person to explain themselves fully and completely first"], answer:1, exp:"Leading with the truth ensures the reader's strongest impression is the accurate one, rather than reinforcing the false claim through repetition."}
-          ]
-        }) + "<p>A second, quieter mechanism works even when belief in the specific claim does soften: mere repetition. Restating a false claim in order to correct it — even inside the correction — increases its familiarity, and familiarity is often mistaken, unconsciously, for truth. This is why effective corrections are built carefully: lead with the true fact, not the false one; keep the retraction brief; and replace the false claim with a clear alternative explanation, rather than leaving a gap where the myth used to sit, because an unfilled gap invites the original claim straight back in.</p><p>None of this argues against correcting misinformation — silence performs worse in every study that has tested it. It argues for correcting it deliberately: evidence delivered without contempt for the person holding the belief, aimed at the claim rather than the identity attached to it, and structured so the true version, not the false one, is what a reader's memory keeps.</p><div style='border-top:1px solid #e5e5e5;margin-top:14px;padding-top:8px;font-size:.85rem;color:#555'><b>Go further:</b> BBC Bitesize's <i>Solve the Story: The Truth</i> and its guide on arguing with evidence model a version of this method. See <a href='https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr' target='_blank' rel='noopener'>bbc.co.uk/bitesize</a>.</div>",
-        mcqs:[
-          {q:"What is the 'backfire effect' as defined in the article?", options:["When a correction always works perfectly","When evidence against a claim leaves belief unchanged or strengthens it","When a false claim disappears on its own","When a correction is shared far more widely than the original false claim"], answer:1, exp:"The article defines it precisely as evidence failing to reduce, and sometimes increasing, belief in the false claim it targets."},
-          {q:"According to the article, why does identity-protective reasoning make correction harder?", options:["Because people are generally dishonest","Because the correction is processed as an attack on a group the person belongs to","Because most corrections are written far too long and technical for anyone to read","Because people don't read corrections"], answer:1, exp:"The article explains that when a claim is tied to group identity, a correction triggers the same defences used against a perceived attack on that identity."},
-          {q:"What is the 'quieter mechanism' the article identifies alongside identity protection?", options:["Repeating the false claim increases its familiarity, which can be mistaken for truth","People simply and quickly forget corrections almost as soon as they read them at all","Corrections are usually false themselves","Evidence is rarely available"], answer:0, exp:"The article describes mere repetition — even within a correction — as increasing a claim's felt familiarity, which fluency effects can mistake for truth."},
-          {q:"What does the article recommend to avoid this repetition problem?", options:["Never mention the false claim at all","Lead with the true fact, keep the retraction brief, and replace the myth with a clear alternative","Repeat the false claim exactly as many times as the corrected true version, for perceived balance","Only correct claims made by strangers"], answer:1, exp:"The article's structural advice is to foreground truth, minimise repetition of the falsehood, and fill the explanatory gap so the myth cannot slide back in."},
-          {q:"Does the article conclude that correcting misinformation is pointless?", options:["Yes, because corrections never work","No — it argues silence performs worse in every study, so correction should be done deliberately","Yes, because backfire always occurs","No — but this is only true for claims made about well-known public figures, celebrities and politicians"], answer:1, exp:"The article explicitly rejects the pointlessness conclusion, arguing for deliberate, well-structured correction rather than no correction."}
-        ],
-        selfcheck:[
-          {q:"Explain the difference between a false belief that responds normally to evidence and one susceptible to the backfire effect, using the article's concept of identity-protective reasoning.", model:"A possible answer tours around: an ordinary false belief is held because someone lacks the correct information, so new evidence simply updates it. A backfire-prone belief is held partly because it signals belonging to a group, so evidence against it is processed as a threat to that belonging, activating defensive reasoning that can override the factual update the evidence was meant to produce."},
-          {q:"The article recommends leading with the true fact rather than the false claim when correcting misinformation. Explain the reasoning behind this structural choice.", model:"A possible answer tours around: because merely stating a claim increases its felt familiarity regardless of whether it is being affirmed or denied, opening a correction with the false claim risks reinforcing it through repetition before the true version even appears; leading with the truth ensures the reader's strongest, freshest impression is the accurate one."}
-        ],
-        design:"Design a 'correction template' — a short structure (not a filled-in example) that any student could use to challenge a false claim online, built to avoid both the backfire effect and the repetition problem described in this article.", designId:null }
-    ]
-  }
-},
-
-/* ---------------- 27 · THE SCROLL, ADDICTION &amp; FOMO ---------------- */
-{ n:27, id:"scrollfomo", strand:"info", icon:"📵", name:"The scroll, addiction & FOMO", strap:"When the app is designed to be hard to put down", colour:"#DB2777",
-  what:"Social media apps are not accidentally hard to stop using — features like infinite scroll, autoplay and unpredictable notifications are deliberately designed to keep you engaged, using the same reward mechanisms as games of chance. FOMO, the fear of missing out, is one of the feelings that design relies on.",
-  how:["Notice the difference between choosing to open an app and finding yourself already scrolling — the second is the design working, not a personal failure.","Ask what a notification is actually for: informing you, or pulling you back in? Many exist purely to interrupt.","Treat 'everyone is there without me' as a feeling to examine, not a fact — feeds are built to make absence feel louder than it is.","Look for the actual evidence behind a claim that you're 'missing out' — usually the moment itself, once you check, was smaller than the anxiety about missing it."],
-  trap:"Feeling anxious about missing something is not proof that something worth having was actually missed. The anxiety and the value of the event are two separate things, and apps are built to blur the difference.",
-  levels:{
-    standard:[
-      { id:"rk27s1", title:"The party that wasn't much of a party", genre:"Non-fiction", field:"Media literacy · digital wellbeing", register:"Informal", type:"Narrative account", words:215,
-        vocab:[["notification","an alert from a device or app, telling you something has happened"],["autoplay","a feature that automatically starts playing the next video without being asked"],["compulsive","done repeatedly and difficult to stop, even when a person wants to"],["anxiety","a feeling of worry, nervousness or unease"],["exaggerate","to make something seem larger, better or more important than it really is"]],
-        text:"<p>Yousef spent Saturday night refreshing a group's story instead of doing anything else, because everyone he followed seemed to be at the same beach bonfire, and he had not been invited.</p><p>He watched forty seconds of footage, over and over, at 11 p.m., at midnight, at 1 a.m. Each clip showed the same six people laughing near a fire. He read meaning into who was standing near whom, replayed a joke he couldn't hear properly, and went to sleep certain he had missed the best night of the term.</p><p>On Monday, Rana — who had actually been there — described it differently: someone forgot the matches, the wood was damp, they left after ninety minutes because it got cold, and half the stories were filmed to look bigger than the night actually was, because a bonfire photographs better than it felt.</p>" + rcVidBlock({
-          id:"rk27s1vid", title:"A quick FOMO reality check", duration:"1:30", caption:"FOMO REALITY CHECK",
-          youtubeId:"REPLACE_WITH_YOUR_YOUTUBE_ID",
-          transcript:"<p>Before deciding you missed out on something big, ask three questions: what actual evidence do I have beyond this one clip? Is this footage a fair sample of the whole event, or the best few seconds of it? And would I feel this anxious if I hadn't watched it on a loop at midnight?</p>",
-          quiz:[
-            {q:"What does a FOMO reality check ask you to look for first?", options:["How many people liked the post?","Who else is going to attend future events like this one?","What filter was used on the video?","What actual evidence do I have beyond this one clip?"], answer:3, exp:"The check starts by separating what you actually know from what the loop of footage made you feel."},
-            {q:"Why does the check ask whether footage is 'a fair sample of the whole event'?", options:["Because clips are usually the best-looking highlights, not the whole picture","Because all videos are fake","Because longer videos are always automatically more honest and trustworthy than short ones","Because footage should never be trusted"], answer:0, exp:"A short highlight clip, like Yousef's forty seconds, can look far more exciting than the full, ordinary evening it came from."},
-            {q:"Why might watching a clip on a loop at midnight make FOMO feel worse?", options:["Because midnight footage is always edited","Because phone screens are brighter at night","Because repeated, late-night viewing can build anxious feelings not based on new evidence","Because algorithms only ever show sad content late at night specifically and never during the day"], answer:2, exp:"Replaying the same clip doesn't add information — it just gives anxiety more time to build on nothing new."}
-          ]
-        }) + "<p>Yousef realised the forty-second clip had shown him a night edited for the camera, on a loop, at an hour built for anxious replay — and that his sense of missing out had been built entirely from that loop, not from anything that had actually happened at the beach.</p><div style='border-top:1px solid #e5e5e5;margin-top:14px;padding-top:8px;font-size:.85rem;color:#555'><b>Go further:</b> BBC Bitesize's <i>Other Side of the Story</i> collection covers digital wellbeing and social media pressure alongside the <i>Solve the Story</i> series — see <a href='https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr' target='_blank' rel='noopener'>bbc.co.uk/bitesize</a>.</div>",
-        mcqs:[
-          {q:"What did Yousef actually do on Saturday night?", options:["Went to the bonfire briefly","Refreshed and replayed the same short clip repeatedly","Called Rana repeatedly to ask detailed questions about the party","Posted his own story"], answer:1, exp:"He watched the same forty-second clip on a loop at multiple hours rather than gathering any new information about the event."},
-          {q:"According to Rana's account, how did the actual bonfire compare to how it appeared online?", options:["It was exactly as exciting in real life as it looked online to everyone","It was shorter, colder and less eventful than the footage suggested","It didn't happen at all","It lasted much longer than shown"], answer:1, exp:"Rana describes a short, uncomfortable, uneventful evening — a clear gap between the edited footage and the lived experience."},
-          {q:"What does the story suggest was the real source of Yousef's feeling of missing out?", options:["Something genuinely important that happened at the bonfire","The repeated, edited clip itself, watched at anxious hours","A message from a friend","News reports about the event"], answer:1, exp:"The text explicitly attributes his anxiety to the loop of footage, not to any actual missed event, which turned out to be much smaller than it appeared."},
-          {q:"What does 'a bonfire photographs better than it felt' suggest about social media footage generally?", options:["Footage is always completely dishonest and should therefore be banned entirely from schools","Footage can be true in the moment but still misrepresent the whole experience by selection","Photographs are more accurate than memory","Nobody should film social events"], answer:1, exp:"The clips weren't fake, but selecting the best-looking forty seconds from a cold, short evening created an impression more exciting than the reality."}
-        ],
-        selfcheck:[
-          {q:"Explain the difference between 'missing an event' and 'missing a version of an event edited to look better than it was', using Yousef's night as your example.", model:"A possible answer tours around: Yousef assumed the footage was a fair sample of the whole night, when it was in fact a curated highlight — cold, damp, ninety minutes, filmed to look bigger. He wasn't missing the night; he was missing forty selected seconds of it, which is a much smaller thing to have missed."},
-          {q:"Suggest one habit that could have reduced Yousef's anxiety before he found out the truth from Rana, and explain how it would have helped.", model:"A possible answer tours around: asking himself what evidence, beyond the clip's replayed impression, he actually had for how good the night was — he had none beyond the footage itself. Naming that gap (feeling vs. evidence) at the time, rather than after Rana's account, would have let him question the anxiety before it shaped his whole night."}
-        ],
-        design:"Design a short 'FOMO reality check' — three questions someone could ask themselves before believing they missed out on something big, based on what actually happened to Yousef.", designId:null }
-    ],
-    advanced:[
-      { id:"rk27a1", title:"The slot machine in your pocket", genre:"Non-fiction", field:"Media literacy · digital wellbeing and design", register:"Formal", type:"Analytical article", words:315,
-        vocab:[["variable reward","a reward that arrives unpredictably rather than on a fixed schedule, which behavioural science shows is especially compulsive"],["intermittent","occurring at irregular intervals rather than continuously or predictably"],["attrition","here: the gradual loss of a person's attention or time, in small amounts that add up"],["dopamine","a brain chemical associated with anticipation and reward, relevant to how habits form"],["frictionless","designed to remove any obstacle or pause, making an action effortless to repeat"]],
-        text:"<p>Slot machines are engineered around a single, well-documented principle: a reward that arrives unpredictably is more compelling than one that arrives on a fixed schedule. This is not folk wisdom; it is one of the most replicated findings in behavioural psychology, and it is the same principle infinite-scroll feeds and notification systems are built on. A 'pull to refresh' gesture that sometimes reveals something interesting and sometimes reveals nothing behaves, mechanically, like a lever — and the uncertainty is not a flaw in the design. It is the design.</p><p>None of this requires malice from any individual engineer. A team optimising for 'time spent' or 'sessions per day' will, through ordinary iteration and testing, converge on features that exploit variable reward, because those features simply perform better against the metric than features that don't — autoplay removes the natural stopping point at the end of a video; infinite scroll removes the stopping point at the end of a page; unpredictable notification timing (rather than a fixed daily digest) keeps a possible reward always pending. Each choice is small and individually defensible. Together they remove almost every natural pause a user might have used to ask whether to continue.</p>" + rcVidBlock({
-          id:"rk27a1vid", title:"A 'friction audit' for your own phone", duration:"1:55", caption:"REMOVE THE LEVER",
-          youtubeId:"REPLACE_WITH_YOUR_YOUTUBE_ID",
-          transcript:"<p>Slot machines work because unpredictable rewards are more compelling than predictable ones — and the same principle sits behind infinite scroll and unpredictable notifications. A friction audit means changing the phone itself, not just promising to resist it: turning off notifications, switching a feed to grey-scale, or leaving the phone in another room during the hours the pull feels strongest.</p>",
-          quiz:[
-            {q:"What principle from slot machines does the article link to infinite scroll?", options:["Fixed, predictable rewards keep people playing for the longest time","Unpredictable rewards are more compelling than predictable ones","Bright colours cause addiction","Longer games are always more popular"], answer:1, exp:"Variable, unpredictable reward is the documented mechanism shared by slot machines and infinite-scroll feeds alike."},
-            {q:"What does a 'friction audit' actually involve?", options:["Reading more about willpower","Promising yourself firmly that you will scroll much less often from now on","Changing the phone's design so triggers are removed, not just resisted","Deleting all apps permanently"], answer:2, exp:"A friction audit changes the environment — removing notifications or cues — rather than relying on willpower alone."},
-            {q:"Why does the article say willpower alone is a weak defence here?", options:["It targets a moment when temptation is already strongest, which is the hardest moment to resist","People simply don't have enough willpower in general to resist temptation of any kind whatsoever","Willpower only works for adults","Apps do not respond to willpower"], answer:0, exp:"Resisting in the exact moment a variable reward is dangled is the hardest possible time to rely on willpower — structural changes act before that moment arrives."}
-          ]
-        }) + "<p>This reframes what looks, from the outside, like a simple failure of willpower. A person who 'can't stop scrolling' is not necessarily weak-willed; they are responding rationally to an environment engineered specifically to defeat willpower, using mechanisms that predate any individual app by nearly a century of research into behaviour. The corresponding response, then, is not shame but structural counter-measures: removing the frictionless cues rather than relying on resisting them in the moment — turning off notifications rather than promising to ignore them, setting an app to grey-scale to reduce its visual reward, or physically leaving the phone in another room during the hours the pull is strongest. Removing a lever is more reliable than promising not to pull it.</p><div style='border-top:1px solid #e5e5e5;margin-top:14px;padding-top:8px;font-size:.85rem;color:#555'><b>Go further:</b> BBC Bitesize's <i>Other Side of the Story</i> and the film 'What your digital footprint says about you' explore these design patterns further at <a href='https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr' target='_blank' rel='noopener'>bbc.co.uk/bitesize</a>.</div>",
-        mcqs:[
-          {q:"What behavioural principle does the article say infinite-scroll feeds share with slot machines?", options:["Fixed, predictable rewards on a schedule","Variable, unpredictable rewards","Rewards only given once a day","No rewards at all"], answer:1, exp:"The article states unpredictable reward timing is more compelling than fixed reward timing, and identifies this as the shared mechanism."},
-          {q:"According to the article, why do engineers not need 'malice' to build compulsive features?", options:["Because compulsive features are actually illegal, so nobody would ever build them on purpose intentionally","Because features that exploit variable reward simply score better on the metrics being optimised for","Because engineers don't understand psychology","Because users request these features directly"], answer:1, exp:"The article argues ordinary optimisation for engagement metrics converges on these features without requiring deliberate manipulation by any one person."},
-          {q:"How does the article reframe someone who 'can't stop scrolling'?", options:["As lacking willpower and self-discipline","As responding rationally to an environment engineered to defeat willpower","As someone who simply enjoys the content far too much for their own personal good","As someone who should feel ashamed"], answer:1, exp:"The article explicitly rejects a willpower explanation, framing the behaviour as a predictable response to deliberately engineered design."},
-          {q:"What kind of solution does the article recommend, and why?", options:["Relying entirely on personal willpower to resist notifications in the exact moment of temptation","Removing frictionless cues structurally, such as turning off notifications entirely","Deleting all social media permanently","Reporting the apps to regulators"], answer:1, exp:"The article argues structural removal of triggers (turning off, not just resisting) is more reliable than in-the-moment willpower."},
-          {q:"What does the phrase 'removing a lever is more reliable than promising not to pull it' mean in context?", options:["Phones should be physically destroyed","Structural changes work better than relying on self-control in the moment","Levers are dangerous and should be avoided","Promises to change your own behaviour are almost always eventually broken under pressure"], answer:1, exp:"It restates the article's core practical conclusion: change the environment rather than relying on willpower against a system built to overcome it."}
-        ],
-        selfcheck:[
-          {q:"Explain why the article insists individual engineers do not need 'malice' for a harmful design pattern to emerge, and evaluate whether this makes the outcome more or less concerning.", model:"A possible answer tours around: optimisation for a metric like 'time spent' will, through routine testing and iteration, favour whichever features perform best against that metric, and variable-reward features simply do — no single decision to 'trap' users is required. This could be read as less concerning (no one intended harm) or more concerning (the harm doesn't depend on anyone's intentions, so appealing to individual ethics won't fix it — only changing the metric or the design constraints would)."},
-          {q:"The article recommends structural counter-measures over willpower. Using the slot-machine comparison, explain why willpower is specifically unsuited to this problem.", model:"A possible answer tours around: variable reward exploits exactly the anticipation mechanism willpower has to override in the moment of temptation, at the moment it is weakest — which is why gambling addiction research also favours removing access (self-exclusion, limits) over relying on resolve. Structural changes act before the moment of temptation exists, rather than fighting it head-on."}
-        ],
-        design:"Design a 'friction audit' — a short set of structural changes (not willpower tips) someone could make to their own phone, using the mechanisms described in this article to justify each change.", designId:null }
-    ]
-  }
-},
-
-/* ---------------- 28 · ONLINE FRIENDS, REAL FRIENDS ---------------- */
-{ n:28, id:"onlinereal", strand:"info", icon:"🤝", name:"Online friends, real friends", strap:"Connection, comparison and the algorithm", colour:"#2563EB",
-  what:"Online platforms can genuinely support real friendship — but they can also replace it with something that looks similar and feels thinner: performance instead of presence, comparison instead of connection, and a follower count that measures reach, not closeness.",
-  how:["Ask what a friendship actually gives you offline — someone to call at 2 a.m., not just someone who likes your posts — and check whether your online relationships meet that bar.","Notice the difference between showing your life to people and sharing it with them; the first invites an audience, the second invites a response.","Remember that everyone else's feed is also curated. Comparing your ordinary day to someone else's highlight reel is not a fair comparison.","Use online contact to arrange real contact, not to replace it, where that's possible — a message that never turns into a conversation is doing a different job than friendship."],
-  trap:"A large number of followers or likes is evidence of reach, not evidence of being known or cared for. The two can look identical from the outside and feel completely different from the inside.",
-  levels:{
-    standard:[
-      { id:"rk28s1", title:"Six hundred followers, nobody to call", genre:"Non-fiction", field:"Media literacy · digital wellbeing", register:"Informal", type:"Narrative account", words:220,
-        vocab:[["followers","people who subscribe to see someone's posts on social media"],["curated","carefully selected and presented, rather than shown completely or naturally"],["genuine","real and sincere, not fake or performed"],["isolated","separated from others; feeling alone"],["reciprocal","involving two people giving and receiving something in return"]],
-        text:"<p>Lina had six hundred followers and, the night her grandmother went into hospital, nobody to actually call.</p><p>She scrolled her contacts twice. People she messaged daily about homework, people who commented on every post, an account with matching profile pictures that called her 'best friend forever' in the bio — and not one number she felt able to dial at 9 p.m. with real news that wasn't yet a story to tell, only a fact to sit with.</p><p>She ended up calling her cousin Huda, who she rarely posted with online at all, because their friendship happened mostly through visits and long, boring phone calls with nothing to show for them afterwards — no photo, no story, nothing that would have proven, to anyone scrolling past, that the friendship existed.</p>" + rcVidBlock({
-          id:"rk28s1vid", title:"The 'who would I call' test", duration:"1:40", caption:"WHO WOULD YOU CALL?",
-          youtubeId:"REPLACE_WITH_YOUR_YOUTUBE_ID",
-          transcript:"<p>A simple test for any online relationship: could you call this person with real news at 9 p.m., before it becomes a story to share? Friendships built mostly through private, unposted time together often pass this test more reliably than ones built for an audience.</p>",
-          quiz:[
-            {q:"What is the 'who would I call' test actually checking for?", options:["Whether a friendship can handle a real, private moment of need","How many likes a friendship gets on social media posts online each day","Whether two people follow each other","How often two people post together"], answer:0, exp:"The test asks whether a relationship holds up in a private, urgent moment — not how visible it is online."},
-            {q:"Why did Lina's friendship with Huda pass the test, according to the story?", options:["Huda had the most followers","It was built through private, unposted time together, not public posts","They posted together publicly online every single day without fail, always","Huda lived closest to Lina"], answer:1, exp:"The friendship had 'nothing to show for it' online, which is exactly why it held up when Lina needed someone privately."},
-            {q:"What does the story suggest about friendships 'built for an audience'?", options:["They are always fake","They always automatically last much longer than private friendships do","They are only found on social media","They may be genuine but not built for private crisis support"], answer:3, exp:"The text explicitly calls online friendships 'real in their own way' while distinguishing them from ones built to survive a private crisis."}
-          ]
-        }) + "<p>Lina noticed the pattern later: the friendships that showed up least online were, without exception, the ones that showed up most in the actual moment she needed someone. The online friendships weren't fake, exactly. They were real in their own way — but they had been built for an audience, and an audience is not the same thing as someone who picks up the phone.</p><div style='border-top:1px solid #e5e5e5;margin-top:14px;padding-top:8px;font-size:.85rem;color:#555'><b>Go further:</b> BBC Bitesize's Other Side of the Story collection includes further guidance on online relationships and digital wellbeing at <a href='https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr' target='_blank' rel='noopener'>bbc.co.uk/bitesize</a>.</div>",
-        mcqs:[
-          {q:"What did Lina realise when she needed to call someone with real news?", options:["She had too many people to choose from","None of her most-online contacts felt right to call","Her phone had completely run out of battery and charge","She decided to post about it instead"], answer:1, exp:"Despite 600 followers and daily online contact with many people, she found none of those specific relationships suited an urgent, private moment."},
-          {q:"Why is it significant that Lina's friendship with Huda has 'no photo, no story' to show for it?", options:["It clearly means that the entire friendship was never real at all, ever, in any way whatsoever","It shows the friendship wasn't built for an online audience, unlike her other contacts","It means Huda doesn't like her","It shows Huda dislikes photography"], answer:1, exp:"The absence of postable content marks this friendship as functioning outside the logic of performance — it wasn't maintained for visibility, which the text links to why it held up in a real crisis."},
-          {q:"What pattern does Lina notice about which friendships 'showed up' when it mattered?", options:["The accounts with the most followers online helped her the very most","The friendships least visible online were most present in real need","Random chance decided who was helpful","Only family members are ever real friends"], answer:1, exp:"The text draws a direct, explicit contrast: least documented online correlated with most present in the actual crisis."},
-          {q:"What does the text mean by 'they had been built for an audience'?", options:["Built through public posting and performance, not private contact","Those friends were famous","Those friendships were entirely fake and did not really exist at all","Lina didn't like those friends"], answer:0, exp:"The phrase describes relationships sustained through visible, public interaction (likes, comments, tagged posts) rather than private, sustained contact — different from what an emergency required."}
-        ],
-        selfcheck:[
-          {q:"Explain the distinction the text draws between friendships that are 'real in their own way' and friendships that could be called on at 9 p.m. Are these mutually exclusive?", model:"A possible answer tours around: online friendships can involve genuine warmth and enjoyment without necessarily involving the depth, privacy or reliability a crisis requires — the text calls them real but built for a different purpose (visibility) than crisis support (presence). They are not necessarily mutually exclusive; some online friendships do deepen into both, but the text shows they don't automatically."},
-          {q:"Suggest a way Lina could tell, in advance, which of her online relationships were likely to become 'call at 9 p.m.' friendships, based on clues from the story.", model:"A possible answer tours around: relationships that already involved private, non-postable contact — long calls, visits, conversations with 'nothing to show for them' — were the signal, even before any crisis tested them. The presence of unshared, unperformed time together was the clue, not the volume of public interaction."}
-        ],
-        design:"Design a short 'who would I call' reflection activity — three questions someone could privately ask themselves about their online contacts, based on what Lina learned.", designId:null }
-    ],
-    advanced:[
-      { id:"rk28a1", title:"Parasocial and social: the two things a feed can be", genre:"Non-fiction", field:"Media literacy · digital wellbeing and relationships", register:"Formal", type:"Analytical article", words:320,
-        vocab:[["parasocial","describing a one-sided relationship in which one person feels connection to someone who does not know them personally"],["reciprocity","a mutual exchange in which both people give and receive"],["curation","the deliberate selection and presentation of content, rather than a complete or unfiltered account"],["asymmetry","an imbalance; unequal in structure or effect"],["social comparison","the psychological process of evaluating oneself by measuring against others"]],
-        text:"<p>Researchers distinguish between two kinds of connection a screen can produce, and the distinction matters more than most feed designs let on. A <b>social</b> relationship is reciprocal: both people know each other, respond to each other, and can be changed by the exchange. A <b>parasocial</b> relationship is asymmetric: one person feels a bond — with a creator, an influencer, sometimes even a close online acquaintance who barely registers the relationship in return — that is not, and structurally cannot be, returned with equal weight. Neither is inherently harmful. The problem is that modern feeds are built to make the second feel like the first.</p><p>A creator's videos, filmed to camera, using casual language and eye contact, are engineered — often quite deliberately, as an audience-retention technique — to produce the physiological cues of friendship: familiarity, warmth, the sense of being spoken to directly. The viewer's brain registers something close to a real social bond, while the creator, whatever their private feelings, is by necessity distributing that same performed intimacy to an audience of thousands or millions. The relationship is real on one side and, structurally, cannot be equivalently real on the other — not through anyone's dishonesty, but through simple scale.</p>" + rcVidBlock({
-          id:"rk28a1vid", title:"Social or parasocial? A quick reciprocity test", duration:"2:05", caption:"SOCIAL VS PARASOCIAL",
-          youtubeId:"REPLACE_WITH_YOUR_YOUTUBE_ID",
-          transcript:"<p>A social relationship is reciprocal: both people know each other and can be changed by the exchange. A parasocial one is one-sided — a viewer feels connected to a creator who is, by scale, distributing the same warmth to thousands of people. Test any online relationship by asking: does contact flow both ways, privately, outside of what's posted publicly?</p>",
-          quiz:[
-            {q:"What makes a relationship 'social' rather than 'parasocial', according to this?", options:["How many followers each person has","Whether the connection is reciprocal and can be changed by both sides","How often people comment on each other's posts","Whether the relationship first started online or instead in person originally"], answer:1, exp:"Reciprocity — both sides knowing and responding to each other — is the defining test, not follower counts or comment frequency."},
-            {q:"Why can't a creator's warmth toward an audience be a one-to-one bond, even if the creator is sincere?", options:["Because creators are usually dishonest","Because platforms strictly limit exactly how much creators are allowed to post each single day","Because most creators don't reply to comments","Because the same performed warmth is being distributed across a huge audience, not one person"], answer:3, exp:"The asymmetry comes from scale, not deception — one performance, divided among thousands, cannot equal a private, one-to-one bond."},
-            {q:"What test does the article recommend before investing emotionally in an online relationship?", options:["Check the account's follower count","Check how often they post","Check whether contact flows both ways, privately, outside the public feed","Check exactly how long the account itself has already existed online for, in total"], answer:2, exp:"The recommended test is private reciprocity — whether contact genuinely flows both ways outside the performance of the public feed."}
-          ]
-        }) + "<p>This has a second, quieter cost beyond one-sidedness: social comparison. A curated feed of other people's highlights, whether from creators or peers, is compared not against their full, ordinary lives but against the viewer's own uncurated, complete one — homework, boredom, an argument with a sibling, the parts nobody posts. The comparison is therefore rigged before it starts, since one side of it was never a full account to begin with.</p><p>None of this argues for abandoning online connection, much of which is genuinely reciprocal and valuable. It argues for classifying a relationship correctly before investing in it emotionally: asking whether contact flows both ways, privately, outside the feed's performance — and treating a feed's warmth as evidence of good design before treating it as evidence of being known.</p><div style='border-top:1px solid #e5e5e5;margin-top:14px;padding-top:8px;font-size:.85rem;color:#555'><b>Go further:</b> BBC Bitesize's Other Side of the Story collection explores online relationships and comparison further at <a href='https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr' target='_blank' rel='noopener'>bbc.co.uk/bitesize</a>.</div>",
-        mcqs:[
-          {q:"How does the article define the difference between a 'social' and a 'parasocial' relationship?", options:["Social relationships happen entirely offline; parasocial ones happen only online","Social relationships are reciprocal; parasocial ones are one-sided","Parasocial relationships are always with celebrities","There is no meaningful difference"], answer:1, exp:"The article's core distinction is reciprocity: whether the bond is mutually felt and mutually responsive, or one-sided by structure."},
-          {q:"Why does the article say a parasocial bond 'structurally cannot' be equally returned, even by an honest creator?", options:["Because creators are usually dishonest","Because the same performed warmth is distributed across a mass audience, not one viewer","Because parasocial relationships are illegal to reciprocate in most countries around the world","Because viewers don't want reciprocity"], answer:1, exp:"The article attributes the asymmetry to scale, not deception — the same warmth is necessarily divided among a large audience, so it cannot equal a one-to-one bond."},
-          {q:"What does the article identify as the 'quieter cost' of parasocial and curated feed relationships beyond one-sidedness?", options:["The very real financial and material cost to the viewer's wallet over time","Social comparison against a curated, incomplete version of others' lives","Loss of internet access","Increased screen brightness"], answer:1, exp:"The article names social comparison — measuring one's full, ordinary life against others' curated highlights — as a second, distinct harm."},
-          {q:"Why does the article call the comparison between a viewer's life and a curated feed 'rigged before it starts'?", options:["Because feeds are illegal to curate","Because one side of the comparison was never a complete account to begin with","Because viewers themselves always inevitably lose every single comparison they make","Because creators cheat deliberately"], answer:1, exp:"The comparison is structurally unfair because a curated highlight reel and a complete, ordinary life are not equivalent categories of evidence."},
-          {q:"What practical test does the article recommend before investing emotionally in an online relationship?", options:["Checking the number of followers the account has","Asking whether contact flows both ways, privately, outside the feed's performance","Only trusting relationships with verified accounts","Avoiding every single online relationship of any kind entirely and forever, no matter what"], answer:1, exp:"The article's concluding advice is to test for genuine, private reciprocity rather than accepting a feed's felt warmth as proof of connection."}
-        ],
-        selfcheck:[
-          {q:"Explain why the article insists the asymmetry of a parasocial relationship is 'not through anyone's dishonesty, but through simple scale'. Why does this distinction matter for how a viewer should respond to it?", model:"A possible answer tours around: if the asymmetry were caused by dishonesty, the fix would be exposing a liar; if it is caused by scale (one creator, many viewers), no exposure is possible or necessary — the structure itself guarantees the imbalance regardless of anyone's intentions. This matters because it shifts the viewer's response from feeling betrayed to simply recalibrating expectations about what the relationship can realistically provide."},
-          {q:"The article argues that comparing your full life to someone's curated highlights is 'rigged before it starts'. Evaluate how easy this insight actually is to apply in the moment of scrolling, and suggest why.", model:"A possible answer tours around: the insight is intellectually simple but hard to apply live because curated content is specifically designed to feel like a spontaneous, complete glimpse rather than a selection, so the very cue that would trigger the correction (recognising curation) is the thing the format is built to disguise — which suggests the habit needs to be applied deliberately in advance, not relied on to trigger automatically while scrolling."}
-        ],
-        design:"Design a short 'social vs parasocial' sorting activity — a set of criteria someone could use to classify five of their own online relationships, based on the reciprocity test this article recommends.", designId:null }
-    ]
-  }
-},
-
+{ n:4, id:"ml_doxx", strand:"info", icon:"🔐", name:"Staying safe online", strap:"Doxxing · phishing · digital footprint", colour:"#8B5CF6",
+  what:"Protecting your personal information — and spotting the scams and traps designed to steal it.",
+  how:["Guard personal data: the less you share, the less can be leaked or used against you.","Check senders and links before you click — panic and urgency are the scammer's tools.","Remember your digital footprint: every post adds up to a picture of you that lasts."],
+  trap:"A message that makes you panic ('Act now or lose your account!') is trying to switch off the careful part of your brain. That urgency is the scam.",
+  levels:{ standard:[
+    { id:"mld1", title:"The Doxx: staying safe online", genre:"Non-fiction", field:"Media literacy · online safety", register:"Neutral", type:"Explainer · multimodal", words:205,
+      vocab:[["doxxing","publishing someone's private information online without consent"],["phishing","messages that trick you into giving away passwords or data"],["digital footprint","the trail of data left by everything you do online"],["consent","permission for something to happen"]],
+      mcqs:[
+        {type:"mcq", q:"Why is doxxing described as more serious than rude comments?", options:["It tends to be written in much louder capital letters.","It leaks private data that can endanger someone.","It only ever happens to famous or wealthy people.","It is generally meant as a harmless private joke."], answer:1, exp:"Leaking private data can lead to real-world harm, not just hurt feelings."},
+        {type:"mcq", q:"A classic sign of a phishing message is —", options:["a calm, patient and unhurried friendly tone","perfect spelling and completely flawless grammar","urgent wording that rushes you to act","the total absence of any links whatsoever"], answer:2, exp:"Urgency and panic are engineered to stop you thinking."},
+        {type:"mcq", q:"What is a 'digital footprint'?", options:["The trail of data your online actions leave behind.","A small shoe-shaped icon shown on some websites.","A brand-new and unusually strong type of password.","An automated account pretending to be a real person."], answer:0, exp:"Likes, posts and searches accumulate into a lasting record of you."}],
+      selfcheck:[
+        {q:"Name three red flags that would make you suspicious of a message before clicking a link in it.", model:"Strong answers include a strange or misspelt sender address, urgent or threatening wording, and unexpected links or attachments you did not ask for."},
+        {q:"Explain why your digital footprint matters even for posts you think are private.", model:"Data can be copied, shared or leaked, so a 'private' post can still spread and add to a lasting record that others — including schools or employers — may later see."}],
+      design:"Design a phone lock-screen safety card: five short rules for spotting a phishing message and protecting personal data online.",
+      text:'<p>The pressure intensifies. When Sam traces the attacks back to a hidden account, a mysterious message arrives claiming to reveal the truth. But some of what is happening is more dangerous than rumours: private details about Misha are being shared online without her <b>consent</b>. This is <b>doxxing</b>, and it can put someone at real risk.</p><p>Alongside it come suspicious links and messages — <b>phishing</b> attempts designed to steal passwords and data by making you panic and click. Every click, post and search also adds to your <b>digital footprint</b>, the lasting trail that shapes how others see you.</p>'
+        + mediaVideoBlock({ ytId:'TmDgim1StpM', title:'Watch: The shocking simplicity of a phishing scam', dur:'3:24',
+            transcript:'<p><b>What the video covers:</b> phishing works not because it is clever but because it is fast. A message manufactures panic and urgency so that you click before you think, and a single careless tap can hand over a password. The defence is simple: slow down, and check the sender and the link before you act.</p>',
+            quiz:[
+              {q:"According to the video, phishing succeeds mainly because it is —", options:["extremely clever and highly advanced","fast, and it rushes you to act","only ever aimed at older adults","sent from real company addresses"], answer:1, exp:"Speed and urgency, not cleverness, make phishing work."},
+              {q:"The safest response to an urgent, unexpected message is to —", options:["click the link before the offer runs out","reply with your password to stay safe","slow down and check the sender first","forward it quickly to all your friends"], answer:2, exp:"Slowing down to verify defeats the urgency trap."},
+              {q:"In the video, one careless click can —", options:["speed up your home internet connection","hand a password over to a scammer","block every future scam message","instantly improve your account security"], answer:1, exp:"A single click can surrender your credentials."}] })
+        + '<p>If a message does not feel right, stop. Look at the real sender address, watch for odd spelling and urgent threats, and think twice before clicking. If someone is targeted by doxxing or abuse, the safest steps are to save evidence, block, report, and tell a trusted adult.</p>'
+        + '<p style="margin-top:6px"><b>Go deeper (BBC Bitesize):</b> <a href="https://www.bbc.co.uk/bitesize/articles/zn38b7h" target="_blank" rel="noopener">How to spot and avoid a phishing scam →</a></p>'
+        + '<p style="font-size:.8rem;color:#888;border-top:1px solid #eee;padding-top:8px;margin-top:14px">Adapted for classroom reading from BBC Bitesize — <i>Solve the Story</i> (Other Side of the Story), Episode 5: The Doxx. Source: <a href="https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr" target="_blank" rel="noopener">bbc.co.uk/bitesize</a>.</p>' } ], advanced:[] } }
 ];
 let RC_TIER="standard";                 /* "standard" | "advanced" */
 let RC_GENRE="all";                     /* "all" | "Non-fiction" | "Fiction" */
@@ -4593,7 +4331,7 @@ const RC_CUSTOM_SKILL={ id:"custom", n:"★", icon:"📎", name:"Teacher-added t
   how:["Read once for the whole picture.","Read again for the questions.","Justify every answer from the text."],
   trap:"Always check your answer against the words on the page." };
 /* ---- Reading Course: Units → Lessons ----
-   Units group the existing twenty-eight skills; each skill is a numbered lesson (U-N). */
+   Units group the existing sixteen skills; each skill is a numbered lesson (U-N). */
 const RC_UNITS=[
   {id:"ru1", n:1, title:"Reading Skills", icon:"🎯", colour:"#0c8a72",
    obj:"Read a text closely and reliably: find the gist, locate detail, work out meaning, read between the lines, follow how a text is built, and judge what it claims."},
@@ -4601,14 +4339,13 @@ const RC_UNITS=[
    obj:"Read texts that mean through more than words: charts, layout, image–text relations, infographics, posters and advertisements."},
   {id:"ru3", n:3, title:"Reading Literature", icon:"📖", colour:"#8B5CF6",
    obj:"Read how stories work: structure, character, voice, conflict, theme, and what a text will not say out loud."},
-  {id:"ru4", n:4, title:"Media Literacy", icon:"🛡️", colour:"#EA580C",
-   obj:"Read the digital world critically: spot deepfakes and bots, defend yourself against phishing and doxxing, argue with evidence against misinformation, and understand how apps are designed to hold your attention, fuel FOMO, and blur online connection with real friendship. Includes texts inspired by BBC Bitesize's Solve the Story series, credited throughout with links to the original episodes and guides."}
+  {id:"ru4", n:4, title:"Media Literacy", icon:"🕵️", colour:"#E0403F",
+   obj:"Read the online world with a sharp eye: spot fakes and deepfakes, see through bots and bias, and stay safe from scams and doxxing."}
 ];
 /* skill id → unit id */
 const RC_UNIT_OF={ skim:"ru1", scan:"ru1", vocab:"ru1", infer:"ru1", purpose:"ru1", structure:"ru1",
   factop:"ru1", summary:"ru1", critical:"ru1", visual:"ru2", infographic:"ru2", advert:"ru2", process:"ru2", directions:"ru2", mmstory:"ru2",
-  plot:"ru3", character:"ru3", pov:"ru3", conflict:"ru3", theme:"ru3", figlang:"ru3", irony:"ru3",
-  deepfake:"ru4", botcrowd:"ru4", cybersafe:"ru4", factcheck:"ru4", scrollfomo:"ru4", onlinereal:"ru4" };
+  plot:"ru3", character:"ru3", pov:"ru3", conflict:"ru3", theme:"ru3", figlang:"ru3", irony:"ru3", ml_glitch:"ru4", ml_noise:"ru4", ml_skew:"ru4", ml_doxx:"ru4" };
 function rcUnitSkills(uid){ return RSKILLS.filter(sk=>RC_UNIT_OF[sk.id]===uid); }
 function rcUnitDone(u){
   let d=0,t=0; rcUnitSkills(u.id).forEach(sk=>{ const p=rcSkillDone(sk); d+=p.done; t+=p.total; });
@@ -4652,73 +4389,6 @@ function rcWordListHTML(l){
       </div>`).join('')}
     </div>
   </div>`;
-}
-/* ---- Reading Course: embedded video card (thumbnail → pop-up player) + Video Transcript dropdown + inline quiz ----
-   Call rcVidBlock({id,title,youtubeId,duration,caption,transcript,quiz:[{q,options,answer,exp}]}) and drop the
-   returned HTML straight into a lesson's `text` field, at a natural break between paragraphs. */
-function rcVidBlock(o){
-  if(!o||!o.youtubeId) return '';
-  const panelId='rcvp_'+esc(o.id||Math.random().toString(36).slice(2));
-  const quiz=o.quiz||[];
-  const qHTML=quiz.map((q,i)=>`<div class="q" data-a="${q.answer}">
-      <b>${i+1}. ${esc(q.q)}</b>
-      ${q.options.map((op,j)=>`<label class="opt"><input type="radio" name="${panelId}_q${i}" value="${j}"><span>${esc(op)}</span></label>`).join('')}
-      <div class="feedback hidden" data-exp="${esc(q.exp||'')}"></div>
-    </div>`).join('');
-  return `<div class="rc-vid-card">
-    <div class="rc-vid-thumb" onclick="rcVidOpen('${escq(o.youtubeId)}','${escq(o.title||'')}')">
-      ${o.caption?`<div class="rc-vid-cap">${esc(o.caption)}</div>`:''}
-      <div class="rc-vid-play">▶</div>
-      ${o.duration?`<div class="rc-vid-dur">${esc(o.duration)}</div>`:''}
-    </div>
-    <button type="button" class="rc-vid-bar" onclick="rcVidToggle('${panelId}')">
-      <span>🎬 Video Transcript</span><span class="rc-vid-chev" id="${panelId}_chev">⌄</span>
-    </button>
-    <div class="rc-vid-panel hidden" id="${panelId}">
-      <div class="rc-vid-transcript">${o.transcript||''}</div>
-      ${quiz.length?`<div class="rc-vid-quiz">
-        <b>🧠 Quick check — before you keep reading</b>
-        ${qHTML}
-        <button type="button" class="btn" onclick="rcVidCheck('${panelId}')">Check my answers</button>
-        <div class="rc-vid-score" id="${panelId}_score"></div>
-      </div>`:''}
-    </div>
-  </div>`;
-}
-function rcVidToggle(panelId){
-  const p=document.getElementById(panelId); const chev=document.getElementById(panelId+'_chev');
-  if(!p) return;
-  const wasHidden=p.classList.contains('hidden');
-  p.classList.toggle('hidden');
-  if(chev) chev.textContent=wasHidden?'⌃':'⌄';
-}
-function rcVidOpen(youtubeId,title){
-  let o=document.getElementById('rcVidOverlay');
-  if(!o){ o=document.createElement('div'); document.body.appendChild(o); }
-  o.id='rcVidOverlay'; o.className='rc-vid-overlay';
-  o.innerHTML=`<div class="rc-vid-modal">
-      <div class="rc-vid-modal-head"><b>${esc(title||'Video')}</b><button class="rc-vid-close" onclick="rcVidClose()">✕</button></div>
-      <div class="rc-vid-frame-wrap"><iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(youtubeId)}?autoplay=1&rel=0&modestbranding=1" title="${esc(title||'Video')}" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>
-    </div>`;
-  o.onclick=function(e){ if(e.target===o) rcVidClose(); };
-  document.body.style.overflow='hidden';
-}
-function rcVidClose(){
-  const o=document.getElementById('rcVidOverlay'); if(o) o.remove();
-  document.body.style.overflow='';
-}
-function rcVidCheck(panelId){
-  const root=document.getElementById(panelId); if(!root) return;
-  let s=0,m=0;
-  root.querySelectorAll('.q[data-a]').forEach(q=>{
-    m++; const sel=q.querySelector('input:checked'); const ch=sel?+sel.value:-1; const a=+q.dataset.a;
-    const fb=q.querySelector('.feedback'); fb.classList.remove('hidden');
-    q.querySelectorAll('.opt').forEach((op,j)=>{ op.classList.remove('correct','wrong'); if(j===a)op.classList.add('correct'); if(j===ch&&ch!==a)op.classList.add('wrong'); });
-    if(ch===a){ s++; fb.className='feedback good'; fb.textContent='✓ Correct!'; }
-    else{ const exp=fb.dataset.exp; fb.className='feedback'; fb.textContent=(ch===-1?'Choose an answer. ':'Not quite. ')+(exp||'See the green answer.'); }
-  });
-  const scoreEl=document.getElementById(panelId+'_score');
-  if(scoreEl) scoreEl.innerHTML='Score: <b>'+s+'/'+m+'</b>'+(s===m?' 🎉':'');
 }
 function bankWord(w,d,btn){
   try{
@@ -4899,6 +4569,47 @@ function maybeInjectBulkLock(){
     else { var wrap=document.querySelector('.wrap'); if(wrap) wrap.insertBefore(bar, wrap.firstChild); else document.body.appendChild(bar); }
   }catch(e){}
 }
+/* ===== Multimodal video block: YouTube pop-up + transcript dropdown + inline unpredictable 3-MCQ quiz ===== */
+function videoPop(ytId, title){
+  if(!ytId){ return; }
+  var o=document.getElementById('vidPop');
+  if(!o){ o=document.createElement('div'); o.id='vidPop'; o.className='vidpop-ov'; document.body.appendChild(o); }
+  var src='https://www.youtube-nocookie.com/embed/'+ytId+'?rel=0&modestbranding=1&autoplay=1';
+  o.innerHTML='<div class="vidpop-box"><button class="vidpop-x" onclick="videoPopClose()" aria-label="Close">✕</button>'
+    +(title?('<div class="vidpop-title">'+title+'</div>'):'')
+    +'<div class="vidpop-frame"><iframe src="'+src+'" title="'+(title||'video')+'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div></div>';
+  o.style.display='flex'; o.onclick=function(e){ if(e.target===o) videoPopClose(); };
+}
+function videoPopClose(){ var o=document.getElementById('vidPop'); if(o){ o.style.display='none'; o.innerHTML=''; } }
+function mlPick(el, correct){
+  var wrap=el.parentNode; while(wrap && !(wrap.className&&wrap.className.indexOf('mlq')>-1)) wrap=wrap.parentNode;
+  if(!wrap || wrap.getAttribute('data-done')) return;
+  wrap.setAttribute('data-done','1');
+  var opts=wrap.querySelectorAll('.mlq-opt');
+  for(var i=0;i<opts.length;i++){ opts[i].disabled=true; if(i===correct) opts[i].className+=' right'; }
+  if(String(el.getAttribute('data-i'))!==String(correct)) el.className+=' wrong';
+  var exp=wrap.querySelector('.mlq-exp'); if(exp) exp.style.display='block';
+}
+function mlqOne(q, idx){
+  var pairs=q.options.map(function(op,i){ return {op:op, correct:(i===q.answer)}; });
+  for(var i=pairs.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=pairs[i]; pairs[i]=pairs[j]; pairs[j]=t; }
+  var ans=0; pairs.forEach(function(p,i){ if(p.correct) ans=i; });
+  var opts=pairs.map(function(p,i){ return '<button type="button" class="mlq-opt" data-i="'+i+'" onclick="mlPick(this,'+ans+')">'+p.op+'</button>'; }).join('');
+  return '<div class="mlq"><p class="mlq-q">'+(idx+1)+'. '+q.q+'</p><div class="mlq-opts">'+opts+'</div>'
+    +(q.exp?('<p class="mlq-exp" style="display:none">✅ '+q.exp+'</p>'):'')+'</div>';
+}
+function mediaVideoBlock(o){
+  o=o||{};
+  var thumbStyle=o.thumb?(' style="background-image:linear-gradient(rgba(9,12,30,.35),rgba(9,12,30,.55)),url('+o.thumb+')"'):'';
+  var openJs=o.ytId?("videoPop('"+o.ytId+"','"+String(o.title||'').replace(/'/g,'')+"')"):"alert('A video will be added here.')";
+  var quiz=(o.quiz||[]).map(mlqOne).join('');
+  return '<div class="mvb">'
+    +'<button type="button" class="mvb-play"'+thumbStyle+' onclick="'+openJs+'"><span class="mvb-tri">▶</span><span class="mvb-cap">'+(o.title||'Watch the video')+'</span>'+(o.dur?('<span class="mvb-dur">'+o.dur+'</span>'):'')+'</button>'
+    +'<details class="mvb-tr"><summary>Video transcript &amp; quick quiz</summary>'
+    +'<div class="mvb-trbody">'+(o.transcript||'')+'</div>'
+    +(quiz?('<div class="mvb-quiz"><h4>✍️ Quick check — read the video, then answer</h4>'+quiz+'</div>'):'')
+    +'</details></div>';
+}
 function go(screen, arg){
   CURRENT_SCREEN = screen; CURRENT_ARG = arg;
   stopSpeak(); turnOffHighlighter(); clearSpellTimer(); clearExamTimer(); window.scrollTo(0,0);
@@ -5051,7 +4762,7 @@ const ROUTES = {
       <aside class="wk-rail" id="wkRail">${weekRailHTML()}</aside>
       <div class="wk-main">
       <div class="hub">
-        <div class="hub-greet">Hello ${SESSION&&SESSION.name?esc(SESSION.name.split(' ')[0]):'there'} 👋 — tap a circle to begin. <b>Read · Write · Design</b> sit at the core; more practice orbits around. <a onclick="showStageChoice()" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline;font-weight:600;font-size:.85rem;white-space:nowrap">🔄 Switch course</a></div>
+        <div class="hub-greet">Hello ${SESSION&&SESSION.name?esc(SESSION.name.split(' ')[0]):'there'} 👋 — tap a circle to begin. <b>Read · Write · Design</b> sit at the core; more practice orbits around.</div>
         <svg class="hub-map" viewBox="0 0 900 640" xmlns="http://www.w3.org/2000/svg" font-family="Lexend,system-ui,sans-serif">
           <defs>
             <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
@@ -5116,6 +4827,8 @@ const ROUTES = {
         <div class="hub-foot">Tap any circle to begin.</div>
         <div class="hub-copyright">© 2026 Emad Ali Mohamed · <i>Developer of iCAN my English File — a multiliteracy hub for EFL learners</i></div>
       </div>
+
+      <button class="yl-banner" onclick="go('ylhub')"><span style="font-size:2rem">🧒</span><span><b>Foundational Course</b> — Grades 1–8 · picture readers with read-to-me & tap-a-word, games after every read, printable quizzes.<br><span style="font-size:.8rem;opacity:.9">Read it · Write it · Design it — fun-sized ⭐</span></span><span class="sb-go" style="background:#fff;color:#15183A;border-radius:999px;padding:8px 16px;font-weight:700;white-space:nowrap">Learn and have fun!</span></button>
 
       <div style="margin-top:16px;font-size:.9rem;color:#15183A;font-weight:600;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.7);border-radius:14px;padding:11px 16px;box-shadow:0 6px 22px rgba(0,0,0,.1);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)">Looking for your awarded certificates? Open <a onclick="go('mycerts')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">🏅 My Certificates</a>. &nbsp;·&nbsp; Looking for your saved words? Open your <a onclick="go('vocab')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">📚 Vocabulary bank</a>. &nbsp;·&nbsp; Review everything you create in <a onclick="go('myDesigns')" style="cursor:pointer;color:var(--teal-dk);text-decoration:underline">🎨 My Designs</a>.</div>
 
@@ -5943,10 +5656,10 @@ const ROUTES = {
     <div class="wrap screen">
       <button class="back" onclick="go('dashboard')">← Pathways</button>
       <h1 style="font-size:2.2rem">🔭 Reading Course</h1>
-      <p style="color:var(--muted);max-width:740px">Four units, twenty-eight lessons. Each lesson teaches one reading skill: read what it is and how to do it, then pick <b>Standard</b> or <b>Advanced</b> and any text on the shelf. The multiple-choice questions are built to test <i>that skill</i> and score instantly; the self-check questions ask you to grade your own thinking against a model answer. Every text ends with a <b>design challenge</b> — the bridge to the Design Studio.</p>
+      <p style="color:var(--muted);max-width:740px">Three units, sixteen lessons. Each lesson teaches one reading skill: read what it is and how to do it, then pick <b>Standard</b> or <b>Advanced</b> and any text on the shelf. The multiple-choice questions are built to test <i>that skill</i> and score instantly; the self-check questions ask you to grade your own thinking against a model answer. Every text ends with a <b>design challenge</b> — the bridge to the Design Studio.</p>
       <div class="rc-chips">${chip('all','All texts')}${chip('Non-fiction','📄 Non-fiction')}${chip('Fiction','📖 Fiction')}</div>
       <div class="progress" style="max-width:420px;margin-top:12px"><span style="width:${all.length?Math.round(doneAll/all.length*100):0}%"></span></div>
-      <p style="font-size:.8rem;color:var(--muted)">${doneAll} of ${all.length} texts completed${RC_GENRE==='all'?' across all twenty-eight lessons':' in '+RC_GENRE.toLowerCase()}</p>
+      <p style="font-size:.8rem;color:var(--muted)">${doneAll} of ${all.length} texts completed${RC_GENRE==='all'?' across all sixteen lessons':' in '+RC_GENRE.toLowerCase()}</p>
 
       ${RC_UNITS.map(u=>{
         const skills=rcUnitSkills(u.id).filter(rcSkillHasGenre);
@@ -6054,7 +5767,7 @@ const ROUTES = {
       <div class="passage" id="rcText" data-dict>${l.text}</div>
       ${rcWordListHTML(l)}
 
-      <h2 style="font-size:1.4rem;margin:24px 0 4px">Now answer the following questions — instant score</h2>
+      <h2 style="font-size:1.4rem;margin:24px 0 4px">${esc(sk.name)} — instant score</h2>
       <p style="color:var(--muted);font-size:.9rem;margin-top:0">Every question below tests one skill: <b>${esc(sk.name.toLowerCase())}</b>.</p>
       <div id="rcMcq"></div>
 
@@ -6476,38 +6189,8 @@ function doStudentLogin(){
   SESSION={role:"student", name, first, middle, last, class:cls, code, id};
   setStudent(id,{name, class:cls, code});
   /* Set this student's tier from their diagnostic before the first screen paints. */
-  if(cloudUrl()){ err.textContent="Loading your online record…"; pullContent(()=>refreshCloud(()=>{ applyPlacement(); showStageChoice(); })); }
-  else { applyPlacement(); showStageChoice(); }
-}
-/* ---- Senior (main RWD hub) vs Junior (Foundational Course) ----
-   Every student login asks which course they're joining; the choice routes
-   straight to the right hub and is remembered on this student's profile so
-   the "Switch course" links elsewhere can pre-select it next time. */
-function showStageChoice(){
-  let o=document.getElementById('stageOverlay');
-  if(!o){ o=document.createElement('div'); o.id='stageOverlay'; document.body.appendChild(o); }
-  o.style.cssText='position:fixed;inset:0;background:rgba(21,24,58,.6);display:flex;align-items:center;justify-content:center;z-index:99999;padding:16px';
-  const firstName = (SESSION&&SESSION.first)?esc(SESSION.first):'there';
-  o.innerHTML = `<div class="card" style="max-width:460px;width:100%;background:#fff;text-align:center;padding:30px 24px">
-    <div style="font-size:2.3rem;margin-bottom:4px">👋</div>
-    <h2 style="margin:0 0 6px">Hi ${firstName}!</h2>
-    <p style="color:var(--muted);margin:0 0 22px">Which course are you joining today?</p>
-    <div style="display:flex;flex-direction:column;gap:12px">
-      <button class="btn teal" style="padding:16px 18px;font-size:1.05rem;text-align:left" onclick="chooseStage('senior')">
-        <div>🎓 <b>Senior student</b></div>
-        <div style="font-size:.8rem;font-weight:400;opacity:.92;margin-top:3px">High school EFL — the main Read · Write · Design hub</div>
-      </button>
-      <button class="btn" style="padding:16px 18px;font-size:1.05rem;text-align:left;background:#F5A301;border-color:#F5A301;color:#3a2a00" onclick="chooseStage('junior')">
-        <div>🧒 <b>Junior student</b></div>
-        <div style="font-size:.8rem;font-weight:400;opacity:.92;margin-top:3px">Foundational Course — Grades 1–8</div>
-      </button>
-    </div>
-  </div>`;
-}
-function chooseStage(stage){
-  if(SESSION){ SESSION.stage=stage; try{ setStudent(SESSION.id,{stage}); }catch(e){} }
-  const o=document.getElementById('stageOverlay'); if(o) o.remove();
-  go(stage==='junior' ? 'ylhub' : 'dashboard');
+  if(cloudUrl()){ err.textContent="Loading your online record…"; pullContent(()=>refreshCloud(()=>{ applyPlacement(); go('dashboard'); })); }
+  else { applyPlacement(); go('dashboard'); }
 }
 function doTeacherLogin(){
   const code=val('tCode'); const err=document.getElementById('tErr');
@@ -12943,7 +12626,7 @@ const ALIGN=[
   {name:"Writing tasks & quizzes", route:"writing", obj:"Writing", types:["quiz","homework","reflection"], ev:"Multimodal writing tasks with rubric-based feedback."},
   {name:"Listening comprehension", route:"listening", obj:"Listening", types:["quiz","exit","homework"], ev:"Comprehension checks plus timed spelling."},
   {name:"Speaking prompts & debates", route:"speaking", obj:"Speaking", types:["discussion","project","observation"], ev:"Prompts, debates and presentations — observe and note participation."},
-  {name:"Reading Course", route:"readingCourse", obj:"Reading", types:["homework","quiz"], ev:"Twenty-eight reading skills across two strands (information & literature, including a media literacy unit), each with Standard and Advanced texts."},
+  {name:"Reading Course", route:"readingCourse", obj:"Reading", types:["homework","quiz"], ev:"Sixteen reading skills across two strands (information & literature), each with Standard and Advanced texts."},
   {name:"Writing Course", route:"writingCourse", obj:"Writing", types:["homework","reflection"], ev:"Guided lessons, model answers, rubric self-check."},
   {name:"Design Studio (4-slide decks)", route:"dstudio", obj:"Design", types:["project","self"], ev:"A four-slide deck built from a reading text: source, idea, composition, artefact."},
   {name:"Vocabulary Bank", route:"vocab", obj:"Vocabulary", types:["homework","reflection"], ev:"Student-built word bank with example sentences and audio."},
@@ -12990,7 +12673,7 @@ const SKILL_GROUPS=[
   {key:"Vocabulary", label:"Vocabulary", skills:["Vocabulary"], color:"#6f3fd6"}
 ];
 const GOAL_TPL={
-  Reading:{m:"Complete 3 Reading Course skills at Standard level and 2 reading quizzes; practise True/False/Not-Given.", s:"Lift the reading average to 70%+ and complete at least 8 of the 28 reading skills, including two literary skills.", y:"Reach a steady 80%+, finish all twenty-eight skills, and handle the Advanced texts in inference, bias, critical response, theme, irony and media literacy."},
+  Reading:{m:"Complete 3 Reading Course skills at Standard level and 2 reading quizzes; practise True/False/Not-Given.", s:"Lift the reading average to 70%+ and complete at least 8 of the 16 reading skills, including two literary skills.", y:"Reach a steady 80%+, finish all sixteen skills, and handle the Advanced texts in inference, bias, critical response, theme and irony."},
   Writing:{m:"Do 2 Writing Course lessons and 1 Revise & Edit task; focus on paragraphing and punctuation.", s:"Raise writing to 70%+; master the 5 rubric criteria and the OREO structure.", y:"Achieve 80%+ and write confidently across genres with accurate grammar."},
   Design:{m:"Complete 1 Design Studio challenge with the Creative Canvas, linked to a reading.", s:"Produce 3 designed artefacts that connect reading and writing.", y:"Build a small portfolio of multimodal designs."},
   Grammar:{m:"Finish the lessons for weak points and 2 mixed-practice sets.", s:"Reach 70%+ and complete one Grammar Challenge.", y:"Reach 80%+ across all grammar points, including advanced structures."},
@@ -14294,24 +13977,12 @@ function gateKeyOfNav(screen, arg){
 function gateOpen(k){
   const g = gates();
   if(k==='ylDiag:start' || k==='diag:pre') return g[k] !== false;  // start-of-year open by default
-  /* The Foundational Course is now a student's whole world from the moment they
-     choose "Junior student" at login — there is no main dashboard to fall back to
-     for them. So, unlike other modules, it defaults OPEN; a teacher can still lock
-     it explicitly if they want to hold it back for a class. */
-  if(k==='yl') return g[k] !== false;
   return !!g[k];
 }
 function setGate(k,v){ const g=gates(); g[k]=!!v; Store.set('ican_gates',g); paintGates(); if(CURRENT_SCREEN==='dashboard') injectBars('dashboard'); }
 function setAllGates(v){ const g={}; gateDefs().forEach(d=>g[d.key]=!!v); Store.set('ican_gates',g); paintGates(); }
 function gateLabel(k){ const d=gateDefs().find(d=>d.key===k); return d? d.icon+' '+d.label : 'this activity'; }
 function renderLocked(k){
-  /* A locked Foundational Course has no "dashboard" to send a Junior student
-     back to — that's the Senior hub, which would just re-mix the two courses
-     we deliberately split apart. Offer "Switch course" there instead. */
-  const isYl = (k==='yl' || k.indexOf('ylDiag')===0);
-  const escapeBtn = isYl
-    ? `<button class="btn dark" onclick="showStageChoice()">🔄 Switch course</button>`
-    : `<button class="btn dark" onclick="go('dashboard')">← Back to my dashboard</button>`;
   app().innerHTML = `
   <div class="wrap screen"><div class="card locked-card">
     <div class="locked-ic">🔒</div>
@@ -14320,7 +13991,7 @@ function renderLocked(k){
     Your teacher activates activities step by step, so you can focus on what matters now instead of facing everything at once.
     Check back soon — or ask your teacher when it opens.</p>
     <div style="margin-top:16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      ${escapeBtn}
+      <button class="btn dark" onclick="go('dashboard')">← Back to my dashboard</button>
       <button class="btn ghost" onclick="go('typing')">⌨️ Practise typing (always open)</button>
     </div>
   </div></div>`;
@@ -21935,7 +21606,7 @@ ROUTES.ylhub=function(){
   const box=(route,bg1,bg2,icon,title,sub,rwd)=>`<button class="yl-big" style="--bg1:${bg1};--bg2:${bg2};min-height:150px;align-items:flex-start;text-align:left" onclick="go('${route}')"><b style="font-size:1.15rem">${icon} ${title}</b><span>${sub}</span><span style="display:block;margin-top:auto;padding-top:8px;font-size:.72rem;opacity:.9;font-weight:700">${rwd}</span></button>`;
   app().innerHTML=`
   <div class="wrap screen yl-scene">
-    <button class="back" onclick="showStageChoice()">🔄 Switch course</button>
+    <button class="back" onclick="go('dashboard')">← Home</button>
     <div class="yl-layout">
     <aside class="yl-rail" id="ylRail">${ylWeekRailHTML()}</aside>
     <div class="yl-main">
