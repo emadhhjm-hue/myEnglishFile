@@ -2521,7 +2521,11 @@ const SPELL_BANK = {
   complex:{ label:"Complex sentences", sub:"with a subordinate clause · punctuation counts", type:"sentence", items:[
     {t:"Although she was tired, she finished the marathon."},{t:"Because the bridge was closed, we took the long way home."},
     {t:"The book that you lent me was fascinating."},{t:"When the lights went out, everyone gasped."},
-    {t:"If you practise daily, your accent will improve."},{t:"Whoever finishes first should help the others."} ]}
+    {t:"If you practise daily, your accent will improve."},{t:"Whoever finishes first should help the others."} ]},
+  yl_animals:{ label:"Animals 🐾", sub:"fun animal words", type:"word", items:[{t:"cat",hint:"a pet that says meow"},{t:"dog",hint:"a pet that says woof"},{t:"fish",hint:"it swims in water"},{t:"bird",hint:"it can fly and sing"},{t:"frog",hint:"green and it hops"},{t:"duck",hint:"it says quack"},{t:"lion",hint:"the king of the animals"},{t:"bear",hint:"big and furry"},{t:"goat",hint:"it climbs hills"},{t:"rabbit",hint:"long ears, it hops"},{t:"tiger",hint:"orange with stripes"},{t:"horse",hint:"you can ride it"}] },
+  yl_food:{ label:"Food & Drink 🍎", sub:"yummy everyday words", type:"word", items:[{t:"milk",hint:"a white drink"},{t:"cake",hint:"sweet, for birthdays"},{t:"rice",hint:"small white grains"},{t:"egg",hint:"a hen lays it"},{t:"apple",hint:"a red or green fruit"},{t:"bread",hint:"you make toast from it"},{t:"water",hint:"you drink it every day"},{t:"juice",hint:"a fruity drink"},{t:"banana",hint:"a long yellow fruit"},{t:"cheese",hint:"a mouse likes it"},{t:"honey",hint:"sweet, from bees"},{t:"soup",hint:"warm in a bowl"}] },
+  yl_school:{ label:"My School 🎒", sub:"classroom words", type:"word", items:[{t:"book",hint:"you read it"},{t:"pen",hint:"you write with it"},{t:"desk",hint:"you sit at it"},{t:"bag",hint:"you carry things in it"},{t:"class",hint:"your room at school"},{t:"read",hint:"you do this with a book"},{t:"write",hint:"you do this with a pen"},{t:"draw",hint:"you do this with crayons"},{t:"teacher",hint:"helps you learn"},{t:"pencil",hint:"you can rub it out"},{t:"ruler",hint:"for straight lines"},{t:"friend",hint:"you play with them"}] },
+  yl_home:{ label:"At Home 🏠", sub:"things around the house", type:"word", items:[{t:"bed",hint:"you sleep in it"},{t:"door",hint:"you open it to go in"},{t:"table",hint:"you eat at it"},{t:"cup",hint:"you drink from it"},{t:"spoon",hint:"you eat soup with it"},{t:"plate",hint:"food goes on it"},{t:"house",hint:"you live in it"},{t:"window",hint:"you see out of it"},{t:"clock",hint:"it tells the time"},{t:"lamp",hint:"it gives light"},{t:"key",hint:"it opens a lock"},{t:"chair",hint:"you sit on it"}] }
 };
 /* Merge enriched items into SPELL_BANK.
    For every category listed in SPELL_ENRICH we UNION the arrays, matching by
@@ -4768,7 +4772,7 @@ const ROUTES = {
   },
 
   /* ---------------- STUDENT DASHBOARD ---------------- */
-  dashboard(){
+  dashboard(){ if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'&&typeof studentTier==='function'&&studentTier()==='junior'){ go('ylhub'); return; }
     app().innerHTML = `
     <div class="wrap screen student-dash">
      <div class="wk-row">
@@ -4923,17 +4927,16 @@ const ROUTES = {
       <p style="color:var(--muted);font-size:.87rem;margin:0 0 10px;max-width:760px">${desc}</p>`;
 
     /* --- Section 1: everything short, in one shelf (drills, short passages, poems). --- */
-    const shortItems = TYPING_TEXTS.filter(t=>t.level==='short'||t.level==='medium')
-      .concat(typeof LIT_SINGLES!=='undefined'?LIT_SINGLES:[])
-      .sort((a,b)=>wc(a)-wc(b));
+    const shortItems = (yl
+      ? TYPING_TEXTS.filter(t=>t.yl)
+      : TYPING_TEXTS.filter(t=>(t.level==='short'||t.level==='medium') && !t.yl).concat(typeof LIT_SINGLES!=='undefined'?LIT_SINGLES:[])
+      ).sort((a,b)=>wc(a)-wc(b));
     const shortCard=t=>{ const sub=t.author?`${esc(t.author)}${t.kind?' · '+t.kind:''}`:`${esc(t.genre||'')}`; return `
       <button onclick="startTyping('${t.id}')" style="text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:13px 16px;cursor:pointer">
         <b style="color:var(--ink)">${esc(t.title)}</b><br><span style="font-size:.8rem;color:var(--muted)">${sub} · ${wc(t)} words</span></button>`; };
 
     /* --- Section 2: long reads, banded by word count. --- */
-    const longPool = TYPING_TEXTS.filter(t=>t.level==='long')
-      .concat(typeof AAD_TYPING!=='undefined'?AAD_TYPING:[])
-      .sort((a,b)=>wc(a)-wc(b));
+    const longPool = (yl ? [] : TYPING_TEXTS.filter(t=>t.level==='long').concat(typeof AAD_TYPING!=='undefined'?AAD_TYPING:[])).sort((a,b)=>wc(a)-wc(b));
     const longCard=t=>`<button onclick="startTyping('${t.id}')" style="text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:13px 15px;cursor:pointer">
         <span style="font-size:.62rem;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#b45309">${esc(t.genre||'Passage')}</span><br>
         <b style="color:var(--ink);line-height:1.25;display:inline-block;margin:2px 0">${esc(t.title)}</b><br>
@@ -5341,7 +5344,7 @@ const ROUTES = {
         ${[10,20,30,50].map(n=>`<button class="chip ${SPELL_ROUND_SIZE===n?'on':''}" onclick="setRoundSize(${n})">${n}</button>`).join('')}
       </div>
       <div class="grid c2" style="margin-top:6px">
-        ${Object.keys(SPELL_BANK).map(k=>spellTile(k)).join('')}
+        ${Object.keys(SPELL_BANK).filter(k=>k.indexOf('yl_')!==0).map(k=>spellTile(k)).join('')}
       </div>
     </div>`;
   },
@@ -9758,6 +9761,12 @@ function wsGrammar(id){ if(!pdfReady())return noPdf(); const f=findGr(id); const
    TYPING TUTOR — practice/race, live WPM + accuracy + timer, banded certificate
    ========================================================================= */
 const TYPING_TEXTS=[
+  {id:"tyj1",title:"My Pet Cat",genre:"Animals",level:"short",yl:true,text:`My cat is small and grey. She likes to sleep on my warm bed all day. At night she plays with a soft red ball. I love my little cat very much.`},
+  {id:"tyj2",title:"A Rainy Day",genre:"Weather",level:"short",yl:true,text:`It is raining today. I put on my red boots and my big yellow coat. I jump in the puddles with my best friend. Splash! We laugh and have fun in the rain.`},
+  {id:"tyj3",title:"The Big Blue Sea",genre:"Seaside",level:"short",yl:true,text:`We went to the sea on a sunny day. I made a tall sand castle with my dad. The waves came and said hello to my feet. I found a pink shell and took it home.`},
+  {id:"tyj4",title:"My Best Friend",genre:"Friends",level:"short",yl:true,text:`My best friend is called Sam. We sit together at school every day. We share our books and play at lunch. After school we ride our bikes in the green park.`},
+  {id:"tyj5",title:"Yummy Breakfast",genre:"Food",level:"short",yl:true,text:`In the morning I eat my breakfast. I have warm bread, sweet fruit, and a cup of cold milk. My mum makes eggs for me too. Then I brush my teeth and go to school.`},
+  {id:"tyj6",title:"My Little Garden",genre:"Nature",level:"short",yl:true,text:`I have a little garden at home. I plant small seeds and give them water. Soon green leaves and bright flowers grow. A busy bee comes to say hello to my flowers.`},
   {id:"ty1",title:"A good morning",genre:"Everyday",level:"short",text:`The sun rose over the quiet town. Birds sang in the tall green trees, and a soft wind moved through the streets. It was going to be a calm and happy day for everyone who lived there.`},
   {id:"ty2",title:"Numbers at the shop",genre:"Numbers",level:"short",text:`I bought 3 apples for $1.50, 12 eggs for $2.99, and 2 loaves of bread for $4.25. In total, I spent $8.74 and saved about 15% with my member card.`},
   {id:"ty3",title:"A short email",genre:"Email",level:"short",text:`Dear Mr. Khan, thank you for your message. I can meet on Tuesday at 9:30 a.m. or Thursday at 2 p.m. Please let me know which time suits you best. Kind regards, Sara.`},
@@ -21615,11 +21624,12 @@ function ylHubMap(){
   </svg>`;
 }
 ROUTES.ylhub=function(){
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'&&typeof studentTier==='function'&&studentTier()==='senior'){ go('dashboard'); return; }
   try{speechSynthesis.cancel();}catch(e){}
   const box=(route,bg1,bg2,icon,title,sub,rwd)=>`<button class="yl-big" style="--bg1:${bg1};--bg2:${bg2};min-height:150px;align-items:flex-start;text-align:left" onclick="go('${route}')"><b style="font-size:1.15rem">${icon} ${title}</b><span>${sub}</span><span style="display:block;margin-top:auto;padding-top:8px;font-size:.72rem;opacity:.9;font-weight:700">${rwd}</span></button>`;
   app().innerHTML=`
   <div class="wrap screen yl-scene">
-    <button class="back" onclick="go('dashboard')">← Home</button>
+    ${(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'&&typeof studentTier==='function'&&studentTier()==='junior')?`<button class="back" onclick="logout()">🚪 Sign out</button>`:`<button class="back" onclick="go('dashboard')">← Home</button>`}
     <div class="yl-layout">
     <aside class="yl-rail" id="ylRail">${ylWeekRailHTML()}</aside>
     <div class="yl-main">
@@ -21633,6 +21643,7 @@ ROUTES.ylhub=function(){
       <button class="btn sm ghost" onclick="ylDictGo()">📖 Dictionary ↗</button>
       
       <button class="btn sm ghost" onclick="go('typing','yl')">⌨️ Typing lessons</button>
+      <button class="btn sm ghost" onclick="go('ylspell')">🐝 Spelling Bee</button>
       <button class="btn sm ghost" onclick="go('mycerts')">🏅 My Certificates</button>
       <button class="btn sm ghost" onclick="go('myachieve')">🏆 My Achievement Log</button>
       <button class="btn sm teal" onclick="ylLessonPlanDoc()">📥 Teacher lesson plan (Word)</button>
@@ -25279,6 +25290,19 @@ ROUTES.tierChoose = function(){
   try{window.scrollTo(0,0);}catch(e){}
 };
 ROUTES.switchTier = function(){ if(SESSION&&SESSION.role==='student'){ go('tierChoose'); } else { go('dashboard'); } };
+
+ROUTES.ylspell = function(){
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'&&typeof studentTier==='function'&&studentTier()==='senior'){ go('dashboard'); return; }
+  var keys=Object.keys(SPELL_BANK).filter(function(k){return k.indexOf('yl_')===0;});
+  app().innerHTML='<div class="wrap screen">'
+    +'<button class="back" onclick="go(\'ylhub\')">← Foundational</button>'
+    +'<div class="meta">Foundational · Spelling</div>'
+    +'<h1 style="font-size:2.1rem">🐝 Spelling Bee</h1>'
+    +'<p style="color:var(--muted);max-width:640px">Hear a word, then type it. Pick a fun pack to begin — animals, food, school or home. You get two tries for each word.</p>'
+    +'<div class="grid c2" style="margin-top:12px">'+keys.map(function(k){return spellTile(k);}).join('')+'</div>'
+    +'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
 </script>
 </body>
 </html>
