@@ -1221,6 +1221,13 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .dst-grid b{display:block;font-size:.82rem;color:#5c3d9e;margin-bottom:2px}
 .dst-grid p{margin:0;font-size:.86rem;line-height:1.4;color:var(--ink)}
 .dst-tools{margin:4px 0 0;padding-left:18px;font-size:.86rem;line-height:1.6}
+
+.yl-qm{display:flex;flex-wrap:wrap;gap:8px;align-items:flex-start;margin:6px 0 10px}
+.yl-qm-head{width:100%;font-weight:800;font-size:.9rem;color:#15183A;margin:0 0 2px}
+.yl-qm-cube{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;width:88px;min-height:72px;padding:9px 6px;border-radius:14px;background:#fff;border:1px solid var(--line);box-shadow:0 3px 10px rgba(0,0,0,.06);cursor:pointer;text-align:center}
+.yl-qm-cube:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,.1)}
+.yl-qm-cube .c-em{font-size:1.35rem;line-height:1}
+.yl-qm-cube span:not(.c-em){font-size:.64rem;font-weight:600;color:#15183A;line-height:1.15}
 </style>
 <style id="waspk-css">
 /* =========================================================================
@@ -4627,6 +4634,7 @@ function studentTier(){ if(SESSION&&SESSION.tier) return SESSION.tier; try{ var 
 function setStudentTier(t){ if(SESSION) SESSION.tier=t; try{ var m=Store.get('ican_tiers')||{}; if(SESSION&&SESSION.id) m[SESSION.id]=t; Store.set('ican_tiers',m); }catch(e){} }
 function routeStudentHome(){ var t=studentTier(); if(t==='junior') go('ylhub'); else if(t==='senior') go('dashboard'); else go('tierChoose'); }
 function chooseTier(t){ setStudentTier(t); routeStudentHome(); }
+function ylDictPrompt(){ var w=(prompt('Look up a word:')||'').trim(); if(!w) return; var el=document.getElementById('ylDict'); if(el) el.value=w; if(typeof ylDictGo==='function') ylDictGo(); }
 function go(screen, arg){
   CURRENT_SCREEN = screen; CURRENT_ARG = arg;
   stopSpeak(); turnOffHighlighter(); clearSpellTimer(); clearExamTimer(); window.scrollTo(0,0);
@@ -14346,6 +14354,7 @@ function toggleQADone(k){
 
 /* ---------- student mini-bar ---------- */
 function injectStudentBar(){
+  if(typeof studentTier==='function'&&studentTier()==='junior') return;
   const wrap=document.querySelector('#app .wrap'); if(!wrap) return;
   const lk=k=>gateOpen(k)?'':' <span class="mb-lock">🔒</span>';
   const pubInits=getInits().filter(i=>i.published);
@@ -21638,17 +21647,19 @@ ROUTES.ylhub=function(){
       <h1 style="color:#fff;margin:4px 0">🧒 Foundational Course</h1>
       <p style="margin:0;opacity:.95;font-size:.9rem">The <b>RWD loop</b>: read to discover, write to explain, design to build — then loop back and have fun.</p></div>
     </div>
-    <div class="yl-tools"><b>🧰 Support tools:</b>
-      <input id="ylDict" class="yl-in" style="min-width:150px" placeholder="look up a word…" onkeydown="if(event.key==='Enter')ylDictGo()">
-      <button class="btn sm ghost" onclick="ylDictGo()">📖 Dictionary ↗</button>
-      
-      <button class="btn sm ghost" onclick="go('typing','yl')">⌨️ Typing lessons</button>
-      <button class="btn sm ghost" onclick="go('ylspell')">🐝 Spelling Bee</button>
-      <button class="btn sm ghost" onclick="go('mycerts')">🏅 My Certificates</button>
-      <button class="btn sm ghost" onclick="go('myachieve')">🏆 My Achievement Log</button>
-      <button class="btn sm teal" onclick="ylLessonPlanDoc()">📥 Teacher lesson plan (Word)</button>
-      <span style="font-size:.78rem;color:var(--muted)">Affordances everywhere: 🔊 read-to-me · A± zoom · tap any word to hear it &amp; see its meaning</span>
+    <div class="yl-qm">
+      <div class="yl-qm-head">⚡ Quick moves</div>
+      <input id="ylDict" style="display:none">
+      <button class="yl-qm-cube" onclick="ylDictPrompt()"><span class="c-em">🔤</span><span>Dictionary</span></button>
+      <button class="yl-qm-cube" onclick="go('typing','yl')"><span class="c-em">⌨️</span><span>Typing</span></button>
+      <button class="yl-qm-cube" onclick="go('ylspell')"><span class="c-em">🐝</span><span>Spelling Bee</span></button>
+      <button class="yl-qm-cube" onclick="go('ylMedia')"><span class="c-em">🕵️</span><span>Media</span></button>
+      <button class="yl-qm-cube" onclick="go('vocab')"><span class="c-em">📚</span><span>My Words</span></button>
+      <button class="yl-qm-cube" onclick="go('mycerts')"><span class="c-em">🏅</span><span>Certificates</span></button>
+      <button class="yl-qm-cube" onclick="go('myachieve')"><span class="c-em">🏆</span><span>Achievements</span></button>
+      ${(SESSION&&SESSION.role==='teacher')?`<button class="yl-qm-cube" onclick="ylLessonPlanDoc()"><span class="c-em">📥</span><span>Lesson Plan</span></button>`:''}
     </div>
+    <p style="font-size:.74rem;color:var(--muted);margin:0 0 8px">🔊 read-to-me · A± zoom · tap any word to hear it &amp; see its meaning</p>
 
     <div class="hub" style="margin-top:8px">
       <div class="hub-greet">🧒 Tap a circle to begin. <b>Read · Write · Design</b> sit at the core; <b>Grammar</b>, <b>Exams &amp; Quizzes</b> and <b>STEM·STREAM</b> orbit around.</div>
@@ -25301,6 +25312,107 @@ ROUTES.ylspell = function(){
     +'<p style="color:var(--muted);max-width:640px">Hear a word, then type it. Pick a fun pack to begin — animals, food, school or home. You get two tries for each word.</p>'
     +'<div class="grid c2" style="margin-top:12px">'+keys.map(function(k){return spellTile(k);}).join('')+'</div>'
     +'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
+
+/* ===== Junior Media Literacy unit (Foundational) ===== */
+const YLML=[
+ { id:'jml1', icon:'🕵️', colour:'#E0403F', title:'When a video is not real', strap:'Deepfakes — pictures that can lie',
+   intro:['<p>Have you ever seen a video that looked real, but was not? Today, clever computers can change what people say and do in a video. This is called a <b>deepfake</b>. It can make it look like someone did something they never did.</p>','<p>So we do not believe a video just because it looks real. We stop and ask three questions: <i>Where did this come from? Who made it? Is it true?</i> A picture or a video is not proof all by itself.</p>'],
+   ytId:'7akzhpx0EIU', dur:'6:10',
+   transcript:'<p><b>What to watch for:</b> people have changed pictures and videos for a very long time. Now computers can make fake videos that look real. The video reminds us to check where a video came from before we believe it or share it.</p>',
+   quiz:[
+     {q:"A deepfake is —", options:["a real home video that is always completely true","a video changed by a computer to trick you","a kind of camera that you buy in a shop","a fun new game you play on a phone"], answer:1, exp:"A deepfake is a fake video made by a computer."},
+     {q:"Before you believe a video, you should —", options:["share it fast with everyone you know","check where it came from","turn your phone off","watch only cartoons"], answer:1, exp:"Always check the source first."},
+     {q:"Does looking real mean a video is true?", options:["Yes, always, with no exceptions at all","No — a fake video can look real too","Only if you watch it on a weekend","Only when the video is funny"], answer:1, exp:"Fakes are made to look real, so looking real is not proof."}],
+   credit:"Adapted for young learners from BBC Bitesize — Solve the Story (Other Side of the Story). Source: bbc.co.uk/bitesize." },
+ { id:'jml2', icon:'🤖', colour:'#E6608A', title:'The fake crowd', strap:'Bots — pretend people online',
+   intro:['<p>Sometimes it looks like <b>everyone</b> online is angry about the same thing. Hundreds of comments say almost the same words. But here is a secret: many of those comments are not from real people at all.</p>','<p>They come from <b>bots</b> — pretend accounts made by a computer. Bots can post the same thing again and again to make a small idea look big. A big crowd online is not always a real crowd.</p>'],
+   ytId:'Up_d93HG6do', dur:'4:10',
+   transcript:'<p><b>What to watch for:</b> not every account is a real person. Bots can copy the same message many times to make it look popular. The video helps you tell a real user from a pretend, computer-made account.</p>',
+   quiz:[
+     {q:"A bot is —", options:["a real, living person who types very fast","a pretend account run by a computer","a small flying insect outside","a kind of tasty snack food"], answer:1, exp:"A bot is a computer account, not a real person."},
+     {q:"Why do people use bots?", options:["to water all the plants in the home garden","to make an idea look more popular","to help you sleep at night","to tidy up the classroom"], answer:1, exp:"Bots make a small idea look big and popular."},
+     {q:"A big crowd online is —", options:["always completely real and always right","not always made of real people","only ever your close friends","never seen on the internet"], answer:1, exp:"Some of the crowd may be bots."}],
+   credit:"Adapted for young learners from BBC Bitesize — Solve the Story (Other Side of the Story). Source: bbc.co.uk/bitesize." },
+ { id:'jml3', icon:'📢', colour:'#2B5FA6', title:'Only one side of the story', strap:'Bias — telling just one side',
+   intro:['<p>Two people can see the very same thing and tell it in two very different ways. The words we choose can change how a story <b>feels</b>. When someone tells only one side, we call it <b>bias</b>.</p>','<p>Your phone also shows you more of what you tap and like. Little by little, you can end up seeing only one kind of story. To be fair, we look for the <b>other side</b> too, and we ask: what is being left out?</p>'],
+   ytId:'LuBgbenRH1Q', dur:'4:20',
+   transcript:'<p><b>What to watch for:</b> the same event can be told in different ways, and your feed shows you more of what you already like. The video shows why it is smart to check more than one place before you decide.</p>',
+   quiz:[
+     {q:"Bias means —", options:["telling every side fairly and equally","telling only one side of a story","a kind of hard school test","a bright colour of the rainbow"], answer:1, exp:"Bias is showing only one side."},
+     {q:"Your phone mostly shows you —", options:["exactly the same as everyone else","more of what you tap and like","only your school homework tasks","nothing at all, ever"], answer:1, exp:"The feed gives you more of what you react to."},
+     {q:"To be fair, you should —", options:["read only one single account","look for the other side too","believe the loudest voice","stop reading any news"], answer:1, exp:"Check more than one side before deciding."}],
+   credit:"Adapted for young learners from BBC Bitesize — Solve the Story (Other Side of the Story). Source: bbc.co.uk/bitesize." },
+ { id:'jml4', icon:'🔐', colour:'#8B5CF6', title:'Stay safe online', strap:'Tricky messages & staying safe',
+   intro:['<p>Some messages online try to trick you. They say things like "Act now!" or "You won a prize!" to make you scared or excited so you click quickly. This trick is called <b>phishing</b>.</p>','<p>The safe thing to do is <b>slow down</b>. Do not click strange links. Never share your password. And if a message does not feel right, stop and tell a grown-up you trust.</p>'],
+   ytId:'7f_H4nSeHZA', dur:'3:24',
+   transcript:'<p><b>What to watch for:</b> tricky messages work by making you hurry. The video shows how one fast click can give away a password, and why slowing down and checking keeps you safe.</p>',
+   quiz:[
+     {q:"Phishing tries to make you —", options:["click fast without thinking","read a nice, long bedtime story","do your homework early","feel sleepy and calm"], answer:0, exp:"It rushes you so you click before you think."},
+     {q:"If a message feels wrong, you should —", options:["click it right away, very quickly","stop and tell a trusted grown-up","send your password to be safe","share it with everyone you know"], answer:1, exp:"Slow down and ask a trusted adult."},
+     {q:"You should never share your —", options:["favourite colour","password","name of your pet","favourite food"], answer:1, exp:"Keep your password private, always."}],
+   credit:"Adapted for young learners from BBC Bitesize — Solve the Story (Other Side of the Story). Source: bbc.co.uk/bitesize." }
+];
+ROUTES.ylMedia = function(){
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'&&typeof studentTier==='function'&&studentTier()==='senior'){ go('dashboard'); return; }
+  var cards=YLML.map(function(l){ return '<button class="yl-big" style="--bg1:'+l.colour+';--bg2:#20213a;text-align:left;min-height:118px;align-items:flex-start" onclick="go(\''+'ylMediaLesson'+'\',\''+l.id+'\')"><b style="font-size:1.1rem">'+l.icon+' '+l.title+'</b><span>'+l.strap+'</span></button>'; }).join('');
+  app().innerHTML='<div class="wrap screen yl-scene">'
+    +'<button class="back" onclick="go(\'ylhub\')">← Foundational</button>'
+    +'<div class="meta">Foundational · Media Literacy</div>'
+    +'<h1 style="font-size:2.1rem">🕵️ Media Literacy</h1>'
+    +'<p style="color:var(--muted);max-width:640px">Four short lessons about being smart and safe online. Watch a video, learn one big idea, then try the quick quiz.</p>'
+    +'<div style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:12px">'+cards+'</div>'
+    +'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
+const YLML_CH={
+ jml1:{ sumModel:"A strong summary names two or three of: computers can now make fake videos (deepfakes) that look real; the danger is both believing fakes and doubting real proof; we should check the source and evidence, not just how real a clip looks.",
+   mcqs:[
+     {q:"Why is 'people doubt everything' called the biggest danger?", options:["Because fake videos are cheap to make now","Because real proof can be dismissed as fake too","Because only very famous public people are ever affected","Because cameras will soon stop working"], answer:1, exp:"If nothing is trusted, true evidence loses its power."},
+     {q:"The best way to judge a clip is to ask —", options:["whether it looks real to you","whether it can be proven true","how many people have shared it","whether a friend sent it first"], answer:1, exp:"Fakes are built to look real, so ask if it can be proven."},
+     {q:"A reverse image search helps you —", options:["make the video much longer","find where a picture first came from","delete the fake video forever","improve the overall video picture quality"], answer:1, exp:"It traces a picture to its original source."}],
+   text:'<p>For a long time, a photograph or a video felt like solid proof. If a camera captured it, most people believed it really happened. That old certainty is now fading, because computers can create <b>synthetic media</b> — pictures, sound and video built or changed by artificial intelligence until they look completely real.</p><p>The idea behind a <b>deepfake</b> is simpler than it sounds. A computer studies many pictures and recordings of a person until it learns the small details that make that face and voice unique. Then it can produce brand-new footage of that person saying or doing something they never actually said or did. Early fakes were easy to catch, with strange blinking or blurry edges. The best ones today can fool a careful viewer, at least for the few seconds it takes to feel angry and hit the share button.</p><p>The biggest danger is not only that people believe fakes. It is also that, once fakes are everywhere, people start to doubt everything. Someone caught doing something wrong on camera can simply claim the video is a deepfake, and a true recording can be waved away as invented. When no one is sure what is real, the truth loses its power.</p><p>So how do you read a suspicious clip like a detective? Check where it first appeared and who posted it. Search for the original using a reverse image search. Slow the video down and look at hands, teeth, shadows, and the way the mouth matches the sound. Above all, do not ask <i>does this look real?</i> — a good fake is built to look real. Ask instead: <i>can this be proven true?</i></p>' },
+ jml2:{ sumModel:"A strong summary names two or three of: bots are computer-run accounts; in large networks they fake a huge crowd (astroturfing); a fake crowd triggers a real pile-on; judge the accounts behind a post, not just the number.",
+   mcqs:[
+     {q:"Astroturfing means —", options:["watering the real grass outside","faking a grassroots movement with fake accounts","building a large brand-new outdoor sports field","tidying up a social network"], answer:1, exp:"It fakes a real, grassroots movement using fake accounts."},
+     {q:"Why does a fake crowd pull in a real one?", options:["the bots quietly pay a lot of real people to join","people join the anger without checking","platforms remove every calm post","real users are unable to log in"], answer:1, exp:"An apparent stampede makes real people pile on."},
+     {q:"A number online is only as trustworthy as —", options:["the accounts behind it","the colour of the app","the time it was first posted","the length of the message"], answer:0, exp:"Volume means nothing if the accounts are fake."}],
+   text:'<p>Scroll through the comments under a post and it can feel as though the whole world has an opinion. Thousands of replies, all saying almost the same thing, can make an idea feel true and important. But numbers online can be faked, and one of the main tools for faking them is the <b>bot</b>.</p><p>A bot is an account run by software instead of a person. On its own, a single bot is harmless. The danger comes when someone controls hundreds or thousands of them at once. A network of bots can flood a post, repeat a message, push a hashtag, or attack a target — all to make a small opinion look like the view of a huge crowd. This trick has a name: <b>astroturfing</b>, because it fakes a real grassroots movement the way plastic turf fakes grass.</p><p>What makes it work is that a fake crowd pulls in a real one. When people see what looks like a stampede of anger, many join in without checking, and now the pile-on really is large. The bots light the fire; real users keep it burning. For the person in the middle, the fear feels real whether the crowd is real or not.</p><p>Reading a crowd wisely means refusing to treat volume as proof. Look at the accounts, not just the number. When were they made? Do they have a real history and ordinary photos, or were they created last week with a stolen picture and the same message posted over and over? A number is only as trustworthy as the accounts behind it.</p>' },
+ jml3:{ sumModel:"A strong summary names two or three of: bias is a one-sided slant from word choice and what is left out; the algorithm feeds you more of what you react to; this builds an echo chamber; to read fairly, notice framing and seek views that challenge you.",
+   mcqs:[
+     {q:"An echo chamber is —", options:["a room built for good sound","a feed that shows mostly views you already hold","a new and unusually loud kind of computer bot account","a website that checks facts for you"], answer:1, exp:"You mostly see what you already agree with."},
+     {q:"The algorithm feeds you more of —", options:["balanced and very calm posts","whatever you react to most","only your school subjects","posts from total strangers"], answer:1, exp:"Reactions train it to narrow your feed."},
+     {q:"The writer says an untested opinion is —", options:["guaranteed to be correct","not really yours yet","always written by a bot","best shared very fast"], answer:1, exp:"An opinion should be tested against a real counter-argument."}],
+   text:'<p>Imagine two friends describing the same football match. One says the referee was unfair and robbed their team; the other says their team simply played badly. Same match, two very different stories. The way we choose words, and the details we leave out, changes how a story <b>feels</b>. That slant is called <b>bias</b>.</p><p>Online, bias is only half the problem. The other half is the <b>algorithm</b> — the set of rules that decides what appears in your feed. It watches what you tap, watch and linger on, and then shows you more of the same. Because strong feelings hold attention, it learns to feed you posts that make you angry or excited, and to hide the calm, balanced ones. Slowly, your feed fills with one kind of view, until it looks like almost everyone agrees with you. This comfortable trap is called an <b>echo chamber</b>.</p><p>The danger is quiet. No one has lied to you; you have simply been shown one slice of the world and mistaken it for the whole. When you finally meet someone who disagrees, they can seem not just wrong but impossible to understand, because your feed erased the reasons anyone might think that way.</p><p>Reading past the skew takes real effort. Notice the framing: which words are emotional, whose side is told, and what is missing. Judge a whole account, not one post. And deliberately follow a few good sources that disagree with you — not to give up your view, but to test it. An opinion that has never met a strong argument against it is not really yours yet.</p>' },
+ jml4:{ sumModel:"A strong summary names two or three of: your digital footprint is a lasting record; doxxing gathers small details into a map to a person; phishing uses panic to make you click; stay safe by sharing less, checking senders, using strong passwords, and telling an adult.",
+   mcqs:[
+     {q:"Why do small personal details matter?", options:["they are genuinely entertaining and fun to post online","put together, they can map a person","they make your phone run faster","they make your passwords stronger"], answer:1, exp:"Small facts combine into a map to someone."},
+     {q:"Phishing works mainly by —", options:["using very clever secret code","making you panic and click fast","only ever being sent very late at night time","never including any links"], answer:1, exp:"Fear and hurry, not clever code, make it work."},
+     {q:"A safe habit is to —", options:["share as much as you possibly can","check the sender before clicking","reply with your password quickly","click on every link you receive"], answer:1, exp:"Verify the sender; share less."}],
+   text:'<p>You leave footprints in wet sand, and the tide washes them away. Online, you leave a different kind of trail that almost never washes away. Every post, like, search and login adds to your <b>digital footprint</b> — a growing record of you that others can collect and piece together.</p><p>Most of the time this record is harmless. The trouble starts when someone uses it against you. <b>Doxxing</b> means gathering scattered private details — a school, a home area, a phone number, an old photo — and publishing them together without permission, so a person can be found or frightened in real life. Each detail alone seems tiny. Put together, they become a map to someone, which is why guarding small facts matters more than it seems.</p><p>Attackers often do not break in; they are handed the key. That is the idea behind <b>phishing</b>: a message pretends to be from a bank, a game or a school, and it creates panic — your account will close, your prize will expire, act now. Fear is the point, because a frightened brain clicks before it checks, and one tap on a fake link can give away a password.</p><p>Staying safe is mostly about calm habits. Share less, because what you never post cannot leak. Pause on any message that rushes or threatens you, and check the real sender before you click. Use strong, different passwords. And if something feels wrong, or someone is targeted, save the evidence, block, report, and tell a trusted adult.</p>' }
+};
+ROUTES.ylMediaLesson = function(compound){
+  var parts=String(compound||'').split(':'); var id=parts[0]; var ch=(parts[1]==='ch');
+  var l=YLML.find(function(x){return x.id===id;}); if(!l){ go('ylMedia'); return; }
+  var C=(typeof YLML_CH!=='undefined')?YLML_CH[id]:null;
+  var toggle = C ? ('<div style="display:flex;gap:8px;margin:8px 0 12px;flex-wrap:wrap">'
+      +'<button class="btn sm'+(ch?' ghost':'')+'" onclick="go(\'ylMediaLesson\',\''+id+'\')">📄 Standard</button>'
+      +'<button class="btn sm'+(ch?'':' ghost')+'" onclick="go(\'ylMediaLesson\',\''+id+':ch\')">🧗 Challenge · longer text</button></div>') : '';
+  var vid = mediaVideoBlock({ytId:l.ytId,title:'Watch: '+l.title,dur:l.dur,transcript:l.transcript,quiz:l.quiz});
+  var cred = '<p style="font-size:.8rem;color:#888;border-top:1px solid #eee;padding-top:8px;margin-top:14px">'+l.credit+'</p>';
+  var body;
+  if(ch && C){
+    var quiz = C.mcqs.map(function(q,i){ return mlqOne(q,i); }).join('');
+    var _p2=(function(){var n=0,i=-1;while(n<2){i=C.text.indexOf('</p>',i+1);if(i<0)break;n++;}return i<0?-1:i+4;})(); var withVid=(_p2>0)?(C.text.slice(0,_p2)+vid+C.text.slice(_p2)):(C.text+vid);
+    body = '<div class="passage" style="line-height:1.7">'+withVid
+      +'<div class="mvb-quiz" style="border:1px solid var(--line);border-radius:12px;margin-top:14px"><h4>✍️ Check you understood</h4>'+quiz+'</div>'
+      +'<div class="mvb-quiz" style="border:1px dashed #E08A2B;background:#fff7e6;border-radius:12px;margin-top:12px"><h4>📝 Summarise it</h4><p style="margin:0 0 6px;font-size:.9rem">In your own words, write the <b>two or three main points</b> of this article.</p><textarea id="jmlSum" rows="4" style="width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font:inherit" placeholder="1. ...&#10;2. ...&#10;3. ..."></textarea><details class="quiz-ans" style="margin-top:8px"><summary>✅ See a model summary</summary><p style="margin:6px 0 0;font-size:.88rem;color:#0c6b53">'+C.sumModel+'</p></details></div>'
+      + cred + '</div>';
+  } else {
+    body = '<div class="passage" style="line-height:1.7">'+l.intro.join('') + vid + cred + '</div>';
+  }
+  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylMedia\')">← Media Literacy</button><div class="meta">Foundational · Media Literacy</div><h1 style="font-size:2rem">'+l.icon+' '+l.title+'</h1>'+toggle+body+'</div>';
   try{window.scrollTo(0,0);}catch(e){}
 };
 </script>
