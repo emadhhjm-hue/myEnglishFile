@@ -4209,6 +4209,95 @@ const RSKILLS = [
     ]
   }
 }
+,
+/* ---------------- UNIT 4 · MEDIA LITERACY (BBC Bitesize "Solve the Story") ---------------- */
+{ n:1, id:"ml_glitch", strand:"info", icon:"🕵️", name:"When a video lies", strap:"Deepfakes · edited media · reverse image search", colour:"#E0403F",
+  what:"Working out whether an image or video is real, edited, or completely fake — before you believe it or share it.",
+  how:["Look for the tell-tale signs of editing: odd lighting, blurred edges, hands and teeth that look wrong, audio that does not match the mouth.","Ask where it came from. Run a reverse image search to find the original.","Pause before you share. A fake spreads fastest through people who felt something and reposted."],
+  trap:"'It looks real' is not evidence. Modern AI can fake a face and a voice — realism is exactly what a good fake is built to have.",
+  levels:{ standard:[
+    { id:"mlg1", title:"The Glitch: when a video lies", genre:"Non-fiction", field:"Media literacy · manipulated media", register:"Neutral", type:"Explainer · multimodal", words:210,
+      vocab:[["deepfake","a fake image, audio or video made with AI to look real"],["manipulated","changed or edited to mislead"],["verify","to check that something is true"],["reverse image search","searching the internet using a picture instead of words"]],
+      mcqs:[
+        {type:"mcq", q:"What is the writer's main point about edited videos?", options:["They are always easy to spot.","You should check before believing or sharing them.","Only celebrities are ever targeted.","They cannot damage a real person."], answer:1, exp:"The whole text argues for pausing to verify — not for trusting how real something looks."},
+        {type:"mcq", q:"Why does a reverse image search help?", options:["It deletes the fake for you.","It makes your phone faster.","It can reveal where a picture first came from.","It proves every image is fake."], answer:2, exp:"It traces an image back to its earliest source, exposing reused or edited pictures."},
+        {type:"mcq", q:"According to the text, why do fakes spread so fast?", options:["People repost from emotion before checking.","Platforms pay users to share them.","They are only shared by bots.","They appear only late at night."], answer:0, exp:"A strong feeling plus a quick tap is how a fake travels — the text's central warning."}],
+      text:'<p>One skate trick. One video. One big problem. When Misha lands a trick at the skatepark, her friends film it — until an <b>edited</b> version suddenly appears online, showing something that never happened. Misha did not do the thing the video claims. But it looks real, and it is spreading.</p><p>This is the danger of <b>manipulated media</b>. Editing tools and AI can now change faces, voices and actions so smoothly that our eyes are fooled. A <b>deepfake</b> does not have to be perfect — it only has to be believable for the few seconds it takes someone to react and share.</p>'
+        + mediaVideoBlock({ ytId:'hz6GULbowAk', title:'Watch: Why people fall for misinformation (TED-Ed)', dur:'4:42',
+            transcript:'<p><b>What the video covers:</b> a "fact" can be completely wrong and still spread for over a century — like the famous tongue "taste map". Misinformation survives because it is simple, it makes a satisfying story, and we rarely go back to check the original source. The habit that stops it is small: pause, and verify before you pass it on.</p>',
+            quiz:[
+              {q:"In the video, why does a wrong 'fact' keep spreading?", options:["It is simple and makes a satisfying story.","A law forces schools to teach it.","It is written only in old books.","Nobody ever shares it."], answer:0, exp:"Simple, story-shaped claims travel — accuracy comes second to how satisfying they feel."},
+              {q:"What is the single most useful habit the video suggests?", options:["Share it quickly so others can judge.","Check the original source before believing it.","Only trust images, never text.","Believe whatever most people repost."], answer:1, exp:"Tracing a claim back to its source is the core defence."},
+              {q:"Misinformation differs from disinformation because misinformation is —", options:["always about science","spread on purpose to deceive","shared by mistake, without intent to deceive","impossible to correct"], answer:2, exp:"Misinformation is an honest mistake; disinformation is deliberate."}] })
+        + '<p>Before you believe the video of Misha, ask the media-literacy questions: <i>Where did this first appear? Who benefits from me believing it? Does anything look edited?</i> Then use the BBC guide to run a reverse image search on the source picture.</p>'
+        + '<p style="margin-top:6px"><b>Go deeper (BBC Bitesize):</b> <a href="https://www.bbc.co.uk/bitesize/articles/zfw9ywx" target="_blank" rel="noopener">How to do a reverse image search →</a></p>'
+        + '<p style="font-size:.8rem;color:#888;border-top:1px solid #eee;padding-top:8px;margin-top:14px">Adapted for classroom reading from BBC Bitesize — <i>Solve the Story</i> (Other Side of the Story), Episode 1: The Glitch. Source: <a href="https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr" target="_blank" rel="noopener">bbc.co.uk/bitesize</a>.</p>' } ], advanced:[] } },
+
+{ n:2, id:"ml_noise", strand:"info", icon:"🤖", name:"Bots and the fake crowd", strap:"Bot accounts · fake comments · online pile-ons", colour:"#E6608A",
+  what:"Recognising when the 'crowd' attacking or praising something online is not made of real people at all.",
+  how:["Check the account: when was it created, does it have real posts, is the profile picture reused?","Notice the language — fake comments are often emotional, repetitive, and designed to provoke.","Remember that a flood of comments can be manufactured to change how a real situation feels."],
+  trap:"Numbers feel like truth. 'Everyone is saying it' can be a handful of bots posting hundreds of times.",
+  levels:{ standard:[
+    { id:"mln1", title:"The Noise: bots and the fake crowd", genre:"Non-fiction", field:"Media literacy · bots & manipulation", register:"Neutral", type:"Explainer · multimodal", words:205,
+      vocab:[["bot","an automated account run by software, not a person"],["escalate","to grow quickly and become more serious"],["manipulative","designed to control how someone feels or acts"],["credibility","how believable or trustworthy something is"]],
+      mcqs:[
+        {type:"mcq", q:"What does the text suggest about a sudden flood of angry comments?", options:["It proves the person is guilty.","Some of it may be fake, from bots.","It is always from close friends.","It should make you join in."], answer:1, exp:"Sam's suspicion — and the lesson — is that the 'noise' may be manufactured."},
+        {type:"mcq", q:"Which is a warning sign of a bot account?", options:["A brand-new account with no real posts.","A profile with years of ordinary photos.","An account that never comments.","A verified account with a long history."], answer:0, exp:"New accounts, reused pictures and repetitive posting are classic bot signs."},
+        {type:"mcq", q:"Why might someone use bots to pile on a target?", options:["To make an opinion look far more popular than it is.","To improve the target's mental health.","To slow down the internet.","To reduce the number of comments."], answer:0, exp:"Bots manufacture the appearance of a crowd, pressuring real people to agree."}],
+      text:'<p>The fake video of Misha is spreading fast, and the online abuse is growing. Hundreds of comments judge her; some demand she is punished. Misha feels anxious and overwhelmed — but Sam thinks something strange is going on. As they look closer, some of the comments seem oddly similar, and they begin to wonder whether they are from real people at all.</p><p>Many are <b>bots</b>: automated accounts that flood a post to make an opinion look huge. A manufactured crowd can <b>escalate</b> a pile-on and push real people to join in — which is exactly what it is designed to do.</p>'
+        + mediaVideoBlock({ ytId:'q-Y-z6HmRgI', title:'Watch: How to choose your news (TED-Ed)', dur:'4:47',
+            transcript:'<p><b>What the video covers:</b> news now reaches us instantly from countless sources, mixed with opinion and sometimes non-facts. A smart reader slows down, separates fact from opinion, checks who is speaking and why, and looks at more than one source before deciding what to believe.</p>',
+            quiz:[
+              {q:"The video says a smart reader should first —", options:["repost the most dramatic story","separate fact from opinion","trust the account with the most followers","read only headlines"], answer:1, exp:"Telling fact from opinion is the reader's first job."},
+              {q:"Why check more than one source?", options:["To make reading take longer","So a single biased account cannot decide what you believe","Because one source is always a bot","To find the funniest version"], answer:1, exp:"Cross-checking protects you from a single slanted or fake source."},
+              {q:"A flood of identical comments is best treated as —", options:["proof the story is true","a reason to join in immediately","a possible sign of coordinated or bot activity","irrelevant and never worth noticing"], answer:2, exp:"Repetition at scale is a red flag, not evidence."}] })
+        + '<p>So before you trust the "crowd", check the accounts behind it. A real reaction and a manufactured one can look identical at a glance — the difference is in the pattern.</p>'
+        + '<p style="margin-top:6px"><b>Go deeper (BBC Bitesize):</b> <a href="https://www.bbc.co.uk/bitesize/articles/znbbh4j" target="_blank" rel="noopener">How to identify bot accounts →</a></p>'
+        + '<p style="font-size:.8rem;color:#888;border-top:1px solid #eee;padding-top:8px;margin-top:14px">Adapted for classroom reading from BBC Bitesize — <i>Solve the Story</i> (Other Side of the Story), Episode 2: The Noise. Source: <a href="https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr" target="_blank" rel="noopener">bbc.co.uk/bitesize</a>.</p>' } ], advanced:[] } },
+
+{ n:3, id:"ml_skew", strand:"info", icon:"📢", name:"Bias and the echo chamber", strap:"Bias · algorithms · echo chambers · influencers", colour:"#2B5FA6",
+  what:"Understanding how the way a story is framed — and the way algorithms feed it to you — shapes what you think and feel.",
+  how:["Notice framing: which words are emotional, what is left out, whose side is told.","Remember the algorithm shows you more of what you react to — an echo chamber, not the whole world.","Ask why an influencer might exaggerate. Drama earns clicks; balance rarely does."],
+  trap:"If everything in your feed agrees with you, that is not proof you are right — it may just be the echo chamber working.",
+  levels:{ standard:[
+    { id:"mls1", title:"The Skew: bias and the echo chamber", genre:"Non-fiction", field:"Media literacy · bias & algorithms", register:"Neutral", type:"Explainer · multimodal", words:200,
+      vocab:[["bias","a one-sided view that unfairly favours something"],["algorithm","a set of rules a platform uses to decide what you see"],["echo chamber","a space where you only hear opinions like your own"],["agenda","a hidden aim behind what someone says or shares"]],
+      mcqs:[
+        {type:"mcq", q:"What is an 'echo chamber'?", options:["A room with good sound.","A feed that mostly shows you views you already hold.","A type of bot.","A fact-checking tool."], answer:1, exp:"Algorithms feed you more of what you react to, so opposing views fade out."},
+        {type:"mcq", q:"Why might an influencer post an exaggerated story?", options:["Because balance always performs best.","Because dramatic content earns more clicks and attention.","Because platforms ban calm posts.","Because they dislike their audience."], answer:1, exp:"Outrage and drama are rewarded by attention, so some creators lean into them."},
+        {type:"mcq", q:"How does bias 'skew' a story?", options:["By deleting the story completely.","By choosing words and details that push one feeling.","By making the text longer.","By adding a source list."], answer:1, exp:"Framing — word choice and what's included or left out — steers the reader."}],
+      text:'<p>Just when things cannot seem to get worse, a new video drops from an American gossip channel. Misha is trapped in an endless scroll of hate — but Sam and Aaron notice something is off. Could the influencer be stirring drama on purpose?</p><p>This is <b>bias</b> at work. The way a story is framed — the words chosen, the details left out — changes how it feels. And the <b>algorithm</b> quietly feeds you more of whatever you react to, building an <b>echo chamber</b> where one view drowns out the rest.</p>'
+        + mediaVideoBlock({ ytId:'q-Y-z6HmRgI', title:'Watch: How to choose your news (TED-Ed)', dur:'4:47',
+            transcript:'<p><b>What the video covers:</b> because anyone can publish, the same event can be told in very different ways. The video shows how opinion, emotion and selective facts shape a story, and why comparing sources — and noticing what a source wants from you — protects your judgement.</p>',
+            quiz:[
+              {q:"According to the video, the same event can —", options:["only ever be reported one way","be framed very differently by different sources","never contain any opinion","be trusted only if it is dramatic"], answer:1, exp:"Framing means one event yields many versions."},
+              {q:"An echo chamber is a problem mainly because —", options:["it makes your phone slower","it hides views that disagree with you","it deletes your posts","it only happens to adults"], answer:1, exp:"You stop seeing anything that challenges you."},
+              {q:"The safest response to an emotionally charged post is to —", options:["share it before you forget","assume it is balanced","check who made it and what they might want","turn off your phone forever"], answer:2, exp:"Consider the source's possible agenda before reacting."}] })
+        + '<p>To read past the skew, look for the pattern across a whole account — not one post. Who do they always praise or attack? Are they trying to inform you, or to provoke you?</p>'
+        + '<p style="margin-top:6px"><b>Go deeper (BBC Bitesize):</b> <a href="https://www.bbc.co.uk/bitesize/articles/z4w79ty" target="_blank" rel="noopener">How to spot hidden agendas online →</a></p>'
+        + '<p style="font-size:.8rem;color:#888;border-top:1px solid #eee;padding-top:8px;margin-top:14px">Adapted for classroom reading from BBC Bitesize — <i>Solve the Story</i> (Other Side of the Story), Episode 3: The Skew. Source: <a href="https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr" target="_blank" rel="noopener">bbc.co.uk/bitesize</a>.</p>' } ], advanced:[] } },
+
+{ n:4, id:"ml_doxx", strand:"info", icon:"🔐", name:"Staying safe online", strap:"Doxxing · phishing · digital footprint", colour:"#8B5CF6",
+  what:"Protecting your personal information — and spotting the scams and traps designed to steal it.",
+  how:["Guard personal data: the less you share, the less can be leaked or used against you.","Check senders and links before you click — panic and urgency are the scammer's tools.","Remember your digital footprint: every post adds up to a picture of you that lasts."],
+  trap:"A message that makes you panic ('Act now or lose your account!') is trying to switch off the careful part of your brain. That urgency is the scam.",
+  levels:{ standard:[
+    { id:"mld1", title:"The Doxx: staying safe online", genre:"Non-fiction", field:"Media literacy · online safety", register:"Neutral", type:"Explainer · multimodal", words:205,
+      vocab:[["doxxing","publishing someone's private information online without consent"],["phishing","messages that trick you into giving away passwords or data"],["digital footprint","the trail of data left by everything you do online"],["consent","permission for something to happen"]],
+      mcqs:[
+        {type:"mcq", q:"Why is doxxing described as more serious than rude comments?", options:["It is louder.","It exposes real private information that can put someone at risk.","It only happens to famous people.","It is always a joke."], answer:1, exp:"Leaking private data can lead to real-world harm, not just hurt feelings."},
+        {type:"mcq", q:"A classic sign of a phishing message is —", options:["a calm, patient tone","urgent or threatening language pushing you to act fast","perfect spelling and grammar","no links at all"], answer:1, exp:"Urgency and panic are engineered to stop you thinking."},
+        {type:"mcq", q:"What is a 'digital footprint'?", options:["A shoe-shaped icon.","The trail of data your online actions leave behind.","A type of password.","A bot account."], answer:1, exp:"Likes, posts and searches accumulate into a lasting record of you."}],
+      text:'<p>The pressure intensifies. When Sam traces the attacks back to a hidden account, a mysterious message arrives claiming to reveal the truth. But some of what is happening is more dangerous than rumours: private details about Misha are being shared online without her <b>consent</b>. This is <b>doxxing</b>, and it can put someone at real risk.</p><p>Alongside it come suspicious links and messages — <b>phishing</b> attempts designed to steal passwords and data by making you panic and click. Every click, post and search also adds to your <b>digital footprint</b>, the lasting trail that shapes how others see you.</p>'
+        + mediaVideoBlock({ ytId:'hz6GULbowAk', title:'Watch: Why people fall for misinformation (TED-Ed)', dur:'4:42',
+            transcript:'<p><b>What the video covers:</b> false or misleading information sticks because it is easy to believe and hard to unlearn. The same instinct that makes us accept a neat story makes us click a convincing scam. Slowing down — checking the source, the sender and the claim — is what keeps you safe.</p>',
+            quiz:[
+              {q:"The video suggests false information is hard to shift because —", options:["it is always about health","once we accept a story, new evidence rarely changes our mind","it is illegal to correct it","only experts ever see it"], answer:1, exp:"First impressions of a 'fact' are surprisingly sticky."},
+              {q:"How does this connect to phishing scams?", options:["A convincing story can make a scam feel trustworthy.","Scams only target adults.","Scams never use stories.","Belief has nothing to do with safety."], answer:0, exp:"The same trust in a neat story is what scammers exploit."},
+              {q:"Before clicking an unexpected link you should —", options:["click fast so you don't lose access","check the sender and the claim first","forward it to friends","ignore all messages forever"], answer:1, exp:"Verify sender and claim; urgency is the trap."}] })
+        + '<p>If a message does not feel right, stop. Look at the real sender address, watch for odd spelling and urgent threats, and think twice before clicking. If someone is targeted by doxxing or abuse, the safest steps are to save evidence, block, report, and tell a trusted adult.</p>'
+        + '<p style="margin-top:6px"><b>Go deeper (BBC Bitesize):</b> <a href="https://www.bbc.co.uk/bitesize/articles/zn38b7h" target="_blank" rel="noopener">How to spot and avoid a phishing scam →</a></p>'
+        + '<p style="font-size:.8rem;color:#888;border-top:1px solid #eee;padding-top:8px;margin-top:14px">Adapted for classroom reading from BBC Bitesize — <i>Solve the Story</i> (Other Side of the Story), Episode 5: The Doxx. Source: <a href="https://www.bbc.co.uk/bitesize/articles/z8qh7v4#zbw6jfr" target="_blank" rel="noopener">bbc.co.uk/bitesize</a>.</p>' } ], advanced:[] } }
 ];
 let RC_TIER="standard";                 /* "standard" | "advanced" */
 let RC_GENRE="all";                     /* "all" | "Non-fiction" | "Fiction" */
@@ -4233,12 +4322,14 @@ const RC_UNITS=[
   {id:"ru2", n:2, title:"Multimodal Reading", icon:"📊", colour:"#5B8DEF",
    obj:"Read texts that mean through more than words: charts, layout, image–text relations, infographics, posters and advertisements."},
   {id:"ru3", n:3, title:"Reading Literature", icon:"📖", colour:"#8B5CF6",
-   obj:"Read how stories work: structure, character, voice, conflict, theme, and what a text will not say out loud."}
+   obj:"Read how stories work: structure, character, voice, conflict, theme, and what a text will not say out loud."},
+  {id:"ru4", n:4, title:"Media Literacy", icon:"🕵️", colour:"#E0403F",
+   obj:"Read the online world with a sharp eye: spot fakes and deepfakes, see through bots and bias, and stay safe from scams and doxxing."}
 ];
 /* skill id → unit id */
 const RC_UNIT_OF={ skim:"ru1", scan:"ru1", vocab:"ru1", infer:"ru1", purpose:"ru1", structure:"ru1",
   factop:"ru1", summary:"ru1", critical:"ru1", visual:"ru2", infographic:"ru2", advert:"ru2", process:"ru2", directions:"ru2", mmstory:"ru2",
-  plot:"ru3", character:"ru3", pov:"ru3", conflict:"ru3", theme:"ru3", figlang:"ru3", irony:"ru3" };
+  plot:"ru3", character:"ru3", pov:"ru3", conflict:"ru3", theme:"ru3", figlang:"ru3", irony:"ru3", ml_glitch:"ru4", ml_noise:"ru4", ml_skew:"ru4", ml_doxx:"ru4" };
 function rcUnitSkills(uid){ return RSKILLS.filter(sk=>RC_UNIT_OF[sk.id]===uid); }
 function rcUnitDone(u){
   let d=0,t=0; rcUnitSkills(u.id).forEach(sk=>{ const p=rcSkillDone(sk); d+=p.done; t+=p.total; });
