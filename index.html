@@ -1228,6 +1228,36 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .yl-qm-cube:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,.1)}
 .yl-qm-cube .c-em{font-size:1.35rem;line-height:1}
 .yl-qm-cube span:not(.c-em){font-size:.64rem;font-weight:600;color:#15183A;line-height:1.15}
+.jt-card{background:#fff;border:1px solid var(--line);border-radius:14px;margin:0 0 10px;overflow:hidden}
+.jt-card>summary{cursor:pointer;list-style:none;padding:12px 14px;font-weight:700;color:#15183A;display:flex;gap:8px;align-items:center}
+.jt-card>summary::-webkit-details-marker{display:none}
+.jt-card>summary::after{content:'\25b8';margin-left:auto;color:#2b5fa6}
+.jt-card[open]>summary::after{content:'\25be'}
+.jt-body{padding:0 14px 14px}
+.jt-scenario{background:#f3f6fb;border-radius:10px;padding:10px 12px;font-size:.95rem;margin:0 0 12px;color:#15183A}
+.jt-step{border-top:1px dashed var(--line);padding:12px 0}
+.jt-step>b{display:block;margin-bottom:6px;color:#15183A}
+.jt-clock{display:inline-block;min-width:58px;text-align:center;background:#15183A;color:#fff;border-radius:8px;padding:3px 8px;font-weight:700;margin-left:6px}
+.jt-card textarea{width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font:inherit;margin-top:8px}
+.jt-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));margin-top:14px}
+.jt-tile{border:none;border-radius:16px;overflow:hidden;background:#222;margin:0;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.jt-tile>summary{list-style:none;cursor:pointer;position:relative;aspect-ratio:9/14;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;color:#fff;background:linear-gradient(160deg,var(--c1),var(--c2))}
+.jt-tile>summary::-webkit-details-marker{display:none}
+.jt-tile>summary .jt-emoji{position:absolute;top:10px;left:12px;font-size:2.4rem;filter:drop-shadow(0 2px 6px rgba(0,0,0,.45))}
+.jt-tile>summary .jt-ttl{font-weight:800;font-size:1.05rem;text-shadow:0 1px 6px rgba(0,0,0,.55);line-height:1.15}
+.jt-tile>summary .jt-go{font-size:.74rem;opacity:.92;margin-top:4px}
+.jt-cover{background-size:cover !important;background-position:center !important}
+.ysp-row{display:flex;align-items:center;gap:8px;margin:7px 0;flex-wrap:wrap}
+.ysp-num{font-weight:700;color:var(--muted);min-width:22px}
+.ysp-in{flex:1;min-width:140px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font:inherit}
+.ysp-sent{font-size:.92rem;color:#333;flex:1 1 100%}
+.ysp-cols{display:flex;gap:12px;font-size:.72rem;margin-top:10px;text-align:left}
+.ysp-cols>div{flex:1;background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.ysp-cols ul{list-style:none;margin:4px 0 0;padding:0}.ysp-cols li{padding:1px 0}
+.jt-tile[open]{grid-column:1/-1}
+.jt-tile[open]>summary{aspect-ratio:auto;min-height:84px}
+.jt-body{background:#fff;padding:14px}
+.jt-rubric{background:#eef7f3;border:1px solid #a9e0d0;border-radius:10px;padding:10px 12px;margin-top:6px}
 </style>
 <style id="waspk-css">
 /* =========================================================================
@@ -21604,8 +21634,8 @@ function ylHubMap(){
       r+=`<line x1="${(cx+ci*112).toFixed(1)}" y1="${(cy+si*112).toFixed(1)}" x2="${(cx+ci*170).toFixed(1)}" y2="${(cy+si*170).toFixed(1)}"/>`; }
     return `<circle cx="${cx}" cy="${cy}" r="146" fill="url(#${grad})" opacity="0.45"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="${(3.2+li*0.6).toFixed(1)}s" repeatCount="indefinite"/></circle><g stroke="${col}" stroke-width="3.2" stroke-linecap="round" filter="url(#ylRayGlow)" opacity="0.7"><animate attributeName="opacity" values="0.42;1;0.42" dur="${(2.6+li*0.5).toFixed(1)}s" repeatCount="indefinite"/><animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="-360 ${cx} ${cy}" dur="${dur}s" repeatCount="indefinite"/>${r}</g>`;
   }).join('');
-  const sats=[['ylGrammar','🧩','Grammar',132,296],['ylStem','🚀','STEM·STREAM',768,296],['ylExams','🎓','Exams & Quizzes',450,532]];
-  const wrapMap={ylStem:['STEM·','STREAM'],ylExams:['Exams &','Quizzes']};
+  const sats=[['ylGrammar','🧩','Grammar',115,245],['ylStem','🚀','STEM·STREAM',785,245],['ylExams','🎓','Exams & Quizzes',160,505],['ylspell','🐝','Spelling & Typing',740,505],['ylTalk','🗣️','Talkabout',450,540]];
+  const wrapMap={ylStem:['STEM·','STREAM'],ylExams:['Exams &','Quizzes'],ylspell:['Spelling','& Typing']};
   const satSvg=sats.map(([r,ic,lab,cx,cy],idx)=>{
     const rad=58, wr=wrapMap[r], iconY=wr?cy-14:cy-7, sdur=(2.8+idx*0.4).toFixed(1);
     const halo='';
@@ -21662,7 +21692,7 @@ ROUTES.ylhub=function(){
     <p style="font-size:.74rem;color:var(--muted);margin:0 0 8px">🔊 read-to-me · A± zoom · tap any word to hear it &amp; see its meaning</p>
 
     <div class="hub" style="margin-top:8px">
-      <div class="hub-greet">🧒 Tap a circle to begin. <b>Read · Write · Design</b> sit at the core; <b>Grammar</b>, <b>Exams &amp; Quizzes</b> and <b>STEM·STREAM</b> orbit around.</div>
+      <div class="hub-greet">🧒 Tap a circle to begin. <b>Read · Write · Design</b> sit at the core; <b>Grammar</b>, <b>Exams</b>, <b>STEM·STREAM</b>, <b>Spelling &amp; Typing</b> and <b>Talkabout</b> orbit around.</div>
       ${ylHubMap()}
       <div class="hub-foot">Read to discover · Write to explain · Design to build — then loop back &amp; have fun ⭐</div>
     </div>
@@ -25302,16 +25332,79 @@ ROUTES.tierChoose = function(){
 };
 ROUTES.switchTier = function(){ if(SESSION&&SESSION.role==='student'){ go('tierChoose'); } else { go('dashboard'); } };
 
+/* ===== Junior Spelling Challenge — Levels A/B/C × word/sentence/idioms ===== */
+const YLSP={
+ A:{ label:"Level A", colour:"#0FA98B", sub:"Easy, common words",
+   word:["friend","school","water","family","because","people","garden","animal","happy","colour"],
+   sentence:[["school","I walk to school every day."],["water","Please drink some water."],["friend","My best friend is kind."],["happy","The baby looks very happy."],["family","I love my whole family."],["garden","Flowers grow in the garden."],["animal","A dog is my favourite animal."],["people","Many people came to the party."],["colour","Blue is a lovely colour."],["because","I smiled because I was glad."]],
+   idiom:["good morning","thank you","well done","once upon a time","best friends","never mind","see you soon","take care","by the way","all the best"] },
+ B:{ label:"Level B", colour:"#2B5FA6", sub:"Harder, longer words",
+   word:["weather","science","sentence","February","beautiful","favourite","sandwich","question","exercise","different"],
+   sentence:[["weather","The weather is sunny today."],["science","We did an experiment in science."],["beautiful","The sunset was beautiful."],["favourite","Pizza is my favourite food."],["question","She asked a good question."],["exercise","Daily exercise keeps us healthy."],["February","My birthday is in February."],["sandwich","I ate a cheese sandwich."],["different","Every fingerprint is different."],["important","Sleep is very important."]],
+   idiom:["piece of cake","break the ice","under the weather","hit the books","once in a blue moon","raining cats and dogs","the early bird","practice makes perfect","better late than never","keep an eye on"] },
+ C:{ label:"Level C", colour:"#8B5CF6", sub:"Longest, most challenging",
+   word:["necessary","definitely","embarrassed","rhythm","silhouette","mischievous","pronunciation","questionnaire","environment","photosynthesis"],
+   sentence:[["necessary","Sleep is necessary for good health."],["definitely","I will definitely be there."],["environment","We must protect the environment."],["conscience","Let your conscience guide you."],["rhythm","The drummer kept a steady rhythm."],["parliament","Laws are debated in parliament."],["psychology","She is studying psychology."],["algorithm","A computer follows an algorithm."],["documentary","We watched a nature documentary."],["mischievous","The kitten looked mischievous."]],
+   idiom:["bite the bullet","the ball is in your court","burn the midnight oil","a blessing in disguise","cut corners","the tip of the iceberg","food for thought","a storm in a teacup","the elephant in the room","actions speak louder than words"] }
+};
+let YSP_STATE=null;
+function ylspSpeak(i){ try{ if(!YSP_STATE)return; var t=YSP_STATE.items[i].say; speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(t); u.rate=0.9; speechSynthesis.speak(u); }catch(e){} }
+function ylspCheck(){
+  var st=YSP_STATE; if(!st) return; var correct=[], wrong=[];
+  st.items.forEach(function(n,i){ var el=document.getElementById('ysp_'+i); var v=(el&&el.value||'').trim().toLowerCase().replace(/\s+/g,' ');
+    if(v===n.ans.trim().toLowerCase()){ correct.push(n.ans); if(el){el.style.borderColor='#0c8a72';el.style.background='#e8f7f2';} }
+    else { wrong.push(n.ans); if(el){el.style.borderColor='#E6464B';el.style.background='#fdecec';} } });
+  var total=st.items.length, pct=Math.round(correct.length/total*100);
+  var box='<div class="ysp-cols"><div><b style="color:#0c6b53">\u2713 Correctly spelt ('+correct.length+')</b><ul>'+correct.map(function(w){return '<li>'+w+'</li>';}).join('')+'</ul></div><div><b style="color:#B4231F">\u2717 Misspelt ('+wrong.length+')</b><ul>'+wrong.map(function(w){return '<li>'+w+'</li>';}).join('')+'</ul></div></div>';
+  var head='<h3 style="margin:12px 0 4px">Score: '+pct+'%  ('+correct.length+'/'+total+')</h3>';
+  var out=document.getElementById('yspResult'); if(!out) return;
+  if(pct>=60){
+    var nm=(typeof SESSION!=='undefined'&&SESSION&&SESSION.name)?SESSION.name:'Student';
+    var band=pct>=80?'Outstanding':(pct>=50?'At-level':'Emerging');
+    var cert=''; try{ cert=certificateHTML({name:nm, band:band, title:'Spelling Challenge — '+st.label+' · '+st.modeName, skill:'Spelling Challenge', percent:pct, score:correct.length, max:total, date:new Date().toLocaleDateString()}); }catch(e){ cert=''; }
+    out.innerHTML=head+'<p style="color:#0c6b53;font-weight:800">\ud83c\udf89 Certificate earned! Well done, '+nm+' \u00b7 Junior Class.</p>'+cert+box;
+  } else {
+    out.innerHTML=head+'<p style="color:#B4231F;font-weight:700">Almost! You need at least 60% to earn a certificate. Listen again and try once more \u2014 you can do it!</p>'+box;
+  }
+  try{ out.scrollIntoView({behavior:'smooth',block:'nearest'}); }catch(e){}
+}
 ROUTES.ylspell = function(){
   if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'&&typeof studentTier==='function'&&studentTier()==='senior'){ go('dashboard'); return; }
-  var keys=Object.keys(SPELL_BANK).filter(function(k){return k.indexOf('yl_')===0;});
-  app().innerHTML='<div class="wrap screen">'
-    +'<button class="back" onclick="go(\'ylhub\')">← Foundational</button>'
-    +'<div class="meta">Foundational · Spelling</div>'
-    +'<h1 style="font-size:2.1rem">🐝 Spelling Bee</h1>'
-    +'<p style="color:var(--muted);max-width:640px">Hear a word, then type it. Pick a fun pack to begin — animals, food, school or home. You get two tries for each word.</p>'
-    +'<div class="grid c2" style="margin-top:12px">'+keys.map(function(k){return spellTile(k);}).join('')+'</div>'
+  var modes=[['word','\ud83d\udd24 Word spelling'],['sentence','\ud83d\udcdd Sentence spelling'],['idiom','\ud83d\udcac Idioms & phrases']];
+  var cards=['A','B','C'].map(function(k){ var L=YLSP[k];
+    var btns=modes.map(function(m){ return '<button class="btn sm ghost" onclick="go(\'ylspellRun\',\''+k+':'+m[0]+'\')">'+m[1]+'</button>'; }).join(' ');
+    return '<div class="card" style="border-left:5px solid '+L.colour+'"><h3 style="margin:0 0 2px;color:'+L.colour+'">\ud83d\udd24 '+L.label+'</h3><p style="margin:0 0 8px;font-size:.88rem;color:var(--muted)">'+L.sub+'</p><div style="display:flex;flex-wrap:wrap;gap:6px">'+btns+'</div></div>';
+  }).join('');
+  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylhub\')">\u2190 Foundational</button>'
+    +'<div class="meta">Foundational \u00b7 Spelling Challenge</div>'
+    +'<h1 style="font-size:2.1rem">\ud83d\udc1d Spelling Challenge</h1>'
+    +'<p style="color:var(--muted);max-width:660px">Pick a level, then a challenge. Tap \ud83d\udd0a to hear each item, type it, then press <b>Check</b>. Score <b>60% or more</b> to earn your certificate!</p>'
+    +'<div style="display:grid;gap:12px;margin-top:12px">'+cards+'</div>'
+    +'<div style="margin-top:14px"><button class="btn sm ghost" onclick="go(\'typing\',\'yl\')">\u2328\ufe0f Typing lessons \u2192</button></div>'
     +'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
+ROUTES.ylspellRun = function(compound){
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'&&typeof studentTier==='function'&&studentTier()==='senior'){ go('dashboard'); return; }
+  var parts=String(compound||'A:word').split(':'); var lvl=parts[0]; var mode=parts[1]||'word';
+  var L=YLSP[lvl]; if(!L||!L[mode]){ go('ylspell'); return; }
+  var modeName={word:'Word spelling',sentence:'Sentence spelling',idiom:'Idioms & phrases'}[mode];
+  var raw=L[mode];
+  var norm=raw.map(function(it){ if(mode==='sentence'){ return {ans:it[0], say:it[1], show:it[1].replace(it[0],'\u2015\u2015\u2015\u2015\u2015')}; } return {ans:it, say:it, show:''}; });
+  YSP_STATE={lvl:lvl, mode:mode, label:L.label, modeName:modeName, items:norm};
+  var rows=norm.map(function(n,i){
+    return '<div class="ysp-row"><button class="btn sm ghost" onclick="ylspSpeak('+i+')" title="Hear it">\ud83d\udd0a</button>'
+      + '<span class="ysp-num">'+(i+1)+'.</span>'
+      + (n.show?('<span class="ysp-sent">'+n.show+'</span>'):'')
+      + '<input id="ysp_'+i+'" class="ysp-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="'+(mode==='idiom'?'type the phrase\u2026':'type the word\u2026')+'"></div>';
+  }).join('');
+  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylspell\')">\u2190 Spelling Challenge</button>'
+    +'<div class="meta">Foundational \u00b7 Spelling \u00b7 '+L.label+'</div>'
+    +'<h1 style="font-size:1.9rem" style="color:'+L.colour+'">\ud83d\udd24 '+L.label+' \u2014 '+modeName+'</h1>'
+    +'<p style="color:var(--muted);max-width:640px">Tap \ud83d\udd0a to hear each '+(mode==='idiom'?'phrase':(mode==='sentence'?'sentence':'word'))+', then type it. When you are ready, press Check.</p>'
+    +'<div style="margin:12px 0">'+rows+'</div>'
+    +'<button class="btn teal" onclick="ylspCheck()">\u2713 Check my spelling</button>'
+    +'<div id="yspResult"></div></div>';
   try{window.scrollTo(0,0);}catch(e){}
 };
 
@@ -25413,6 +25506,85 @@ ROUTES.ylMediaLesson = function(compound){
     body = '<div class="passage" style="line-height:1.7">'+l.intro.join('') + vid + cred + '</div>';
   }
   app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylMedia\')">← Media Literacy</button><div class="meta">Foundational · Media Literacy</div><h1 style="font-size:2rem">'+l.icon+' '+l.title+'</h1>'+toggle+body+'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
+
+/* ===== Junior Talkabout & Writeabout — TikTok cards + guided flow ===== */
+function jtTimer(btn, secs, elId){
+  var el=document.getElementById(elId); if(!el || btn._run) return;
+  btn._run=true; btn.textContent='⏱ Running…'; btn.disabled=true; var r=secs;
+  var t=setInterval(function(){ r--; var m=Math.floor(r/60),s=r%60; el.textContent=m+':'+(s<10?'0':'')+s; if(r<=0){ clearInterval(t); el.textContent='⏰ Time!'; btn.textContent='Done'; } },1000);
+}
+function jtCheck(idx){
+  var sub=document.getElementById('jtSub_'+idx); if(!sub) return;
+  var body=sub.parentNode; while(body && !(body.className&&(''+body.className).indexOf('jt-body')>-1)) body=body.parentNode;
+  var boxes=(body||document).querySelectorAll('input.jt-ck'); var all=boxes.length>0;
+  for(var i=0;i<boxes.length;i++){ if(!boxes[i].checked){ all=false; break; } }
+  sub.disabled=!all; sub.style.opacity=all?'1':'.5';
+}
+function jtSubmit(btn, idx){
+  if(btn.disabled) return;
+  var box=document.getElementById('jtCert_'+idx); if(!box) return;
+  var nm=(typeof SESSION!=='undefined'&&SESSION&&SESSION.name)?SESSION.name:'Student';
+  var title=btn.getAttribute('data-title')||'Talkabout';
+  var html=''; try{ html=certificateHTML({name:nm, band:"At-level", title:"Junior Talkabout — "+title, skill:"Talkabout", percent:100, score:1, max:1, date:new Date().toLocaleDateString()}); }catch(e){ html='<p class="note">Certificate could not be generated in this browser.</p>'; }
+  box.innerHTML='<div style="text-align:center;margin-top:10px"><p style="font-weight:800;color:#0c6b53;margin:0 0 8px">🎉 Published! Well done, '+nm+' · Junior Class!</p>'+html+'</div>';
+  try{ box.scrollIntoView({behavior:'smooth',block:'nearest'}); }catch(e){}
+}
+ROUTES.ylTalk = function(){
+  if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'&&typeof studentTier==='function'&&studentTier()==='senior'){ go('dashboard'); return; }
+  var P=[
+    {i:'🏅',t:'Sports',c1:'#f7971e',c2:'#ffd200',sc:'Your school is choosing one new sport for everyone to try. Which sport should it be, and why would other students enjoy it?'},
+    {i:'🧭',t:'Adventure',c1:'#11998e',c2:'#38ef7d',sc:'You find an old map in your attic that leads somewhere in your town. Describe the adventure you would go on to follow it.'},
+    {i:'🔬',t:'Science',c1:'#2193b0',c2:'#6dd5ed',sc:'Scientists say people may live on Mars one day. What would be exciting, and what would be hard, about living on another planet?'},
+    {i:'👨‍👩‍👧',t:'Family',c1:'#ee9ca7',c2:'#ffdde1',sc:'Families are all different. Describe your family and one tradition or habit that makes it special.'},
+    {i:'🤝',t:'Friendship',c1:'#c471f5',c2:'#fa71cd',sc:'A new student joins your class and knows no one. What would you do in their first week to help them feel welcome?'},
+    {i:'🔭',t:'Discovery',c1:'#4568dc',c2:'#b06ab3',sc:'Think of something you discovered or learned that surprised you. What was it, and how did it change what you think?'},
+    {i:'📔',t:'A memoir',c1:'#8e9eab',c2:'#4b6cb7',sc:'Write about one small moment you will always remember. Where were you, and why did it matter so much to you?'},
+    {i:'🌱',t:'Life',c1:'#56ab2f',c2:'#a8e063',sc:'If you could give one piece of advice to a younger child about life, what would it be, and why?'},
+    {i:'🦁',t:'Wildlife',c1:'#c96f00',c2:'#f9d976',sc:'Many wild animals are losing their homes. Choose one animal and explain why it matters and how we could help it.'},
+    {i:'🐾',t:'Pets',c1:'#ff758c',c2:'#ff7eb3',sc:'Some people say every child should have a pet; others disagree. What do you think, and why?'},
+    {i:'💻',t:'Technology',c1:'#141e30',c2:'#243b55',sc:'Describe one piece of technology you could not live without. How does it help you, and is there a downside?'},
+    {i:'🤖',t:'Artificial intelligence',c1:'#7028e4',c2:'#e5b2ca',sc:'AI can now write, draw and answer questions. Is that more helpful or more worrying for students like you? Explain.'},
+    {i:'📱',t:'Social media',c1:'#ff512f',c2:'#dd2476',sc:'Some apps are built to keep you scrolling for hours. How can a young person enjoy social media without letting it take over?'},
+    {i:'🌐',t:'Online friendship',c1:'#1d976c',c2:'#93f9b9',sc:'Can someone you have only met online be a real friend? Give reasons for your opinion.'},
+    {i:'💛',t:'A true friend',c1:'#f2994a',c2:'#f2c94c',sc:'What makes someone a true friend? Describe three things a true friend does.'},
+    {i:'👩‍🏫',t:'My favourite person',c1:'#2c3e50',c2:'#4ca1af',sc:'Talk about a teacher, a family member or a famous person you admire. What do they do that makes them special?'},
+    {i:'🕵️',t:'Media literacy',c1:'#cb2d3e',c2:'#ef473a',sc:'You see a shocking video online that might be fake. Explain, step by step, how you would check it is true before sharing.'},
+    {i:'🚀',t:'My future',c1:'#360033',c2:'#0b8793',sc:'Imagine yourself in ten years. What might you be doing, and what would you like to have achieved?'}
+  ];
+  var JTIMG=['https://images.unsplash.com/photo-1758947041685-5de333619040?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1429743305873-d4065c15f93e?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1509030441537-8af1c02726f7?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1561232295-b5ada34a032e?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1606920031092-c14461fc4db6?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1668385900491-48ad396f9cde?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1635082627989-dcd12a107364?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1515378040420-7d3f50e186e8?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1679110663825-c6ec1ad51884?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1549279873-30c053a630bc?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1706277750070-038c259c2ab7?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1727302788554-ae905ac91651?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1686299596388-d3433279ec64?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1664073204901-e2d9c84d558f?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1758941808079-fa54b03519de?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1615827157349-b3225b74f6e4?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1632849369576-06cb097fe68f?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1772617388664-a7a4189732b5?w=1200&q=80&auto=format&fit=crop'];
+  var checks=['I spoke clearly at an even pace, pronouncing each word distinctly so my listener could understand every part.','I used a confident, natural volume that was easy and engaging to listen to.','I spoke with a steady, natural rhythm without long pauses or excessive filler words.','I varied my tone and expressed genuine enthusiasm to bring my ideas to life.','I stayed focused on the topic and gave clear, well-supported reasons for my thoughts.'];
+  var cards=P.map(function(p,idx){
+    var ck=checks.map(function(c){ return '<label style="display:block;margin:4px 0;font-size:.9rem;color:#15183A"><input type="checkbox" class="jt-ck" onchange="jtCheck('+idx+')"> '+c+'</label>'; }).join('');
+    return '<details class="jt-tile"><summary class="jt-cover" style="background-image:linear-gradient(to top,rgba(8,10,22,.85),rgba(8,10,22,.15)),url(\''+JTIMG[idx]+'\')"><span class="jt-emoji">'+p.i+'</span><span class="jt-ttl">'+p.t+'</span><span class="jt-go">▶ Tap to start</span></summary>'
+      +'<div class="jt-body">'
+      +'<p class="jt-scenario"><b>Scenario.</b> '+p.sc+'</p>'
+      +'<div class="jt-step"><b>Step 1 · ✍️ Writeabout it <span style="font-weight:400;color:var(--muted)">— 5 minutes</span></b>'
+        +'<button class="btn sm" onclick="jtTimer(this,300,\'jtT1_'+idx+'\')">▶ Start 5:00</button> <span id="jtT1_'+idx+'" class="jt-clock">5:00</span>'
+        +'<textarea id="jtW_'+idx+'" rows="5" placeholder="Write your ideas here…"></textarea></div>'
+      +'<div class="jt-step"><b>Step 2 · 🎤 Talkabout it <span style="font-weight:400;color:var(--muted)">— 1 min 30</span></b>'
+        +'<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px"><button class="btn sm" onclick="jtTimer(this,90,\'jtT2_'+idx+'\')">▶ Start 1:30</button> <span id="jtT2_'+idx+'" class="jt-clock">1:30</span>'
+        +'<button class="btn sm coral" id="spkRecBtn_jt_'+idx+'" onclick="audioToggle(\'jt\',\''+idx+'\')">● Record</button>'
+        +'<span id="recStatus_jt_'+idx+'" style="font-size:.82rem;color:var(--muted)"></span></div>'
+        +'<div id="audioActions_jt_'+idx+'" style="display:none;gap:8px;flex-wrap:wrap">'
+          +'<button class="btn sm ghost" id="spkPlayBtn_jt_'+idx+'" onclick="audioPlay(\'jt\',\''+idx+'\')">▶ Play</button>'
+          +'<button class="btn sm ghost" onclick="audioDownload(\'jt\',\''+idx+'\')">⬇ Save my recording</button>'
+          +'<button class="btn sm ghost" onclick="audioClear(\'jt\',\''+idx+'\')">🗑 Delete</button></div>'
+        +'<audio id="audio_jt_'+idx+'" style="display:none" controls></audio></div>'
+      +'<div class="jt-step"><b>Step 3 · 📤 Share</b>'
+        +'<div class="jt-rubric"><b style="display:block;margin-bottom:2px">✅ Self-check (tick all to publish)</b>'+ck+'</div>'
+        +'<button class="btn sm teal" id="jtSub_'+idx+'" disabled style="opacity:.5;margin-top:8px" data-title="'+p.t+'" onclick="jtSubmit(this,'+idx+')">Publish & get my certificate 🎓</button>'
+        +'<div id="jtCert_'+idx+'"></div></div>'
+      +'</div></details>';
+  }).join('');
+  app().innerHTML='<div class="wrap screen yl-scene">'
+    +'<button class="back" onclick="go(\'ylhub\')">← Foundational</button>'
+    +'<div class="meta" style="color:rgba(255,255,255,.8)">Foundational · Talkabout & Writeabout</div>'
+    +'<h1 style="font-size:2.1rem;color:#fff">🗣️ Talkabout & Writeabout</h1>'
+    +'<p style="color:rgba(255,255,255,.92);max-width:660px">Tap a topic card. Then follow the steps: <b>write</b> (5 min), <b>talk & record</b> (1½ min), tick your <b>self-check</b>, and <b>publish</b> to earn a certificate.</p>'
+    +'<div class="jt-grid">'+cards+'</div>'
+    +'</div>';
   try{window.scrollTo(0,0);}catch(e){}
 };
 </script>
