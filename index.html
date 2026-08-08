@@ -1254,6 +1254,11 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .ysp-cols{display:flex;gap:12px;font-size:.72rem;margin-top:10px;text-align:left}
 .ysp-cols>div{flex:1;background:#f7f9fc;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
 .ysp-cols ul{list-style:none;margin:4px 0 0;padding:0}.ysp-cols li{padding:1px 0}
+.jt-tile.jt-cover{aspect-ratio:9/14;display:flex;flex-direction:column;justify-content:flex-end;padding:12px;color:#fff;border:none;cursor:pointer;text-align:left;width:100%;border-radius:16px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.25);position:relative}
+.jt-tile.jt-cover:hover{transform:translateY(-2px)}
+.jt-tile.jt-cover .jt-emoji{position:absolute;top:10px;left:12px;font-size:2.4rem;filter:drop-shadow(0 2px 6px rgba(0,0,0,.45))}
+.jt-tile.jt-cover .jt-ttl{font-weight:800;font-size:1.05rem;text-shadow:0 1px 6px rgba(0,0,0,.55);line-height:1.15}
+.jt-tile.jt-cover .jt-go{font-size:.74rem;opacity:.92;margin-top:4px}
 .jt-tile[open]{grid-column:1/-1}
 .jt-tile[open]>summary{aspect-ratio:auto;min-height:84px}
 .jt-body{background:#fff;padding:14px}
@@ -6243,8 +6248,8 @@ function doStudentLogin(){
   SESSION={role:"student", name, first, middle, last, class:cls, code, id};
   setStudent(id,{name, class:cls, code});
   /* Set this student's tier from their diagnostic before the first screen paints. */
-  if(cloudUrl()){ err.textContent="Loading your online record…"; pullContent(()=>refreshCloud(()=>{ applyPlacement(); routeStudentHome(); })); }
-  else { applyPlacement(); routeStudentHome(); }
+  if(cloudUrl()){ err.textContent="Loading your online record…"; pullContent(()=>refreshCloud(()=>{ applyPlacement(); go('tierChoose'); })); }
+  else { applyPlacement(); go('tierChoose'); }
 }
 function doTeacherLogin(){
   const code=val('tCode'); const err=document.getElementById('tErr');
@@ -6701,7 +6706,7 @@ function cardsFullscreen(){
   w.document.close();
 }
 function spellBack(){ return (SPELLSTATE&&SPELLSTATE.back)||'listening'; }
-function spellBackLabel(){ return spellBack()==='spelldrill'?'Spell &amp; Drill':'Listening'; }
+function spellBackLabel(){ var b=spellBack(); return b==='spelldrill'?'Spell &amp; Drill':(b==='ylspell'?'Spelling Challenge':'Listening'); }
 function spellLaunch(key, back){ const cat=SPELL_BANK[key]; if(!cat)return; const items=spellPick(cat.items, SPELL_ROUND_SIZE, 'bank_'+key); SPELLSTATE={ key, back:back||'listening', type:cat.type, label:cat.label, items, i:0, attempt:1, first:0, second:0, missed:0, log:[] }; renderSpell(); }
 function spellNewRound(){ const s=SPELLSTATE; if(!s)return;
   if(s.key==='standard'){ standardSpellStart(); return; }
@@ -24073,7 +24078,7 @@ const WASPK_BAR_PALETTE=[
 ];
 function waspkBarToggle(btn){ const item=btn.closest('.wa-baritem'); if(item) item.classList.toggle('open'); }
 /* ===== THE BETTER YOU — cards of wisdom (Writeabout → Talkabout → Share & Publish) ===== */
-function betterYouFind(id){ try{ return WASPK_BETTER_CAT.prompts.find(function(p){return p.id===id;})||null; }catch(e){ return null; } }
+function betterYouFind(id){ try{ if(id&&id.indexOf('jtp')===0&&typeof window!=='undefined'&&window.__YLTALK){ var j=window.__YLTALK.find(function(p){return p.id===id;}); if(j) return j; } return WASPK_BETTER_CAT.prompts.find(function(p){return p.id===id;})||null; }catch(e){ return null; } }
 function betterYouStyle(){
   if(document.getElementById('byStyle')) return;
   const st=document.createElement('style'); st.id='byStyle';
@@ -24100,7 +24105,7 @@ function betterYouStyle(){
   document.head.appendChild(st);
 }
 function betterYouOpen(id){
-  const p=betterYouFind(id); if(!p) return;
+  const p=betterYouFind(id); if(!p) return; var _isJ=(id&&id.indexOf('jtp')===0);
   betterYouStyle();
   try{ if(typeof waspkClearRec==='function') waspkClearRec(); }catch(e){}
   let o=document.getElementById('byOverlay');
@@ -24108,14 +24113,14 @@ function betterYouOpen(id){
   o.innerHTML = `
     <div class="by-card" role="dialog" aria-modal="true">
       <button class="by-x" onclick="betterYouClose()" aria-label="Close">✕</button>
-      <div class="by-head">💛 The Better You</div>
-      <div class="by-imgwrap"><img class="by-img" id="byImg" src="${p.img}" alt="${esc(p.title)}"></div>
-      <div class="by-zoom">🔍 <input type="range" min="1" max="3" step="0.1" value="1" oninput="byZoom(this)" aria-label="Zoom the card"> <span id="byZoomLbl">1.0×</span></div>
+      <div class="by-head">${_isJ?esc(p.title):'💛 The Better You'}</div>
+      <div class="by-imgwrap">${p.video?`<iframe width="100%" height="300" src="https://www.youtube-nocookie.com/embed/${p.video}?rel=0&modestbranding=1" frameborder="0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen style="border:none;border-radius:12px;display:block"></iframe>`:`<img class="by-img" id="byImg" src="${p.img}" onerror="this.onerror=null;var f='${p.fb||''}';if(f)this.src=f;" alt="${esc(p.title)}">`}</div>${p.video?`<div class="by-sub" style="margin-top:6px">🎬 <b>Watch this first</b>, then write your ideas below.</div>`:``}
+      ${p.video?``:`<div class="by-zoom">🔍 <input type="range" min="1" max="3" step="0.1" value="1" oninput="byZoom(this)" aria-label="Zoom the card"> <span id="byZoomLbl">1.0×</span></div>`}
       <blockquote class="by-words">“${esc(p.words)}”</blockquote>
 
       <div class="by-step"><span class="by-n">1</span> ✍️ Writeabout</div>
       <p class="by-sub">In a sentence or two: what does it mean to you, and do you agree?</p>
-      <textarea id="byThink" class="by-ta" placeholder="Type your thinking here…"></textarea>
+      <textarea id="byThink" class="by-ta" onpaste="return false" oncut="return false" ondrop="return false" placeholder="Type your thinking here…"></textarea>
 
       <div class="by-step"><span class="by-n">2</span> 🎤 Talkabout</div>
       <p class="by-sub">Now say it aloud in your own words — then record your voice.</p>
@@ -24130,11 +24135,11 @@ function betterYouOpen(id){
       <div class="wa-status" id="waspkRecStatus">Record your voice saying the idea your own way. Your audio stays on this device.</div>
 
       <div class="by-step"><span class="by-n">3</span> 📔 Share &amp; Publish</div>
-      <p class="by-sub">Pick a person these words could help right now — it can be you — and say why.</p>
-      <input id="byWho" class="by-in" placeholder="Their name (or “me”)">
-      <textarea id="byWhy" class="by-ta" placeholder="Why might these words help them — or you — right now?"></textarea>
+      ${_isJ?'<p class="by-sub">Happy with your writing and your recording? Publish your work below.</p>':'<p class="by-sub">Pick a person these words could help right now — it can be you — and say why.</p>'}
+      <input id="byWho" class="by-in" ${_isJ?'type=\"hidden\"':''} placeholder="Their name (or “me”)">
+      <textarea id="byWhy" class="by-ta" ${_isJ?'style=\"display:none\"':''} placeholder="Why might these words help them — or you — right now?"></textarea>
       <div class="by-actions">
-        <button class="btn ghost sm" onclick="betterYouCopy('${p.id}')">📋 Copy the message to send</button>
+        ${_isJ?'':`<button class="btn ghost sm" onclick="betterYouCopy('${p.id}')">📋 Copy the message to send</button>`}
       </div>
 
       <button class="btn teal" onclick="betterYouShared('${p.id}')" style="margin-top:16px;width:100%;font-size:1rem;padding:12px">Submit to share →</button>
@@ -25389,24 +25394,10 @@ ROUTES.ylspellRun = function(compound){
   var parts=String(compound||'A:word').split(':'); var lvl=parts[0]; var mode=parts[1]||'word';
   var L=YLSP[lvl]; if(!L||!L[mode]){ go('ylspell'); return; }
   var modeName={word:'Word spelling',sentence:'Sentence spelling',idiom:'Idioms & phrases'}[mode];
-  var raw=L[mode];
-  var norm=raw.map(function(it){ if(mode==='sentence'){ return {ans:it[0], say:it[1], show:it[1].replace(it[0],'\u2015\u2015\u2015\u2015\u2015')}; } return {ans:it, say:it, show:''}; });
-  YSP_STATE={lvl:lvl, mode:mode, label:L.label, modeName:modeName, items:norm};
-  var rows=norm.map(function(n,i){
-    return '<div class="ysp-row"><button class="btn sm ghost" onclick="ylspSpeak('+i+')" title="Hear it">\ud83d\udd0a</button>'
-      + '<span class="ysp-num">'+(i+1)+'.</span>'
-      + (n.show?('<span class="ysp-sent">'+n.show+'</span>'):'')
-      + '<input id="ysp_'+i+'" class="ysp-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="'+(mode==='idiom'?'type the phrase\u2026':'type the word\u2026')+'"></div>';
-  }).join('');
-  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylspell\')">\u2190 Spelling Challenge</button>'
-    +'<div class="meta">Foundational \u00b7 Spelling \u00b7 '+L.label+'</div>'
-    +'<h1 style="font-size:1.9rem" style="color:'+L.colour+'">\ud83d\udd24 '+L.label+' \u2014 '+modeName+'</h1>'
-    +'<p style="color:var(--muted);max-width:640px">Tap \ud83d\udd0a to hear each '+(mode==='idiom'?'phrase':(mode==='sentence'?'sentence':'word'))+', then type it. When you are ready, press Check.</p>'
-    +'<div style="margin:12px 0">'+rows+'</div>'
-    +'<button class="btn teal" onclick="ylspCheck()">\u2713 Check my spelling</button>'
-    +'<div id="yspResult"></div></div>';
-  try{window.scrollTo(0,0);}catch(e){}
-};
+  var items=L[mode].map(function(it){ if(mode==='sentence'){ return {t:it[0], hint:it[1]}; } return {t:it}; });
+  SPELLSTATE={ key:'yl_'+lvl+'_'+mode, back:'ylspell', type:'word', label:L.label+' - '+modeName, items:items, i:0, attempt:1, first:0, second:0, missed:0, log:[] };
+  renderSpell();
+}
 
 /* ===== Junior Media Literacy unit (Foundational) ===== */
 const YLML=[
@@ -25551,32 +25542,35 @@ ROUTES.ylTalk = function(){
     {i:'💛',t:'A true friend',c1:'#f2994a',c2:'#f2c94c',sc:'What makes someone a true friend? Describe three things a true friend does.'},
     {i:'👩‍🏫',t:'My favourite person',c1:'#2c3e50',c2:'#4ca1af',sc:'Talk about a teacher, a family member or a famous person you admire. What do they do that makes them special?'},
     {i:'🕵️',t:'Media literacy',c1:'#cb2d3e',c2:'#ef473a',sc:'You see a shocking video online that might be fake. Explain, step by step, how you would check it is true before sharing.'},
-    {i:'🚀',t:'My future',c1:'#360033',c2:'#0b8793',sc:'Imagine yourself in ten years. What might you be doing, and what would you like to have achieved?'}
+    {i:'🚀',t:'My future',c1:'#360033',c2:'#0b8793',sc:'Imagine yourself in ten years. What might you be doing, and what would you like to have achieved?'},
+    {i:'🐶',t:'Pip',img:'https://img.youtube.com/vi/07d2dXHYb94/hqdefault.jpg',video:'07d2dXHYb94',sc:'Watch the short film "Pip", about a little guide-dog puppy who refuses to give up. What did Pip do when things went wrong, and what can we learn from her?'},
+    {i:'🎁',t:'The Present',img:'https://img.youtube.com/vi/3XA0bB79oGc/hqdefault.jpg',video:'3XA0bB79oGc',sc:'Watch "The Present". A boy and a three-legged puppy change how he sees himself. Why did the boy change his mind, and what is the film really about?'},
+    {i:'🕊️',t:'Soar',img:'https://img.youtube.com/vi/eDkpVwrhYfo/hqdefault.jpg',video:'eDkpVwrhYfo',sc:'Watch "Soar". A young girl helps a tiny pilot get back into the sky. How did helping someone else help the girl too?'},
+    {i:'📵',t:'Social Media Addiction',img:'https://img.youtube.com/vi/QugooaNRnsk/hqdefault.jpg',video:'QugooaNRnsk',sc:'Watch this short film about how apps pull at our attention. How do apps try to keep us scrolling, and how can we stay in control?'},
+    {i:'🪞',t:'The Reflection',img:'https://img.youtube.com/vi/D9OOXCu5XMg/hqdefault.jpg',video:'D9OOXCu5XMg',sc:'Watch "The Reflection in Me". A girl learns to accept and value her own reflection. What changed for her, and what would you say to someone who does not like their reflection?'},
+    {i:'🧑‍🏫',t:'With a Piece of Chalk',img:'https://img.youtube.com/vi/Z8cHNkuIc24/hqdefault.jpg',video:'Z8cHNkuIc24',sc:'Watch "With a Piece of Chalk", about a pupil having a hard time and a teacher who notices. Why does noticing someone matter so much?'},
+    {i:'🧠',t:'Manage Your Emotions',img:'https://img.youtube.com/vi/Uew5BbvmLks/hqdefault.jpg',video:'Uew5BbvmLks',sc:'Watch this TED-Ed film about managing emotions. What is one strong feeling you find hard to handle, and what could you try next time?'},
+    {i:'📱',t:'Phones in School',sc:'DEBATE: "Mobile phones should be banned in schools." Do you agree? Take a side and give your strongest reasons.'},
+    {i:'🧳',t:'Stay or Go',sc:'DEBATE: "The best place to build your future is the country you grew up in." Agree or disagree? Give your reasons.'},
+    {i:'📚',t:'No More Homework',sc:'DEBATE: "Homework should be abolished." Do you agree? Take a side and give your reasons.'},
+    {i:'🔞',t:'Age Limit for Social Media',sc:'DEBATE: "No one under sixteen should use social media." Agree or disagree? Give your reasons.'},
+    {i:'🤝',t:'Give Back',sc:'DEBATE: "Every teenager should have to volunteer in their community." Do you agree? Give your reasons.'},
+    {i:'🥗',t:'Know Your Food',sc:'DEBATE: "Every shop and restaurant should show exactly where their food comes from." Agree or disagree?'},
+    {i:'🍔',t:'Junk-Food Ads',sc:'DEBATE: "Advertising junk food to children should be illegal." Do you agree? Give your reasons.'},
+    {i:'🦁',t:'Zoos',sc:'DEBATE: "Zoos do more good than harm." Agree or disagree? Take a side and give your reasons.'},
+    {i:'🌳',t:'Old Roots, New Wings',sc:'DEBATE: "Keeping old traditions alive matters as much as building new technology." Agree or disagree?'},
+    {i:'🌐',t:'Trust the Internet?',sc:'DEBATE: "Most of what people read on the internet cannot be fully trusted." Agree or disagree?'},
+    {i:'🧗',t:'Success Is Not Luck',img:'https://images.unsplash.com/photo-1429743305873-d4065c15f93e?w=1200&q=80&auto=format&fit=crop',pic:true,sc:'Study the photo. Some people think success just happens by luck; this image says something else. INTERPRET: (1) What do you see? (2) What is it saying about success? (3) Do you think effort matters more than luck, and why?'},
+    {i:'🕊️',t:'Hold or Release?',img:'https://images.unsplash.com/photo-1766899920729-07f014702ce8?w=1200&q=80&auto=format&fit=crop',pic:true,sc:'A small bird sits in cupped hands, beside an open cage. INTERPRET: (1) What choice is shown here? (2) When is it kind to hold on, and when is it kinder to let go? (3) Tell about a time you let something go.'},
+    {i:'🌅',t:'Better Alone?',img:'https://images.unsplash.com/photo-1509030441537-8af1c02726f7?w=1200&q=80&auto=format&fit=crop',pic:true,sc:'One person stands alone in a wide, empty landscape at sunset. INTERPRET: (1) How do you think the person feels? (2) Is being alone always lonely, or can it be good? (3) When do you like being alone?'},
+    {i:'👣',t:'The Marks We Leave',img:'https://images.unsplash.com/photo-1668385900491-48ad396f9cde?w=1200&q=80&auto=format&fit=crop',pic:true,sc:'This picture is about the marks and traces we leave behind. INTERPRET: (1) What marks can you see? (2) What kind of mark would you like to leave on the world? (3) How can small actions leave a big mark?'},
+    {i:'🌱',t:'In Whose Hands?',img:'https://images.unsplash.com/photo-1679110663825-c6ec1ad51884?w=1200&q=80&auto=format&fit=crop',pic:true,sc:'A tiny green plant is held in a pair of hands. INTERPRET: (1) What is being protected here? (2) Whose hands should look after our planet? (3) What is one thing YOU could do to help?'}
   ];
   var JTIMG=['https://images.unsplash.com/photo-1758947041685-5de333619040?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1429743305873-d4065c15f93e?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1509030441537-8af1c02726f7?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1561232295-b5ada34a032e?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1606920031092-c14461fc4db6?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1668385900491-48ad396f9cde?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1635082627989-dcd12a107364?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1515378040420-7d3f50e186e8?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1679110663825-c6ec1ad51884?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1549279873-30c053a630bc?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1706277750070-038c259c2ab7?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1727302788554-ae905ac91651?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1686299596388-d3433279ec64?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1664073204901-e2d9c84d558f?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1758941808079-fa54b03519de?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1615827157349-b3225b74f6e4?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1632849369576-06cb097fe68f?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1772617388664-a7a4189732b5?w=1200&q=80&auto=format&fit=crop'];
   var checks=['I spoke clearly at an even pace, pronouncing each word distinctly so my listener could understand every part.','I used a confident, natural volume that was easy and engaging to listen to.','I spoke with a steady, natural rhythm without long pauses or excessive filler words.','I varied my tone and expressed genuine enthusiasm to bring my ideas to life.','I stayed focused on the topic and gave clear, well-supported reasons for my thoughts.'];
+  window.__YLTALK=P.map(function(p,i){ var _c=['#163a2f','#2b5fa6','#7028e4','#c96f00','#8e2f6a','#0c6b53'][i%6]; var _svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400"><rect width="640" height="400" fill="'+_c+'"/><text x="320" y="195" font-size="150" text-anchor="middle">'+p.i+'</text><text x="320" y="320" font-size="34" fill="#ffffff" text-anchor="middle" font-family="sans-serif" font-weight="bold">'+p.t+'</text></svg>'; return {id:'jtp'+i, img:(p.img||JTIMG[i%JTIMG.length]), fb:'data:image/svg+xml,'+encodeURIComponent(_svg), video:(p.video||''), title:p.t, words:p.sc}; });
   var cards=P.map(function(p,idx){
-    var ck=checks.map(function(c){ return '<label style="display:block;margin:4px 0;font-size:.9rem;color:#15183A"><input type="checkbox" class="jt-ck" onchange="jtCheck('+idx+')"> '+c+'</label>'; }).join('');
-    return '<details class="jt-tile"><summary class="jt-cover" style="background-image:linear-gradient(to top,rgba(8,10,22,.85),rgba(8,10,22,.15)),url(\''+JTIMG[idx]+'\')"><span class="jt-emoji">'+p.i+'</span><span class="jt-ttl">'+p.t+'</span><span class="jt-go">▶ Tap to start</span></summary>'
-      +'<div class="jt-body">'
-      +'<p class="jt-scenario"><b>Scenario.</b> '+p.sc+'</p>'
-      +'<div class="jt-step"><b>Step 1 · ✍️ Writeabout it <span style="font-weight:400;color:var(--muted)">— 5 minutes</span></b>'
-        +'<button class="btn sm" onclick="jtTimer(this,300,\'jtT1_'+idx+'\')">▶ Start 5:00</button> <span id="jtT1_'+idx+'" class="jt-clock">5:00</span>'
-        +'<textarea id="jtW_'+idx+'" rows="5" placeholder="Write your ideas here…"></textarea></div>'
-      +'<div class="jt-step"><b>Step 2 · 🎤 Talkabout it <span style="font-weight:400;color:var(--muted)">— 1 min 30</span></b>'
-        +'<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px"><button class="btn sm" onclick="jtTimer(this,90,\'jtT2_'+idx+'\')">▶ Start 1:30</button> <span id="jtT2_'+idx+'" class="jt-clock">1:30</span>'
-        +'<button class="btn sm coral" id="spkRecBtn_jt_'+idx+'" onclick="audioToggle(\'jt\',\''+idx+'\')">● Record</button>'
-        +'<span id="recStatus_jt_'+idx+'" style="font-size:.82rem;color:var(--muted)"></span></div>'
-        +'<div id="audioActions_jt_'+idx+'" style="display:none;gap:8px;flex-wrap:wrap">'
-          +'<button class="btn sm ghost" id="spkPlayBtn_jt_'+idx+'" onclick="audioPlay(\'jt\',\''+idx+'\')">▶ Play</button>'
-          +'<button class="btn sm ghost" onclick="audioDownload(\'jt\',\''+idx+'\')">⬇ Save my recording</button>'
-          +'<button class="btn sm ghost" onclick="audioClear(\'jt\',\''+idx+'\')">🗑 Delete</button></div>'
-        +'<audio id="audio_jt_'+idx+'" style="display:none" controls></audio></div>'
-      +'<div class="jt-step"><b>Step 3 · 📤 Share</b>'
-        +'<div class="jt-rubric"><b style="display:block;margin-bottom:2px">✅ Self-check (tick all to publish)</b>'+ck+'</div>'
-        +'<button class="btn sm teal" id="jtSub_'+idx+'" disabled style="opacity:.5;margin-top:8px" data-title="'+p.t+'" onclick="jtSubmit(this,'+idx+')">Publish & get my certificate 🎓</button>'
-        +'<div id="jtCert_'+idx+'"></div></div>'
-      +'</div></details>';
+    return '<button class="jt-tile jt-cover" style="background-image:linear-gradient(to top,rgba(8,10,22,.82),rgba(8,10,22,.12)),url(\''+(p.img||JTIMG[idx%JTIMG.length])+'\')" onclick="betterYouOpen(\'jtp'+idx+'\')"><span class="jt-emoji">'+p.i+'</span><span class="jt-ttl">'+p.t+'</span><span class="jt-go">▶ Tap to open</span></button>';
   }).join('');
   app().innerHTML='<div class="wrap screen yl-scene">'
     +'<button class="back" onclick="go(\'ylhub\')">← Foundational</button>'
