@@ -1665,6 +1665,7 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 
 <!-- ============ SCREENS MOUNT ============ -->
 <main id="app"></main>
+<footer id="ican-cr" style="text-align:center;font-size:.72rem;color:#8a8fa3;padding:16px 16px 30px;line-height:1.55;max-width:760px;margin:0 auto">© iCAN, 2026. All rights reserved. Original creation owned by the Founder (emadhhjm@gmail.com). iCAN content may not be copied, redistributed, or reused without prior permission from the Founder.</footer>
 
 <!-- ============ CREATION TOOLS POP-UP ============ -->
 <div id="toolsModal" class="tools-overlay hidden" onclick="if(event.target===this)closeTools()">
@@ -4637,7 +4638,7 @@ function videoPop(ytId, title){
 }
 function videoPopClose(){ var o=document.getElementById('vidPop'); if(o){ o.style.display='none'; o.innerHTML=''; } }
 function mlPick(el, correct){
-  var wrap=el.parentNode; while(wrap && !(wrap.className&&wrap.className.indexOf('mlq')>-1)) wrap=wrap.parentNode;
+  var wrap=el.parentNode; while(wrap && !(wrap.classList&&wrap.classList.contains('mlq'))) wrap=wrap.parentNode;
   if(!wrap || wrap.getAttribute('data-done')) return;
   wrap.setAttribute('data-done','1');
   var opts=wrap.querySelectorAll('.mlq-opt');
@@ -4699,6 +4700,23 @@ var YLML_GLOSS={
 function mlGloss(id){ var g=(typeof YLML_GLOSS!=='undefined')?YLML_GLOSS[id]:null; if(!g){ return; } var rows=Object.keys(g).map(function(w){ return '<div style="margin:7px 0"><b style="color:#0c6b53">'+w+'</b> \u2014 '+g[w]+'</div>'; }).join(''); var ov=document.getElementById('mlGlossOv'); if(!ov){ ov=document.createElement('div'); ov.id='mlGlossOv'; document.body.appendChild(ov); } ov.setAttribute('style','position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px'); ov.innerHTML='<div style="background:#fff;border-radius:14px;max-width:460px;width:100%;padding:18px;max-height:82vh;overflow:auto"><h3 style="margin:0 0 10px">\ud83d\udcd7 Key vocabulary</h3>'+rows+'<button class="btn sm" style="margin-top:12px" onclick="var o=document.getElementById(\'mlGlossOv\');if(o)o.remove();">Close</button></div>'; }
 function mlTypeThis(id){ var l=(typeof YLML!=='undefined')?YLML.find(function(x){return x.id===id;}):null; if(!l){ return; } var txt=(l.intro?l.intro.join(' '):'').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim(); var ov=document.getElementById('mlTypeOv'); if(!ov){ ov=document.createElement('div'); ov.id='mlTypeOv'; document.body.appendChild(ov); } ov.setAttribute('style','position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px'); ov.innerHTML='<div style="background:#fff;border-radius:14px;max-width:560px;width:100%;padding:18px;max-height:85vh;overflow:auto"><h3 style="margin:0 0 8px">\u2328\ufe0f Type this</h3><p style="background:#f3f6fb;border-radius:8px;padding:10px;font-size:.95rem;line-height:1.6">'+txt+'</p><textarea rows="5" onpaste="return false" oncut="return false" ondrop="return false" style="width:100%;box-sizing:border-box;padding:9px;border:1px solid var(--line);border-radius:8px;font:inherit" placeholder="Type the text above here to practise\u2026"></textarea><button class="btn sm" style="margin-top:12px" onclick="var o=document.getElementById(\'mlTypeOv\');if(o)o.remove();">Close</button></div>'; }
 function ylDictPrompt(){ var w=(prompt('Look up a word:')||'').trim(); if(!w) return; var el=document.getElementById('ylDict'); if(el) el.value=w; if(typeof ylDictGo==='function') ylDictGo(); }
+function _ylUnit(r){ var t=((r.meta&&r.meta.theme)||'').toLowerCase(); if(/sport|team|structur|engineer|innovat|invent|\bfly|flight|rescue/.test(t)) return 3; if(/environ|scien|sustain|energy|nature|travel|marine|water|urban|sdg|wildlife|uae|heritage/.test(t)) return 2; return 1; }
+function ylMLUnitHTML(){ if(typeof YLML==='undefined'||!YLML.length) return ''; var rows=YLML.map(function(l){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.9rem">'+l.icon+'</div><div style="flex:1"><span class="yl-lv yl-lvB">ML</span> <b>'+esc(l.title)+'</b><div class="meta">🕵️ Media literacy · '+esc(l.strap||'')+' '+(typeof doneTag==='function'?doneTag('Foundational',l.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylMediaLesson\',\''+l.id+'\')">Open →</button></div>'; }).join(''); return '<h2 class="stem-h2" style="margin-top:18px">Unit 4 · Media Literacy <span style="font-weight:400;color:var(--muted);font-size:.95rem">— read, watch &amp; think critically</span></h2><div class="grid c2">'+rows+'</div>'; }
+var YLML_WRITE=[
+ {id:'mw1',icon:'🕵️',title:'Spot-the-Fake Warning',prompt:'Write a short warning (4 to 6 sentences) that teaches a younger student how to check whether a video is real before sharing it. Use clear steps and kind, confident language.',design:'Turn it into a poster (Design)'},
+ {id:'mw2',icon:'📢',title:'Two Sides, Fair Report',prompt:'Pick a topic people argue about. Write two short paragraphs, one for each side, told fairly. Then add one sentence saying what YOU think, and why.',design:'Make an infographic (Design)'},
+ {id:'mw3',icon:'🔐',title:'Advice to a Friend',prompt:'Your friend keeps clicking links and sharing posts without checking. Write them a kind message (4 to 6 sentences) about staying safe online: strong passwords, checking the sender, and slowing down.',design:'Design a safety card (Design)'}
+];
+function _ywUnit(x){ var f=((x&&x.field)||'').toLowerCase();
+ if(/story|literat|drama|poe|travel|adventure|imagin/.test(f)) return 3;
+ if(/educat|social|media|digital|climate|data|ecolog|communit|environ|argument|admission|econom|wellbeing/.test(f)) return 2;
+ return 1; }
+function mlWriteUnitHTML(){ if(typeof YLML_WRITE==='undefined') return ''; var rows=YLML_WRITE.map(function(l){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.6rem">'+l.icon+'</div><div style="flex:1"><span class="genre-tag">Media literacy</span> <b>'+esc(l.title)+'</b><div class="meta">'+esc(l.prompt.slice(0,72))+'… '+(typeof doneTag==='function'?doneTag('Foundational','Writing — '+l.title):'')+'</div></div><button class="btn sm" onclick="mlWriteOpen(\''+l.id+'\')">Write →</button></div>'; }).join('');
+ return '<h2 class="stem-h2" style="margin-top:18px">Unit 4 · Media Literacy <span style="font-weight:400;color:var(--muted);font-size:.95rem">— write to inform &amp; persuade, then design it</span></h2><div class="grid c2">'+rows+'</div>'; }
+function mlWriteOpen(id){ var l=(typeof YLML_WRITE!=='undefined')?YLML_WRITE.find(function(x){return x.id===id;}):null; if(!l) return; var ov=document.getElementById('mlwOv'); if(!ov){ ov=document.createElement('div'); ov.id='mlwOv'; document.body.appendChild(ov); } ov.setAttribute('style','position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px'); ov.innerHTML='<div style="background:#fff;border-radius:14px;max-width:560px;width:100%;padding:18px;max-height:88vh;overflow:auto"><div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">'+l.icon+' '+esc(l.title)+'</h3><button class="avp-x" onclick="mlWriteClose()">✕</button></div><p class="jt-scenario" style="margin:10px 0"><b>Task.</b> '+esc(l.prompt)+'</p><textarea id="mlwTa" rows="6" onpaste="return false" oncut="return false" ondrop="return false" style="width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font:inherit" placeholder="Write your answer here…"></textarea><div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:10px"><button class="btn sm" style="background:#7028e4;color:#fff;border-color:#7028e4" onclick="mlWriteClose();go(\'ylDesign\')">🎨 '+esc(l.design)+'</button><button class="btn sm teal" onclick="mlWriteFinish(\''+l.id+'\')">🏅 Finish &amp; get certificate</button></div><div id="mlwCert"></div></div>'; setTimeout(function(){ var e=document.getElementById('mlwTa'); if(e) e.focus(); },120); }
+function mlWriteFinish(id){ var l=(typeof YLML_WRITE!=='undefined')?YLML_WRITE.find(function(x){return x.id===id;}):null; var ta=document.getElementById('mlwTa'); var box=document.getElementById('mlwCert'); if(!box) return; var w=(ta&&ta.value||'').trim().split(/\s+/).filter(Boolean).length; if(w<15){ box.innerHTML='<p style="color:#B4231F;font-weight:700;margin-top:8px">Write a little more first (a few full sentences) before you finish.</p>'; return; } var nm=(typeof SESSION!=='undefined'&&SESSION&&SESSION.name)?SESSION.name:'Student'; var cert=''; try{ cert=certificateHTML({name:nm,band:'At-level',title:'Media Literacy Writing — '+(l?l.title:''),skill:'Media Literacy',percent:100,score:1,max:1,date:new Date().toLocaleDateString()}); }catch(e){} box.innerHTML='<p style="color:#0c6b53;font-weight:800;margin:10px 0 6px">🎉 Well done, '+nm+' · Junior Class!</p>'+cert; }
+function mlWriteClose(){ var o=document.getElementById('mlwOv'); if(o) o.remove(); }
+
 function go(screen, arg){
   CURRENT_SCREEN = screen; CURRENT_ARG = arg;
   stopSpeak(); turnOffHighlighter(); clearSpellTimer(); clearExamTimer(); window.scrollTo(0,0);
@@ -5050,8 +5068,8 @@ const ROUTES = {
       <div class="grid c2">${shortItems.map(shortCard).join('')}</div>
 
       ${head('II','#d98324','📰 Long reads','Longer single passages — authentic Article-A-Day texts for stamina and rhythm. Banded by length.')}
-      ${longBand('Long (≈250–300 words)','A solid sitting.', longPool.filter(t=>wc(t)<=300))}
-      ${longBand('Extended (300+ words)','Go the distance.', longPool.filter(t=>wc(t)>300))}
+      ${yl ? '<div class="card" style="border-left:5px solid #d98324"><h3 style="margin:0 0 4px">📖 Article-A-Day (ReadWorks)</h3><p style="margin:0 0 10px;font-size:.9rem;color:var(--muted)">Read a short, real article every day to build stamina and rhythm. ReadWorks has free Article-A-Day passages for young learners. Opens in a new tab — pick one, read it, then come back and type a favourite paragraph here.</p><a class="btn teal sm" href="https://www.readworks.org/" target="_blank" rel="noopener">Open ReadWorks Article-A-Day ↗</a></div>'
+        : (longBand('Long (≈250–300 words)','A solid sitting.', longPool.filter(t=>wc(t)<=300)) + longBand('Extended (300+ words)','Go the distance.', longPool.filter(t=>wc(t)>300)))}
 
       ${journeyTier}
 
@@ -9678,6 +9696,8 @@ function drawCert(o){
   const tag=CONFIG.tagline||"iCAN — an RWD-aligned project for English proficiency.";
   x.fillText(tag.length>120?tag.slice(0,118)+"…":tag, W/2, H-80);
   if(o.serial){ x.fillStyle="#8f8a7e"; x.font="12px 'Lexend',monospace"; x.fillText("Serial  "+o.serial, W/2, H-56); }
+  x.textAlign="center"; x.fillStyle="#a49c8e"; x.font="10px 'Lexend',sans-serif"; x.fillText("© iCAN, 2026. All rights reserved.", W/2, H-40);
+  x.font="8.5px 'Lexend',sans-serif"; x.fillText("Original work owned by the Founder (emadhhjm@gmail.com) — not to be copied or reused without permission.", W/2, H-26);
   return c.toDataURL("image/png");
 }
 try{ if(typeof document!=='undefined'&&document.fonts&&document.fonts.load){ document.fonts.load("400 90px 'Great Vibes'"); } }catch(e){}
@@ -19915,18 +19935,19 @@ function luLessonTeacherBtn(id){
 }
 ROUTES.ylReading=function(){
   try{speechSynthesis.cancel();}catch(e){}
-  const groups=[['A','Level A \u00b7 A1\u2013A2','emerging readers'],['B','Level B \u00b7 B1\u2013B2','developing readers'],['C','Level C \u00b7 C1\u2013C2','confident readers']];
+  const groups=[[1,'Unit 1 · People & Everyday Life','pets, food, family, community, health & tech'],[2,'Unit 2 · Our Planet & Science','environment, energy, nature, wildlife, SDGs'],[3,'Unit 3 · Sport, Invention & Flight','teamwork, engineering, innovation, flight']];
   const rowOf=r=>{ const m=r.meta||{}; const sub=m.genre?('\ud83d\udcd6 '+esc(m.genre)+' \u00b7 '+esc(m.lexile||'')+' \u00b7 '+esc(m.skill||'')):('\ud83c\udfaf '+esc(r.obj));
     return '<div class="item-row" style="align-items:center"><div style="font-size:1.9rem">'+r.icon+'</div><div style="flex:1"><span class="yl-lv yl-lv'+r.lv+'">'+r.lv+'</span> <b>'+esc(r.title)+'</b><div class="meta">'+sub+' '+(typeof doneTag==='function'?doneTag('Foundational',r.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylReader\',\''+r.id+'\')">Open \u2192</button>'+luLessonTeacherBtn(r.id)+'</div>'; };
-  const secs=groups.map(gr=>{ const lv=gr[0]; const rows=YL_READERS.filter(r=>r.lv===lv).map(rowOf).join('');
+  const secs=groups.map(gr=>{ const lv=gr[0]; const rows=YL_READERS.filter(r=>_ylUnit(r)===lv).sort(function(a,b){return 'ABC'.indexOf(a.lv)-'ABC'.indexOf(b.lv);}).map(rowOf).join('');
     return rows?('<h2 class="stem-h2" style="margin-top:18px">'+gr[1]+' <span style="font-weight:400;color:var(--muted);font-size:.95rem">\u2014 '+gr[2]+'</span></h2><div class="grid c2">'+rows+'</div>'):''; }).join('');
   app().innerHTML=`
   <div class="wrap screen">
     <button class="back" onclick="go('ylhub')">\u2190 Foundational</button>
     <div class="stem-kicker" style="color:#0FA98B">Reading \u00b7 read to discover</div>
     <h1 style="font-size:1.9rem">\ud83d\udcd6 Reading</h1>
-    <p style="color:var(--muted);max-width:700px">Multimodal texts grouped by CEFR level, roughly in the <b>600\u20131000L</b> Lexile range. Every reader has a <b>Standard</b> and an <b>Extended</b> version, a visual to interpret, and a details panel like a real reading library. Full affordances: \ud83d\udd0a read-to-me \u00b7 A\u00b1 zoom \u00b7 tap any word for a live definition (opens vocabulary.com).</p>
+    <p style="color:var(--muted);max-width:700px">Multimodal texts organised into theme-based Units (with a Media Literacy unit), roughly in the <b>600\u20131000L</b> Lexile range. Every reader has a <b>Standard</b> and an <b>Extended</b> version, a visual to interpret, and a details panel like a real reading library. Full affordances: \ud83d\udd0a read-to-me \u00b7 A\u00b1 zoom \u00b7 tap any word for a live definition (opens vocabulary.com).</p>
     ${secs}
+    ${ylMLUnitHTML()}
     ${ylCReadListHTML()}
   </div>`;
 };
@@ -19934,13 +19955,14 @@ ROUTES.ylWriting=function(){
   try{speechSynthesis.cancel();}catch(e){}
   const labelOf={'5–6':'Grade 5–6','7':'Grade 7','8':'Grade 8'}; const bands=['5–6','7','8'];
   const rowOf=x=>'<div class="item-row" style="align-items:center"><div style="font-size:1.6rem">✍️</div><div style="flex:1"><span class="mz-gpill" style="background:'+mzGradeColor(x.band)+'">'+labelOf[x.band]+'</span> <span class="genre-tag">'+esc(x.field)+'</span> <b>'+esc(x.title)+'</b><div class="meta">'+esc(x.prompt)+' '+(typeof doneTag==='function'?doneTag('Foundational','Writing — '+x.title):'')+'</div></div><button class="btn sm" onclick="go(\'ylWriteRun\',\''+x.id+'\')">Write →</button>'+luLessonTeacherBtn(x.id)+'</div>';
-  const secs=bands.map(b=>{ const rows=YL_WRITE.filter(x=>x.band===b).map(rowOf).join(''); return rows?'<h3 style="margin:16px 0 6px"><span class="mz-gpill" style="background:'+mzGradeColor(b)+'">'+labelOf[b]+'</span></h3><div class="grid c2">'+rows+'</div>':''; }).join('');
+  const _WU=[[1,'Unit 1 · Everyday Life & People'],[2,'Unit 2 · Ideas & Society'],[3,'Unit 3 · Stories & Imagination']];
+  const secs=_WU.map(u=>{ const rows=YL_WRITE.filter(x=>_ywUnit(x)===u[0]).map(rowOf).join(''); return rows?('<h2 class="stem-h2" style="margin-top:18px">'+u[1]+'</h2><div class="grid c2">'+rows+'</div>'):''; }).join('') + mlWriteUnitHTML();
   app().innerHTML=MZ_STYLE+`
   <div class="wrap screen">
     <button class="back" onclick="go('ylhub')">← Foundational</button>
     <div class="stem-kicker" style="color:#e6608a">Writing · write to explain</div>
     <h1 style="font-size:1.9rem">✍️ Writing</h1>
-    <p style="color:var(--muted);max-width:700px">Choose a prompt and address all three points. Every task is differentiated — a <b>Standard</b> target for emerging writers and an <b>Extended</b> target for stronger ones. Submit to reveal <b>two model answers</b> (a weaker piece to learn from and a full-mark model) and the marking <b>rubric</b>.</p>
+    <p style="color:var(--muted);max-width:700px">Prompts are organised into theme-based Units, with a Media Literacy unit that links writing to a design task. Choose a prompt and address all three points. Every task is differentiated — a <b>Standard</b> target for emerging writers and an <b>Extended</b> target for stronger ones. Submit to reveal <b>two model answers</b> (a weaker piece to learn from and a full-mark model) and the marking <b>rubric</b>.</p>
     ${secs}
   </div>`;
 };
@@ -24282,6 +24304,8 @@ ROUTES.waspkCats = function(){
     <p style="color:var(--muted);max-width:680px">Every prompt lives here, sorted by type: <b>🎬 Video</b>, <b>🖼️ Picture</b>, <b>🗣️ Talking Points</b> and <b>🧩 Puzzles</b>. Start with 💛 <b>The Better You</b> — a quick card of wisdom to react to, talk about, and pass on — then explore the main prompts below.</p>
     ${teacherBlock}
     ${sections}
+    <div class="wa-typehead" style="margin-top:20px"><span class="ti">🎵</span><div><h2>Melody</h2><p>Learn English through songs + imaginative storytelling — "live the words".</p></div></div>
+    <button class="btn teal" onclick="go('melody')">🎵 Open Melody →</button>
   </div>`;
 };
 
@@ -25456,7 +25480,7 @@ const YLML=[
    credit:"Adapted for young learners from BBC Bitesize — Solve the Story (Other Side of the Story). Source: bbc.co.uk/bitesize." },
  { id:'jml3', icon:'📢', colour:'#2B5FA6', title:'Only one side of the story', strap:'Bias — telling just one side',
    intro:['<p>Two people can see the very same thing and tell it in two very different ways. The words we choose can change how a story <b>feels</b>. When someone tells only one side, we call it <b>bias</b>.</p>','<p>Your phone also shows you more of what you tap and like. Little by little, you can end up seeing only one kind of story. To be fair, we look for the <b>other side</b> too, and we ask: what is being left out?</p>'],
-   ytId:'LuBgbenRH1Q', dur:'4:20',
+   ytId:'Zk1o2BpC79g', dur:'4:20',
    transcript:'<p><b>What to watch for:</b> the same event can be told in different ways, and your feed shows you more of what you already like. The video shows why it is smart to check more than one place before you decide.</p>',
    quiz:[
      {q:"Bias means —", options:["telling every side fairly and equally","telling only one side of a story","a kind of hard school test","a bright colour of the rainbow"], answer:1, exp:"Bias is showing only one side."},
@@ -25465,7 +25489,7 @@ const YLML=[
    credit:"Adapted for young learners from BBC Bitesize — Solve the Story (Other Side of the Story). Source: bbc.co.uk/bitesize." },
  { id:'jml4', icon:'🔐', colour:'#8B5CF6', title:'Stay safe online', strap:'Tricky messages & staying safe',
    intro:['<p>Some messages online try to trick you. They say things like "Act now!" or "You won a prize!" to make you scared or excited so you click quickly. This trick is called <b>phishing</b>.</p>','<p>The safe thing to do is <b>slow down</b>. Do not click strange links. Never share your password. And if a message does not feel right, stop and tell a grown-up you trust.</p>'],
-   ytId:'7f_H4nSeHZA', dur:'3:24',
+   ytId:'onVNFP7iN3c', dur:'3:24',
    transcript:'<p><b>What to watch for:</b> tricky messages work by making you hurry. The video shows how one fast click can give away a password, and why slowing down and checking keeps you safe.</p>',
    quiz:[
      {q:"Phishing tries to make you —", options:["click fast without thinking","read a nice, long bedtime story","do your homework early","feel sleepy and calm"], answer:0, exp:"It rushes you so you click before you think."},
@@ -25628,6 +25652,49 @@ ROUTES.ylTalk = function(){
     +'<h1 style="font-size:2.1rem;color:#fff">🗣️ Talkabout & Writeabout</h1>'
     +'<p style="color:rgba(255,255,255,.92);max-width:660px">Tap a topic card. Then follow the steps: <b>write</b> (5 min), <b>talk & record</b> (1½ min), tick your <b>self-check</b>, and <b>publish</b> to earn a certificate.</p>'
     +'<div class="jt-grid">'+cards+'</div>'
+     +'<div class="wa-typehead" style="margin-top:22px;background:rgba(255,255,255,.92);border-radius:14px;padding:10px 14px"><span class="ti">🎧</span><div><h2 style="margin:0">Shadowing &amp; Storytelling</h2><p style="margin:0;color:var(--slate)">Listen and repeat (shadow) real storytellers \u2014 copy the sounds, rhythm and feeling, then retell the story your way.</p></div></div>'
+     +'<div style="margin-top:8px"><button class="btn teal" onclick="go(\'ylShadow\')">🎧 Open Shadowing &amp; Storytelling \u2192</button></div>'
+     +'<div class="wa-typehead" style="margin-top:16px;background:rgba(255,255,255,.92);border-radius:14px;padding:10px 14px"><span class="ti">📖</span><div><h2 style="margin:0">Storytelling</h2><p style="margin:0;color:var(--slate)">Learn vocabulary and talk easily by following clear, friendly storytellers.</p></div></div>'
+     +'<div style="margin-top:8px"><button class="btn teal" onclick="go(\'ylStory\')">📖 Open Storytelling \u2192</button></div>'
+    +'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
+
+ROUTES.melody = function(){
+  var channels=[{name:'Gengu AI', handle:'@GenguAI', url:'https://www.youtube.com/@GenguAI', note:'AI-crafted songs and stories that bring English to life.'},{name:'Grace AI Art', handle:'@GraceAIArt', url:'https://www.youtube.com/@GraceAIArt', note:'Stylised, narrative-driven songs with cosy, cinematic visuals.'},{name:'Sing Highlights', handle:'@SingHighlights', url:'https://www.youtube.com/@SingHighlights', note:'Clear vocals and repetitive, easy-to-follow phrasing with strong visual cues.'}];
+  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">🎵</div><div style="flex:1"><b>'+esc(c.name)+'</b> <span class="meta">'+esc(c.handle)+'</span><div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel \u2197</a></div>'; }).join('');
+  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'waspkCats\')">\u2190 Talkabout</button>'
+    +'<div class="meta">Talkabout \u00b7 Melody</div>'
+    +'<h1 style="font-size:2rem">🎵 Melody</h1>'
+    +'<p style="color:var(--muted);max-width:700px">Learn English through <b>songs</b>, enhanced with imaginative storytelling that ignites past memories and helps learners <b>live the words</b>. Listen, feel the story, then talk and write about what you heard. These channels share clear vocals, story-driven lyrics and cosy, cinematic visuals, so the words are easy to hear and feel. More channels will be added here over time.</p>'
+    +'<h3 style="margin:16px 0 6px">Channels</h3><div class="grid c2">'+rows+'</div>'
+    +'<p style="font-size:.8rem;color:var(--muted);margin-top:14px">Channels open on YouTube in a new tab. \u00a9 iCAN, 2026.</p>'
+    +'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
+
+ROUTES.ylShadow = function(){
+  var channels=[{name:'Tales by Monisha', handle:'@talesbymonisha2.0', url:'https://www.youtube.com/@talesbymonisha2.0', note:'Gentle storytelling to listen and repeat \u2014 shadow the voice, sounds and feeling.'},{name:'Storytime Channel', handle:'', url:'https://www.youtube.com/channel/UCpfbuNmv5P9GlbNnbCiMgKA', note:'Story videos to shadow, then retell in your own words.'}];
+  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">🎧</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel \u2197</a></div>'; }).join('');
+  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylTalk\')">\u2190 Talkabout</button>'
+    +'<div class="meta">Talkabout \u00b7 Shadowing &amp; Storytelling</div>'
+    +'<h1 style="font-size:2rem">🎧 Shadowing &amp; Storytelling</h1>'
+    +'<p style="color:var(--muted);max-width:700px">Play a story, then <b>shadow</b> it: listen to a short part, pause, and repeat it out loud \u2014 copy the sounds, the rhythm and the feeling. Afterwards, <b>retell</b> the story in your own words. This builds clear pronunciation, natural rhythm and confidence.</p>'
+    +'<h3 style="margin:16px 0 6px">Channels</h3><div class="grid c2">'+rows+'</div>'
+    +'<p style="font-size:.8rem;color:var(--muted);margin-top:14px">Channels open on YouTube in a new tab. \u00a9 iCAN, 2026.</p>'
+    +'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
+
+ROUTES.ylStory = function(){
+  var channels=[{name:'English Natively', handle:'@EnglishNatively', url:'https://www.youtube.com/@EnglishNatively', note:'Learn everyday vocabulary through clear, natural storytelling.'},{name:'Talk Easy English', handle:'@TalkEasy_English89', url:'https://www.youtube.com/@TalkEasy_English89', note:'Simple stories and phrases that help you talk easily and with confidence.'}];
+  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">📖</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel \u2197</a></div>'; }).join('');
+  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylTalk\')">\u2190 Talkabout</button>'
+    +'<div class="meta">Talkabout \u00b7 Storytelling</div>'
+    +'<h1 style="font-size:2rem">📖 Storytelling</h1>'
+    +'<p style="color:var(--muted);max-width:700px">Watch friendly storytellers to build <b>vocabulary</b> and learn to <b>talk easily</b>. Listen for useful words and phrases, say them out loud, then use them to tell a short story of your own.</p>'
+    +'<h3 style="margin:16px 0 6px">Channels</h3><div class="grid c2">'+rows+'</div>'
+    +'<p style="font-size:.8rem;color:var(--muted);margin-top:14px">Channels open on YouTube in a new tab. \u00a9 iCAN, 2026.</p>'
     +'</div>';
   try{window.scrollTo(0,0);}catch(e){}
 };
