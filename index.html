@@ -1276,6 +1276,12 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 @keyframes orbspin{to{transform:rotate(360deg)}}
 @keyframes orbfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @keyframes orbpulse{0%,100%{box-shadow:0 8px 22px rgba(224,138,43,.4)}50%{box-shadow:0 8px 34px rgba(224,138,43,.9);transform:scale(1.05)}}
+
+.aad-drop{display:inline-block}
+.aad-btn{cursor:pointer;list-style:none;background:#0c8a72;color:#fff;font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:20px;display:inline-block}
+.aad-btn::-webkit-details-marker{display:none}
+.aad-drop[open] .aad-btn{background:#0c6b53}
+.aad-panel{margin-top:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;max-width:480px;box-shadow:0 6px 18px rgba(0,0,0,.12);font-size:.9rem;line-height:1.5}
 </style>
 <style id="waspk-css">
 /* =========================================================================
@@ -5079,8 +5085,8 @@ const ROUTES = {
       ${head('I','#0FA98B','✏️ Warm-up & short texts','Everything short in one place — key and number drills, quick passages and complete short poems. A minute or two each.')}
       <div class="grid c2">${shortItems.map(shortCard).join('')}</div>
 
-      ${head('II','#d98324','📰 Long reads','Longer single passages — authentic Article-A-Day texts for stamina and rhythm. Banded by length.')}
-      ${yl ? '<div class="card" style="border-left:5px solid #d98324"><h3 style="margin:0 0 4px">📖 Article-A-Day (ReadWorks)</h3><p style="margin:0 0 10px;font-size:.9rem;color:var(--muted)">Read a short, real article every day to build stamina and rhythm. ReadWorks has free Article-A-Day passages for young learners. Opens in a new tab — pick one, read it, then come back and type a favourite paragraph here.</p><a class="btn teal sm" href="https://www.readworks.org/" target="_blank" rel="noopener">Open ReadWorks Article-A-Day ↗</a></div>'
+      ${yl?'':head('II','#d98324','📰 Long reads','Longer single passages — authentic Article-A-Day texts for stamina and rhythm. Banded by length.')}
+      ${yl ? ''
         : (longBand('Long (≈250–300 words)','A solid sitting.', longPool.filter(t=>wc(t)<=300)) + longBand('Extended (300+ words)','Go the distance.', longPool.filter(t=>wc(t)>300)))}
 
       ${journeyTier}
@@ -19957,7 +19963,7 @@ ROUTES.ylReading=function(){
   <div class="wrap screen">
     <button class="back" onclick="go('ylhub')">\u2190 Foundational</button>
     <div class="stem-kicker" style="color:#0FA98B">Reading \u00b7 read to discover</div>
-    <h1 style="font-size:1.9rem">\ud83d\udcd6 Reading</h1>
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><h1 style="font-size:1.9rem;margin:0">📖 Reading</h1><details class="aad-drop"><summary class="aad-btn">📰 Article-A-Day</summary><div class="aad-panel"><p style="margin:0 0 6px"><b>Read a short, real article every day.</b> Sign in to ReadWorks to get your Article-A-Day:</p><ol style="margin:0 0 6px;padding-left:20px"><li>Go to <a href="https://www.readworks.org/student" target="_blank" rel="noopener">readworks.org/student ↗</a></li><li>Enter class code <b>3ULDQ4</b></li><li>Default password is <b>1234</b></li></ol><p style="margin:0;font-size:.82rem;color:var(--muted)">Note: you can change your password after you log in.</p></div></details></div>
     <p style="color:var(--muted);max-width:700px">Multimodal texts organised into theme-based Units (with a Media Literacy unit), roughly in the <b>600\u20131000L</b> Lexile range. Every reader has a <b>Standard</b> and an <b>Extended</b> version, a visual to interpret, and a details panel like a real reading library. Full affordances: \ud83d\udd0a read-to-me \u00b7 A\u00b1 zoom \u00b7 tap any word for a live definition (opens vocabulary.com).</p>
     ${secs}
     ${ylMLUnitHTML()}
@@ -25716,14 +25722,22 @@ ROUTES.ylStory = function(){
   try{window.scrollTo(0,0);}catch(e){}
 };
 
-function storyCheckpointHTML(){
- var P=[['The Lesson','What did this song or story teach you about life or human experience?'],['The Conflict & Resolution','What problem did the characters face, and how did they overcome it?'],['The Alternate Ending','How would you change the ending of this story, and why is your version better?']];
- var boxes=P.map(function(p,i){ return '<div style="margin:10px 0"><b>'+(i+1)+'. '+p[0]+'</b><p style="margin:2px 0 4px;color:var(--muted);font-size:.9rem">'+p[1]+' <i>(at least 50 words)</i></p><textarea id="sck'+i+'" rows="4" onpaste="return false" oncut="return false" ondrop="return false" oninput="storyCheckCount('+i+')" style="width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font:inherit" placeholder="Write at least 50 words..."></textarea><div id="sckc'+i+'" class="meta" style="text-align:right">0 words</div></div>'; }).join('');
- return '<details class="card" style="margin-top:16px"><summary style="cursor:pointer;font-weight:800;font-size:1.05rem">📝 Story Checkpoint — respond to the story</summary><div style="margin-top:8px"><p class="meta">Watch or listen to a story, then answer all three prompts. Each answer needs at least 50 words. When all three are done, submit to earn your certificate.</p>'+boxes+'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"><button class="btn teal" onclick="storyCheckSubmit()">🏅 Submit &amp; get certificate</button><button class="btn ghost sm" onclick="storyCheckPrint()">🖨️ Download / Print template</button></div><div id="sckCert"></div></div></details>';
+var STORY_CK_SETS={
+ story:{title:'Storytelling', q:[['The Lesson','Listen to the story. What did it teach you about life or human experience?'],['The Conflict and Resolution','Listen to the story. What problem did the characters face, and how did they overcome it?'],['The Alternate Ending','Listen to the story. How would you change the ending, and why is your version better?']]},
+ song:{title:'Storybook Songs', q:[['The Feeling','Listen to the song. What mood or feeling did it create, and which words or sounds made you feel that way?'],['The Story in the Song','Listen to the song. What story or little world does it paint? Describe what you pictured.'],['Your Verse','Listen to the song. Add or change a verse or ending to its story. What happens, and why do you like it?']]},
+ idea:{title:'Life n Extras', q:[['The Key Idea','Watch the TED-Ed short. What is the key idea of the short?'],['Why It Matters','Watch the TED-Ed short. Why is it important?'],['Positive Impact','Watch the TED-Ed short. How can you act for a positive impact?']]}
+};
+window.__CKKIND='story';
+function storyCheckpointHTML(kind){ kind=(kind&&STORY_CK_SETS[kind])?kind:'story'; window.__CKKIND=kind; var P=STORY_CK_SETS[kind].q;
+ var boxes=P.map(function(p,i){ return '<div style="margin:10px 0"><b>'+(i+1)+'. '+p[0]+'</b><p style="margin:2px 0 4px;color:var(--muted);font-size:.9rem">'+p[1]+'</p><textarea id="sck'+i+'" rows="4" onpaste="return false" oncut="return false" ondrop="return false" oninput="storyCheckCount('+i+')" style="width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font:inherit" placeholder="Write your answer here..."></textarea><div id="sckc'+i+'" class="meta" style="text-align:right">0 words</div></div>'; }).join('');
+ return '<div style="margin-top:16px"><h3 style="margin:0 0 8px">📝 Story Checkpoint</h3>'
+  +'<details class="card"><summary style="cursor:pointer;font-weight:700;font-size:1rem">Open the checkpoint quiz</summary><div style="margin-top:8px">'+boxes+'<div style="margin-top:6px"><button class="btn teal" onclick="storyCheckSubmit()">🏅 Submit &amp; get certificate</button></div><div id="sckCert"></div></div></details>'
+  +'<div style="margin-top:8px"><button class="btn ghost sm" onclick="storyCheckPrint()">🖨️ Download the quiz</button></div>'
+  +'</div>';
 }
 function storyCheckCount(i){ var t=document.getElementById('sck'+i), c=document.getElementById('sckc'+i); if(!t||!c) return; var w=(t.value||'').trim().split(/\s+/).filter(Boolean).length; c.textContent=w+' words'+(w>=50?' ✓':''); c.style.color=w>=50?'#0c8a72':''; }
-function storyCheckSubmit(){ var box=document.getElementById('sckCert'); if(!box) return; var short=[]; for(var i=0;i<3;i++){ var t=document.getElementById('sck'+i); var w=t?(t.value||'').trim().split(/\s+/).filter(Boolean).length:0; if(w<50) short.push(i+1); } if(short.length){ box.innerHTML='<p style="color:#B4231F;font-weight:700;margin-top:8px">Please finish response '+short.join(', ')+' — each needs at least 50 words.</p>'; return; } var nm=(typeof SESSION!=='undefined'&&SESSION&&SESSION.name)?SESSION.name:'Student'; var cert=''; try{ cert=certificateHTML({name:nm,band:'Participation',title:'Talkabout · Storytelling',skill:'Storytelling',percent:100,score:3,max:3,date:new Date().toLocaleDateString()}); }catch(e){} box.innerHTML='<p style="color:#0c6b53;font-weight:800;margin:10px 0 6px">🎉 Certificate of Participation — well done, '+nm+'!</p>'+cert; }
-function storyCheckPrint(){ var P=[['The Lesson','What did this song or story teach you about life or human experience?'],['The Conflict & Resolution','What problem did the characters face, and how did they overcome it?'],['The Alternate Ending','How would you change the ending of this story, and why is your version better?']]; var body=P.map(function(p,i){ var t=document.getElementById('sck'+i); var v=t?(t.value||''):''; return '<h3>'+(i+1)+'. '+p[0]+'</h3><p style="color:#555">'+p[1]+' (at least 50 words)</p><div style="border:1px solid #ccc;border-radius:8px;min-height:90px;padding:8px;white-space:pre-wrap">'+(typeof esc==='function'?esc(v):v)+'</div>'; }).join(''); var w=window.open('','_blank'); if(!w) return; w.document.write('<html><head><title>Story Checkpoint</title><style>body{font-family:Georgia,serif;max-width:720px;margin:24px auto;padding:0 16px;color:#222}h1{color:#c05a1a}h3{margin:16px 0 2px}</style></head><body><h1>Story Checkpoint — Talkabout · Storytelling</h1><p>Name: ______________________   Date: __________</p>'+body+'<p style="margin-top:20px;font-size:.78rem;color:#888">© iCAN, 2026. All rights reserved. Original creation owned by the Founder (emadhhjm@gmail.com). Not to be copied or reused without permission.</p></body></html>'); w.document.close(); w.focus(); try{ w.print(); }catch(e){} }
+function storyCheckSubmit(){ var box=document.getElementById('sckCert'); if(!box) return; var short=[]; for(var i=0;i<3;i++){ var t=document.getElementById('sck'+i); var w=t?(t.value||'').trim().split(/\s+/).filter(Boolean).length:0; if(w<50) short.push(i+1); } if(short.length){ box.innerHTML='<p style="color:#B4231F;font-weight:700;margin-top:8px">Please finish response '+short.join(', ')+' — each needs at least 50 words.</p>'; return; } var set=STORY_CK_SETS[window.__CKKIND||'story']; var nm=(typeof SESSION!=='undefined'&&SESSION&&SESSION.name)?SESSION.name:'Student'; var cert=''; try{ cert=certificateHTML({name:nm,band:'Participation',title:'Talkabout · '+set.title,skill:set.title,percent:100,score:3,max:3,date:new Date().toLocaleDateString()}); }catch(e){} box.innerHTML='<p style="color:#0c6b53;font-weight:800;margin:10px 0 6px">🎉 Certificate of Participation — well done, '+nm+'!</p>'+cert; }
+function storyCheckPrint(){ var set=STORY_CK_SETS[window.__CKKIND||'story']; var P=set.q; var body=P.map(function(p,i){ var t=document.getElementById('sck'+i); var v=t?(t.value||''):''; return '<h3>'+(i+1)+'. '+p[0]+'</h3><p style="color:#555">'+p[1]+'</p><div style="border:1px solid #ccc;border-radius:8px;min-height:90px;padding:8px;white-space:pre-wrap">'+(typeof esc==='function'?esc(v):v)+'</div>'; }).join(''); var w=window.open('','_blank'); if(!w) return; w.document.write('<html><head><title>Checkpoint</title><style>body{font-family:Georgia,serif;max-width:720px;margin:24px auto;padding:0 16px;color:#222}h1{color:#c05a1a}h3{margin:16px 0 2px}</style></head><body><h1>Checkpoint — Talkabout · '+set.title+'</h1><p>Name: ______________________   Date: __________</p>'+body+'<p style="margin-top:20px;font-size:.78rem;color:#888">© iCAN, 2026. All rights reserved. Original creation owned by the Founder (emadhhjm@gmail.com). Not to be copied or reused without permission.</p></body></html>'); w.document.close(); w.focus(); try{ w.print(); }catch(e){} }
 
 
 ROUTES.ylStorybookSongs = function(){
@@ -25734,18 +25748,20 @@ ROUTES.ylStorybookSongs = function(){
     +'<h1 style="font-size:2rem">🎶 Storybook Songs</h1>'
     +'<p style="color:var(--muted);max-width:720px">Learn English through <b>musical storybooks</b>. Gengu AI specialises in AI-generated music paired with whimsical, narrative-driven visual worlds (such as <i>A Very Old Town</i> and <i>A Very Unusual Town</i>); the tracks and stop-motion-style art evoke musical storybooks, folklore and cosy tales. Listen, feel the story, then talk and write about it.</p>'
     +'<h3 style="margin:16px 0 6px">Channels</h3><div class="grid c2">'+rows+'</div>'
+    +storyCheckpointHTML('song')
     +'<p style="font-size:.8rem;color:var(--muted);margin-top:14px">Channels open on YouTube in a new tab. © iCAN, 2026.</p>'
     +'</div>';
   try{window.scrollTo(0,0);}catch(e){}
 };
 ROUTES.ylLifeExtras = function(){
-  var channels=[{name:'TED-Ed: Lessons Worth Sharing', handle:'@TEDEd', url:'https://www.youtube.com/@TEDEd', note:'Short animated lessons on big ideas in science, life and human experience — worth talking about.'}];
+  var channels=[{name:'TED-Ed: Lessons Worth Sharing', handle:'@TEDEd', url:'https://www.youtube.com/@TEDEd', note:'Short animated lessons on big ideas in science, life and human experience — worth talking about.'},{name:'TED-Ed Lessons Library', handle:'ed.ted.com', url:'https://ed.ted.com/', note:'Free EFL educational video lessons with built-in questions and activities.'}];
   var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">💡</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel ↗</a></div>'; }).join('');
   app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylTalk\')">← Talkabout</button>'
     +'<div class="meta">Talkabout · Life n Extras</div>'
     +'<h1 style="font-size:2rem">💡 Life n Extras</h1>'
     +'<p style="color:var(--muted);max-width:720px">Big ideas and <b>lessons worth sharing</b>. Watch a short talk, then discuss: what did it make you think, and do you agree?</p>'
     +'<h3 style="margin:16px 0 6px">Channels</h3><div class="grid c2">'+rows+'</div>'
+    +storyCheckpointHTML('idea')
     +'<p style="font-size:.8rem;color:var(--muted);margin-top:14px">Channels open on YouTube in a new tab. © iCAN, 2026.</p>'
     +'</div>';
   try{window.scrollTo(0,0);}catch(e){}
@@ -25753,7 +25769,7 @@ ROUTES.ylLifeExtras = function(){
 
 
 ROUTES.seniorExtras = function(){
-  var channels=[{name:'TED-Ed: Lessons Worth Sharing', handle:'@TEDEd', url:'https://www.youtube.com/@TEDEd', note:'Short animated lessons on big ideas in science, life and human experience — worth talking about.'}];
+  var channels=[{name:'TED-Ed: Lessons Worth Sharing', handle:'@TEDEd', url:'https://www.youtube.com/@TEDEd', note:'Short animated lessons on big ideas in science, life and human experience — worth talking about.'},{name:'TED-Ed Lessons Library', handle:'ed.ted.com', url:'https://ed.ted.com/', note:'Free EFL educational video lessons with built-in questions and activities.'}];
   var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">💡</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel ↗</a></div>'; }).join('');
   app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'waspkCats\')">← Talkabout</button>'
     +'<div class="meta">Talkabout · Life n Extras</div>'
@@ -25761,6 +25777,18 @@ ROUTES.seniorExtras = function(){
     +'<p style="color:var(--muted);max-width:720px">Big ideas and <b>lessons worth sharing</b>. Watch a short talk, then discuss: what did it make you think, and do you agree?</p>'
     +'<h3 style="margin:16px 0 6px">Channels</h3><div class="grid c2">'+rows+'</div>'
     +'<p style="font-size:.8rem;color:var(--muted);margin-top:14px">Channels open on YouTube in a new tab. © iCAN, 2026.</p>'
+    +'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
+
+
+ROUTES.ylAAD = function(){
+  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylhub\')">← Foundational</button>'
+    +'<div class="meta">Foundational · Article-A-Day</div>'
+    +'<h1 style="font-size:2rem">📰 Article-A-Day</h1>'
+    +'<p style="color:var(--muted);max-width:720px">Read a short, real article every day to build reading stamina and rhythm. ReadWorks has free Article-A-Day passages for young learners. It opens in a new tab — pick one, read it, then come back and type a favourite paragraph in Typing.</p>'
+    +'<a class="btn teal" href="https://www.readworks.org/" target="_blank" rel="noopener" style="margin-top:8px;display:inline-block">Open ReadWorks Article-A-Day ↗</a>'
+    +'<p style="font-size:.8rem;color:var(--muted);margin-top:16px">Opens on ReadWorks.org in a new tab. © iCAN, 2026.</p>'
     +'</div>';
   try{window.scrollTo(0,0);}catch(e){}
 };
