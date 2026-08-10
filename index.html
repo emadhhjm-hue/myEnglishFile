@@ -1264,6 +1264,18 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 .jt-body{background:#fff;padding:14px}
 .jt-rubric{background:#eef7f3;border:1px solid #a9e0d0;border-radius:10px;padding:10px 12px;margin-top:6px}
 .mlbee-card{background:#fff;border-radius:14px;max-width:420px;width:100%;padding:18px;max-height:85vh;overflow:auto}
+
+.yl-orbs{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin:10px 0 20px}
+.yl-orb{display:flex;flex-direction:column;align-items:center;gap:8px;border:none;background:none;cursor:pointer;width:120px}
+.yl-orb .disc{width:92px;height:92px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.6rem;color:#fff;box-shadow:0 8px 22px rgba(0,0,0,.28)}
+.yl-orb .lbl{color:#fff;font-weight:800;font-size:.85rem;text-align:center;text-shadow:0 1px 5px rgba(0,0,0,.6);line-height:1.15}
+.yl-orb:hover .disc{filter:brightness(1.08)}
+.orb-song .disc{background:linear-gradient(135deg,#7028e4,#b14bd8);animation:orbspin 6s linear infinite}
+.orb-book .disc{background:linear-gradient(135deg,#0c8a72,#0c6b53);animation:orbfloat 3.2s ease-in-out infinite}
+.orb-idea .disc{background:linear-gradient(135deg,#e08a2b,#c05a1a);animation:orbpulse 2.6s ease-in-out infinite}
+@keyframes orbspin{to{transform:rotate(360deg)}}
+@keyframes orbfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes orbpulse{0%,100%{box-shadow:0 8px 22px rgba(224,138,43,.4)}50%{box-shadow:0 8px 34px rgba(224,138,43,.9);transform:scale(1.05)}}
 </style>
 <style id="waspk-css">
 /* =========================================================================
@@ -6190,6 +6202,7 @@ const ROUTES = {
           <button class="btn" onclick="go('apprcert')">🏅 Certificates</button>
           <button class="btn" onclick="go('analytics')">📊 Analytics</button>
           <button class="btn" onclick="go('align')">🎯 Aligned practice</button>
+          <button class="btn" onclick="openHubPlanner()">📝 Lesson Planner</button>
           <button class="btn" onclick="exportExcel()">⬇ Export to Excel</button>
           <button class="btn ghost" onclick="go('teacher')">↻ Refresh</button>
         </div>
@@ -24304,8 +24317,10 @@ ROUTES.waspkCats = function(){
     <p style="color:var(--muted);max-width:680px">Every prompt lives here, sorted by type: <b>🎬 Video</b>, <b>🖼️ Picture</b>, <b>🗣️ Talking Points</b> and <b>🧩 Puzzles</b>. Start with 💛 <b>The Better You</b> — a quick card of wisdom to react to, talk about, and pass on — then explore the main prompts below.</p>
     ${teacherBlock}
     ${sections}
-    <div class="wa-typehead" style="margin-top:20px"><span class="ti">🎵</span><div><h2>Melody</h2><p>Learn English through songs + imaginative storytelling — "live the words".</p></div></div>
-    <button class="btn teal" onclick="go('melody')">🎵 Open Melody →</button>
+    <div class="wa-typehead" style="margin-top:20px"><span class="ti">🎵</span><div><h2>Storybook Songs</h2><p>Learn English through songs + imaginative storytelling — "live the words".</p></div></div>
+    <button class="btn teal" onclick="go('melody')">🎶 Open Storybook Songs →</button>
+    <div class="wa-typehead" style="margin-top:20px"><span class="ti">💡</span><div><h2>Life n Extras</h2><p>Big ideas and lessons worth sharing — watch, then discuss.</p></div></div>
+    <button class="btn teal" onclick="go('seniorExtras')">💡 Open Life n Extras →</button>
   </div>`;
 };
 
@@ -25651,9 +25666,12 @@ ROUTES.ylTalk = function(){
     +'<div class="meta" style="color:rgba(255,255,255,.8)">Foundational · Talkabout & Writeabout</div>'
     +'<h1 style="font-size:2.1rem;color:#fff">🗣️ Talkabout & Writeabout</h1>'
     +'<p style="color:rgba(255,255,255,.92);max-width:660px">Tap a topic card. Then follow the steps: <b>write</b> (5 min), <b>talk & record</b> (1½ min), tick your <b>self-check</b>, and <b>publish</b> to earn a certificate.</p>'
-    +'<div class="jt-grid">'+cards+'</div>'
-     +'<div class="wa-typehead" style="margin-top:22px;background:rgba(255,255,255,.92);border-radius:14px;padding:10px 14px"><span class="ti">🎧</span><div><h2 style="margin:0">Shadowing &amp; Storytelling</h2><p style="margin:0;color:var(--slate)">Listen and repeat (shadow) real storytellers \u2014 copy the sounds, rhythm and feeling, then retell the story your way.</p></div></div>'
-     +'<div style="margin-top:8px"><button class="btn teal" onclick="go(\'ylShadow\')">🎧 Open Shadowing &amp; Storytelling \u2192</button></div>'
+    +'<div class="yl-orbs">'
+     +'<button class="yl-orb orb-book" onclick="go(\'ylShadow\')"><span class="disc">📖</span><span class="lbl">Shadowing &amp; Storybook</span></button>'
+     +'<button class="yl-orb orb-song" onclick="go(\'ylStorybookSongs\')"><span class="disc">🎶</span><span class="lbl">Storybook Songs</span></button>'
+     +'<button class="yl-orb orb-idea" onclick="go(\'ylLifeExtras\')"><span class="disc">💡</span><span class="lbl">Life n Extras</span></button>'
+     +'</div>'
+     +'<div class="jt-grid" style="margin-top:8px">'+cards+'</div>'
     +'</div>';
   try{window.scrollTo(0,0);}catch(e){}
 };
@@ -25662,8 +25680,8 @@ ROUTES.melody = function(){
   var channels=[{name:'Gengu AI', handle:'@GenguAI', url:'https://www.youtube.com/@GenguAI', note:'AI-crafted songs and stories that bring English to life.'},{name:'Grace AI Art', handle:'@GraceAIArt', url:'https://www.youtube.com/@GraceAIArt', note:'Stylised, narrative-driven songs with cosy, cinematic visuals.'},{name:'Sing Highlights', handle:'@SingHighlights', url:'https://www.youtube.com/@SingHighlights', note:'Clear vocals and repetitive, easy-to-follow phrasing with strong visual cues.'}];
   var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">🎵</div><div style="flex:1"><b>'+esc(c.name)+'</b> <span class="meta">'+esc(c.handle)+'</span><div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel \u2197</a></div>'; }).join('');
   app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'waspkCats\')">\u2190 Talkabout</button>'
-    +'<div class="meta">Talkabout \u00b7 Melody</div>'
-    +'<h1 style="font-size:2rem">🎵 Melody</h1>'
+    +'<div class="meta">Talkabout \u00b7 Storybook Songs</div>'
+    +'<h1 style="font-size:2rem">🎶 Storybook Songs</h1>'
     +'<p style="color:var(--muted);max-width:700px">Learn English through <b>songs</b>, enhanced with imaginative storytelling that ignites past memories and helps learners <b>live the words</b>. Listen, feel the story, then talk and write about what you heard. These channels share clear vocals, story-driven lyrics and cosy, cinematic visuals, so the words are easy to hear and feel. More channels will be added here over time.</p>'
     +'<h3 style="margin:16px 0 6px">Channels</h3><div class="grid c2">'+rows+'</div>'
     +'<p style="font-size:.8rem;color:var(--muted);margin-top:14px">Channels open on YouTube in a new tab. \u00a9 iCAN, 2026.</p>'
@@ -25672,11 +25690,11 @@ ROUTES.melody = function(){
 };
 
 ROUTES.ylShadow = function(){
-  var channels=[{name:'Tales by Monisha', handle:'@talesbymonisha2.0', url:'https://www.youtube.com/@talesbymonisha2.0', note:'Gentle storytelling to listen and repeat \u2014 shadow the voice, sounds and feeling.'},{name:'Storytime Channel', handle:'', url:'https://www.youtube.com/channel/UCpfbuNmv5P9GlbNnbCiMgKA', note:'Story videos to shadow, then retell in your own words.'},{name:'Fairy English Daily', handle:'@FairyEnglishDaily', url:'https://www.youtube.com/@FairyEnglishDaily', note:'Fairy tales and short stories with clear, friendly narration.'},{name:'English Natively', handle:'@EnglishNatively', url:'https://www.youtube.com/@EnglishNatively', note:'Learn everyday vocabulary through clear, natural storytelling.'},{name:'Talk Easy English', handle:'@TalkEasy_English89', url:'https://www.youtube.com/@TalkEasy_English89', note:'Simple stories and phrases that help you talk easily.'},{name:'English Fluent Stories', handle:'', url:'https://www.youtube.com/channel/UCykgSjs6nXsIownJq5ooMmw', note:'Longer stories to build fluency, rhythm and confidence.'},{name:'MoTV Fairytale 3D Animation', handle:'@MoTVEnglishMoviesFairytale', url:'https://www.youtube.com/@MoTVEnglishMoviesFairytale', note:'Fairytales as 3D animated films with strong visuals.'}];
+  var channels=[{name:'Talisman Animation', handle:'@TalismanAnimation', url:'https://www.youtube.com/@TalismanAnimation', note:'Animated stories to listen and repeat \u2014 shadow the voice, sounds and feeling.'},{name:'Storytime Channel', handle:'', url:'https://www.youtube.com/channel/UCpfbuNmv5P9GlbNnbCiMgKA', note:'Story videos to shadow, then retell in your own words.'},{name:'Fairy English Daily', handle:'@FairyEnglishDaily', url:'https://www.youtube.com/@FairyEnglishDaily', note:'Fairy tales and short stories with clear, friendly narration.'},{name:'English Natively', handle:'@EnglishNatively', url:'https://www.youtube.com/@EnglishNatively', note:'Learn everyday vocabulary through clear, natural storytelling.'},{name:'Talk Easy English', handle:'@TalkEasy_English89', url:'https://www.youtube.com/@TalkEasy_English89', note:'Simple stories and phrases that help you talk easily.'},{name:'English Fluent Stories', handle:'', url:'https://www.youtube.com/channel/UCykgSjs6nXsIownJq5ooMmw', note:'Longer stories to build fluency, rhythm and confidence.'},{name:'MoTV Fairytale 3D Animation', handle:'@MoTVEnglishMoviesFairytale', url:'https://www.youtube.com/@MoTVEnglishMoviesFairytale', note:'Fairytales as 3D animated films with strong visuals.'}];
   var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">🎧</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel \u2197</a></div>'; }).join('');
   app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylTalk\')">\u2190 Talkabout</button>'
-    +'<div class="meta">Talkabout \u00b7 Shadowing &amp; Storytelling</div>'
-    +'<h1 style="font-size:2rem">🎧 Shadowing &amp; Storytelling</h1>'
+    +'<div class="meta">Talkabout \u00b7 Shadowing &amp; Storybook</div>'
+    +'<h1 style="font-size:2rem">🎧 Shadowing &amp; Storybook</h1>'
     +'<p style="color:var(--muted);max-width:700px">Play a story, then <b>shadow</b> it: listen to a short part, pause, and repeat it out loud \u2014 copy the sounds, the rhythm and the feeling. Afterwards, <b>retell</b> the story in your own words. This builds clear pronunciation, natural rhythm and confidence.</p>'
     +storyCheckpointHTML()
     +'<h3 style="margin:16px 0 6px">Channels</h3><div class="grid c2">'+rows+'</div>'
@@ -25706,6 +25724,46 @@ function storyCheckpointHTML(){
 function storyCheckCount(i){ var t=document.getElementById('sck'+i), c=document.getElementById('sckc'+i); if(!t||!c) return; var w=(t.value||'').trim().split(/\s+/).filter(Boolean).length; c.textContent=w+' words'+(w>=50?' ✓':''); c.style.color=w>=50?'#0c8a72':''; }
 function storyCheckSubmit(){ var box=document.getElementById('sckCert'); if(!box) return; var short=[]; for(var i=0;i<3;i++){ var t=document.getElementById('sck'+i); var w=t?(t.value||'').trim().split(/\s+/).filter(Boolean).length:0; if(w<50) short.push(i+1); } if(short.length){ box.innerHTML='<p style="color:#B4231F;font-weight:700;margin-top:8px">Please finish response '+short.join(', ')+' — each needs at least 50 words.</p>'; return; } var nm=(typeof SESSION!=='undefined'&&SESSION&&SESSION.name)?SESSION.name:'Student'; var cert=''; try{ cert=certificateHTML({name:nm,band:'Participation',title:'Talkabout · Storytelling',skill:'Storytelling',percent:100,score:3,max:3,date:new Date().toLocaleDateString()}); }catch(e){} box.innerHTML='<p style="color:#0c6b53;font-weight:800;margin:10px 0 6px">🎉 Certificate of Participation — well done, '+nm+'!</p>'+cert; }
 function storyCheckPrint(){ var P=[['The Lesson','What did this song or story teach you about life or human experience?'],['The Conflict & Resolution','What problem did the characters face, and how did they overcome it?'],['The Alternate Ending','How would you change the ending of this story, and why is your version better?']]; var body=P.map(function(p,i){ var t=document.getElementById('sck'+i); var v=t?(t.value||''):''; return '<h3>'+(i+1)+'. '+p[0]+'</h3><p style="color:#555">'+p[1]+' (at least 50 words)</p><div style="border:1px solid #ccc;border-radius:8px;min-height:90px;padding:8px;white-space:pre-wrap">'+(typeof esc==='function'?esc(v):v)+'</div>'; }).join(''); var w=window.open('','_blank'); if(!w) return; w.document.write('<html><head><title>Story Checkpoint</title><style>body{font-family:Georgia,serif;max-width:720px;margin:24px auto;padding:0 16px;color:#222}h1{color:#c05a1a}h3{margin:16px 0 2px}</style></head><body><h1>Story Checkpoint — Talkabout · Storytelling</h1><p>Name: ______________________   Date: __________</p>'+body+'<p style="margin-top:20px;font-size:.78rem;color:#888">© iCAN, 2026. All rights reserved. Original creation owned by the Founder (emadhhjm@gmail.com). Not to be copied or reused without permission.</p></body></html>'); w.document.close(); w.focus(); try{ w.print(); }catch(e){} }
+
+
+ROUTES.ylStorybookSongs = function(){
+  var channels=[{name:'Gengu AI', handle:'@GenguAI', url:'https://www.youtube.com/@GenguAI', note:'AI-generated music paired with whimsical, narrative-driven worlds (like A Very Old Town and A Very Unusual Town).'},{name:'Clay Comfort', handle:'@ClayComfort', url:'https://www.youtube.com/@ClayComfort', note:'Cosy, claymation-style musical stories.'},{name:'Luna AI Art Studio', handle:'@LunaAIArtStudio', url:'https://www.youtube.com/@LunaAIArtStudio', note:'Dreamy AI art and songs with a storybook feel.'}];
+  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">🎶</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel ↗</a></div>'; }).join('');
+  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylTalk\')">← Talkabout</button>'
+    +'<div class="meta">Talkabout · Storybook Songs</div>'
+    +'<h1 style="font-size:2rem">🎶 Storybook Songs</h1>'
+    +'<p style="color:var(--muted);max-width:720px">Learn English through <b>musical storybooks</b>. Gengu AI specialises in AI-generated music paired with whimsical, narrative-driven visual worlds (such as <i>A Very Old Town</i> and <i>A Very Unusual Town</i>); the tracks and stop-motion-style art evoke musical storybooks, folklore and cosy tales. Listen, feel the story, then talk and write about it.</p>'
+    +'<h3 style="margin:16px 0 6px">Channels</h3><div class="grid c2">'+rows+'</div>'
+    +'<p style="font-size:.8rem;color:var(--muted);margin-top:14px">Channels open on YouTube in a new tab. © iCAN, 2026.</p>'
+    +'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
+ROUTES.ylLifeExtras = function(){
+  var channels=[{name:'TED-Ed: Lessons Worth Sharing', handle:'@TEDEd', url:'https://www.youtube.com/@TEDEd', note:'Short animated lessons on big ideas in science, life and human experience — worth talking about.'}];
+  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">💡</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel ↗</a></div>'; }).join('');
+  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylTalk\')">← Talkabout</button>'
+    +'<div class="meta">Talkabout · Life n Extras</div>'
+    +'<h1 style="font-size:2rem">💡 Life n Extras</h1>'
+    +'<p style="color:var(--muted);max-width:720px">Big ideas and <b>lessons worth sharing</b>. Watch a short talk, then discuss: what did it make you think, and do you agree?</p>'
+    +'<h3 style="margin:16px 0 6px">Channels</h3><div class="grid c2">'+rows+'</div>'
+    +'<p style="font-size:.8rem;color:var(--muted);margin-top:14px">Channels open on YouTube in a new tab. © iCAN, 2026.</p>'
+    +'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
+
+
+ROUTES.seniorExtras = function(){
+  var channels=[{name:'TED-Ed: Lessons Worth Sharing', handle:'@TEDEd', url:'https://www.youtube.com/@TEDEd', note:'Short animated lessons on big ideas in science, life and human experience — worth talking about.'}];
+  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">💡</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel ↗</a></div>'; }).join('');
+  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'waspkCats\')">← Talkabout</button>'
+    +'<div class="meta">Talkabout · Life n Extras</div>'
+    +'<h1 style="font-size:2rem">💡 Life n Extras</h1>'
+    +'<p style="color:var(--muted);max-width:720px">Big ideas and <b>lessons worth sharing</b>. Watch a short talk, then discuss: what did it make you think, and do you agree?</p>'
+    +'<h3 style="margin:16px 0 6px">Channels</h3><div class="grid c2">'+rows+'</div>'
+    +'<p style="font-size:.8rem;color:var(--muted);margin-top:14px">Channels open on YouTube in a new tab. © iCAN, 2026.</p>'
+    +'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
 
 </script>
 </body>
