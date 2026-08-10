@@ -1665,7 +1665,7 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 
 <!-- ============ SCREENS MOUNT ============ -->
 <main id="app"></main>
-<footer id="ican-cr" style="text-align:center;font-size:.72rem;color:#8a8fa3;padding:16px 16px 30px;line-height:1.55;max-width:760px;margin:0 auto">© iCAN, 2026. All rights reserved. Original creation owned by the Founder (emadhhjm@gmail.com). iCAN content may not be copied, redistributed, or reused without prior permission from the Founder.</footer>
+<footer id="ican-cr" style="text-align:center;font-size:.92rem;color:#ffffff;background:#25407a;padding:16px 22px;line-height:1.6;max-width:920px;margin:20px auto;border-radius:12px;box-shadow:0 4px 14px rgba(0,0,0,.18)">© iCAN, 2026. All rights reserved. Original creation owned by the Founder (emadhhjm@gmail.com). iCAN content may not be copied, redistributed, or reused without prior permission from the Founder.</footer>
 
 <!-- ============ CREATION TOOLS POP-UP ============ -->
 <div id="toolsModal" class="tools-overlay hidden" onclick="if(event.target===this)closeTools()">
@@ -25654,8 +25654,6 @@ ROUTES.ylTalk = function(){
     +'<div class="jt-grid">'+cards+'</div>'
      +'<div class="wa-typehead" style="margin-top:22px;background:rgba(255,255,255,.92);border-radius:14px;padding:10px 14px"><span class="ti">🎧</span><div><h2 style="margin:0">Shadowing &amp; Storytelling</h2><p style="margin:0;color:var(--slate)">Listen and repeat (shadow) real storytellers \u2014 copy the sounds, rhythm and feeling, then retell the story your way.</p></div></div>'
      +'<div style="margin-top:8px"><button class="btn teal" onclick="go(\'ylShadow\')">🎧 Open Shadowing &amp; Storytelling \u2192</button></div>'
-     +'<div class="wa-typehead" style="margin-top:16px;background:rgba(255,255,255,.92);border-radius:14px;padding:10px 14px"><span class="ti">📖</span><div><h2 style="margin:0">Storytelling</h2><p style="margin:0;color:var(--slate)">Learn vocabulary and talk easily by following clear, friendly storytellers.</p></div></div>'
-     +'<div style="margin-top:8px"><button class="btn teal" onclick="go(\'ylStory\')">📖 Open Storytelling \u2192</button></div>'
     +'</div>';
   try{window.scrollTo(0,0);}catch(e){}
 };
@@ -25674,12 +25672,13 @@ ROUTES.melody = function(){
 };
 
 ROUTES.ylShadow = function(){
-  var channels=[{name:'Tales by Monisha', handle:'@talesbymonisha2.0', url:'https://www.youtube.com/@talesbymonisha2.0', note:'Gentle storytelling to listen and repeat \u2014 shadow the voice, sounds and feeling.'},{name:'Storytime Channel', handle:'', url:'https://www.youtube.com/channel/UCpfbuNmv5P9GlbNnbCiMgKA', note:'Story videos to shadow, then retell in your own words.'}];
+  var channels=[{name:'Tales by Monisha', handle:'@talesbymonisha2.0', url:'https://www.youtube.com/@talesbymonisha2.0', note:'Gentle storytelling to listen and repeat \u2014 shadow the voice, sounds and feeling.'},{name:'Storytime Channel', handle:'', url:'https://www.youtube.com/channel/UCpfbuNmv5P9GlbNnbCiMgKA', note:'Story videos to shadow, then retell in your own words.'},{name:'Fairy English Daily', handle:'@FairyEnglishDaily', url:'https://www.youtube.com/@FairyEnglishDaily', note:'Fairy tales and short stories with clear, friendly narration.'},{name:'English Natively', handle:'@EnglishNatively', url:'https://www.youtube.com/@EnglishNatively', note:'Learn everyday vocabulary through clear, natural storytelling.'},{name:'Talk Easy English', handle:'@TalkEasy_English89', url:'https://www.youtube.com/@TalkEasy_English89', note:'Simple stories and phrases that help you talk easily.'},{name:'English Fluent Stories', handle:'', url:'https://www.youtube.com/channel/UCykgSjs6nXsIownJq5ooMmw', note:'Longer stories to build fluency, rhythm and confidence.'},{name:'MoTV Fairytale 3D Animation', handle:'@MoTVEnglishMoviesFairytale', url:'https://www.youtube.com/@MoTVEnglishMoviesFairytale', note:'Fairytales as 3D animated films with strong visuals.'}];
   var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">🎧</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel \u2197</a></div>'; }).join('');
   app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylTalk\')">\u2190 Talkabout</button>'
     +'<div class="meta">Talkabout \u00b7 Shadowing &amp; Storytelling</div>'
     +'<h1 style="font-size:2rem">🎧 Shadowing &amp; Storytelling</h1>'
     +'<p style="color:var(--muted);max-width:700px">Play a story, then <b>shadow</b> it: listen to a short part, pause, and repeat it out loud \u2014 copy the sounds, the rhythm and the feeling. Afterwards, <b>retell</b> the story in your own words. This builds clear pronunciation, natural rhythm and confidence.</p>'
+    +storyCheckpointHTML()
     +'<h3 style="margin:16px 0 6px">Channels</h3><div class="grid c2">'+rows+'</div>'
     +'<p style="font-size:.8rem;color:var(--muted);margin-top:14px">Channels open on YouTube in a new tab. \u00a9 iCAN, 2026.</p>'
     +'</div>';
@@ -25698,6 +25697,16 @@ ROUTES.ylStory = function(){
     +'</div>';
   try{window.scrollTo(0,0);}catch(e){}
 };
+
+function storyCheckpointHTML(){
+ var P=[['The Lesson','What did this song or story teach you about life or human experience?'],['The Conflict & Resolution','What problem did the characters face, and how did they overcome it?'],['The Alternate Ending','How would you change the ending of this story, and why is your version better?']];
+ var boxes=P.map(function(p,i){ return '<div style="margin:10px 0"><b>'+(i+1)+'. '+p[0]+'</b><p style="margin:2px 0 4px;color:var(--muted);font-size:.9rem">'+p[1]+' <i>(at least 50 words)</i></p><textarea id="sck'+i+'" rows="4" onpaste="return false" oncut="return false" ondrop="return false" oninput="storyCheckCount('+i+')" style="width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font:inherit" placeholder="Write at least 50 words..."></textarea><div id="sckc'+i+'" class="meta" style="text-align:right">0 words</div></div>'; }).join('');
+ return '<details class="card" style="margin-top:16px"><summary style="cursor:pointer;font-weight:800;font-size:1.05rem">📝 Story Checkpoint — respond to the story</summary><div style="margin-top:8px"><p class="meta">Watch or listen to a story, then answer all three prompts. Each answer needs at least 50 words. When all three are done, submit to earn your certificate.</p>'+boxes+'<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"><button class="btn teal" onclick="storyCheckSubmit()">🏅 Submit &amp; get certificate</button><button class="btn ghost sm" onclick="storyCheckPrint()">🖨️ Download / Print template</button></div><div id="sckCert"></div></div></details>';
+}
+function storyCheckCount(i){ var t=document.getElementById('sck'+i), c=document.getElementById('sckc'+i); if(!t||!c) return; var w=(t.value||'').trim().split(/\s+/).filter(Boolean).length; c.textContent=w+' words'+(w>=50?' ✓':''); c.style.color=w>=50?'#0c8a72':''; }
+function storyCheckSubmit(){ var box=document.getElementById('sckCert'); if(!box) return; var short=[]; for(var i=0;i<3;i++){ var t=document.getElementById('sck'+i); var w=t?(t.value||'').trim().split(/\s+/).filter(Boolean).length:0; if(w<50) short.push(i+1); } if(short.length){ box.innerHTML='<p style="color:#B4231F;font-weight:700;margin-top:8px">Please finish response '+short.join(', ')+' — each needs at least 50 words.</p>'; return; } var nm=(typeof SESSION!=='undefined'&&SESSION&&SESSION.name)?SESSION.name:'Student'; var cert=''; try{ cert=certificateHTML({name:nm,band:'Participation',title:'Talkabout · Storytelling',skill:'Storytelling',percent:100,score:3,max:3,date:new Date().toLocaleDateString()}); }catch(e){} box.innerHTML='<p style="color:#0c6b53;font-weight:800;margin:10px 0 6px">🎉 Certificate of Participation — well done, '+nm+'!</p>'+cert; }
+function storyCheckPrint(){ var P=[['The Lesson','What did this song or story teach you about life or human experience?'],['The Conflict & Resolution','What problem did the characters face, and how did they overcome it?'],['The Alternate Ending','How would you change the ending of this story, and why is your version better?']]; var body=P.map(function(p,i){ var t=document.getElementById('sck'+i); var v=t?(t.value||''):''; return '<h3>'+(i+1)+'. '+p[0]+'</h3><p style="color:#555">'+p[1]+' (at least 50 words)</p><div style="border:1px solid #ccc;border-radius:8px;min-height:90px;padding:8px;white-space:pre-wrap">'+(typeof esc==='function'?esc(v):v)+'</div>'; }).join(''); var w=window.open('','_blank'); if(!w) return; w.document.write('<html><head><title>Story Checkpoint</title><style>body{font-family:Georgia,serif;max-width:720px;margin:24px auto;padding:0 16px;color:#222}h1{color:#c05a1a}h3{margin:16px 0 2px}</style></head><body><h1>Story Checkpoint — Talkabout · Storytelling</h1><p>Name: ______________________   Date: __________</p>'+body+'<p style="margin-top:20px;font-size:.78rem;color:#888">© iCAN, 2026. All rights reserved. Original creation owned by the Founder (emadhhjm@gmail.com). Not to be copied or reused without permission.</p></body></html>'); w.document.close(); w.focus(); try{ w.print(); }catch(e){} }
+
 </script>
 </body>
 </html>
