@@ -1277,11 +1277,14 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 @keyframes orbfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
 @keyframes orbpulse{0%,100%{box-shadow:0 8px 22px rgba(224,138,43,.4)}50%{box-shadow:0 8px 34px rgba(224,138,43,.9);transform:scale(1.05)}}
 
-.aad-drop{display:inline-block}
-.aad-btn{cursor:pointer;list-style:none;background:#0c8a72;color:#fff;font-weight:700;font-size:.85rem;padding:7px 14px;border-radius:20px;display:inline-block}
+.aad-drop{display:inline-block;position:relative}
+.aad-btn{cursor:pointer;list-style:none;background:radial-gradient(circle at 34% 28%,#ffe680,#ffc21f 62%,#f5a300);color:#5a3d00;font-weight:800;font-size:1rem;line-height:1.05;text-align:center;width:112px;height:112px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px;box-sizing:border-box;border:3px solid #fff;box-shadow:0 8px 20px rgba(245,163,0,.45);animation:aadCirclePulse 1.7s ease-in-out infinite}
+.aad-btn .aad-ic{font-size:1.85rem;line-height:1}
 .aad-btn::-webkit-details-marker{display:none}
-.aad-drop[open] .aad-btn{background:#0c6b53}
-.aad-panel{margin-top:8px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;max-width:480px;box-shadow:0 6px 18px rgba(0,0,0,.12);font-size:.9rem;line-height:1.5}
+.aad-drop[open] .aad-btn{animation:none;background:radial-gradient(circle at 34% 28%,#ffd84d,#f5a300 62%,#d98a00)}
+@keyframes aadCirclePulse{0%,100%{transform:scale(1);box-shadow:0 8px 20px rgba(245,163,0,.45),0 0 0 0 rgba(245,163,0,.55)}50%{transform:scale(1.06);box-shadow:0 12px 26px rgba(245,163,0,.5),0 0 0 14px rgba(245,163,0,0)}}
+@media (prefers-reduced-motion:reduce){.aad-btn{animation:none}}
+.aad-panel{margin-top:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;width:320px;max-width:86vw;box-shadow:0 10px 26px rgba(0,0,0,.16);font-size:.9rem;line-height:1.5;position:absolute;right:0;top:calc(100% + 10px);z-index:50}
 </style>
 <style id="waspk-css">
 /* =========================================================================
@@ -2110,7 +2113,7 @@ const SPELL_TIME   = { word:{a1:20,a2:12}, phrase:{a1:22,a2:13}, sentence:{a1:30
 function spellTime(type, attempt, text){
   if(type==="sentence"){
     const words=(text||"").trim().split(/\s+/).filter(Boolean).length;
-    const a1=Math.min(50, Math.max(30, Math.round(words*2.6)));  // 30s floor, ~2.6s/word, 50s cap
+    const a1=Math.min(75, Math.max(35, Math.round(words*3.0)));  // 35s floor, ~3s/word, 75s cap (long academic sentences)
     return attempt===1 ? a1 : Math.round(a1*0.65);
   }
   if(type==="phrase"){
@@ -5477,6 +5480,13 @@ const ROUTES = {
         <button class="btn teal" onclick="standardSpellStart()">Start a round →</button>
       </div>
 
+      <h2 class="sub" style="margin-top:22px">📝 Sentence Spelling — graded rounds</h2>
+      <p style="color:var(--muted);margin-top:0">Hear a whole sentence, then type it exactly — <b>capital letters and punctuation count</b>. Five sentences a round, twenty rounds climbing from gentle starters to advanced academic sentences.</p>
+      <div class="card" style="max-width:560px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-left:5px solid #E08A2B">
+        <span style="color:var(--ink)"><b>Sentence Spelling</b><br><span style="font-size:.82rem;color:var(--muted)">20 rounds · 5 sentences each · graded</span></span>
+        <button class="btn teal" onclick="go('sentenceRounds','senior')">Open sentence rounds →</button>
+      </div>
+
       <h2 class="sub" style="margin-top:22px">✨ Extra spelling</h2>
       <p style="color:var(--muted);margin-top:0">Targeted sets: tricky words, heavy-weight words, vowel teams, homophones, idioms &amp; phrases, and full sentences.</p>
       <div class="grid c2">
@@ -6612,7 +6622,7 @@ function renderSpell(){
   </div>`;
   setTimeout(()=>{ const inp=document.getElementById('spellIn'); if(inp)inp.focus(); speakItem(); startSpellTimer(t); if(s.type==='word' && !item.def && !item.senses) spellClueFetch(item.t); },250);
 }
-function speakItem(){ if(!SPELLSTATE)return; stopSpeak(); speak(SPELLSTATE.items[SPELLSTATE.i].t); }
+function speakItem(){ if(!SPELLSTATE)return; var _it=SPELLSTATE.items[SPELLSTATE.i]; if(!_it)return; stopSpeak(); if(SPELLSTATE.type==='sentence'){ speakSentence(_it.t); } else { speak(_it.t); } }
 function checkSpelling(answer, got, type){
   if(type==='sentence'){ const n=x=>x.replace(/\s+/g,' ').trim(); return n(got)===n(answer); }
   const n=x=>x.toLowerCase().replace(/[.,!?;:'"]/g,'').replace(/\s+/g,' ').trim();
@@ -6644,7 +6654,8 @@ function submitSpell(timedOut){
   s.log.push({t:item.t, ok:false, tries:s.attempt});
   logSpellVocab(item.t, item);
   s.resolved=true;
-  if(fb) fb.innerHTML = `<div class="feedback err">${timedOut?'Time up.':'Missed.'} The answer was <b>${esc(item.t)}</b>.</div><div style="margin-top:10px"><button class="btn teal" onclick="nextSpell()">Next → <span style="opacity:.75;font-weight:400">(or press Enter)</span></button></div>`;
+  var _sdiff=(s.type==='sentence'&&got)?sentenceDiffHTML(item.t,got):'';
+  if(fb) fb.innerHTML = `<div class="feedback err">${timedOut?'Time up.':'Missed.'} The answer was <b>${esc(item.t)}</b>.</div>${_sdiff}<div style="margin-top:10px"><button class="btn teal" onclick="nextSpell()">Next → <span style="opacity:.75;font-weight:400">(or press Enter)</span></button></div>`;
   setTimeout(()=>{ const inp=document.getElementById('spellIn'); if(inp) inp.focus(); },30);
 }
 
@@ -6682,10 +6693,18 @@ function finishSpell(){
   const pct=Math.round((s.first + 0.5*s.second)/N*100);
   /* Cards mirror the Vocabulary.com deck: flip through, shuffle, or open fullscreen. */
   window.CARDS = { items:s.items.map((it,i)=>({ ...it, ok:(s.log[i]&&s.log[i].ok)!==false })), i:0 };
+  var _certBlock='';
+  if(s.type==='sentence' && !s._certDone && SESSION && SESSION.role==='student'){
+    s._certDone=true;
+    var _band = pct>=80?'Outstanding':(pct>=50?'At-level':'Emerging');
+    try{ if(typeof mintCert==='function') mintCert({ skill:'Spelling', activity:s.label, percent:pct, score:s.first+s.second, max:N }); }catch(e){}
+    try{ _certBlock='<h3 class="sub" style="text-align:center;margin-top:24px">🏅 Your certificate</h3><p style="text-align:center;color:var(--muted);font-size:.85rem;margin-top:0">Saved to <b>My Certificates</b>.</p>'+certificateHTML({name:SESSION.name, band:_band, title:s.label, skill:'Spelling', percent:pct, score:s.first+s.second, max:N, date:new Date().toLocaleDateString()}); }catch(e){ _certBlock=''; }
+  }
   app().innerHTML=`<div class="wrap screen"><button class="back" onclick="go(spellBack())">← ${spellBackLabel()}</button>
     <div class="scorebox" style="max-width:520px;margin:24px auto"><div class="big">${pct}%</div>
       <div>${s.first} right first try · ${s.second} on the second · ${s.missed} missed</div>
       <div style="opacity:.85;font-size:.9rem;margin-top:6px">${pct>=80?'Excellent — that set is getting easy. Try a longer round!':pct>=50?'Good progress. Run it again for fresh items.':'Keep going — every round pulls new words.'}</div></div>
+    ${_certBlock}
     <h3 class="sub" style="text-align:center;margin-top:24px">📇 Learn the words with flashcards</h3>
     <p style="text-align:center;color:var(--muted);font-size:.85rem;margin-top:0">Tap a card to flip. Use arrows to move. Shuffle to test yourself.</p>
     <div class="cardstage" id="cardstage">${renderCardStage()}</div>
@@ -6702,7 +6721,7 @@ function finishSpell(){
     </div></div>`;
   if(SESSION&&SESSION.role==="student"){
     saveResult({date:Date.now(),name:SESSION.name,class:SESSION.class,code:SESSION.code,id:SESSION.id,
-      skill:(s.back==='spelldrill'?"Spelling":"Listening"),activity:s.label+" (spelling round)",score:(s.first+s.second),max:N,percent:pct,
+      skill:(s.back==='spelldrill'?"Spelling":"Listening"),activity:s.label+" (spelling round)",score:(s.first+s.second),max:N,percent:pct,noCert:(s.type==='sentence'),
       spelling:{correct:s.log.filter(function(x){return x.ok;}).map(function(x){return x.t;}), wrong:s.log.filter(function(x){return !x.ok;}).map(function(x){return x.t;})},
       detail:`first-try ${s.first}, second-try ${s.second}, missed ${s.missed}`});
   }
@@ -6776,6 +6795,7 @@ function spellBackLabel(){ var b=spellBack(); return b==='spelldrill'?'Spell &am
 function spellLaunch(key, back){ const cat=SPELL_BANK[key]; if(!cat)return; const items=spellPick(cat.items, SPELL_ROUND_SIZE, 'bank_'+key); SPELLSTATE={ key, back:back||'listening', type:cat.type, label:cat.label, items, i:0, attempt:1, first:0, second:0, missed:0, log:[] }; renderSpell(); }
 function spellNewRound(){ const s=SPELLSTATE; if(!s)return;
   if(typeof s.key==='string' && s.key.indexOf('yl_')===0){ var _pr=s.key.slice(3).split('_'); go('ylspellRun', _pr[0]+':'+_pr[1]); return; }
+  if(typeof s.key==='string' && s.key.indexOf('sr_')===0){ var _sp=s.key.slice(3).split('_'); var _bk=_sp[0]; var _ni=(parseInt(_sp[1],10)||0)+1; if(_ni>=SENTENCE_ROUNDS.length) _ni=0; go('sentenceRoundRun', _bk+':'+_ni); return; }
   if(typeof s.key==='string' && s.key.indexOf('mlbee_')===0){ mlBee(s.key.slice(6)); return; }
   if(s.key==='standard'){ standardSpellStart(); return; }
   if(typeof s.key==='string' && s.key.indexOf('tb_')===0){ textbookStart(+s.key.slice(3)); return; }
@@ -7307,6 +7327,18 @@ function clearHighlights(){ document.querySelectorAll('mark.user-hl').forEach(m=
 
 /* Text-to-speech */
 function speak(text){ if(!('speechSynthesis'in window))return; const u=new SpeechSynthesisUtterance(text); u.lang='en-GB'; u.rate=.95; speechSynthesis.speak(u); }
+/* Sentence dictation: read the whole sentence once, then each word slowly and clearly. */
+function speakSentence(text){
+  if(!('speechSynthesis'in window))return;
+  try{ speechSynthesis.cancel(); }catch(e){}
+  var whole=new SpeechSynthesisUtterance(text); whole.lang='en-GB'; whole.rate=.9; try{ speechSynthesis.speak(whole); }catch(e){}
+  var words=(text||'').trim().split(/\s+/).filter(Boolean);
+  words.forEach(function(w){
+    var clean=w.replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9]+$/g,'')||w;
+    var u=new SpeechSynthesisUtterance(clean); u.lang='en-GB'; u.rate=.68;
+    try{ speechSynthesis.speak(u); }catch(e){}
+  });
+}
 function stopSpeak(){ _rd.playing=false; if(typeof rtmStop==='function') rtmStop(); else if('speechSynthesis'in window) speechSynthesis.cancel(); if(typeof rdBtn==='function') rdBtn(false); }
 function readPage(){ readSelector('readBody')||readSelector('app'); }
 /* =========================================================================
@@ -13647,7 +13679,7 @@ function certSkillCode(skill){ const s=(''+(skill||'')).toLowerCase();
   if(/read/.test(s))return 1; if(/writ|essay|oreo|mark &|justify/.test(s))return 2; if(/spell/.test(s))return 3;
   if(/listen/.test(s))return 4; if(/typ|wpm/.test(s))return 5; if(/grammar/.test(s))return 6;
   if(/design|poster|\bart\b|drawing/.test(s))return 7; if(/stem|stream/.test(s))return 8; if(/exam|quiz/.test(s))return 9;
-  if(/vocab/.test(s))return 10; if(/article/.test(s))return 11; if(/speak/.test(s))return 12; return 0; }
+  if(/vocab/.test(s))return 10; if(/article/.test(s))return 11; if(/speak|talkabout|writeabout|better you/.test(s))return 12; return 0; }
 function certNameHash(name){ return cyrb53('N|'+(''+(name||'')).toLowerCase().replace(/\s+/g,' ').trim()) % 4096; }
 /* Build a verifiable serial from certificate fields. Deterministic: the same
    certificate always yields the same serial (stable across re-opens). */
@@ -13741,7 +13773,7 @@ function mintCert(o){
     ideas: Array.isArray(o.ideas)? o.ideas.filter(Boolean) : [],
     words: Array.isArray(o.words)? o.words.filter(Boolean) : []
   };
-  cert.honorary = honoraryV2(cert);
+  try{ cert.honorary = honoraryV2(cert); }catch(_e){ cert.honorary = ''; }
   const all = allCerts(); all.push(cert); Store.set('ican_certificates', all);
   return cert;
 }
@@ -19963,7 +19995,7 @@ ROUTES.ylReading=function(){
   <div class="wrap screen">
     <button class="back" onclick="go('ylhub')">\u2190 Foundational</button>
     <div class="stem-kicker" style="color:#0FA98B">Reading \u00b7 read to discover</div>
-    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><h1 style="font-size:1.9rem;margin:0">📖 Reading</h1><details class="aad-drop"><summary class="aad-btn">📰 Article-A-Day</summary><div class="aad-panel"><p style="margin:0 0 6px"><b>Read a short, real article every day.</b> Sign in to ReadWorks to get your Article-A-Day:</p><ol style="margin:0 0 6px;padding-left:20px"><li>Go to <a href="https://www.readworks.org/student" target="_blank" rel="noopener">readworks.org/student ↗</a></li><li>Enter class code <b>3ULDQ4</b></li><li>Default password is <b>1234</b></li></ol><p style="margin:0;font-size:.82rem;color:var(--muted)">Note: you can change your password after you log in.</p></div></details></div>
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap"><h1 style="font-size:1.9rem;margin:0">📖 Reading</h1><details class="aad-drop" style="margin-left:auto"><summary class="aad-btn"><span class="aad-ic">📰</span>Article-A-Day</summary><div class="aad-panel"><p style="margin:0 0 6px"><b>Read a short, real article every day.</b> Sign in to ReadWorks to get your Article-A-Day:</p><ol style="margin:0 0 6px;padding-left:20px"><li>Go to <a href="https://www.readworks.org/student" target="_blank" rel="noopener">readworks.org/student ↗</a></li><li>Enter class code <b>3ULDQ4</b></li><li>Default password is <b>1234</b></li></ol><p style="margin:0;font-size:.82rem;color:var(--muted)">Note: you can change your password after you log in.</p></div></details></div>
     <p style="color:var(--muted);max-width:700px">Multimodal texts organised into theme-based Units (with a Media Literacy unit), roughly in the <b>600\u20131000L</b> Lexile range. Every reader has a <b>Standard</b> and an <b>Extended</b> version, a visual to interpret, and a details panel like a real reading library. Full affordances: \ud83d\udd0a read-to-me \u00b7 A\u00b1 zoom \u00b7 tap any word for a live definition (opens vocabulary.com).</p>
     ${secs}
     ${ylMLUnitHTML()}
@@ -25414,6 +25446,65 @@ ROUTES.tierChoose = function(){
 };
 ROUTES.switchTier = function(){ if(SESSION&&SESSION.role==='student'){ go('tierChoose'); } else { go('dashboard'); } };
 
+/* ===== Watch–Think–Dig Deeper–Discuss chips (TED-Ed approach) ===== */
+function _approachChips(steps){
+  if(!steps||!steps.length) return '';
+  var chips=steps.map(function(a,i){ return (i?'<span style="color:var(--muted);margin:0 2px">→</span>':'')+'<span style="display:inline-block;background:#f2edfe;color:#5b3ea8;border:1px solid #e3d8fb;border-radius:999px;padding:2px 9px;font-size:.74rem;font-weight:700">'+esc(a)+'</span>'; }).join('');
+  return '<div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin-top:6px"><span style="font-size:.68rem;font-weight:800;letter-spacing:.05em;color:#8B5CF6;text-transform:uppercase;margin-right:2px">TED-Ed approach</span>'+chips+'</div>';
+}
+
+/* ================================================================
+   Sentence Spelling — 20 graded rounds (Junior + Senior)
+   Dictates a FULL sentence; the shared spelling engine grades it
+   case- and punctuation-sensitively (type:'sentence').
+   ================================================================ */
+const SENTENCE_ROUNDS = [{"theme": "Simple & gentle starters", "sentences": ["The sun shines bright in the blue sky.", "She reads a good book every single day.", "Birds fly high above the green trees.", "He wrote a short letter to his friend.", "The small cat sleeps on the warm rug."]}, {"theme": "Clear & everyday sentences", "sentences": ["Water flows quickly down the steep mountain.", "They walked through the quiet forest trail.", "Learning new words helps you grow smarter.", "Music makes people feel happy and calm.", "The teacher smiled when the class listened."]}, {"theme": "Building fluency", "sentences": ["Bright stars shine across the dark night.", "Clean air is important for all living things.", "She practiced her piano lesson after school.", "Good habits lead to success in life.", "The blue river runs past the old town."]}, {"theme": "Transition to academic topics", "sentences": ["Plants need sunlight and water to grow tall.", "Science experiments help us understand our world.", "Reading stories expands your imagination and mind.", "Strong bridges connect towns across wide rivers.", "History teaches us valuable lessons about time."]}, {"theme": "Academic vocabulary & simple compounds", "sentences": ["The ubiquitous phenomenon of climate change requires global cooperation.", "Despite the ephemeral nature of the exhibition, its impact was huge.", "Archaeologists unearthed ancient artifacts beneath the deep soil layers.", "The eccentric billionaire left his entire fortune to marine research.", "Anomalous meteorological readings baffled the seasoned weather experts today."]}, {"theme": "Compound & complex sentences", "sentences": ["The bureaucracy implemented cumbersome rules that slowed down innovation.", "Her mnemonic device proved indispensable when memorizing difficult facts.", "The entrepreneur launched a new subsidiary specializing in technology.", "An indomitable spirit sustained the brave explorers through the harsh tundra.", "The physician diagnosed the pulmonary condition with absolute certainty."]}, {"theme": "Governance & arts lexicon", "sentences": ["Although the committee deliberated for hours, no unanimous agreement emerged.", "The flamboyant maestro conducted the symphony with extraordinary precision.", "Subterranean aquifers supply freshwater to the dry agricultural valley.", "The serendipitous discovery revolutionized medical research almost overnight.", "Scholars carefully scrutinized the old manuscript for historical errors."]}, {"theme": "Modern technology & criticism", "sentences": ["The autonomous vehicle navigated the busy downtown streets effortlessly.", "His idiosyncratic writing style perplexes contemporary literary critics.", "The cacophony of urban construction disrupted the quiet morning.", "Meticulous planning ensured that the architectural blueprint met all goals.", "The charismatic orator mesmerized the audience with rhetorical skill."]}, {"theme": "Economics & adventure", "sentences": ["An unprecedented economic downturn challenged international financial markets.", "The intrepid mountaineer conquered the treacherous glacial crevasse.", "Bilateral negotiations successfully averted an impending diplomatic crisis.", "The prodigious pianist mastered the complex concerto within a fortnight.", "Elders advised patience, whereas youth demanded immediate digital transformation."]}, {"theme": "Legal & biological sciences", "sentences": ["The judicious magistrate evaluated every testimonial presented during court.", "Photosynthesis transforms solar radiation into biochemical energy in plants.", "The fortuitous meeting between the two scientists sparked a lifelong partnership.", "Industrial emissions exacerbate environmental degradation across urban sectors.", "The enigmatic philosopher expounded upon existential theories with deep eloquence."]}, {"theme": "Culture & crime investigation", "sentences": ["Breathtaking choreography elevated the contemporary ballet to global acclaim.", "The tenacious investigator unraveled the convoluted financial embezzlement scheme.", "Bioluminescent organisms illuminate the dark abyssal depths of the ocean.", "The phlegmatic diplomat maintained composure amidst hostile political talk.", "An impressive repertoire of classical compositions showcased her musical virtuosity."]}, {"theme": "Communication & history", "sentences": ["The ubiquitous smartphone has profoundly transformed modern interpersonal communication.", "Botanists categorized the indigenous flora according to hierarchical taxonomy.", "The meticulous archivist preserved fragile medieval manuscripts under safe conditions.", "An unambiguous directive from the board streamlined corporate restructuring.", "The serendipitous finding catalyzed a major shift in theoretical physics."]}, {"theme": "Psychology & architecture", "sentences": ["Her magnanimous gesture diffused mounting tension among competing factions.", "The labyrinthine corridors of the ancient palace confounded novice explorers.", "Rigorous empirical testing validates or refutes scientific hypotheses.", "The prolific author published three seminal novels within a single decade.", "An ephemeral rainbow illuminated the horizon before fading away."]}, {"theme": "Finance & international relations", "sentences": ["The meticulous accountant audited corporate ledger entries with high precision.", "Diplomatic delegates convened to negotiate a permanent ceasefire agreement.", "The charismatic keynote speaker articulated visionary concepts with clarity.", "Volcanic eruptions release massive quantities of ash into the stratosphere.", "The harmonious chorus resonated beautifully throughout the cathedral nave."]}, {"theme": "Medicine & computing", "sentences": ["The meticulous surgeon performed the delicate cardiovascular procedure flawlessly.", "An ingenious algorithm optimized data retrieval across distributed cloud servers.", "The serendipitous discovery of penicillin revolutionized twentieth-century medicine.", "Ecological conservation initiatives protect endangered habitats from urban spread.", "The charismatic entrepreneur secured venture capital funding for her startup."]}, {"theme": "Astronomy & chemistry", "sentences": ["Astrophysics analysts study celestial phenomena using advanced radio telescopes.", "The industrious students synthesized complex organic compounds in the lab.", "An unprecedented drought severely impacted agricultural yields throughout the region.", "The meticulous researcher cross-referenced historical documents to verify facts.", "Architectural masterpieces reflect the cultural ethos of their respective eras."]}, {"theme": "Education & curation", "sentences": ["Innovative pedagogical strategies enhance student engagement in higher education.", "The enigmatic artifact baffled curators who examined its intricate engravings.", "Rigorous pharmacokinetic trials ensure medication safety prior to public sale.", "The flamboyant soprano commanded the stage with breathtaking vocal agility.", "An interconnected web of subterranean roots sustains the forest ecosystem."]}, {"theme": "Geoscience & sociology", "sentences": ["The meticulous geologist analyzed mineral compositions within core samples.", "Bilateral trade agreements foster economic stability among neighboring nations.", "The ubiquitous presence of digital technology reshapes modern cognitive habits.", "An eloquent manifesto inspired grassroots activism across multiple communities.", "The meticulous lexicographer cataloged obscure terminology for the dictionary."]}, {"theme": "Economics & higher education", "sentences": ["Astute policymakers anticipated economic repercussions before enacting fiscal reforms.", "The prodigious intellect of the young mathematician amazed university professors.", "Comprehensive psychiatric evaluations require empathetic listening and professional insight.", "The meticulous curator authenticated provenance records for the priceless painting.", "An ingenious technological breakthrough revolutionized renewable energy production globally."]}, {"theme": "Global policy & advanced lexicon", "sentences": ["The philanthropic organization distributed vital humanitarian aid to disaster zones.", "Bioluminescent marine species illuminate deep-sea ecosystems with dazzling displays.", "The meticulous investigator scrutinized financial transactions for evidence of fraud.", "An unprecedented scientific consensus endorsed stringent global carbon limits.", "Comprehensive educational reforms empower future generations to navigate complex geopolitical landscapes."]}];
+function _srBand(i){
+  if(i<4)  return {label:'Easier · Starter',        colour:'#0FA98B'};
+  if(i<12) return {label:'Intermediate · Academic',  colour:'#2B5FA6'};
+  return           {label:'Advanced · Expert',       colour:'#8B5CF6'};
+}
+function _srBackRoute(back){ return back==='senior' ? 'spelldrill' : 'ylspell'; }
+function _srTokens(x){ return (x||'').replace(/\s+/g,' ').trim().split(' ').filter(Boolean); }
+function sentenceDiffHTML(correct, got){
+  var c=_srTokens(correct), g=_srTokens(got), out=[];
+  var strip=function(x){ return x.toLowerCase().replace(/[.,!?;:'"()\u2018\u2019\u201c\u201d\-]/g,''); };
+  for(var i=0;i<c.length;i++){
+    var cw=c[i], gw=g[i];
+    if(gw===undefined){ out.push('<span style="background:#fde2e1;color:#B4231F;border-radius:4px;padding:0 3px">'+esc(cw)+'</span>'); }
+    else if(gw===cw){ out.push('<span style="color:#0c6b53">'+esc(cw)+'</span>'); }
+    else if(strip(gw)===strip(cw)){ out.push('<span style="background:#fff0d6;color:#8a5a00;border-radius:4px;padding:0 3px" title="Capital letter or punctuation off — you wrote: '+esc(gw)+'">'+esc(cw)+'</span>'); }
+    else { out.push('<span style="background:#fde2e1;color:#B4231F;border-radius:4px;padding:0 3px" title="You wrote: '+esc(gw)+'">'+esc(cw)+'</span>'); }
+  }
+  var extra = g.length>c.length ? '<div style="font-size:.78rem;color:#B4231F;margin-top:4px">Extra words typed: '+esc(g.slice(c.length).join(' '))+'</div>' : '';
+  return '<div style="margin-top:8px;padding:8px 10px;background:#fafafa;border:1px solid var(--line);border-radius:8px;line-height:1.9">'+out.join(' ')+'</div>'+
+    '<div style="font-size:.74rem;color:var(--muted);margin-top:4px"><span style="color:#0c6b53">■ right</span> · <span style="color:#8a5a00">■ spelling ok, capital/punctuation off</span> · <span style="color:#B4231F">■ wrong or missing</span></div>'+extra;
+}
+ROUTES.sentenceRounds = function(back){
+  back = (back==='senior') ? 'senior' : 'yl';
+  var backRoute=_srBackRoute(back), backLabel=(back==='senior')?'Spell &amp; Drill':'Spelling Challenge';
+  var cards=SENTENCE_ROUNDS.map(function(r,i){ var b=_srBand(i);
+    var tag=(typeof doneTag==='function')?doneTag((back==='senior'?'Spelling':'Foundational'),'Sentence Spelling — Round '+(i+1)):'';
+    return '<div class="item-row" style="align-items:center;border-left:5px solid '+b.colour+'"><div style="flex:1"><b>Round '+(i+1)+'</b> <span style="font-size:.7rem;font-weight:800;color:#fff;background:'+b.colour+';border-radius:999px;padding:2px 9px;vertical-align:middle">'+b.label+'</span><div class="meta">'+esc(r.theme)+' · 5 sentences '+tag+'</div></div><button class="btn sm teal" onclick="go(\'sentenceRoundRun\',\''+back+':'+i+'\')">Start →</button></div>';
+  }).join('');
+  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\''+backRoute+'\')">← '+backLabel+'</button>'
+    +'<div class="meta">'+(back==='senior'?'Spell &amp; Drill':'Foundational')+' · Sentence Spelling</div>'
+    +'<h1 style="font-size:2.1rem">📝 Sentence Spelling</h1>'
+    +'<p style="color:var(--muted);max-width:680px">Listen to a whole sentence, then type it <b>exactly</b> — capital letters and punctuation count. Each round has <b>5 sentences</b>, and the rounds climb from gentle starters to advanced academic sentences.</p>'
+    +'<div style="display:grid;gap:10px;margin-top:14px">'+cards+'</div>'
+    +'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
+ROUTES.sentenceRoundRun = function(compound){
+  var parts=String(compound||'yl:0').split(':'); var back=(parts[0]==='senior')?'senior':'yl'; var idx=parseInt(parts[1],10)||0;
+  if(idx<0||idx>=SENTENCE_ROUNDS.length){ go('sentenceRounds',back); return; }
+  var r=SENTENCE_ROUNDS[idx], b=_srBand(idx);
+  var items=r.sentences.map(function(x){ return {t:x}; });
+  SPELLSTATE={ key:'sr_'+back+'_'+idx, back:_srBackRoute(back), type:'sentence',
+    label:'Sentence Spelling · Round '+(idx+1)+' ('+b.label+')', items:items,
+    i:0, attempt:1, first:0, second:0, missed:0, log:[] };
+  renderSpell();
+};
 /* ===== Junior Spelling Challenge — Levels A/B/C × word/sentence/idioms ===== */
 const YLSP={
  A:{ label:"Level A", colour:"#0FA98B", sub:"Easy, common words",
@@ -25452,7 +25543,7 @@ function ylspCheck(){
 }
 ROUTES.ylspell = function(){
   if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'&&typeof studentTier==='function'&&studentTier()==='senior'){ go('dashboard'); return; }
-  var modes=[['word','\ud83d\udd24 Word spelling'],['sentence','\ud83d\udcdd Sentence spelling'],['idiom','\ud83d\udcac Idioms & phrases']];
+  var modes=[['word','\ud83d\udd24 Word spelling'],['idiom','\ud83d\udcac Idioms & phrases']];
   var cards=['A','B','C'].map(function(k){ var L=YLSP[k];
     var btns=modes.map(function(m){ return '<button class="btn sm ghost" onclick="go(\'ylspellRun\',\''+k+':'+m[0]+'\')">'+m[1]+'</button>'; }).join(' ');
     return '<div class="card" style="border-left:5px solid '+L.colour+'"><h3 style="margin:0 0 2px;color:'+L.colour+'">\ud83d\udd24 '+L.label+'</h3><p style="margin:0 0 8px;font-size:.88rem;color:var(--muted)">'+L.sub+'</p><div style="display:flex;flex-wrap:wrap;gap:6px">'+btns+'</div></div>';
@@ -25462,6 +25553,7 @@ ROUTES.ylspell = function(){
     +'<h1 style="font-size:2.1rem">\ud83d\udc1d Spelling Challenge</h1>'
     +'<p style="color:var(--muted);max-width:660px">Pick a level, then a challenge. Tap \ud83d\udd0a to hear each item, type it, then press <b>Check</b>. Score <b>60% or more</b> to earn your certificate!</p>'
     +'<div style="display:grid;gap:12px;margin-top:12px">'+cards+'</div>'
+    +'<div class="card" style="border-left:5px solid #E08A2B;margin-top:14px"><h3 style="margin:0 0 2px;color:#E08A2B">📝 Sentence Spelling — 20 graded rounds</h3><p style="margin:0 0 8px;font-size:.88rem;color:var(--muted)">Listen to a whole sentence, then type it exactly. <b>Capital letters and punctuation count.</b> Five sentences a round, getting harder as you climb.</p><button class="btn teal" onclick="go(\'sentenceRounds\',\'yl\')">Open sentence rounds →</button></div>'
     +'<div style="margin-top:14px"><button class="btn sm ghost" onclick="go(\'typing\',\'yl\')">\u2328\ufe0f Typing lessons \u2192</button></div>'
     +'</div>';
   try{window.scrollTo(0,0);}catch(e){}
@@ -25469,6 +25561,7 @@ ROUTES.ylspell = function(){
 ROUTES.ylspellRun = function(compound){
   if(typeof SESSION!=='undefined'&&SESSION&&SESSION.role==='student'&&typeof studentTier==='function'&&studentTier()==='senior'){ go('dashboard'); return; }
   var parts=String(compound||'A:word').split(':'); var lvl=parts[0]; var mode=parts[1]||'word';
+  if(mode==='sentence'){ go('sentenceRounds','yl'); return; }
   var L=YLSP[lvl]; if(!L||!L[mode]){ go('ylspell'); return; }
   var modeName={word:'Word spelling',sentence:'Sentence spelling',idiom:'Idioms & phrases'}[mode];
   if(!window.__YSPQ) window.__YSPQ={}; var _pk=lvl+':'+mode; var _pool=L[mode];
@@ -25684,7 +25777,7 @@ ROUTES.ylTalk = function(){
 
 ROUTES.melody = function(){
   var channels=[{name:'Gengu AI', handle:'@GenguAI', url:'https://www.youtube.com/@GenguAI', note:'AI-crafted songs and stories that bring English to life.'},{name:'Grace AI Art', handle:'@GraceAIArt', url:'https://www.youtube.com/@GraceAIArt', note:'Stylised, narrative-driven songs with cosy, cinematic visuals.'},{name:'Sing Highlights', handle:'@SingHighlights', url:'https://www.youtube.com/@SingHighlights', note:'Clear vocals and repetitive, easy-to-follow phrasing with strong visual cues.'}];
-  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">🎵</div><div style="flex:1"><b>'+esc(c.name)+'</b> <span class="meta">'+esc(c.handle)+'</span><div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel \u2197</a></div>'; }).join('');
+  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">🎵</div><div style="flex:1"><b>'+esc(c.name)+'</b> <span class="meta">'+esc(c.handle)+'</span><div class="meta">'+esc(c.note)+'</div>'+(c.approach?_approachChips(c.approach):'')+'</div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel \u2197</a></div>'; }).join('');
   app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'waspkCats\')">\u2190 Talkabout</button>'
     +'<div class="meta">Talkabout \u00b7 Storybook Songs</div>'
     +'<h1 style="font-size:2rem">🎶 Storybook Songs</h1>'
@@ -25697,7 +25790,7 @@ ROUTES.melody = function(){
 
 ROUTES.ylShadow = function(){
   var channels=[{name:'Talisman Animation', handle:'@TalismanAnimation', url:'https://www.youtube.com/@TalismanAnimation', note:'Animated stories to listen and repeat \u2014 shadow the voice, sounds and feeling.'},{name:'Storytime Channel', handle:'', url:'https://www.youtube.com/channel/UCpfbuNmv5P9GlbNnbCiMgKA', note:'Story videos to shadow, then retell in your own words.'},{name:'Fairy English Daily', handle:'@FairyEnglishDaily', url:'https://www.youtube.com/@FairyEnglishDaily', note:'Fairy tales and short stories with clear, friendly narration.'},{name:'English Natively', handle:'@EnglishNatively', url:'https://www.youtube.com/@EnglishNatively', note:'Learn everyday vocabulary through clear, natural storytelling.'},{name:'Talk Easy English', handle:'@TalkEasy_English89', url:'https://www.youtube.com/@TalkEasy_English89', note:'Simple stories and phrases that help you talk easily.'},{name:'English Fluent Stories', handle:'', url:'https://www.youtube.com/channel/UCykgSjs6nXsIownJq5ooMmw', note:'Longer stories to build fluency, rhythm and confidence.'},{name:'MoTV Fairytale 3D Animation', handle:'@MoTVEnglishMoviesFairytale', url:'https://www.youtube.com/@MoTVEnglishMoviesFairytale', note:'Fairytales as 3D animated films with strong visuals.'}];
-  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">🎧</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel \u2197</a></div>'; }).join('');
+  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">🎧</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div>'+(c.approach?_approachChips(c.approach):'')+'</div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel \u2197</a></div>'; }).join('');
   app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylTalk\')">\u2190 Talkabout</button>'
     +'<div class="meta">Talkabout \u00b7 Shadowing &amp; Storybook</div>'
     +'<h1 style="font-size:2rem">🎧 Shadowing &amp; Storybook</h1>'
@@ -25711,7 +25804,7 @@ ROUTES.ylShadow = function(){
 
 ROUTES.ylStory = function(){
   var channels=[{name:'English Natively', handle:'@EnglishNatively', url:'https://www.youtube.com/@EnglishNatively', note:'Learn everyday vocabulary through clear, natural storytelling.'},{name:'Talk Easy English', handle:'@TalkEasy_English89', url:'https://www.youtube.com/@TalkEasy_English89', note:'Simple stories and phrases that help you talk easily and with confidence.'}];
-  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">📖</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel \u2197</a></div>'; }).join('');
+  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">📖</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div>'+(c.approach?_approachChips(c.approach):'')+'</div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel \u2197</a></div>'; }).join('');
   app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylTalk\')">\u2190 Talkabout</button>'
     +'<div class="meta">Talkabout \u00b7 Storytelling</div>'
     +'<h1 style="font-size:2rem">📖 Storytelling</h1>'
@@ -25736,13 +25829,13 @@ function storyCheckpointHTML(kind){ kind=(kind&&STORY_CK_SETS[kind])?kind:'story
   +'</div>';
 }
 function storyCheckCount(i){ var t=document.getElementById('sck'+i), c=document.getElementById('sckc'+i); if(!t||!c) return; var w=(t.value||'').trim().split(/\s+/).filter(Boolean).length; c.textContent=w+' words'+(w>=50?' ✓':''); c.style.color=w>=50?'#0c8a72':''; }
-function storyCheckSubmit(){ var box=document.getElementById('sckCert'); if(!box) return; var short=[]; for(var i=0;i<3;i++){ var t=document.getElementById('sck'+i); var w=t?(t.value||'').trim().split(/\s+/).filter(Boolean).length:0; if(w<50) short.push(i+1); } if(short.length){ box.innerHTML='<p style="color:#B4231F;font-weight:700;margin-top:8px">Please finish response '+short.join(', ')+' — each needs at least 50 words.</p>'; return; } var set=STORY_CK_SETS[window.__CKKIND||'story']; var nm=(typeof SESSION!=='undefined'&&SESSION&&SESSION.name)?SESSION.name:'Student'; var cert=''; try{ cert=certificateHTML({name:nm,band:'Participation',title:'Talkabout · '+set.title,skill:set.title,percent:100,score:3,max:3,date:new Date().toLocaleDateString()}); }catch(e){} box.innerHTML='<p style="color:#0c6b53;font-weight:800;margin:10px 0 6px">🎉 Certificate of Participation — well done, '+nm+'!</p>'+cert; }
+function storyCheckSubmit(){ var box=document.getElementById('sckCert'); if(!box) return; var short=[]; for(var i=0;i<3;i++){ var t=document.getElementById('sck'+i); var w=t?(t.value||'').trim().split(/\s+/).filter(Boolean).length:0; if(w<50) short.push(i+1); } if(short.length){ box.innerHTML='<p style="color:#B4231F;font-weight:700;margin-top:8px">Please finish response '+short.join(', ')+' — each needs at least 50 words.</p>'; return; } var set=STORY_CK_SETS[window.__CKKIND||'story']; try{ if(typeof mintCert==='function' && SESSION && SESSION.role==='student'){ var _act='Talkabout · '+set.title; var _dupe=(typeof allCerts==='function')&&allCerts().some(function(c){return c.sid===sid()&&c.activity===_act;}); if(!_dupe) mintCert({ skill:set.title, activity:_act, participation:true }); } }catch(e){} var nm=(typeof SESSION!=='undefined'&&SESSION&&SESSION.name)?SESSION.name:'Student'; var cert=''; try{ cert=certificateHTML({name:nm,band:'Participation',title:'Talkabout · '+set.title,skill:set.title,percent:100,score:3,max:3,date:new Date().toLocaleDateString()}); }catch(e){} box.innerHTML='<p style="color:#0c6b53;font-weight:800;margin:10px 0 6px">🎉 Certificate of Participation — well done, '+nm+'!</p>'+cert; }
 function storyCheckPrint(){ var set=STORY_CK_SETS[window.__CKKIND||'story']; var P=set.q; var body=P.map(function(p,i){ var t=document.getElementById('sck'+i); var v=t?(t.value||''):''; return '<h3>'+(i+1)+'. '+p[0]+'</h3><p style="color:#555">'+p[1]+'</p><div style="border:1px solid #ccc;border-radius:8px;min-height:90px;padding:8px;white-space:pre-wrap">'+(typeof esc==='function'?esc(v):v)+'</div>'; }).join(''); var w=window.open('','_blank'); if(!w) return; w.document.write('<html><head><title>Checkpoint</title><style>body{font-family:Georgia,serif;max-width:720px;margin:24px auto;padding:0 16px;color:#222}h1{color:#c05a1a}h3{margin:16px 0 2px}</style></head><body><h1>Checkpoint — Talkabout · '+set.title+'</h1><p>Name: ______________________   Date: __________</p>'+body+'<p style="margin-top:20px;font-size:.78rem;color:#888">© iCAN, 2026. All rights reserved. Original creation owned by the Founder (emadhhjm@gmail.com). Not to be copied or reused without permission.</p></body></html>'); w.document.close(); w.focus(); try{ w.print(); }catch(e){} }
 
 
 ROUTES.ylStorybookSongs = function(){
   var channels=[{name:'Gengu AI', handle:'@GenguAI', url:'https://www.youtube.com/@GenguAI', note:'AI-generated music paired with whimsical, narrative-driven worlds (like A Very Old Town and A Very Unusual Town).'},{name:'Clay Comfort', handle:'@ClayComfort', url:'https://www.youtube.com/@ClayComfort', note:'Cosy, claymation-style musical stories.'},{name:'Luna AI Art Studio', handle:'@LunaAIArtStudio', url:'https://www.youtube.com/@LunaAIArtStudio', note:'Dreamy AI art and songs with a storybook feel.'}];
-  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">🎶</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel ↗</a></div>'; }).join('');
+  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">🎶</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div>'+(c.approach?_approachChips(c.approach):'')+'</div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel ↗</a></div>'; }).join('');
   app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylTalk\')">← Talkabout</button>'
     +'<div class="meta">Talkabout · Storybook Songs</div>'
     +'<h1 style="font-size:2rem">🎶 Storybook Songs</h1>'
@@ -25754,8 +25847,8 @@ ROUTES.ylStorybookSongs = function(){
   try{window.scrollTo(0,0);}catch(e){}
 };
 ROUTES.ylLifeExtras = function(){
-  var channels=[{name:'TED-Ed: Lessons Worth Sharing', handle:'@TEDEd', url:'https://www.youtube.com/@TEDEd', note:'Short animated lessons on big ideas in science, life and human experience — worth talking about.'},{name:'TED-Ed Lessons Library', handle:'ed.ted.com', url:'https://ed.ted.com/', note:'Free EFL educational video lessons with built-in questions and activities.'}];
-  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">💡</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel ↗</a></div>'; }).join('');
+  var channels=[{name:'TED-Ed: Lessons Worth Sharing', handle:'@TEDEd', url:'https://www.youtube.com/@TEDEd', note:'Short animated lessons on big ideas in science, life and human experience — worth talking about.'},{name:'TED-Ed Lessons Library', handle:'ed.ted.com', url:'https://ed.ted.com/', note:'Free EFL educational video lessons with built-in questions and activities.', approach:['Watch','Think','Dig Deeper','Discuss']}];
+  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">💡</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div>'+(c.approach?_approachChips(c.approach):'')+'</div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel ↗</a></div>'; }).join('');
   app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylTalk\')">← Talkabout</button>'
     +'<div class="meta">Talkabout · Life n Extras</div>'
     +'<h1 style="font-size:2rem">💡 Life n Extras</h1>'
@@ -25769,8 +25862,8 @@ ROUTES.ylLifeExtras = function(){
 
 
 ROUTES.seniorExtras = function(){
-  var channels=[{name:'TED-Ed: Lessons Worth Sharing', handle:'@TEDEd', url:'https://www.youtube.com/@TEDEd', note:'Short animated lessons on big ideas in science, life and human experience — worth talking about.'},{name:'TED-Ed Lessons Library', handle:'ed.ted.com', url:'https://ed.ted.com/', note:'Free EFL educational video lessons with built-in questions and activities.'}];
-  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">💡</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div></div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel ↗</a></div>'; }).join('');
+  var channels=[{name:'TED-Ed: Lessons Worth Sharing', handle:'@TEDEd', url:'https://www.youtube.com/@TEDEd', note:'Short animated lessons on big ideas in science, life and human experience — worth talking about.'},{name:'TED-Ed Lessons Library', handle:'ed.ted.com', url:'https://ed.ted.com/', note:'Free EFL educational video lessons with built-in questions and activities.', approach:['Watch','Think','Dig Deeper','Discuss']}];
+  var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">💡</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div>'+(c.approach?_approachChips(c.approach):'')+'</div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel ↗</a></div>'; }).join('');
   app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'waspkCats\')">← Talkabout</button>'
     +'<div class="meta">Talkabout · Life n Extras</div>'
     +'<h1 style="font-size:2rem">💡 Life n Extras</h1>'
