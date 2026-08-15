@@ -26089,8 +26089,11 @@ ROUTES.ylTalk = function(){
   ];
   var JTIMG=['https://images.unsplash.com/photo-1758947041685-5de333619040?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1429743305873-d4065c15f93e?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1509030441537-8af1c02726f7?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1561232295-b5ada34a032e?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1606920031092-c14461fc4db6?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1668385900491-48ad396f9cde?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1635082627989-dcd12a107364?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1515378040420-7d3f50e186e8?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1679110663825-c6ec1ad51884?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1549279873-30c053a630bc?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1706277750070-038c259c2ab7?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1727302788554-ae905ac91651?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1686299596388-d3433279ec64?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1664073204901-e2d9c84d558f?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1758941808079-fa54b03519de?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1615827157349-b3225b74f6e4?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1632849369576-06cb097fe68f?w=1200&q=80&auto=format&fit=crop','https://images.unsplash.com/photo-1772617388664-a7a4189732b5?w=1200&q=80&auto=format&fit=crop'];
   var checks=['I spoke clearly at an even pace, pronouncing each word distinctly so my listener could understand every part.','I used a confident, natural volume that was easy and engaging to listen to.','I spoke with a steady, natural rhythm without long pauses or excessive filler words.','I varied my tone and expressed genuine enthusiasm to bring my ideas to life.','I stayed focused on the topic and gave clear, well-supported reasons for my thoughts.'];
-  window.__YLTALK=P.map(function(p,i){ var _c=['#163a2f','#2b5fa6','#7028e4','#c96f00','#8e2f6a','#0c6b53'][i%6]; var _svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400"><rect width="640" height="400" fill="'+_c+'"/><text x="320" y="195" font-size="150" text-anchor="middle">'+p.i+'</text><text x="320" y="320" font-size="34" fill="#ffffff" text-anchor="middle" font-family="sans-serif" font-weight="bold">'+p.t+'</text></svg>'; var _fb='data:image/svg+xml,'+encodeURIComponent(_svg); return {id:'jtp'+i, img:(p.pic&&p.img?p.img:_fb), fb:_fb, video:(p.video||''), title:p.t, words:p.sc}; });
+  var jrIsPic=function(p){return p.pic===true||(p.img&&(''+p.img).indexOf('data:')===0);};
+  try{window.__JTP=P;window.__JTPOOL=JTIMG;window.__jrIsPic=jrIsPic;}catch(e){}
+  window.__YLTALK=P.map(function(p,i){ var _c=['#163a2f','#2b5fa6','#7028e4','#c96f00','#8e2f6a','#0c6b53'][i%6]; var _svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400"><rect width="640" height="400" fill="'+_c+'"/><text x="320" y="195" font-size="150" text-anchor="middle">'+p.i+'</text><text x="320" y="320" font-size="34" fill="#ffffff" text-anchor="middle" font-family="sans-serif" font-weight="bold">'+p.t+'</text></svg>'; var _fb='data:image/svg+xml,'+encodeURIComponent(_svg); return {id:'jtp'+i, img:(p.img&&(p.pic||(''+p.img).indexOf('data:')===0)?p.img:_fb), fb:_fb, video:(p.video||''), title:p.t, words:p.sc}; });
   var cards=P.map(function(p,idx){
+    if(jrIsPic(p))return '';
     return '<button class="jt-tile jt-cover" style="background-image:linear-gradient(to top,rgba(8,10,22,.82),rgba(8,10,22,.12)),url(\''+(p.img||JTIMG[idx%JTIMG.length])+'\')" onclick="betterYouOpen(\'jtp'+idx+'\')"><span class="jt-emoji">'+p.i+'</span><span class="jt-ttl">'+p.t+'</span><span class="jt-go">▶ Tap to open</span></button>';
   }).join('');
   app().innerHTML='<div class="wrap screen yl-scene">'
@@ -26103,8 +26106,25 @@ ROUTES.ylTalk = function(){
      +'<button class="yl-orb orb-song" onclick="go(\'ylStorybookSongs\')"><span class="disc">🎶</span><span class="lbl">Storybook Songs</span></button>'
      +'<button class="yl-orb orb-idea" onclick="go(\'ylLifeExtras\')"><span class="disc">💡</span><span class="lbl">Life n Extras</span></button>'
      +'<button class="yl-orb orb-song" style="--od:1" onclick="go(\'ispeak\',\'yl\')"><span class="disc" style="background:linear-gradient(135deg,#2B5FA6,#6b3fd0)">🗣️</span><span class="lbl">iSpeak cards</span></button>'
+     +'<button class="yl-orb orb-book" style="--od:2" onclick="go(\'ylPics\')"><span class="disc" style="background:linear-gradient(135deg,#2a86c9,#124e86)">🖼️</span><span class="lbl">Picture Prompts</span></button>'
      +'</div>'
      +'<div class="jt-grid" style="margin-top:8px">'+cards+'</div>'
+    +'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
+
+ROUTES.ylPics = function(){
+  var P=window.__JTP||[], POOL=window.__JTPOOL||[], isPic=window.__jrIsPic||function(p){return p.pic===true||(p.img&&(''+p.img).indexOf('data:')===0);};
+  var cards=P.map(function(p,idx){
+    if(!isPic(p)) return '';
+    return '<button class="jt-tile jt-cover" style="background-image:linear-gradient(to top,rgba(8,10,22,.82),rgba(8,10,22,.12)),url(\''+(p.img||POOL[idx%POOL.length])+'\')" onclick="betterYouOpen(\'jtp'+idx+'\')"><span class="jt-emoji">'+p.i+'</span><span class="jt-ttl">'+p.t+'</span><span class="jt-go">▶ Tap to open</span></button>';
+  }).join('');
+  app().innerHTML='<div class="wrap screen yl-scene">'
+    +'<button class="back" onclick="go(\'ylTalk\')">← Talkabout</button>'
+    +'<div class="meta" style="color:rgba(255,255,255,.8)">Foundational · Talkabout</div>'
+    +'<h1 style="font-size:2.1rem;color:#fff">🖼️ Picture Prompts</h1>'
+    +'<p style="color:rgba(255,255,255,.92);max-width:660px">Look closely at a photo, then <b>talk it through</b>: describe what you see, share your opinion, and give reasons and an example. Then follow the steps — <b>write</b>, <b>talk &amp; record</b>, self-check, and <b>publish</b>.</p>'
+    +'<div class="jt-grid" style="margin-top:8px">'+cards+'</div>'
     +'</div>';
   try{window.scrollTo(0,0);}catch(e){}
 };
