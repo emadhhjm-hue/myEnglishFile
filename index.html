@@ -6547,6 +6547,49 @@ function spellClueHTML(item){
    Uses dictionaryapi.dev with a localStorage cache. Silently degrades if
    offline. Also patches the current item so the reveal popup gets the same
    definition without a second lookup. */
+function buildIdiomDefs(){
+  var m={};
+  try{
+    (typeof IDIOMS_BANK!=='undefined'?IDIOMS_BANK:[]).forEach(function(g){
+      (g.items||[]).forEach(function(it){
+        if(it&&it[0]&&it[1]){ var k=(''+it[0]).toLowerCase().replace(/[.!?,;:]+$/,'').trim(); m[k]=it[1]; m[k.replace(/^(a|an|the)\s+/,'')]=it[1]; }
+      });
+    });
+  }catch(e){}
+  var extra={
+    'good morning':'A polite greeting used in the morning.',
+    'thank you':'A polite way to show that you are grateful.',
+    'well done':'Said to praise someone for doing something well.',
+    'once upon a time':'A traditional way to begin a story or fairy tale.',
+    'best friends':'The friends you like and trust the most.',
+    'never mind':'Said to tell someone not to worry about something.',
+    'see you soon':'A friendly way to say goodbye for a short while.',
+    'take care':'A friendly way to say goodbye and tell someone to stay safe.',
+    'by the way':'Used to add an extra comment or gently change the subject.',
+    'all the best':'A friendly way to wish someone good luck.',
+    'hit the books':'To study hard.',
+    'raining cats and dogs':'Raining very heavily.',
+    'the early bird':'The one who starts early gains the advantage \u2014 the early bird catches the worm.',
+    'practice makes perfect':'Doing something again and again is the way to get better at it.',
+    'better late than never':'It is better to do something late than not to do it at all.',
+    'keep an eye on':'To watch someone or something carefully.',
+    'the tip of the iceberg':'A small, visible part of a much larger problem.',
+    'food for thought':'Something worth thinking about carefully.',
+    'a storm in a teacup':'A lot of fuss about something unimportant.',
+    'actions speak louder than words':'What you do matters more than what you say.'
+  };
+  for(var k in extra){ if(!m[k]) m[k]=extra[k]; var k2=k.replace(/^(a|an|the)\s+/,''); if(!m[k2]) m[k2]=extra[k]; }
+  window.__IDIOM_DEFS=m; return m;
+}
+function localDefLookup(raw){
+  try{
+    var k=(''+raw).toLowerCase().replace(/[.!?,;:]+$/,'').trim(); if(!k) return null;
+    var map=window.__IDIOM_DEFS||buildIdiomDefs();
+    var hit=map[k]; if(!hit) hit=map[k.replace(/^(a|an|the)\s+/,'')];
+    if(!hit) return null;
+    return { meanings:[{pos:'idiom', def:hit, ex:''}] };
+  }catch(e){ return null; }
+}
 async function spellClueFetch(word){
   const target = document.getElementById('clueFetch');
   if(!target || !word) return;
@@ -6571,6 +6614,7 @@ async function spellClueFetch(word){
       }
     } catch(e){}
   }
+  if(!data){ data = localDefLookup(key); }
   /* Patch current item so the reveal popup uses the same definition. */
   const s = SPELLSTATE, it = s && s.items && s.items[s.i];
   if(data && data.meanings && data.meanings.length && it && it.t===word){
@@ -24302,7 +24346,8 @@ ROUTES.waspkCats = function(cat){
     + orb('video','\uD83C\uDFAC','Video prompts',['#2B5FA6','#173a6b'],"go('waspkCats','video')")
     + orb('pic','\uD83D\uDDBC\uFE0F','Picture prompts',['#8B5CF6','#5B8DEF'],"go('waspkCats','pic')")
     + orb('debate','\uD83D\uDDE3\uFE0F','Talking point prompts',['#E6464B','#992b2f'],"go('waspkCats','debate')")
-    + orb('song','\uD83C\uDFB6','Storybook songs',['#0FA98B','#0b6e5c'],"go('melody')")
+    + orb('shadow','\uD83C\uDFA7','Shadowing &amp; Storybook',['#3AA0FF','#1E5FBF'],"go('ylShadow')")
+    + orb('song','\uD83C\uDFB6','Storybook songs',['#0FA98B','#0b6e5c'],"go('ylStorybookSongs')")
     + orb('life','\uD83D\uDCA1','Life n Extras',['#0C8A72','#0a5f50'],"go('seniorExtras')")
     + orb('ispeak','\uD83D\uDCDC','iSpeak cards',['#6b3fd0','#2B5FA6'],"go('ispeak','senior')")
     + '</div>';
@@ -26102,13 +26147,14 @@ ROUTES.ylTalk = function(){
     +'<h1 style="font-size:2.1rem;color:#fff">🗣️ Talkabout & Writeabout</h1>'
     +'<p style="color:rgba(255,255,255,.92);max-width:660px">Tap a topic card. Then follow the steps: <b>write</b> (5 min), <b>talk & record</b> (1½ min), tick your <b>self-check</b>, and <b>publish</b> to earn a certificate.</p>'
     +'<div class="yl-orbs">'
+     +'<button class="yl-orb orb-book" onclick="go(\'ylCat\',\'topic\')"><span class="disc" style="background:linear-gradient(135deg,#0FA98B,#0b6e5c)">📝</span><span class="lbl">Talkabout Topics</span></button>'
+     +'<button class="yl-orb orb-book" onclick="go(\'ylCat\',\'video\')"><span class="disc" style="background:linear-gradient(135deg,#2B5FA6,#173a6b)">🎬</span><span class="lbl">Video Prompts</span></button>'
      +'<button class="yl-orb orb-book" onclick="go(\'ylShadow\')"><span class="disc">📖</span><span class="lbl">Shadowing &amp; Storybook</span></button>'
      +'<button class="yl-orb orb-song" onclick="go(\'ylStorybookSongs\')"><span class="disc">🎶</span><span class="lbl">Storybook Songs</span></button>'
      +'<button class="yl-orb orb-idea" onclick="go(\'ylLifeExtras\')"><span class="disc">💡</span><span class="lbl">Life n Extras</span></button>'
      +'<button class="yl-orb orb-song" style="--od:1" onclick="go(\'ispeak\',\'yl\')"><span class="disc" style="background:linear-gradient(135deg,#2B5FA6,#6b3fd0)">🗣️</span><span class="lbl">iSpeak cards</span></button>'
      +'<button class="yl-orb orb-book" style="--od:2" onclick="go(\'ylPics\')"><span class="disc" style="background:linear-gradient(135deg,#2a86c9,#124e86)">🖼️</span><span class="lbl">Picture Prompts</span></button>'
      +'</div>'
-     +'<div class="jt-grid" style="margin-top:8px">'+cards+'</div>'
     +'</div>';
   try{window.scrollTo(0,0);}catch(e){}
 };
@@ -26124,6 +26170,33 @@ ROUTES.ylPics = function(){
     +'<div class="meta" style="color:rgba(255,255,255,.8)">Foundational · Talkabout</div>'
     +'<h1 style="font-size:2.1rem;color:#fff">🖼️ Picture Prompts</h1>'
     +'<p style="color:rgba(255,255,255,.92);max-width:660px">Look closely at a photo, then <b>talk it through</b>: describe what you see, share your opinion, and give reasons and an example. Then follow the steps — <b>write</b>, <b>talk &amp; record</b>, self-check, and <b>publish</b>.</p>'
+    +'<div class="jt-grid" style="margin-top:8px">'+cards+'</div>'
+    +'</div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
+
+function ylStoryBack(){ return (typeof studentTier==='function'&&studentTier()==='senior')?'waspkCats':'ylTalk'; }
+ROUTES.ylCat = function(kind){
+  var P=window.__JTP||[], POOL=window.__JTPOOL||[];
+  var K=function(p){
+    if(p.pic===true||(p.img&&(''+p.img).indexOf('data:')===0)) return 'pic';
+    if(p.video) return 'video';
+    if(p.sc&&(''+p.sc).indexOf('DEBATE')===0) return 'debate';
+    return 'topic';
+  };
+  var meta={topic:['\uD83D\uDCDD','Talkabout Topics','Pick a topic or talking point, then <b>write</b> and <b>talk</b> about it \u2014 give your reasons and an example, then record and publish.'],
+            video:['\uD83C\uDFAC','Video Prompts','Watch a short video, then <b>retell</b> it in your own words and share what you think.'],
+            debate:['\uD83D\uDDE3\uFE0F','Talking Points','Take a side, give your <b>reasons</b> and an example, and make your case.']};
+  var m=meta[kind]||meta.topic;
+  var cards=P.map(function(p,idx){
+    var _mk=K(p); if(kind==='topic'){ if(_mk!=='topic'&&_mk!=='debate') return ''; } else if(_mk!==kind){ return ''; }
+    return '<button class="jt-tile jt-cover" style="background-image:linear-gradient(to top,rgba(8,10,22,.82),rgba(8,10,22,.12)),url(\''+(p.img||POOL[idx%POOL.length])+'\')" onclick="betterYouOpen(\'jtp'+idx+'\')"><span class="jt-emoji">'+p.i+'</span><span class="jt-ttl">'+p.t+'</span><span class="jt-go">\u25B6 Tap to open</span></button>';
+  }).join('');
+  app().innerHTML='<div class="wrap screen yl-scene">'
+    +'<button class="back" onclick="go(\'ylTalk\')">\u2190 Talkabout</button>'
+    +'<div class="meta" style="color:rgba(255,255,255,.8)">Foundational \u00b7 Talkabout</div>'
+    +'<h1 style="font-size:2.1rem;color:#fff">'+m[0]+' '+m[1]+'</h1>'
+    +'<p style="color:rgba(255,255,255,.92);max-width:660px">'+m[2]+'</p>'
     +'<div class="jt-grid" style="margin-top:8px">'+cards+'</div>'
     +'</div>';
   try{window.scrollTo(0,0);}catch(e){}
@@ -26145,7 +26218,7 @@ ROUTES.melody = function(){
 ROUTES.ylShadow = function(){
   var channels=[{name:'Talisman Animation', handle:'@TalismanAnimation', url:'https://www.youtube.com/@TalismanAnimation', note:'Animated stories to listen and repeat \u2014 shadow the voice, sounds and feeling.'},{name:'Storytime Channel', handle:'', url:'https://www.youtube.com/channel/UCpfbuNmv5P9GlbNnbCiMgKA', note:'Story videos to shadow, then retell in your own words.'},{name:'Fairy English Daily', handle:'@FairyEnglishDaily', url:'https://www.youtube.com/@FairyEnglishDaily', note:'Fairy tales and short stories with clear, friendly narration.'},{name:'English Natively', handle:'@EnglishNatively', url:'https://www.youtube.com/@EnglishNatively', note:'Learn everyday vocabulary through clear, natural storytelling.'},{name:'Talk Easy English', handle:'@TalkEasy_English89', url:'https://www.youtube.com/@TalkEasy_English89', note:'Simple stories and phrases that help you talk easily.'},{name:'English Fluent Stories', handle:'', url:'https://www.youtube.com/channel/UCykgSjs6nXsIownJq5ooMmw', note:'Longer stories to build fluency, rhythm and confidence.'},{name:'MoTV Fairytale 3D Animation', handle:'@MoTVEnglishMoviesFairytale', url:'https://www.youtube.com/@MoTVEnglishMoviesFairytale', note:'Fairytales as 3D animated films with strong visuals.'}];
   var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">🎧</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div>'+(c.approach?_approachChips(c.approach):'')+'</div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel \u2197</a></div>'; }).join('');
-  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylTalk\')">\u2190 Talkabout</button>'
+  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(ylStoryBack())">\u2190 Talkabout</button>'
     +'<div class="meta">Talkabout \u00b7 Shadowing &amp; Storybook</div>'
     +'<h1 style="font-size:2rem">🎧 Shadowing &amp; Storybook</h1>'
     +'<p style="color:var(--muted);max-width:700px">Play a story, then <b>shadow</b> it: listen to a short part, pause, and repeat it out loud \u2014 copy the sounds, the rhythm and the feeling. Afterwards, <b>retell</b> the story in your own words. This builds clear pronunciation, natural rhythm and confidence.</p>'
@@ -26190,7 +26263,7 @@ function storyCheckPrint(){ var set=STORY_CK_SETS[window.__CKKIND||'story']; var
 ROUTES.ylStorybookSongs = function(){
   var channels=[{name:'Gengu AI', handle:'@GenguAI', url:'https://www.youtube.com/@GenguAI', note:'AI-generated music paired with whimsical, narrative-driven worlds (like A Very Old Town and A Very Unusual Town).'},{name:'Clay Comfort', handle:'@ClayComfort', url:'https://www.youtube.com/@ClayComfort', note:'Cosy, claymation-style musical stories.'},{name:'Luna AI Art Studio', handle:'@LunaAIArtStudio', url:'https://www.youtube.com/@LunaAIArtStudio', note:'Dreamy AI art and songs with a storybook feel.'}];
   var rows=channels.map(function(c){ return '<div class="item-row" style="align-items:center"><div style="font-size:1.7rem">🎶</div><div style="flex:1"><b>'+esc(c.name)+'</b>'+(c.handle?(' <span class="meta">'+esc(c.handle)+'</span>'):'')+'<div class="meta">'+esc(c.note)+'</div>'+(c.approach?_approachChips(c.approach):'')+'</div><a class="btn sm teal" href="'+c.url+'" target="_blank" rel="noopener">Open channel ↗</a></div>'; }).join('');
-  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(\'ylTalk\')">← Talkabout</button>'
+  app().innerHTML='<div class="wrap screen"><button class="back" onclick="go(ylStoryBack())">← Talkabout</button>'
     +'<div class="meta">Talkabout · Storybook Songs</div>'
     +'<h1 style="font-size:2rem">🎶 Storybook Songs</h1>'
     +'<p style="color:var(--muted);max-width:720px">Learn English through <b>musical storybooks</b>. Gengu AI specialises in AI-generated music paired with whimsical, narrative-driven visual worlds (such as <i>A Very Old Town</i> and <i>A Very Unusual Town</i>); the tracks and stop-motion-style art evoke musical storybooks, folklore and cosy tales. Listen, feel the story, then talk and write about it.</p>'
