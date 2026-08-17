@@ -24622,30 +24622,79 @@ function betterYouShared(id){
 const NEWS_CATS = {'World & Local':'🌍','Politics':'🏛️','Health':'🩺','Education':'🎓','Careers & Jobs':'💼','Science & Discovery':'🔬','Environment':'🌱','Wildlife':'🐾','Technology & Internet':'💻','Economy':'📈','Film & Media':'🎬','Sport':'🏅','Society':'🤝'};
 function newsCatEmoji(c){ return NEWS_CATS[c]||'📰'; }
 const NEWS_SEED = [
- {id:'nw_seed1',date:'Aug 2026',category:'Environment',title:'The UAE Plants Millions of Mangroves',
+ {id:'nw_seed1',date:'Aug 2026',category:'Environment',title:'The UAE Plants Millions of Mangroves', reporter:"iCAN News Desk · Abu Dhabi", lead:"Good evening. Our top story tonight: a quiet green revolution is taking root along the shores of the UAE.",
   article:"Along the coast of the UAE, an army of small trees is quietly growing. They are mangroves — salt-loving trees that grow with their roots in seawater.\n\nThe UAE has pledged to plant 100 million mangroves by 2030. Volunteers, drones and scientists are all helping. Drones can fire seed pods into the mud far faster than people can plant by hand.\n\nWhy mangroves? Their thick roots trap carbon from the air, protect the coast from storms, and give fish, crabs and birds a safe home. Scientists say one area of mangroves can store far more carbon than the same area of normal forest.\n\n“Mangroves are our natural allies,” one researcher said. “They clean the air and guard the shore at the same time.”",
   mcq:[{q:'Where do mangrove trees grow?',opts:['High in the mountains','With their roots in seawater','Only in the desert sand'],ans:1},{q:'How many mangroves does the UAE plan to plant by 2030?',opts:['One hundred','One million','One hundred million'],ans:2}],
   open:['Why do you think drones are useful for planting mangroves?','What is one thing your community could do to protect nature near you?'],
   fact:'One area of mangroves can store up to four times more carbon than the same area of ordinary forest.',
   act:'Find out: does your neighbourhood have any trees or green spaces? Draw a simple map and mark them.',
-  images:['https://images.unsplash.com/photo-1518843875459-f738682238a6?w=1000&q=70&auto=format&fit=crop'],
+  images:['https://images.unsplash.com/photo-1589556183130-530470785fab?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1717292741426-d050f4f25503?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1618288389681-f135edea12db?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1623719647321-188ae37d7133?w=1000&q=70&auto=format&fit=crop'],
   video:'https://www.youtube.com/results?search_query=UAE+mangrove+planting'},
- {id:'nw_seed2',date:'Aug 2026',category:'Health',title:'Can AI Spot Illness Before Doctors Do?',
+ {id:'nw_seed2',date:'Aug 2026',category:'Health',title:'Can AI Spot Illness Before Doctors Do?', reporter:"iCAN Health Desk", lead:"In health news tonight: the doctor of the future may have a new partner in the room — one made entirely of code.",
   article:"Doctors are getting a new helper in the clinic: artificial intelligence. New AI tools can look at a scan or an X-ray and point out tiny signs of illness that are easy to miss.\n\nIn several hospitals, AI now double-checks scans for early signs of disease. It does not replace the doctor — it works like a careful second pair of eyes. The doctor still makes the final decision.\n\nSupporters say this could help people get treatment earlier, when illnesses are easier to cure. Others worry about privacy, mistakes, and trusting a machine too much.\n\n“AI can help us, but it cannot care for a patient,” a nurse explained. “That is still a human job.”",
   mcq:[{q:'According to the article, what does the AI do?',opts:['Replaces the doctor completely','Acts as a careful second pair of eyes','Sends patients home without help'],ans:1},{q:'Why might spotting illness early be helpful?',opts:['It makes scans more colourful','Illnesses can be easier to cure early','It saves electricity'],ans:1}],
   open:['Would you trust an AI to help check your health? Why or why not?','What is one job you think a machine should never do?'],
   fact:'Some AI tools can scan an X-ray in under two seconds — far faster than a human can.',
   act:'Ask a family member: what is one way technology has changed how they visit the doctor?',
-  images:['https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1000&q=70&auto=format&fit=crop'],
+  images:['https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1582560469781-1965b9af903d?w=1000&q=70&auto=format&fit=crop'],
   video:'https://www.youtube.com/results?search_query=AI+in+medicine+explained+for+students'},
- {id:'nw_seed3',date:'Aug 2026',category:'Science & Discovery',title:'Students Build a Solar Water Cleaner',
+ {id:'nw_seed3',date:'Aug 2026',category:'Science & Discovery',title:'Students Build a Solar Water Cleaner', reporter:"iCAN Science Desk", lead:"And now, an invention story that began not in a laboratory, but with a group of teenagers and a problem they refused to ignore.",
   article:"A group of teenagers has invented a simple machine that turns dirty water into clean drinking water — using only sunlight.\n\nThe device is a small box with a clear lid. Dirty water goes in, the sun heats it, and clean water drips out the other side. The dirt and salt are left behind. It costs very little to build and needs no electricity.\n\nThe students hope their invention can help families in places where clean water is hard to find. They are now testing bigger versions that could serve a whole village.\n\n“We started with a problem we cared about,” said one young inventor. “Then we just kept trying until it worked.”",
   mcq:[{q:'What powers the students’ water cleaner?',opts:['Electricity from the wall','Sunlight','A large battery'],ans:1},{q:'What is left behind when the water is cleaned?',opts:['The dirt and salt','The clean water','The sunlight'],ans:0}],
   open:['What problem in the world would you most like to invent something for?','Why is clean water so important for a community?'],
   fact:'Around the world, billions of people still lack safe water at home — so simple, low-cost inventions matter.',
   act:'Sketch your own idea for a machine that solves a problem you see every day. Give it a name.',
   images:[],
-  video:'https://www.youtube.com/results?search_query=solar+still+clean+water+science+project'}
+  video:'https://www.youtube.com/results?search_query=solar+still+clean+water+science+project'},
+ {id:'nw_seed4',date:'Aug 2026',category:'Wildlife',title:'Saving the Arabian Oryx', reporter:"iCAN News · The Desert Reserve", lead:"This just in from the desert: an animal that had almost vanished is walking the sands once more.",
+  article:"Not long ago, the Arabian oryx — a beautiful white desert antelope — had almost vanished from the wild. By the 1970s, hunting had wiped out the last wild ones.\n\nThen a bold plan began. A few oryx were kept safe in special reserves and carefully bred. Year by year, their numbers grew. Today, thousands roam protected areas across the Arabian Peninsula once again.\n\nThe oryx is now a symbol of hope. It shows that when people decide to protect a species, even an animal on the edge of extinction can be brought back.\n\n“We nearly lost it forever,” a ranger said. “Now children can see it living wild again.”",
+  mcq:[{q:'What almost happened to the Arabian oryx?',opts:['It became too common','It nearly vanished from the wild','It grew much larger'],ans:1},{q:'How were the oryx brought back?',opts:['They were left completely alone','They were kept safe and carefully bred','They were moved to the city'],ans:1}],
+  open:['Why do you think it matters to protect animals from extinction?','What is one animal near you that you would like to protect?'],
+  fact:'The Arabian oryx was once declared extinct in the wild — and is now the first animal ever to recover from that status.',
+  act:'Choose an endangered animal, find one fact about it, and share why it is worth saving.',
+  images:['https://images.unsplash.com/photo-1542872952-864cfa8e97af?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1730444002198-3021cba96637?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1619827479015-bb7b3a0b4643?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1711622469223-0f14851df58b?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=Arabian+oryx+conservation'},
+ {id:'nw_seed5',date:'Aug 2026',category:'Science & Discovery',title:'The UAE Reaches for the Moon', reporter:"iCAN Science Desk", lead:"Turning to science: the UAE has set its sights on a target far beyond the desert horizon — the Moon.",
+  article:"The UAE has set its eyes far beyond Earth. After sending a spacecraft to orbit Mars, the country is now working on missions to explore the Moon.\n\nEngineers are building small robotic rovers designed to roll across the Moon's dusty surface, take pictures, and study the soil. Young Emirati scientists — many of them still in their twenties — are leading the work.\n\nSpace missions are hard, and not every attempt succeeds. But each try teaches something new, and inspires students to study science, maths and engineering.\n\n“We are showing young people that the sky is not the limit,” one team member said.",
+  mcq:[{q:'Which planet did the UAE already send a spacecraft to orbit?',opts:['Jupiter','Mars','Saturn'],ans:1},{q:'What are the Moon rovers designed to do?',opts:['Carry passengers','Study the surface and take pictures','Grow plants'],ans:1}],
+  open:['Why do you think countries spend money exploring space?','If you could send a rover anywhere, where would you send it, and why?'],
+  fact:'Many of the engineers on the UAE’s space missions are under 35 years old.',
+  act:'Design your own space rover on paper. Give it a name and label two things it can do.',
+  images:[],video:'https://www.youtube.com/results?search_query=UAE+space+mission+moon+rover'},
+ {id:'nw_seed6',date:'Aug 2026',category:'Sport',title:'Padel: The Sport Taking Over the UAE', reporter:"iCAN Sport Desk", lead:"In sport tonight: a game few had heard of five years ago is now echoing across the Emirates.",
+  article:"Walk past a sports club in the UAE these days, and you will probably hear the pop of a padel ball. Padel — a fast, fun mix of tennis and squash — has become one of the country's most popular sports.\n\nIt is played in pairs on a small court surrounded by glass walls, so the ball stays in play longer. It is easy to learn, friendly, and great exercise, which is why families, friends and even beginners love it.\n\nNew padel courts are opening across the Emirates, and local tournaments are drawing big crowds.\n\n“You can pick it up in one afternoon,” a coach said, “but you can spend years getting really good.”",
+  mcq:[{q:'Padel is a mix of which two sports?',opts:['Football and running','Tennis and squash','Swimming and cycling'],ans:1},{q:'Why do beginners enjoy padel?',opts:['It is very hard to learn','It is easy to learn and friendly','It needs no movement'],ans:1}],
+  open:['Why do you think a new sport can become popular so quickly?','What sport would you most like to try, and why?'],
+  fact:'Padel is one of the fastest-growing sports in the world, played in more than 90 countries.',
+  act:'Invent a simple new game your class could play at break time. Write three short rules for it.',
+  images:[],video:'https://www.youtube.com/results?search_query=padel+sport+how+to+play'},
+ {id:'nw_seed7',date:'Aug 2026',category:'Careers & Jobs',title:'The Jobs That Do Not Exist Yet', reporter:"iCAN News · Special Report", lead:"A special report on your future: many of the jobs waiting for today's students have not been invented yet.",
+  article:"Some of the jobs you will do one day have not even been invented. Experts say that many of today's students will work in careers that do not exist right now.\n\nAs technology changes, new jobs appear. A few years ago, there were no ‘drone pilots’, ‘app designers’ or ‘social-media managers’. Tomorrow, there may be ‘space guides’, ‘robot trainers’ or ‘climate engineers’.\n\nSo how do you prepare for a job nobody can name yet? Experts say the best skills are ones that never go out of date: curiosity, problem-solving, teamwork, and the ability to keep learning.\n\n“Don’t just learn facts,” one careers adviser said. “Learn how to learn.”",
+  mcq:[{q:'What does the article say about many future jobs?',opts:['They already all exist','They have not been invented yet','They will disappear'],ans:1},{q:'Which skill does the adviser say matters most?',opts:['Memorising facts','Knowing how to keep learning','Typing quickly'],ans:1}],
+  open:['What job would you like to have — and what skills will it need?','Why might “learning how to learn” be more useful than memorising facts?'],
+  fact:'Experts estimate that a large share of today’s primary-school children will work in jobs that do not exist yet.',
+  act:'Invent a job of the future. Give it a name and describe what that person would do all day.',
+  images:['https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=jobs+of+the+future+for+students'},
+ {id:'nw_seed8',date:'Aug 2026',category:'World & Local',reporter:"iCAN News Desk · Abu Dhabi",lead:"Breaking news on the roads tonight: authorities have announced tough new penalties aimed at keeping every driver safe.",title:'Tough New Fines to Keep Roads Safe',
+  article:"ABU DHABI — Authorities have announced strict new fines for the most dangerous driving offences. Drivers who travel the wrong way down a road, or who cross onto a fast highway on foot, now face heavy penalties.\n\nOfficials say the rules are not about punishment, but about protection. Driving against the traffic, or walking across high-speed roads, causes some of the most serious accidents — and almost all of them are preventable.\n\n“One careless moment can change a family forever,” a road-safety officer explained. “These rules exist so that everyone gets home safely.”\n\nDrivers are reminded to follow the signs, wear their seatbelts, keep a safe distance, and never use a phone at the wheel.",
+  mcq:[{q:'What is one offence now facing a heavy fine?',opts:['Driving the wrong way down a road','Parking neatly','Driving a little slowly'],ans:0},{q:'According to the officer, the rules are mainly about…',opts:['Collecting money','Protecting people','Slowing everyone down'],ans:1}],
+  open:['Why do you think some drivers still break road rules — and how could we encourage safer driving?','What is one road-safety rule you believe everyone should follow?'],
+  fact:'Wearing a seatbelt can cut the risk of serious injury in a crash by roughly half.',
+  act:'Design a short road-safety poster with one clear message for drivers or for pedestrians.',
+  images:[],video:'https://www.youtube.com/results?search_query=road+safety+rules+explained'},
+ {id:'nw_seed9',date:'Aug 2026',category:'Science & Discovery',reporter:"iCAN Science Desk",lead:"A scientific breakthrough is making headlines around the world — one that could change how we think about clean water forever.",title:'Scientists Pull Drinking Water Straight from the Air',
+  article:"GENEVA — Scientists have unveiled a device that can pull clean drinking water out of thin air — even in dry, desert climates.\n\nThe machine uses a special material that quietly soaks up tiny amounts of water vapour from the air at night, then releases it as liquid water when it is warmed by the sun. No pipes, no wells, and very little electricity are needed.\n\nResearchers hope the invention could one day bring water to remote villages and disaster zones where clean water is scarce.\n\n“The air around us holds more water than all our rivers combined,” one scientist said. “The challenge was reaching it — and now we can.”",
+  mcq:[{q:'Where does the new device get its water?',opts:['Deep underground','Water vapour in the air','The nearest ocean'],ans:1},{q:'What makes the device release the water?',opts:['A powerful engine','Heat from the sun','A city power line'],ans:1}],
+  open:['Where in the world could an invention like this help the most, and why?','What everyday problem would you most like scientists to solve next?'],
+  fact:'The air always holds water vapour — even high above a hot desert.',
+  act:'In three simple steps, explain how you think the device turns air into water.',
+  images:[],video:'https://www.youtube.com/results?search_query=harvesting+drinking+water+from+air'},
+ {id:'nw_seed10',date:'Aug 2026',category:'World & Local',reporter:"iCAN News · Al Dhafra",lead:"A safety warning tonight after a dramatic morning on the motorway — and a reminder that could save your life.",title:'Sandstorm Slows Traffic — Officials Urge Caution',
+  article:"AL DHAFRA — A thick sandstorm swept across the region this morning, cutting visibility on major roads and slowing traffic to a crawl. Thankfully, no serious injuries were reported.\n\nPolice praised the drivers who slowed down, switched on their lights, and kept a safe distance from the cars ahead. They warned that low visibility is one of the most dangerous conditions on the road.\n\nExperts advise drivers caught in a sandstorm to reduce speed, turn on their hazard lights, and — if visibility disappears completely — pull over safely and wait for the dust to pass.\n\n“Arriving a few minutes later is always better than not arriving at all,” an officer said.",
+  mcq:[{q:'What made driving dangerous this morning?',opts:['Heavy snow','A sandstorm cutting visibility','A city-wide power cut'],ans:1},{q:'What did the police praise drivers for doing?',opts:['Driving faster to escape it','Slowing down and keeping a safe distance','Turning off their lights'],ans:1}],
+  open:['Why is it so important to stay calm during an emergency on the road?','What is one thing your family does to stay safe in bad weather?'],
+  fact:'In low visibility, drivers should switch on hazard lights and slow down — never speed up to “get through it”.',
+  act:'Write three short safety tips for driving or walking during a sandstorm.',
+  images:[],video:'https://www.youtube.com/results?search_query=driving+safely+in+low+visibility'}
 ];
 function newsAll(){ var n=Store.get('ican_news'); if(!Array.isArray(n)){ n=NEWS_SEED.slice(); Store.set('ican_news',n); } return n; }
 function newsSetAll(list){ Store.set('ican_news', list); }
@@ -24680,8 +24729,8 @@ ROUTES.newsStory = function(id){
   var tabbar=tabs.map(function(t){return '<button class="news-tab" data-tab="'+t[0]+'" onclick="newsTab(\''+id+'\',\''+t[0]+'\')" style="border:0;background:#eef1f6;color:#33405a;font-weight:700;font-size:.85rem;padding:8px 12px;border-radius:999px;cursor:pointer">'+t[1]+'</button>';}).join(' ');
   app().innerHTML='<div class="wrap screen">'
     +'<button class="back" onclick="go(\'news\')">← Current News</button>'
-    +'<div style="font-size:.78rem;font-weight:700;color:#c0392b;letter-spacing:.04em;margin-top:6px">'+newsCatEmoji(s.category)+' '+esc((s.category||'News').toUpperCase())+' · '+esc(s.date||'')+'</div>'
-    +'<h1 style="font-size:1.9rem;line-height:1.2;margin:4px 0 12px">'+esc(s.title||'')+'</h1>'
+    +'<div style="margin-top:6px"><span style="background:#c0392b;color:#fff;font-size:.66rem;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:4px">● iCAN NEWS</span> <span style="font-size:.78rem;font-weight:700;color:#c0392b;letter-spacing:.04em">'+newsCatEmoji(s.category)+' '+esc((s.category||'News').toUpperCase())+' · '+esc(s.date||'')+'</span></div>'
+    +'<h1 style="font-size:1.9rem;line-height:1.2;margin:4px 0 6px">'+esc(s.title||'')+'</h1>'+(s.reporter?'<div style="font-size:.82rem;color:var(--muted);margin-bottom:12px">🎙️ '+esc(s.reporter)+'</div>':'')
     +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">'+tabbar+'</div>'
     +'<div id="newsBody"></div></div>';
   newsTab(id,'read');
@@ -24693,7 +24742,8 @@ function newsTab(id, tab){
   var body=document.getElementById('newsBody'); if(!body) return; var h='';
   if(tab==='read'){
     var paras=(s.article||'').split(/\n\n+/).map(function(p){return '<p style="margin:0 0 12px;line-height:1.7;font-size:1.05rem">'+esc(p.trim())+'</p>';}).join('');
-    h='<div class="card"><button class="btn sm" style="margin-bottom:12px" onclick="newsRead(this)">🔊 Read to me</button>'+paras+'</div>';
+    var lead=s.lead?'<p style="font-style:italic;font-size:1.12rem;color:#1a2238;background:#eef3fb;border-left:4px solid #2B5FA6;padding:10px 14px;border-radius:6px;margin:0 0 16px">'+esc(s.lead)+'</p>':'';
+    h='<div class="card"><button class="btn sm" style="margin-bottom:12px" onclick="newsRead(this)">🔊 Read this bulletin to me</button>'+lead+paras+'</div>';
   } else if(tab==='questions'){
     var mc=(s.mcq||[]).map(function(q,qi){
       var opts=q.opts.map(function(o,oi){return '<label style="display:block;padding:6px 0;cursor:pointer"><input type="radio" name="nq'+qi+'" value="'+oi+'"> '+esc(o)+'</label>';}).join('');
@@ -24702,7 +24752,12 @@ function newsTab(id, tab){
     var op=(s.open||[]).map(function(o,oi){return '<div style="margin-bottom:12px"><b>'+((s.mcq||[]).length+oi+1)+'. '+esc(o)+'</b><textarea id="nqo'+oi+'" rows="3" style="width:100%;margin-top:6px;padding:8px;border:1.5px solid var(--line);border-radius:8px" placeholder="Write your answer…"></textarea></div>';}).join('');
     h='<div class="card">'+mc+op+'<button class="btn" onclick="newsCheckQuiz(\''+id+'\')">Check my answers</button><div id="nqScore" style="margin-top:10px;font-weight:700"></div></div>';
   } else if(tab==='fact'){
-    h='<div class="card" style="background:#e8f7f2;border-color:#0c8a72"><h3 style="margin:0 0 6px">💡 FACT</h3><p style="margin:0 0 14px;font-size:1.05rem">'+esc(s.fact||'')+'</p><h3 style="margin:0 0 6px">✅ ACT</h3><p style="margin:0;font-size:1.05rem">'+esc(s.act||'')+'</p></div>';
+    h='<div class="card" style="background:#e8f7f2;border-color:#0c8a72"><h3 style="margin:0 0 6px">💡 FACT</h3><p style="margin:0 0 14px;font-size:1.05rem">'+esc(s.fact||'')+'</p>'
+      +'<h3 style="margin:0 0 6px">✅ ACT</h3><p style="margin:0;font-size:1.05rem">'+esc(s.act||'')+'</p></div>'
+      +'<div class="card" style="margin-top:12px;background:#fff6e9;border-color:#f5a301"><h3 style="margin:0 0 6px">🎨 Design &amp; Act</h3>'
+      +'<p style="margin:0 0 10px;font-size:1rem">Now turn your thinking into something real. <b>Design</b> a solution that solves a problem or helps someone connected to this story \u2014 then show it: <b>draw</b> it, <b>record</b> your voice, or <b>film</b> your idea.</p>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" onclick="ylFlipbook()">🎬 Open the Flipbook Maker</button><button class="btn sm ghost" onclick="openTools()">🧰 Creation &amp; AI tools</button></div>'
+      +'<p style="margin:10px 0 0;font-size:.82rem;color:var(--muted)">Use the Flipbook Maker to sketch your idea, add audio or a short video, and build it page by page \u2014 or open the teacher-approved creation &amp; AI tools for posters, slides and clips.</p></div>';
   } else if(tab==='slides'){
     var imgs=(s.images||[]).filter(function(u){return (u||'').trim();});
     if(imgs.length){
@@ -24718,13 +24773,20 @@ function newsTab(id, tab){
       h='<div class="card"><p style="color:var(--muted)">Watch a video about this story:</p><a class="btn" href="'+esc(v)+'" target="_blank" rel="noopener">🎬 Watch →</a></div>';
     } else { h='<div class="card"><p style="color:var(--muted)">No video yet for this story. Your teacher can add a video link.</p></div>'; }
   } else if(tab==='discuss'){
-    h='<div class="card"><h3 style="margin:0 0 6px">🗣️ What do you think?</h3><p style="color:var(--muted);font-size:.92rem;margin:0 0 10px">Share your own opinion in a few full sentences. Give a reason for what you think.</p>'
-      +'<textarea id="newsOpinion" rows="6" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:10px" placeholder="I think… because…"></textarea>'
-      +'<div class="err" id="newsPubErr"></div><button class="btn" style="margin-top:10px" onclick="newsPublish(\''+id+'\')">Publish &amp; get my certificate 🎓</button><div id="newsPubOk" style="margin-top:10px"></div></div>';
+    window.__newsSpoke=false; window.__newsWStarted=false; if(window.__newsWInt)clearInterval(window.__newsWInt); if(window.__newsSpkInt)clearInterval(window.__newsSpkInt);
+    h='<div class="card"><h3 style="margin:0 0 6px">🗣️ What do you think?</h3>'
+      +'<p style="color:var(--muted);font-size:.9rem;margin:0 0 10px">Reflect on the story and connect it to your own life. <b>Write</b> for 2 minutes, or <b>speak</b> for 1½ minutes. Copy-and-paste is off — the ideas must be your own.</p>'
+      +'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:6px"><span style="font-weight:700">✍️ Free write</span><span id="newsWClock" style="font-family:monospace;font-weight:800;color:#2B5FA6">2:00</span><span style="color:var(--muted);font-size:.8rem">— starts when you begin typing</span></div>'
+      +'<textarea id="newsOpinion" rows="6" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:10px" placeholder="I think… because…" oninput="newsWriteTick()" onpaste="return newsNoPaste(event)" ondrop="return newsNoPaste(event)"></textarea>'
+      +'<div style="text-align:center;margin:12px 0;color:var(--muted)">— or —</div>'
+      +'<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="btn sm" id="newsSpkBtn" onclick="newsSpeakToggle(\''+id+'\')">🎤 Speak (1½ min)</button><span id="newsSpkClock" style="font-family:monospace;font-weight:800;color:#c0392b"></span><span id="newsSpkMsg" style="color:var(--muted);font-size:.82rem"></span></div>'
+      +'<div id="newsSpkPlay" style="margin-top:8px"></div>'
+      +'<div class="err" id="newsPubErr" style="margin-top:10px"></div>'
+      +'<button class="btn" style="margin-top:8px" onclick="newsPublish(\''+id+'\')">Publish &amp; get my certificate 🎓</button><div id="newsPubOk" style="margin-top:10px"></div></div>';
   }
   body.innerHTML=h;
 }
-function newsRead(btn){ var s=newsFind(window.__NEWS_CUR); if(!s) return; ylSpeak(newsPlain(s), btn); if(btn){ btn.textContent = (window.speechSynthesis&&speechSynthesis.speaking)?'⏹ Stop':'🔊 Read to me'; } }
+function newsRead(btn){ var s=newsFind(window.__NEWS_CUR); if(!s) return; ylSpeak(((s.lead?s.lead+' ':'')+newsPlain(s)), btn); if(btn){ btn.textContent = (window.speechSynthesis&&speechSynthesis.speaking)?'⏹ Stop':'🔊 Read to me'; } }
 function newsSlide(id, d){ var s=newsFind(id); if(!s) return; var n=(s.images||[]).filter(function(u){return (u||'').trim();}).length; window.__newsSlideIdx=((window.__newsSlideIdx||0)+d+n)%n; newsTab(id,'slides'); }
 function newsCheckQuiz(id){
   var s=newsFind(id); if(!s) return; var right=0, total=(s.mcq||[]).length;
@@ -24739,7 +24801,8 @@ function newsCheckQuiz(id){
 function newsPublish(id){
   var s=newsFind(id); if(!s) return; var err=document.getElementById('newsPubErr');
   var op=(document.getElementById('newsOpinion')||{}).value||'';
-  if(op.trim().split(/\s+/).filter(Boolean).length<12){ if(err)err.textContent='Write at least a few full sentences (about 12+ words) before publishing.'; return; }
+  if(op.trim().split(/\s+/).filter(Boolean).length<12 && !window.__newsSpoke){ if(err)err.textContent='Write a few full sentences (about 12+ words) — or use 🎤 Speak — before publishing.'; return; }
+  if(window.__newsWInt)clearInterval(window.__newsWInt);
   if(err)err.textContent='';
   var cert=(typeof mintCert==='function')?mintCert({skill:'Reading', activity:'Current News — '+(s.title||''), participation:true}):null;
   var ok=document.getElementById('newsPubOk');
@@ -24747,6 +24810,26 @@ function newsPublish(id){
 }
 
 /* ---------- teacher: manage stories ---------- */
+function newsNoPaste(e){ if(e&&e.preventDefault)e.preventDefault(); var m=document.getElementById('newsPubErr'); if(m)m.textContent='Copy-and-paste is turned off here — please write in your own words.'; return false; }
+function newsWriteTick(){
+  if(window.__newsWStarted) return; window.__newsWStarted=true; var left=120; var cl=document.getElementById('newsWClock');
+  window.__newsWInt=setInterval(function(){ left--; var m=Math.floor(left/60),s=left%60; if(cl)cl.textContent=m+':'+(s<10?'0':'')+s; if(left<=0){ clearInterval(window.__newsWInt); var ta=document.getElementById('newsOpinion'); if(ta)ta.readOnly=true; if(cl)cl.textContent='0:00 · time up'; } },1000);
+}
+function newsSpeakToggle(id){
+  var btn=document.getElementById('newsSpkBtn'), clock=document.getElementById('newsSpkClock'), msg=document.getElementById('newsSpkMsg');
+  if(window.__newsRec && window.__newsRec.state==='recording'){ try{window.__newsRec.stop();}catch(e){} }
+  if(window.__newsSpkInt){ clearInterval(window.__newsSpkInt); }
+  var left=90;
+  function done(){ clearInterval(window.__newsSpkInt); if(window.__newsRec){ try{ if(window.__newsRec.state==='recording') window.__newsRec.stop(); }catch(e){} } window.__newsSpoke=true; if(btn)btn.textContent='🎤 Speak again'; if(clock)clock.textContent=''; if(msg)msg.textContent='✓ Great — you reflected aloud. You can publish now.'; }
+  function tick(){ left--; var m=Math.floor(left/60),s=left%60; if(clock)clock.textContent=m+':'+(s<10?'0':'')+s; if(left<=0) done(); }
+  function begin(stream){ if(clock)clock.textContent='1:30'; if(btn)btn.textContent='⏹ Stop & finish'; window.__newsSpkInt=setInterval(tick,1000);
+    if(stream){ try{ window.__newsRec=new MediaRecorder(stream); var chunks=[]; window.__newsRec.ondataavailable=function(e){chunks.push(e.data);}; window.__newsRec.onstop=function(){ try{ var url=URL.createObjectURL(new Blob(chunks,{type:'audio/webm'})); var pl=document.getElementById('newsSpkPlay'); if(pl)pl.innerHTML='<audio controls src="'+url+'"></audio>'; }catch(e){} try{stream.getTracks().forEach(function(t){t.stop();});}catch(e){} }; window.__newsRec.start(); }catch(e){} } }
+  // toggle: if already running, stop
+  if(btn && btn.textContent.indexOf('Stop')>=0){ done(); return; }
+  if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
+    navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){ if(msg)msg.textContent='Recording… speak your reflection, connecting it to the story.'; begin(stream); }).catch(function(){ if(msg)msg.textContent='Mic off — the timer is running. Speak your reflection aloud!'; begin(null); });
+  } else { if(msg)msg.textContent='Speak your reflection aloud — timer running!'; begin(null); }
+}
 function renderNewsAdmin(){
   var panel=document.getElementById('newsAdminPanel'); if(!panel) return;
   var list=newsAll();
@@ -24769,7 +24852,7 @@ function newsEdit(id){
     +'<input type="hidden" id="nfId" value="'+esc(s.id||'')+'">'
     +'<div class="field"><label>Headline</label><input id="nfTitle" value="'+esc(s.title||'')+'" style="'+F+'"></div>'
     +'<div style="display:flex;gap:8px;flex-wrap:wrap"><div class="field" style="flex:1;min-width:160px"><label>Category</label><select id="nfCat" style="'+F+'">'+catOpts+'</select></div><div class="field" style="flex:1;min-width:120px"><label>Date label</label><input id="nfDate" value="'+esc(s.date||'')+'" placeholder="e.g. Aug 2026" style="'+F+'"></div></div>'
-    +'<div class="field"><label>Article (leave a blank line between paragraphs)</label><textarea id="nfArticle" rows="7" style="'+F+'">'+esc(s.article||'')+'</textarea></div>'
+    +'<div class="field"><label>Reporter / byline</label><input id="nfReporter" value="'+esc(s.reporter||'')+'" placeholder="e.g. iCAN News Desk · Abu Dhabi" style="'+F+'"></div>'+'<div class="field"><label>News lead (the anchor\'s opening line)</label><textarea id="nfLead" rows="2" style="'+F+'" placeholder="Good evening. Our top story tonight…">'+esc(s.lead||'')+'</textarea></div>'+'<div class="field"><label>Article (leave a blank line between paragraphs)</label><textarea id="nfArticle" rows="7" style="'+F+'">'+esc(s.article||'')+'</textarea></div>'
     +'<label style="font-weight:700">Questions (multiple choice)</label>'+mcqBlock((s.mcq||[])[0],0)+mcqBlock((s.mcq||[])[1],1)
     +'<div class="field"><label>Open question 1</label><input id="nfOpen0" value="'+esc((s.open||[])[0]||'')+'" style="'+F+'"></div>'
     +'<div class="field"><label>Open question 2</label><input id="nfOpen1" value="'+esc((s.open||[])[1]||'')+'" style="'+F+'"></div>'
@@ -24784,7 +24867,7 @@ function newsSaveForm(){
   function v(id){ var e=document.getElementById(id); return e?e.value:''; }
   function mcq(i){ var a=document.querySelector('input[name="nfa'+i+'"]:checked'); return {q:v('nfq'+i).trim(), opts:[v('nfo'+i+'_0').trim(),v('nfo'+i+'_1').trim(),v('nfo'+i+'_2').trim()], ans:a?parseInt(a.value,10):0}; }
   var title=v('nfTitle').trim(); if(!title){ alert('Please add a headline.'); return; }
-  var story={ id:v('nfId')||newsUUID(), category:v('nfCat'), date:v('nfDate').trim()||'', title:title, article:v('nfArticle'),
+  var story={ id:v('nfId')||newsUUID(), category:v('nfCat'), date:v('nfDate').trim()||'', reporter:v('nfReporter').trim(), lead:v('nfLead').trim(), title:title, article:v('nfArticle'),
     mcq:[mcq(0),mcq(1)].filter(function(m){return m.q;}), open:[v('nfOpen0').trim(),v('nfOpen1').trim()].filter(Boolean),
     fact:v('nfFact').trim(), act:v('nfAct').trim(),
     images:v('nfImages').split(/\r?\n/).map(function(x){return x.trim();}).filter(Boolean),
