@@ -1727,6 +1727,7 @@ const CONFIG = {
   // Student access codes you hand out. Edit freely, or add them from the
   // Teacher dashboard (those are saved in this browser).
   classCodes: ["DEMO"],
+  googleClientId: "",   // optional: paste a Google OAuth Web Client ID to enable real "Sign in with Google"
   // Online sync (optional). Paste your Google Sheet web-app URL here, OR set it
   // from the Teacher dashboard. When set, every result is saved online and the
   // teacher dashboard reads everyone's records from the cloud. Leave "" for
@@ -4744,7 +4745,7 @@ function go(screen, arg){
   /* Auth guard: only these screens are reachable without a login. Everything
      else (including Article-A-Day) requires a student or teacher session, so
      no activity can be opened by bypassing the login. */
-  const PUBLIC=['home','studentLogin','teacherLogin'];
+  const PUBLIC=['home','studentLogin','studentPick','teacherLogin'];
   if(!SESSION && PUBLIC.indexOf(screen)===-1){ go('home'); return; }
   /* Teacher-activated access: gated activities open only when the teacher
      has activated them (typing and other engagements stay open). */
@@ -4852,19 +4853,51 @@ const ROUTES = {
   studentLogin(){
     app().innerHTML = `
     <div class="center rwd-photo-bg">
-      <div class="card" style="max-width:420px;width:100%">
+      <div class="card" style="max-width:440px;width:100%">
         <button class="back" onclick="go('home')">← Back</button>
-        <h2 style="font-size:1.8rem">Student sign-in</h2>
-        <p style="color:var(--muted);margin:6px 0 20px;font-size:.92rem">Use the access code your teacher gave you.</p>
-        <div class="field"><label>First name</label><input id="sFirst" placeholder="e.g. Sara"></div>
-        <div class="field"><label>Middle name</label><input id="sMiddle" placeholder="e.g. Ahmed"></div>
-        <div class="field"><label>Last name</label><input id="sLast" placeholder="e.g. Al Hosani"></div>
-        <div class="field"><label>Access code</label><input id="sCode" placeholder="e.g. DEMO" autocapitalize="characters"></div>
+        <h2 style="font-size:1.8rem">Student Login</h2>
+        <p style="color:var(--muted);margin:6px 0 18px;font-size:.92rem">Sign in with your school Google account, or use the class code your teacher gave you.</p>
+        <button class="btn" id="gBtn" style="width:100%;background:#fff;color:#3c4043;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600" onclick="googleSignInStart()">
+          <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.9 2.4 30.3 0 24 0 14.6 0 6.4 5.4 2.5 13.3l7.9 6.1C12.2 13.2 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.5 3-2.2 5.5-4.7 7.2l7.3 5.7C43.9 37.9 46.5 31.7 46.5 24.5z"/><path fill="#FBBC05" d="M10.4 28.6c-.5-1.5-.8-3-.8-4.6s.3-3.1.8-4.6l-7.9-6.1C.9 16.5 0 20.1 0 24s.9 7.5 2.5 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.3 0 11.6-2.1 15.5-5.7l-7.3-5.7c-2 1.4-4.7 2.3-8.2 2.3-6.4 0-11.8-3.7-13.6-9l-7.9 6.1C6.4 42.6 14.6 48 24 48z"/></svg>
+          Sign in with Google
+        </button>
+        <div id="gEmailWrap" style="display:none;margin-top:12px;padding:12px;border:1.5px dashed var(--line);border-radius:10px">
+          <div class="field" style="margin:0 0 8px"><label>Your school email</label><input id="gEmail" type="email" placeholder="name@school.com" autocomplete="email" onkeydown="if(event.key==='Enter')emailSignIn()"></div>
+          <button class="btn" style="width:100%" onclick="emailSignIn()">Continue with email →</button>
+        </div>
+        <div id="gBtnReal" style="margin-top:10px"></div>
+        <div style="text-align:center;color:var(--muted);margin:16px 0 12px;font-size:.9rem">— OR —</div>
+        <div class="field"><label>Class Code</label><input id="sCode" placeholder="e.g. 5ULDQ4" autocapitalize="characters" style="text-transform:uppercase" onkeydown="if(event.key==='Enter')studentCodeContinue()"></div>
         <div class="err" id="sErr"></div>
-        <button class="btn" style="width:100%" onclick="doStudentLogin()">Start practising →</button>
-        <p class="note" style="margin-top:16px">Access code: <span class="kbd">DEMO</span></p>
+        <button class="btn" style="width:100%" onclick="studentCodeContinue()">Continue →</button>
+        <div style="text-align:center;margin-top:14px"><a href="#" onclick="toggleGuestPanel();return false" style="font-size:.86rem;color:var(--muted)">🎫 Not on the class list? Guest access →</a></div>
+        <div id="guestPanel" style="display:none;margin-top:10px;padding:12px;border:1.5px dashed var(--line);border-radius:10px">
+          <p style="font-size:.84rem;color:var(--muted);margin:0 0 8px">Enter the guest code your teacher gave you and a name to show on your work.</p>
+          <div class="field" style="margin:0 0 8px"><label>Guest code</label><input id="gCode" placeholder="guest code" autocapitalize="none"></div>
+          <div class="field" style="margin:0 0 8px"><label>Your name</label><input id="gName" placeholder="e.g. Sara" onkeydown="if(event.key==='Enter')guestSignIn()"></div>
+          <div class="err" id="guestErr"></div>
+          <button class="btn" style="width:100%" onclick="guestSignIn()">Enter as guest →</button>
+        </div>
+        <p class="note" style="margin-top:16px">Not a student? <a href="#" onclick="go('teacherLogin');return false" style="color:var(--teal-dk);font-weight:600">Go to the Teacher Login</a></p>
       </div>
     </div>`;
+    try{ googleMaybeRenderButton(); }catch(e){}
+  },
+  studentPick(code){
+    code=(code||'').toUpperCase();
+    app().innerHTML = `
+    <div class="center rwd-photo-bg">
+      <div class="card" style="max-width:440px;width:100%">
+        <button class="back" onclick="go('studentLogin')">← Back</button>
+        <h2 style="font-size:1.7rem">Student Login</h2>
+        <h3 style="margin:14px 0 8px;font-size:1.2rem">Select Your Name</h3>
+        <p style="color:var(--muted);font-size:.86rem;margin:0 0 10px">Class <b>${esc(code)}</b> — tap your name.</p>
+        <div class="field" style="margin-bottom:8px"><input id="pickSearch" placeholder="Search for your name" autocomplete="off" oninput="renderPickList('${esc(code)}')"></div>
+        <div id="pickList" style="max-height:280px;overflow:auto;border:1.5px solid var(--line);border-radius:10px"></div>
+        <div class="err" id="pickErr" style="margin-top:8px"></div>
+      </div>
+    </div>`;
+    renderPickList(code);
   },
 
   /* ---------------- TEACHER LOGIN ---------------- */
@@ -5490,7 +5523,7 @@ const ROUTES = {
       <h2 class="sub" style="margin-top:22px">✨ Extra spelling</h2>
       <p style="color:var(--muted);margin-top:0">Targeted sets: tricky words, heavy-weight words, vowel teams, homophones, idioms &amp; phrases, and full sentences.</p>
       <div class="grid c2">
-        ${Object.keys(SPELL_BANK).map(k=>{ const c=SPELL_BANK[k]; return `<div class="item-row" style="flex-direction:column;align-items:flex-start">
+        ${Object.keys(SPELL_BANK).filter(k=>k.indexOf('yl_')!==0).map(k=>{ const c=SPELL_BANK[k]; return `<div class="item-row" style="flex-direction:column;align-items:flex-start">
           <h3 style="font-size:1.1rem;margin:2px 0">${c.label}</h3>
           <div class="meta">${c.sub?c.sub+' · ':''}${c.items.length} items · ${c.type}</div>
           <button class="btn sm" style="margin-top:10px" onclick="spellLaunch('${k}','spelldrill')">Start →</button>
@@ -6246,12 +6279,23 @@ const ROUTES = {
       </div>
 
       <div class="card" style="margin-bottom:20px">
-        <h3 style="font-size:1.2rem">🔑 Access codes</h3>
-        <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Codes students use to sign in. Add a code for a new class or group.</p>
+        <h3 style="font-size:1.2rem">🏫 Classes &amp; students</h3>
+        <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Create a class code, then tap it to add your students’ names. Students sign in with the class code and <b>pick their name from the list</b> — they never type it.</p>
         <div id="codeList" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0"></div>
         <div style="display:flex;gap:8px">
           <input id="newCode" placeholder="NEW-CODE" style="flex:1;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;text-transform:uppercase">
           <button class="btn sm" onclick="addCode()">Add code</button>
+        </div>
+        <p style="font-size:.82rem;color:var(--muted);margin:10px 0 0">Tap a code above to manage its <b>class list</b> — the names students pick from when they sign in.</p>
+        <div id="rosterPanel"></div>
+        <div style="border-top:1px solid var(--line);margin-top:16px;padding-top:12px">
+          <label style="display:flex;align-items:center;gap:8px;font-weight:600;cursor:pointer"><input type="checkbox" id="guestAllow" onchange="setGuestAllowed(this.checked)"> 🎫 Allow guest sign-in</label>
+          <p style="font-size:.82rem;color:var(--muted);margin:6px 0">Guests are learners who are not on any class list. When this is on, they sign in with the guest code below — give it out only when you need to.</p>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <span style="font-size:.85rem">Guest code:</span>
+            <input id="guestCodeField" style="padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;width:170px">
+            <button class="btn sm ghost" onclick="setGuestCode(val('guestCodeField'));renderGuestControls()">Save code</button>
+          </div>
         </div>
       </div>
 
@@ -6306,7 +6350,7 @@ const ROUTES = {
         </div>
       </details>
     </div>`;
-    renderCodeList();
+    renderCodeList(); renderGuestControls();
     if(online){ refreshCloud(()=>{ if(CURRENT_SCREEN==='teacher') { qaMergeCloudReplies(); const r2=allResults(); if(r2.length!==res.length){ ROUTES.teacher(); } else { if(typeof paintQA==='function') paintQA(); if(typeof paintAadJournals==='function') paintAadJournals(); } } }); }
   }
 };
@@ -6314,6 +6358,133 @@ const ROUTES = {
 /* =========================================================================
    LOGIN ACTIONS
    ========================================================================= */
+/* ===================== CLASS ROSTERS (teacher-controlled login) ===================== */
+function getRosterAll(){ return Store.get("ican_roster")||{}; }
+function getRoster(code){ return (getRosterAll()[(code||'').toUpperCase()]||[]); }
+function setRoster(code, list){ const all=getRosterAll(); all[(code||'').toUpperCase()]=list; Store.set("ican_roster",all); }
+function rosterAddLines(code, text){
+  const list=getRoster(code).slice(); const seen=new Set(list.map(s=>(s.name||'').toLowerCase()));
+  (text||'').split(/\r?\n/).forEach(line=>{
+    line=line.trim(); if(!line) return;
+    const parts=line.split(/[,;\t]/).map(s=>(s||'').trim());
+    const name=parts[0], email=(parts[1]||'');
+    if(!name || seen.has(name.toLowerCase())) return;
+    seen.add(name.toLowerCase()); list.push({name, email, pw:'1234'});
+  });
+  setRoster(code, list);
+}
+function rosterRemoveIdx(code, idx){ const l=getRoster(code).slice(); l.splice(idx,1); setRoster(code,l); }
+function rosterFindByEmail(email){
+  email=(email||'').trim().toLowerCase(); if(!email) return null;
+  const all=getRosterAll();
+  for(const code in all){ const s=(all[code]||[]).find(x=>(x.email||'').toLowerCase()===email); if(s) return {code, student:s}; }
+  return null;
+}
+function loginAsRosterStudent(code, s){
+  code=(code||'').toUpperCase(); const name=s.name; const parts=(name||'').split(/\s+/);
+  const id=code+"::"+(name||'').toLowerCase();
+  SESSION={role:"student", name, first:parts[0]||name, middle:parts.length>2?parts.slice(1,-1).join(' '):'', last:parts.length>1?parts[parts.length-1]:'', class:"", code, id, email:s.email||''};
+  setStudent(id,{name, class:"", code, email:s.email||''});
+  if(typeof cloudUrl==='function' && cloudUrl()){ pullContent(()=>refreshCloud(()=>{ applyPlacement(); go('tierChoose'); })); }
+  else { applyPlacement(); go('tierChoose'); }
+}
+/* ---- student login flow (class code -> name -> password) ---- */
+/* ---- guest access (teacher-permitted) ---- */
+function guestAllowed(){ return !!Store.get('ican_guest_allowed'); }
+function setGuestAllowed(v){ Store.set('ican_guest_allowed', !!v); }
+function guestCode(){ return (Store.get('ican_guest_code')||'guest1234'); }
+function setGuestCode(v){ v=(v||'').trim(); Store.set('ican_guest_code', v||'guest1234'); }
+function toggleGuestPanel(show){
+  const p=document.getElementById('guestPanel'); if(!p) return;
+  const vis=(show===true) || (show===undefined && p.style.display==='none');
+  p.style.display=vis?'block':'none';
+  if(vis){ const gc=document.getElementById('gCode'); const sc=(val('sCode')||''); if(gc && sc && sc.toUpperCase()===guestCode().toUpperCase()) gc.value=sc; const n=document.getElementById('gName'); if(n) n.focus(); }
+}
+function guestSignIn(){
+  const err=document.getElementById('guestErr');
+  if(!guestAllowed()){ if(err)err.textContent="Guest access is turned off. Please ask your teacher."; return; }
+  const gc=(val('gCode')||'').trim();
+  if(gc.toUpperCase()!==guestCode().toUpperCase()){ if(err)err.textContent="That guest code isn't right. Ask your teacher for the guest code."; return; }
+  let name=(val('gName')||'').trim(); if(!name) name='Guest';
+  const parts=name.split(/\s+/);
+  const id='GUEST::'+name.toLowerCase()+'::'+Date.now().toString(36);
+  SESSION={role:"student", name, first:parts[0]||name, middle:parts.length>2?parts.slice(1,-1).join(' '):'', last:parts.length>1?parts[parts.length-1]:'', class:"", code:'GUEST', id, guest:true};
+  setStudent(id,{name, class:"", code:'GUEST', guest:true});
+  if(typeof cloudUrl==='function' && cloudUrl()){ pullContent(()=>refreshCloud(()=>{ applyPlacement(); go('tierChoose'); })); }
+  else { applyPlacement(); go('tierChoose'); }
+}
+function renderGuestControls(){ const cb=document.getElementById('guestAllow'); if(cb) cb.checked=guestAllowed(); const gf=document.getElementById('guestCodeField'); if(gf) gf.value=guestCode(); }
+
+function studentCodeContinue(){
+  const code=(val('sCode')||'').trim().toUpperCase(); const err=document.getElementById('sErr');
+  if(!code){ if(err)err.textContent="Enter your class code."; return; }
+  if(code===guestCode().toUpperCase()){ if(!guestAllowed()){ if(err)err.textContent="Guest access is turned off. Please use your class code, or ask your teacher for the guest code."; return; } toggleGuestPanel(true); return; }
+  if(!getCodes().map(c=>c.toUpperCase()).includes(code)){ if(err)err.textContent="That class code isn't recognised. Check with your teacher."; return; }
+  if(!getRoster(code).length){ if(err)err.textContent="Your teacher hasn't added any names to this class yet. Please check back soon, or ask your teacher."; return; }
+  go('studentPick', code);
+}
+function renderPickList(code){
+  code=(code||'').toUpperCase();
+  const q=(val('pickSearch')||'').trim().toLowerCase();
+  const roster=getRoster(code);
+  const box=document.getElementById('pickList'); if(!box) return;
+  const rows=roster.map((s,i)=>({s,i})).filter(o=>(o.s.name||'').toLowerCase().includes(q));
+  box.innerHTML = rows.length
+    ? rows.map(o=>`<button type="button" onclick="studentPickIdx('${esc(code)}',${o.i})" style="display:block;width:100%;text-align:left;padding:12px 14px;border:0;border-bottom:1px solid var(--line);background:#fff;cursor:pointer;font-size:1rem">${esc(o.s.name)}</button>`).join('')
+    : `<div style="padding:14px;color:var(--muted)">No names match. Try again, or ask your teacher.</div>`;
+}
+function studentPickIdx(code, idx){
+  code=(code||'').toUpperCase(); const s=getRoster(code)[idx]; if(!s) return;
+  const card=document.querySelector('.center .card'); if(!card) return;
+  card.innerHTML = `
+    <button class="back" onclick="go('studentPick','${esc(code)}')">← Back</button>
+    <h2 style="font-size:1.6rem">Hi, ${esc((s.name||'').split(' ')[0])}! 👋</h2>
+    <p style="color:var(--muted);font-size:.9rem;margin:6px 0 14px">Enter your password to continue. The default is <b>1234</b>.</p>
+    <div class="field"><label>Password</label><input id="pickPw" type="password" placeholder="1234" onkeydown="if(event.key==='Enter')studentPwLogin('${esc(code)}',${idx})"></div>
+    <div class="err" id="pickErr"></div>
+    <button class="btn" style="width:100%" onclick="studentPwLogin('${esc(code)}',${idx})">Sign in →</button>`;
+  const pw=document.getElementById('pickPw'); if(pw) pw.focus();
+}
+function studentPwLogin(code, idx){
+  code=(code||'').toUpperCase(); const s=getRoster(code)[idx]; if(!s) return;
+  const pw=(val('pickPw')||'').trim()||'1234'; const err=document.getElementById('pickErr');
+  if((s.pw||'1234')!==pw){ if(err)err.textContent="That password isn't right. The default is 1234."; return; }
+  loginAsRosterStudent(code, s);
+}
+/* ---- Google / email identity (teacher-controlled: email must be on a class list) ---- */
+function googleSignInStart(){
+  if(CONFIG.googleClientId){ try{ if(window.google&&google.accounts&&google.accounts.id){ google.accounts.id.prompt(); return; } }catch(e){} }
+  const w=document.getElementById('gEmailWrap'); if(w){ w.style.display='block'; const e=document.getElementById('gEmail'); if(e) e.focus(); }
+}
+function emailSignIn(){
+  const email=(val('gEmail')||'').trim().toLowerCase(); const err=document.getElementById('sErr');
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){ if(err)err.textContent="Enter a valid email address."; return; }
+  const hit=rosterFindByEmail(email);
+  if(!hit){ if(err)err.textContent="This email isn't on any class list yet. Ask your teacher to add it."; return; }
+  loginAsRosterStudent(hit.code, hit.student);
+}
+function googleCredentialResponse(resp){
+  try{
+    const payload=JSON.parse(decodeURIComponent(escape(atob((resp.credential||'').split('.')[1]||''))));
+    const email=(payload.email||'').toLowerCase();
+    const hit=rosterFindByEmail(email);
+    if(!hit){ alert("This Google account ("+email+") isn't on any class list. Ask your teacher to add your email, then try again."); return; }
+    loginAsRosterStudent(hit.code, hit.student);
+  }catch(e){ alert("Google sign-in could not be completed. Please use your class code instead."); }
+}
+function googleMaybeRenderButton(){
+  if(!CONFIG.googleClientId) return;
+  function render(){
+    try{
+      google.accounts.id.initialize({client_id:CONFIG.googleClientId, callback:googleCredentialResponse});
+      const host=document.getElementById('gBtnReal');
+      if(host){ host.innerHTML=''; google.accounts.id.renderButton(host,{theme:'outline',size:'large',width:360,text:'signin_with'}); const b=document.getElementById('gBtn'); if(b) b.style.display='none'; }
+    }catch(e){}
+  }
+  if(window.google&&google.accounts&&google.accounts.id){ render(); return; }
+  var s=document.createElement('script'); s.src='https://accounts.google.com/gsi/client'; s.async=true; s.defer=true; s.onload=render; document.head.appendChild(s);
+}
+
 function doStudentLogin(){
   const first=val('sFirst').trim(), middle=val('sMiddle').trim(), last=val('sLast').trim();
   const name=[first,middle,last].filter(Boolean).join(' '), cls="", code=val('sCode').trim().toUpperCase();
@@ -7128,7 +7299,80 @@ function testCloud(){
 }
 function renderCodeList(){
   const el=document.getElementById('codeList'); if(!el) return;
-  el.innerHTML=getCodes().map(c=>`<span class="pill">${esc(c)} <span style="cursor:pointer;color:var(--coral)" onclick="removeCode('${esc(c)}')">✕</span></span>`).join('');
+  el.innerHTML=getCodes().map(c=>`<span class="pill" style="cursor:pointer" onclick="openRoster('${esc(c)}')" title="Manage class list">${esc(c)} <span style="color:var(--muted);font-size:.78rem">(${getRoster(c).length})</span> <span style="color:var(--coral);margin-left:2px" onclick="event.stopPropagation();removeCode('${esc(c)}')">✕</span></span>`).join('');
+}
+function openRoster(code){
+  code=(code||'').toUpperCase();
+  const panel=document.getElementById('rosterPanel'); if(!panel) return;
+  const roster=getRoster(code);
+  panel.innerHTML = `
+    <div style="border:1.5px solid var(--line);border-radius:12px;padding:14px;margin-top:6px;background:#fff">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+        <b style="font-size:1.05rem">👦 Class list — ${esc(code)}</b>
+        <span style="font-size:.82rem;color:var(--muted)">${roster.length} student${roster.length===1?'':'s'} · default password <b>1234</b></span>
+      </div>
+      <p style="font-size:.86rem;color:var(--muted);margin:8px 0">Add students below, one per line (email optional after a comma), or <b>Import CSV</b>. Columns like <span class="kbd">Name, Email</span> or <span class="kbd">First, Last, Email</span> both work.</p>
+      <div style="max-height:220px;overflow:auto;margin:8px 0">${roster.length? roster.map((s,i)=>`<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 8px;border-bottom:1px solid var(--line)"><span><b>${esc(s.name)}</b>${s.email?` <span style="color:var(--muted);font-size:.82rem">· ${esc(s.email)}</span>`:''}</span><button class="btn sm ghost" onclick="rosterRemoveIdx('${esc(code)}',${i});openRoster('${esc(code)}');renderCodeList()" title="Remove">✕</button></div>`).join('') : '<p class="note" style="margin:4px 0">No students yet — add some below.</p>'}</div>
+      <textarea id="rosterBox_${esc(code)}" placeholder="Sara Ahmed, sara@school.com&#10;Omar Ali&#10;Aisha Hassan, aisha@school.com" style="width:100%;min-height:90px;padding:10px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit"></textarea>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+        <button class="btn sm" onclick="rosterAddFromBox('${esc(code)}')">Add to class list</button>
+        <label class="btn sm ghost" style="cursor:pointer;margin:0">📄 Import CSV<input type="file" accept=".csv,.txt" id="rosterCsv_${esc(code)}" onchange="rosterImportCsv('${esc(code)}')" style="display:none"></label>
+        <button class="btn sm ghost" onclick="if(confirm('Clear the whole class list for ${esc(code)}?')){setRoster('${esc(code)}',[]);openRoster('${esc(code)}');renderCodeList();}">Clear list</button>
+        <span style="font-size:.8rem;color:var(--muted);align-self:center">Give students the code <b>${esc(code)}</b> + password <b>1234</b>.</span>
+      </div>
+    </div>`;
+}
+function rosterAddFromBox(code){ const el=document.getElementById('rosterBox_'+code); if(!el) return; rosterAddLines(code, el.value); openRoster(code); renderCodeList(); }
+function parseCsv(text){
+  text=(text||'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const rows=[]; let row=[], cur='', q=false;
+  for(let i=0;i<text.length;i++){ const ch=text[i];
+    if(q){ if(ch==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=ch; }
+    else { if(ch==='"') q=true; else if(ch===','||ch==='\t'||ch===';'){ row.push(cur); cur=''; } else if(ch==='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; } else cur+=ch; }
+  }
+  if(cur!==''||row.length){ row.push(cur); rows.push(row); }
+  return rows.filter(r=>r.some(c=>(c||'').trim()!==''));
+}
+function rosterFromCsv(text){
+  const rows=parseCsv(text); if(!rows.length) return [];
+  const emailRe=/^[^@\s]+@[^@\s]+\.[^@\s]+$/;
+  let header=null, start=0;
+  const h0=rows[0].map(c=>(c||'').trim().toLowerCase());
+  if(h0.some(c=>/name|email|first|last|student/.test(c)) && !h0.some(c=>emailRe.test(c))){ header=h0; start=1; }
+  const idx=(cands)=>{ if(!header) return -1; for(const n of cands){ const i=header.findIndex(h=>h===n); if(i>=0) return i; } for(const n of cands){ const i=header.findIndex(h=>h.indexOf(n)>=0); if(i>=0) return i; } return -1; };
+  const idxName=()=>{ if(!header) return -1; for(const n of ['full name','name','student name','student']){ const i=header.findIndex(h=>h===n); if(i>=0) return i; } return header.findIndex(h=>h.indexOf('name')>=0 && h.indexOf('first')<0 && h.indexOf('last')<0); };
+  const iName=idxName();
+  const iFirst=idx(['first name','first','firstname','given']);
+  const iLast=idx(['last name','last','lastname','surname','family']);
+  const iEmail=idx(['email','e-mail','mail']);
+  const out=[];
+  for(let r=start;r<rows.length;r++){
+    const f=rows[r].map(c=>(c||'').trim());
+    let email='', name='';
+    if(iEmail>=0 && f[iEmail]) email=f[iEmail];
+    if(!email){ const e=f.find(x=>emailRe.test(x)); if(e) email=e; }
+    if(iFirst>=0 && iLast>=0){ name=[(f[iFirst]||''),(f[iLast]||'')].join(' ').trim(); }
+    else if(iName>=0 && f[iName]) name=f[iName];
+    else if(iFirst>=0 || iLast>=0){ name=[(f[iFirst]||''),(f[iLast]||'')].join(' ').trim(); }
+    if(!name){ const parts=f.filter(x=>x && !emailRe.test(x)); name=parts.slice(0,3).join(' ').trim(); }
+    if(name) out.push({name, email:emailRe.test(email)?email:''});
+  }
+  return out;
+}
+function rosterImportCsv(code){
+  const el=document.getElementById('rosterCsv_'+code); if(!el||!el.files||!el.files[0]) return;
+  const reader=new FileReader();
+  reader.onload=function(){
+    try{
+      const rows=rosterFromCsv(String(reader.result||''));
+      const list=getRoster(code).slice(); const seen=new Set(list.map(s=>(s.name||'').toLowerCase()));
+      let added=0;
+      rows.forEach(s=>{ if(!s.name||seen.has(s.name.toLowerCase())) return; seen.add(s.name.toLowerCase()); list.push({name:s.name, email:s.email||'', pw:'1234'}); added++; });
+      setRoster(code, list); openRoster(code); renderCodeList();
+      alert(added+' student'+(added===1?'':'s')+' imported into '+code+(rows.length>added?' ('+(rows.length-added)+' skipped as duplicates).':'.'));
+    }catch(e){ alert('Could not read that CSV. Use a plain .csv with a Name column (email optional).'); }
+  };
+  reader.readAsText(el.files[0]); el.value='';
 }
 function addCode(){ const v=val('newCode').trim().toUpperCase(); if(!v) return; const c=getCodes(); if(!c.includes(v)){ c.push(v); Store.set('ican_codes',c);} document.getElementById('newCode').value=''; renderCodeList(); }
 function removeCode(c){ Store.set('ican_codes', getCodes().filter(x=>x!==c)); renderCodeList(); }
