@@ -6299,6 +6299,12 @@ const ROUTES = {
         </div>
       </div>
 
+      <div class="card" style="margin-bottom:20px">
+        <h3 style="font-size:1.2rem">📰 Current News</h3>
+        <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Add and edit the news stories your students read and discuss. Each story can have an article, questions, a fact &amp; act, image links and a video link.</p>
+        <div id="newsAdminPanel"></div>
+      </div>
+
       <p style="font-size:.82rem;color:var(--muted);margin:0 0 10px">Everything below is tucked into boxes — <b>click a box to open it</b>.</p>
       <div id="teacherControls"></div>
 
@@ -6350,7 +6356,7 @@ const ROUTES = {
         </div>
       </details>
     </div>`;
-    renderCodeList(); renderGuestControls();
+    renderCodeList(); renderGuestControls(); renderNewsAdmin();
     if(online){ refreshCloud(()=>{ if(CURRENT_SCREEN==='teacher') { qaMergeCloudReplies(); const r2=allResults(); if(r2.length!==res.length){ ROUTES.teacher(); } else { if(typeof paintQA==='function') paintQA(); if(typeof paintAadJournals==='function') paintAadJournals(); } } }); }
   }
 };
@@ -24612,6 +24618,183 @@ function betterYouShared(id){
   try{ if(!already && typeof mintCert==='function'){ cert=mintCert({ skill:'The Better You', activity:activity, participation:true, words:[p.words] }); } }catch(e){}
   if(m) m.innerHTML='<span class="by-ok">Submitted &amp; shared ✓ — you passed these words on to '+esc(who)+'. 💛<br>A <b>Certificate of Participation</b> — naming this wisdom — is now in 🏅 My Certificates, and it is saved to your 🏆 Achievement Log (your portfolio).</span>';
 }
+/* ==================== CURRENT NEWS (teacher-editable) ==================== */
+const NEWS_CATS = {'World & Local':'🌍','Politics':'🏛️','Health':'🩺','Education':'🎓','Careers & Jobs':'💼','Science & Discovery':'🔬','Environment':'🌱','Wildlife':'🐾','Technology & Internet':'💻','Economy':'📈','Film & Media':'🎬','Sport':'🏅','Society':'🤝'};
+function newsCatEmoji(c){ return NEWS_CATS[c]||'📰'; }
+const NEWS_SEED = [
+ {id:'nw_seed1',date:'Aug 2026',category:'Environment',title:'The UAE Plants Millions of Mangroves',
+  article:"Along the coast of the UAE, an army of small trees is quietly growing. They are mangroves — salt-loving trees that grow with their roots in seawater.\n\nThe UAE has pledged to plant 100 million mangroves by 2030. Volunteers, drones and scientists are all helping. Drones can fire seed pods into the mud far faster than people can plant by hand.\n\nWhy mangroves? Their thick roots trap carbon from the air, protect the coast from storms, and give fish, crabs and birds a safe home. Scientists say one area of mangroves can store far more carbon than the same area of normal forest.\n\n“Mangroves are our natural allies,” one researcher said. “They clean the air and guard the shore at the same time.”",
+  mcq:[{q:'Where do mangrove trees grow?',opts:['High in the mountains','With their roots in seawater','Only in the desert sand'],ans:1},{q:'How many mangroves does the UAE plan to plant by 2030?',opts:['One hundred','One million','One hundred million'],ans:2}],
+  open:['Why do you think drones are useful for planting mangroves?','What is one thing your community could do to protect nature near you?'],
+  fact:'One area of mangroves can store up to four times more carbon than the same area of ordinary forest.',
+  act:'Find out: does your neighbourhood have any trees or green spaces? Draw a simple map and mark them.',
+  images:['https://images.unsplash.com/photo-1518843875459-f738682238a6?w=1000&q=70&auto=format&fit=crop'],
+  video:'https://www.youtube.com/results?search_query=UAE+mangrove+planting'},
+ {id:'nw_seed2',date:'Aug 2026',category:'Health',title:'Can AI Spot Illness Before Doctors Do?',
+  article:"Doctors are getting a new helper in the clinic: artificial intelligence. New AI tools can look at a scan or an X-ray and point out tiny signs of illness that are easy to miss.\n\nIn several hospitals, AI now double-checks scans for early signs of disease. It does not replace the doctor — it works like a careful second pair of eyes. The doctor still makes the final decision.\n\nSupporters say this could help people get treatment earlier, when illnesses are easier to cure. Others worry about privacy, mistakes, and trusting a machine too much.\n\n“AI can help us, but it cannot care for a patient,” a nurse explained. “That is still a human job.”",
+  mcq:[{q:'According to the article, what does the AI do?',opts:['Replaces the doctor completely','Acts as a careful second pair of eyes','Sends patients home without help'],ans:1},{q:'Why might spotting illness early be helpful?',opts:['It makes scans more colourful','Illnesses can be easier to cure early','It saves electricity'],ans:1}],
+  open:['Would you trust an AI to help check your health? Why or why not?','What is one job you think a machine should never do?'],
+  fact:'Some AI tools can scan an X-ray in under two seconds — far faster than a human can.',
+  act:'Ask a family member: what is one way technology has changed how they visit the doctor?',
+  images:['https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1000&q=70&auto=format&fit=crop'],
+  video:'https://www.youtube.com/results?search_query=AI+in+medicine+explained+for+students'},
+ {id:'nw_seed3',date:'Aug 2026',category:'Science & Discovery',title:'Students Build a Solar Water Cleaner',
+  article:"A group of teenagers has invented a simple machine that turns dirty water into clean drinking water — using only sunlight.\n\nThe device is a small box with a clear lid. Dirty water goes in, the sun heats it, and clean water drips out the other side. The dirt and salt are left behind. It costs very little to build and needs no electricity.\n\nThe students hope their invention can help families in places where clean water is hard to find. They are now testing bigger versions that could serve a whole village.\n\n“We started with a problem we cared about,” said one young inventor. “Then we just kept trying until it worked.”",
+  mcq:[{q:'What powers the students’ water cleaner?',opts:['Electricity from the wall','Sunlight','A large battery'],ans:1},{q:'What is left behind when the water is cleaned?',opts:['The dirt and salt','The clean water','The sunlight'],ans:0}],
+  open:['What problem in the world would you most like to invent something for?','Why is clean water so important for a community?'],
+  fact:'Around the world, billions of people still lack safe water at home — so simple, low-cost inventions matter.',
+  act:'Sketch your own idea for a machine that solves a problem you see every day. Give it a name.',
+  images:[],
+  video:'https://www.youtube.com/results?search_query=solar+still+clean+water+science+project'}
+];
+function newsAll(){ var n=Store.get('ican_news'); if(!Array.isArray(n)){ n=NEWS_SEED.slice(); Store.set('ican_news',n); } return n; }
+function newsSetAll(list){ Store.set('ican_news', list); }
+function newsFind(id){ return newsAll().find(function(s){return s.id===id;}); }
+function newsUUID(){ return 'nw'+Date.now().toString(36)+Math.random().toString(36).slice(2,5); }
+function newsPlain(s){ return (s&&s.article||'').replace(/\s+/g,' ').trim(); }
+
+/* ---------- student: hub ---------- */
+ROUTES.news = function(){
+  var list=newsAll();
+  var cards = list.length ? list.map(function(s){
+    return '<button class="news-card" onclick="go(\'newsStory\',\''+s.id+'\')" style="text-align:left;display:block;width:100%;border:1.5px solid var(--line);border-radius:14px;padding:16px;background:#fff;cursor:pointer;margin-bottom:12px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:.75rem;font-weight:700;color:#c0392b;letter-spacing:.04em">'+newsCatEmoji(s.category)+' '+esc((s.category||'News').toUpperCase())+'</span><span style="font-size:.75rem;color:var(--muted)">'+esc(s.date||'')+'</span></div>'
+      +'<div style="font-size:1.25rem;font-weight:800;color:#1a2238;line-height:1.25">'+esc(s.title||'Untitled')+'</div>'
+      +'<div style="color:var(--muted);font-size:.9rem;margin-top:6px">'+esc(newsPlain(s).slice(0,120))+'…</div>'
+      +'<div style="margin-top:10px;color:var(--teal-dk);font-weight:700;font-size:.9rem">Read &amp; discuss →</div>'
+      +'</button>';
+  }).join('') : '<p style="color:var(--muted)">No news stories yet. Your teacher will add some soon.</p>';
+  app().innerHTML='<div class="wrap screen">'
+    +'<button class="back" onclick="go(\'waspkCats\')">← Prompt Library</button>'
+    +'<h1 style="font-size:2rem">📰 Current News</h1>'
+    +'<p style="color:var(--muted);max-width:680px">Read a real story, answer the questions, learn a fact — then share what <b>you</b> think.</p>'
+    +'<div style="margin-top:14px">'+cards+'</div></div>';
+  try{window.scrollTo(0,0);}catch(e){}
+};
+
+/* ---------- student: story detail with tabs ---------- */
+ROUTES.newsStory = function(id){
+  var s=newsFind(id); if(!s){ go('news'); return; }
+  window.__NEWS_CUR=id; window.__newsSlideIdx=0;
+  var tabs=[['read','📖 Read'],['questions','❓ Questions'],['fact','💡 Fact & Act'],['slides','🖼️ Slideshow'],['watch','🎬 Watch'],['discuss','🗣️ Discuss']];
+  var tabbar=tabs.map(function(t){return '<button class="news-tab" data-tab="'+t[0]+'" onclick="newsTab(\''+id+'\',\''+t[0]+'\')" style="border:0;background:#eef1f6;color:#33405a;font-weight:700;font-size:.85rem;padding:8px 12px;border-radius:999px;cursor:pointer">'+t[1]+'</button>';}).join(' ');
+  app().innerHTML='<div class="wrap screen">'
+    +'<button class="back" onclick="go(\'news\')">← Current News</button>'
+    +'<div style="font-size:.78rem;font-weight:700;color:#c0392b;letter-spacing:.04em;margin-top:6px">'+newsCatEmoji(s.category)+' '+esc((s.category||'News').toUpperCase())+' · '+esc(s.date||'')+'</div>'
+    +'<h1 style="font-size:1.9rem;line-height:1.2;margin:4px 0 12px">'+esc(s.title||'')+'</h1>'
+    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">'+tabbar+'</div>'
+    +'<div id="newsBody"></div></div>';
+  newsTab(id,'read');
+  try{window.scrollTo(0,0);}catch(e){}
+};
+function newsTab(id, tab){
+  var s=newsFind(id); if(!s) return;
+  document.querySelectorAll('.news-tab').forEach(function(b){ var on=b.getAttribute('data-tab')===tab; b.style.background=on?'#2B5FA6':'#eef1f6'; b.style.color=on?'#fff':'#33405a'; });
+  var body=document.getElementById('newsBody'); if(!body) return; var h='';
+  if(tab==='read'){
+    var paras=(s.article||'').split(/\n\n+/).map(function(p){return '<p style="margin:0 0 12px;line-height:1.7;font-size:1.05rem">'+esc(p.trim())+'</p>';}).join('');
+    h='<div class="card"><button class="btn sm" style="margin-bottom:12px" onclick="newsRead(this)">🔊 Read to me</button>'+paras+'</div>';
+  } else if(tab==='questions'){
+    var mc=(s.mcq||[]).map(function(q,qi){
+      var opts=q.opts.map(function(o,oi){return '<label style="display:block;padding:6px 0;cursor:pointer"><input type="radio" name="nq'+qi+'" value="'+oi+'"> '+esc(o)+'</label>';}).join('');
+      return '<div style="margin-bottom:14px"><b>'+(qi+1)+'. '+esc(q.q)+'</b>'+opts+'<div class="err" id="nqr'+qi+'" style="min-height:0"></div></div>';
+    }).join('');
+    var op=(s.open||[]).map(function(o,oi){return '<div style="margin-bottom:12px"><b>'+((s.mcq||[]).length+oi+1)+'. '+esc(o)+'</b><textarea id="nqo'+oi+'" rows="3" style="width:100%;margin-top:6px;padding:8px;border:1.5px solid var(--line);border-radius:8px" placeholder="Write your answer…"></textarea></div>';}).join('');
+    h='<div class="card">'+mc+op+'<button class="btn" onclick="newsCheckQuiz(\''+id+'\')">Check my answers</button><div id="nqScore" style="margin-top:10px;font-weight:700"></div></div>';
+  } else if(tab==='fact'){
+    h='<div class="card" style="background:#e8f7f2;border-color:#0c8a72"><h3 style="margin:0 0 6px">💡 FACT</h3><p style="margin:0 0 14px;font-size:1.05rem">'+esc(s.fact||'')+'</p><h3 style="margin:0 0 6px">✅ ACT</h3><p style="margin:0;font-size:1.05rem">'+esc(s.act||'')+'</p></div>';
+  } else if(tab==='slides'){
+    var imgs=(s.images||[]).filter(function(u){return (u||'').trim();});
+    if(imgs.length){
+      var i=Math.max(0,Math.min(window.__newsSlideIdx||0, imgs.length-1)); window.__newsSlideIdx=i;
+      h='<div class="card"><div style="position:relative;text-align:center"><img src="'+esc(imgs[i])+'" alt="news image" style="max-width:100%;max-height:420px;border-radius:10px" onerror="this.style.display=\'none\'">'
+        +(imgs.length>1?'<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><button class="btn sm ghost" onclick="newsSlide(\''+id+'\',-1)">← Prev</button><span style="color:var(--muted)">'+(i+1)+' / '+imgs.length+'</span><button class="btn sm ghost" onclick="newsSlide(\''+id+'\',1)">Next →</button></div>':'')+'</div></div>';
+    } else { h='<div class="card"><p style="color:var(--muted)">No images yet for this story. Your teacher can add image links.</p></div>'; }
+  } else if(tab==='watch'){
+    var v=(s.video||'').trim();
+    if(v && typeof waspkYTId==='function' && waspkYTId(v)){
+      h='<div class="card"><div class="wa-video"><iframe src="'+waspkYTEmbed(v)+'" title="video" frameborder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;aspect-ratio:16/9;border-radius:10px"></iframe></div></div>';
+    } else if(v){
+      h='<div class="card"><p style="color:var(--muted)">Watch a video about this story:</p><a class="btn" href="'+esc(v)+'" target="_blank" rel="noopener">🎬 Watch →</a></div>';
+    } else { h='<div class="card"><p style="color:var(--muted)">No video yet for this story. Your teacher can add a video link.</p></div>'; }
+  } else if(tab==='discuss'){
+    h='<div class="card"><h3 style="margin:0 0 6px">🗣️ What do you think?</h3><p style="color:var(--muted);font-size:.92rem;margin:0 0 10px">Share your own opinion in a few full sentences. Give a reason for what you think.</p>'
+      +'<textarea id="newsOpinion" rows="6" style="width:100%;padding:10px;border:1.5px solid var(--line);border-radius:10px" placeholder="I think… because…"></textarea>'
+      +'<div class="err" id="newsPubErr"></div><button class="btn" style="margin-top:10px" onclick="newsPublish(\''+id+'\')">Publish &amp; get my certificate 🎓</button><div id="newsPubOk" style="margin-top:10px"></div></div>';
+  }
+  body.innerHTML=h;
+}
+function newsRead(btn){ var s=newsFind(window.__NEWS_CUR); if(!s) return; ylSpeak(newsPlain(s), btn); if(btn){ btn.textContent = (window.speechSynthesis&&speechSynthesis.speaking)?'⏹ Stop':'🔊 Read to me'; } }
+function newsSlide(id, d){ var s=newsFind(id); if(!s) return; var n=(s.images||[]).filter(function(u){return (u||'').trim();}).length; window.__newsSlideIdx=((window.__newsSlideIdx||0)+d+n)%n; newsTab(id,'slides'); }
+function newsCheckQuiz(id){
+  var s=newsFind(id); if(!s) return; var right=0, total=(s.mcq||[]).length;
+  (s.mcq||[]).forEach(function(q,qi){
+    var sel=document.querySelector('input[name="nq'+qi+'"]:checked'); var r=document.getElementById('nqr'+qi);
+    if(!sel){ if(r){r.textContent='Choose an answer.';} return; }
+    if(parseInt(sel.value,10)===q.ans){ right++; if(r){r.style.color='#0c8a72'; r.textContent='✓ Correct';} }
+    else { if(r){r.style.color='#c0392b'; r.textContent='✗ The answer is: '+q.opts[q.ans];} }
+  });
+  var sc=document.getElementById('nqScore'); if(sc) sc.textContent='You got '+right+' of '+total+' right. Now share your opinion in the Discuss tab →';
+}
+function newsPublish(id){
+  var s=newsFind(id); if(!s) return; var err=document.getElementById('newsPubErr');
+  var op=(document.getElementById('newsOpinion')||{}).value||'';
+  if(op.trim().split(/\s+/).filter(Boolean).length<12){ if(err)err.textContent='Write at least a few full sentences (about 12+ words) before publishing.'; return; }
+  if(err)err.textContent='';
+  var cert=(typeof mintCert==='function')?mintCert({skill:'Reading', activity:'Current News — '+(s.title||''), participation:true}):null;
+  var ok=document.getElementById('newsPubOk');
+  if(ok){ ok.innerHTML='<div class="card" style="background:#e8f7f2;border-color:#0c8a72">🎉 Well done! Your response is published.'+(cert?' <button class="btn sm" style="margin-left:8px" onclick="openEarnedCert(\''+cert.id+'\')">View certificate</button>':'')+'</div>'; }
+}
+
+/* ---------- teacher: manage stories ---------- */
+function renderNewsAdmin(){
+  var panel=document.getElementById('newsAdminPanel'); if(!panel) return;
+  var list=newsAll();
+  panel.innerHTML='<div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0"><button class="btn sm" onclick="newsEdit(\'\')">＋ Add news story</button>'
+    +'<button class="btn sm ghost" onclick="if(confirm(\'Reset the news list to the starter stories?\')){newsSetAll(NEWS_SEED.slice());renderNewsAdmin();}">Reset to samples</button></div>'
+    +'<div id="newsEditBox"></div>'
+    +'<div style="margin-top:8px">'+(list.length?list.map(function(s){
+      return '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px;border-bottom:1px solid var(--line)"><span><b>'+esc(s.title||'Untitled')+'</b> <span style="color:var(--muted);font-size:.82rem">· '+newsCatEmoji(s.category)+' '+esc(s.category||'')+'</span></span><span style="white-space:nowrap"><button class="btn sm ghost" onclick="newsEdit(\''+s.id+'\')">Edit</button> <button class="btn sm ghost" onclick="if(confirm(\'Delete this story?\')){newsDelete(\''+s.id+'\')}">✕</button></span></div>';
+    }).join(''):'<p class="note">No stories yet.</p>')+'</div>';
+}
+function newsEdit(id){
+  var s=id?newsFind(id):{id:'',category:'World & Local',title:'',date:'',article:'',mcq:[{q:'',opts:['','',''],ans:0},{q:'',opts:['','',''],ans:0}],open:['',''],fact:'',act:'',images:[],video:''};
+  if(!s) return;
+  var box=document.getElementById('newsEditBox'); if(!box) return;
+  var catOpts=Object.keys(NEWS_CATS).map(function(c){return '<option value="'+esc(c)+'"'+(c===s.category?' selected':'')+'>'+newsCatEmoji(c)+' '+esc(c)+'</option>';}).join('');
+  function mcqBlock(m,i){ m=m||{q:'',opts:['','',''],ans:0}; return '<div style="border:1px solid var(--line);border-radius:8px;padding:8px;margin:6px 0"><input id="nfq'+i+'" placeholder="Question '+(i+1)+'" value="'+esc(m.q||'')+'" style="width:100%;padding:6px;border:1.5px solid var(--line);border-radius:6px;margin-bottom:6px">'
+    +[0,1,2].map(function(o){return '<div style="display:flex;align-items:center;gap:6px;margin:3px 0"><input type="radio" name="nfa'+i+'" value="'+o+'"'+((m.ans||0)===o?' checked':'')+'><input id="nfo'+i+'_'+o+'" placeholder="Option '+(o+1)+'" value="'+esc((m.opts||[])[o]||'')+'" style="flex:1;padding:5px;border:1.5px solid var(--line);border-radius:6px"></div>';}).join('')+'<div style="font-size:.78rem;color:var(--muted)">Tick the correct option.</div></div>'; }
+  var F='padding:8px;border:1.5px solid var(--line);border-radius:8px;width:100%';
+  box.innerHTML='<div class="card" style="background:#fbfbfd"><h4 style="margin:0 0 8px">'+(id?'Edit story':'New story')+'</h4>'
+    +'<input type="hidden" id="nfId" value="'+esc(s.id||'')+'">'
+    +'<div class="field"><label>Headline</label><input id="nfTitle" value="'+esc(s.title||'')+'" style="'+F+'"></div>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap"><div class="field" style="flex:1;min-width:160px"><label>Category</label><select id="nfCat" style="'+F+'">'+catOpts+'</select></div><div class="field" style="flex:1;min-width:120px"><label>Date label</label><input id="nfDate" value="'+esc(s.date||'')+'" placeholder="e.g. Aug 2026" style="'+F+'"></div></div>'
+    +'<div class="field"><label>Article (leave a blank line between paragraphs)</label><textarea id="nfArticle" rows="7" style="'+F+'">'+esc(s.article||'')+'</textarea></div>'
+    +'<label style="font-weight:700">Questions (multiple choice)</label>'+mcqBlock((s.mcq||[])[0],0)+mcqBlock((s.mcq||[])[1],1)
+    +'<div class="field"><label>Open question 1</label><input id="nfOpen0" value="'+esc((s.open||[])[0]||'')+'" style="'+F+'"></div>'
+    +'<div class="field"><label>Open question 2</label><input id="nfOpen1" value="'+esc((s.open||[])[1]||'')+'" style="'+F+'"></div>'
+    +'<div class="field"><label>Fact</label><textarea id="nfFact" rows="2" style="'+F+'">'+esc(s.fact||'')+'</textarea></div>'
+    +'<div class="field"><label>Act (a small task)</label><textarea id="nfAct" rows="2" style="'+F+'">'+esc(s.act||'')+'</textarea></div>'
+    +'<div class="field"><label>Image links (one per line)</label><textarea id="nfImages" rows="3" style="'+F+'" placeholder="https://…">'+esc((s.images||[]).join('\n'))+'</textarea></div>'
+    +'<div class="field"><label>Video link (YouTube or any URL)</label><input id="nfVideo" value="'+esc(s.video||'')+'" style="'+F+'" placeholder="https://youtube.com/…"></div>'
+    +'<div style="display:flex;gap:8px"><button class="btn sm" onclick="newsSaveForm()">Save story</button><button class="btn sm ghost" onclick="document.getElementById(\'newsEditBox\').innerHTML=\'\'">Cancel</button></div></div>';
+  box.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function newsSaveForm(){
+  function v(id){ var e=document.getElementById(id); return e?e.value:''; }
+  function mcq(i){ var a=document.querySelector('input[name="nfa'+i+'"]:checked'); return {q:v('nfq'+i).trim(), opts:[v('nfo'+i+'_0').trim(),v('nfo'+i+'_1').trim(),v('nfo'+i+'_2').trim()], ans:a?parseInt(a.value,10):0}; }
+  var title=v('nfTitle').trim(); if(!title){ alert('Please add a headline.'); return; }
+  var story={ id:v('nfId')||newsUUID(), category:v('nfCat'), date:v('nfDate').trim()||'', title:title, article:v('nfArticle'),
+    mcq:[mcq(0),mcq(1)].filter(function(m){return m.q;}), open:[v('nfOpen0').trim(),v('nfOpen1').trim()].filter(Boolean),
+    fact:v('nfFact').trim(), act:v('nfAct').trim(),
+    images:v('nfImages').split(/\r?\n/).map(function(x){return x.trim();}).filter(Boolean),
+    video:v('nfVideo').trim() };
+  var list=newsAll().slice(); var idx=list.findIndex(function(x){return x.id===story.id;});
+  if(idx>=0) list[idx]=story; else list.unshift(story);
+  newsSetAll(list); var b=document.getElementById('newsEditBox'); if(b) b.innerHTML=''; renderNewsAdmin();
+}
+function newsDelete(id){ newsSetAll(newsAll().filter(function(s){return s.id!==id;})); renderNewsAdmin(); }
+
 ROUTES.waspkCats = function(cat){
   waspkStopRec(); if(typeof ispkInjectStyle==='function') ispkInjectStyle();
   var sel = cat||'';
@@ -24624,6 +24807,7 @@ ROUTES.waspkCats = function(cat){
     + orb('video','\uD83C\uDFAC','Video prompts',['#2B5FA6','#173a6b'],"go('waspkCats','video')")
     + orb('pic','\uD83D\uDDBC\uFE0F','Picture prompts',['#8B5CF6','#5B8DEF'],"go('waspkCats','pic')")
     + orb('debate','\uD83D\uDDE3\uFE0F','Talking point prompts',['#E6464B','#992b2f'],"go('waspkCats','debate')")
+      + orb('news','📰','Current News',['#2B5FA6','#173a6b'],"go('news')")
     + orb('shadow','\uD83C\uDFA7','Shadowing &amp; Storybook',['#3AA0FF','#1E5FBF'],"go('ylShadow')")
     + orb('song','\uD83C\uDFB6','Storybook songs',['#0FA98B','#0b6e5c'],"go('ylStorybookSongs')")
     + orb('life','\uD83D\uDCA1','Life n Extras',['#0C8A72','#0a5f50'],"go('seniorExtras')")
