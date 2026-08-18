@@ -24628,7 +24628,7 @@ const NEWS_SEED = [
   open:['Why do you think drones are useful for planting mangroves?','What is one thing your community could do to protect nature near you?'],
   fact:'One area of mangroves can store up to four times more carbon than the same area of ordinary forest.',
   act:'Find out: does your neighbourhood have any trees or green spaces? Draw a simple map and mark them.',
-  images:['https://images.unsplash.com/photo-1589556183130-530470785fab?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1717292741426-d050f4f25503?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1618288389681-f135edea12db?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1623719647321-188ae37d7133?w=1000&q=70&auto=format&fit=crop'],
+  images:['https://images.unsplash.com/photo-1618288389681-f135edea12db?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1623719647321-188ae37d7133?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1717292741426-d050f4f25503?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1520333764090-778d6dc95ec3?w=1000&q=70&auto=format&fit=crop'],
   video:'https://www.youtube.com/results?search_query=UAE+mangrove+planting'},
  {id:'nw_seed2',date:'Aug 2026',category:'Health',title:'Can AI Spot Illness Before Doctors Do?', reporter:"iCAN Health Desk", lead:"In health news tonight: the doctor of the future may have a new partner in the room — one made entirely of code.",
   article:"Doctors are getting a new helper in the clinic: artificial intelligence. New AI tools can look at a scan or an X-ray and point out tiny signs of illness that are easy to miss.\n\nIn several hospitals, AI now double-checks scans for early signs of disease. It does not replace the doctor — it works like a careful second pair of eyes. The doctor still makes the final decision.\n\nSupporters say this could help people get treatment earlier, when illnesses are easier to cure. Others worry about privacy, mistakes, and trusting a machine too much.\n\n“AI can help us, but it cannot care for a patient,” a nurse explained. “That is still a human job.”",
@@ -24694,9 +24694,17 @@ const NEWS_SEED = [
   open:['Why is it so important to stay calm during an emergency on the road?','What is one thing your family does to stay safe in bad weather?'],
   fact:'In low visibility, drivers should switch on hazard lights and slow down — never speed up to “get through it”.',
   act:'Write three short safety tips for driving or walking during a sandstorm.',
-  images:[],video:'https://www.youtube.com/results?search_query=driving+safely+in+low+visibility'}
+  images:[],video:'https://www.youtube.com/results?search_query=driving+safely+in+low+visibility'},
+ {id:'nw_seed11',date:'Aug 2026',category:'Society',reporter:"iCAN News \u00b7 Abu Dhabi",lead:"In heritage news: for one Emirati falconer, a bird\u2019s true worth is measured not in dirhams, but in the patience it teaches.",title:'Behind the Bid: Why Falconers Chase the Right Bird',caption:"A calm, well-behaved falcon can be worth far more than a nervous one.",
+  article:"ABU DHABI \u2014 For Emirati falconer Mohammed Al Kaabi, a falcon\u2019s value is not measured only by the number on its auction tag. Sometimes, he says, it is measured by how much patience the bird teaches you.\n\nAl Kaabi, who has practised falconry since he was in Year 6, explains that the bond between falcon and falconer is built slowly \u2014 sometimes over hours of simply sitting together. \u201cWhen you first get it, the bird does not know you,\u201d he said. \u201cYou have to break that barrier of fear.\u201d\n\nWith a new bird, he may spend four or five hours a day just keeping it on his hand, even turning on the television so it grows used to everyday sounds and people. The message he tries to send is simple: I am not going to hurt you; I am going to be with you.\n\nA calm, well-behaved bird is worth more. A falcon that might otherwise fetch around Dh50,000 could be valued closer to Dh100,000 if it has the right qualities. But for Al Kaabi, the real reward is not the price. \u201cIt teaches you patience,\u201d he said. \u201cIf you are an impulsive person, the bird makes you calm down.\u201d",
+  mcq:[{q:'How does the falconer say a falcon\u2019s value can be measured?',opts:['Only by its auction price','By the patience it teaches','By its colour'],ans:1},{q:'What quality can make a falcon worth more?',opts:['Being calm and well behaved','Being very loud','Being the largest'],ans:0}],
+  open:['What is something in your life that has taught you patience?','Why do you think building trust with an animal takes time?'],
+  fact:'Falconry is a centuries-old tradition in the UAE and is recognised by UNESCO as part of humanity\u2019s cultural heritage.',
+  act:'Think of a skill that takes patience to learn. Write three tips you would give a beginner who is just starting out.',
+  images:[],video:'https://www.youtube.com/results?search_query=falconry+UAE+heritage+tradition'}
 ];
-function newsAll(){ var n=Store.get('ican_news'); if(!Array.isArray(n)){ n=NEWS_SEED.slice(); Store.set('ican_news',n); } return n; }
+var NEWS_SEED_VERSION=4;
+function newsAll(){ var n=Store.get('ican_news'); if(!Array.isArray(n) || Store.get('ican_news_v')!==NEWS_SEED_VERSION){ n=NEWS_SEED.slice(); Store.set('ican_news',n); Store.set('ican_news_v',NEWS_SEED_VERSION); } return n; }
 function newsSetAll(list){ Store.set('ican_news', list); }
 function newsFind(id){ return newsAll().find(function(s){return s.id===id;}); }
 function newsUUID(){ return 'nw'+Date.now().toString(36)+Math.random().toString(36).slice(2,5); }
@@ -24712,14 +24720,14 @@ ROUTES.news = function(){
   var shown=list.filter(function(s){ return cur==='All'||s.category===cur; });
   var rows=shown.length ? shown.map(function(s){
     var em=newsCatEmoji(s.category);
-    var thumb='<div style="position:relative;flex:0 0 118px;height:84px;border-radius:8px;overflow:hidden;background:#eef1f6;display:flex;align-items:center;justify-content:center;font-size:1.9rem">'+em
+    var hero='<div style="position:relative;width:100%;height:150px;background:#eef1f6;display:flex;align-items:center;justify-content:center;font-size:2.4rem">'+em
       +((s.images&&s.images[0])?'<img src="'+esc(s.images[0])+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.remove()">':'')+'</div>';
-    return '<button onclick="go(\'newsStory\',\''+s.id+'\')" style="display:flex;gap:14px;align-items:stretch;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:14px 2px;cursor:pointer">'
-      +thumb
-      +'<div style="flex:1;min-width:0">'
-        +'<div style="font-size:.72rem;font-weight:800;letter-spacing:.04em;color:#c0392b;margin-bottom:3px">'+esc((s.category||'News').toUpperCase())+'</div>'
-        +'<div style="font-size:1.05rem;font-weight:800;color:#1a2238;line-height:1.28">'+esc(s.title||'Untitled')+'</div>'
-        +'<div style="color:var(--muted);font-size:.8rem;margin-top:6px">'+esc(s.date||'')+' \u00b7 '+newsReadMins(s)+' min read</div>'
+    return '<button onclick="go(\'newsStory\',\''+s.id+'\')" style="text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;padding:0">'
+      +hero
+      +'<div style="padding:12px 14px 14px">'
+        +'<div style="font-size:.7rem;font-weight:800;letter-spacing:.04em;color:#c0392b;margin-bottom:4px">'+esc((s.category||'News').toUpperCase())+'</div>'
+        +'<div style="font-size:1.08rem;font-weight:800;color:#1a2238;line-height:1.28">'+esc(s.title||'Untitled')+'</div>'
+        +'<div style="color:var(--muted);font-size:.8rem;margin-top:8px">'+esc(s.date||'')+' \u00b7 '+newsReadMins(s)+' min read</div>'
       +'</div></button>';
   }).join('') : '<p style="color:var(--muted);padding:16px 0">No stories in this section yet.</p>';
   app().innerHTML='<div class="wrap screen">'
@@ -24727,7 +24735,7 @@ ROUTES.news = function(){
     +'<h1 style="font-size:2rem;margin-bottom:2px">\ud83d\udcf0 Current News</h1>'
     +'<p style="color:var(--muted);max-width:680px;margin-top:0">Pick a section, read a real story, then share what <b>you</b> think.</p>'
     +'<div style="display:flex;overflow-x:auto;border-bottom:2px solid var(--line);margin:14px 0 2px">'+tabs+'</div>'
-    +'<div>'+rows+'</div></div>';
+    +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:12px">'+rows+'</div></div>';
   try{window.scrollTo(0,0);}catch(e){}
 };
 function newsFilter(cat){ window.__newsCat=cat; ROUTES.news(); }
@@ -24753,8 +24761,9 @@ function newsTab(id, tab){
   var body=document.getElementById('newsBody'); if(!body) return; var h='';
   if(tab==='read'){
     var paras=(s.article||'').split(/\n\n+/).map(function(p){return '<p style="margin:0 0 12px;line-height:1.7;font-size:1.05rem">'+esc(p.trim())+'</p>';}).join('');
-    var lead=s.lead?'<p style="font-style:italic;font-size:1.12rem;color:#1a2238;background:#eef3fb;border-left:4px solid #2B5FA6;padding:10px 14px;border-radius:6px;margin:0 0 16px">'+esc(s.lead)+'</p>':'';
-    h='<div class="card"><button class="btn sm" style="margin-bottom:12px" onclick="newsRead(this)">🔊 Read this bulletin to me</button>'+lead+paras+'</div>';
+    var hero=(s.images&&s.images[0])?'<img src="'+esc(s.images[0])+'" alt="" style="width:100%;max-height:360px;object-fit:cover;border-radius:10px;display:block" onerror="this.remove()">':'';
+    var cap=(s.caption||s.lead||''); var capH=cap?'<p style="font-size:.82rem;color:var(--muted);font-style:italic;margin:8px 2px 16px;border-bottom:1px solid var(--line);padding-bottom:12px">'+esc(cap)+'</p>':'';
+    h='<div class="card">'+hero+capH+'<button class="btn sm" style="margin-bottom:14px" onclick="newsRead(this)">🔊 Read this bulletin to me</button>'+paras+'</div>';
   } else if(tab==='questions'){
     var mc=(s.mcq||[]).map(function(q,qi){
       var opts=q.opts.map(function(o,oi){return '<label style="display:block;padding:6px 0;cursor:pointer"><input type="radio" name="nq'+qi+'" value="'+oi+'"> '+esc(o)+'</label>';}).join('');
@@ -24863,7 +24872,7 @@ function newsEdit(id){
     +'<input type="hidden" id="nfId" value="'+esc(s.id||'')+'">'
     +'<div class="field"><label>Headline</label><input id="nfTitle" value="'+esc(s.title||'')+'" style="'+F+'"></div>'
     +'<div style="display:flex;gap:8px;flex-wrap:wrap"><div class="field" style="flex:1;min-width:160px"><label>Category</label><select id="nfCat" style="'+F+'">'+catOpts+'</select></div><div class="field" style="flex:1;min-width:120px"><label>Date label</label><input id="nfDate" value="'+esc(s.date||'')+'" placeholder="e.g. Aug 2026" style="'+F+'"></div></div>'
-    +'<div class="field"><label>Reporter / byline</label><input id="nfReporter" value="'+esc(s.reporter||'')+'" placeholder="e.g. iCAN News Desk · Abu Dhabi" style="'+F+'"></div>'+'<div class="field"><label>News lead (the anchor\'s opening line)</label><textarea id="nfLead" rows="2" style="'+F+'" placeholder="Good evening. Our top story tonight…">'+esc(s.lead||'')+'</textarea></div>'+'<div class="field"><label>Article (leave a blank line between paragraphs)</label><textarea id="nfArticle" rows="7" style="'+F+'">'+esc(s.article||'')+'</textarea></div>'
+    +'<div class="field"><label>Reporter / byline</label><input id="nfReporter" value="'+esc(s.reporter||'')+'" placeholder="e.g. iCAN News Desk · Abu Dhabi" style="'+F+'"></div>'+'<div class="field"><label>News lead (the anchor\'s opening line)</label><textarea id="nfLead" rows="2" style="'+F+'" placeholder="Good evening. Our top story tonight…">'+esc(s.lead||'')+'</textarea></div>'+'<div class="field"><label>Photo caption (shown under the picture)</label><input id="nfCaption" value="'+esc(s.caption||'')+'" style="'+F+'" placeholder="A short caption for the main photo"></div>'+'<div class="field"><label>Article (leave a blank line between paragraphs)</label><textarea id="nfArticle" rows="7" style="'+F+'">'+esc(s.article||'')+'</textarea></div>'
     +'<label style="font-weight:700">Questions (multiple choice)</label>'+mcqBlock((s.mcq||[])[0],0)+mcqBlock((s.mcq||[])[1],1)
     +'<div class="field"><label>Open question 1</label><input id="nfOpen0" value="'+esc((s.open||[])[0]||'')+'" style="'+F+'"></div>'
     +'<div class="field"><label>Open question 2</label><input id="nfOpen1" value="'+esc((s.open||[])[1]||'')+'" style="'+F+'"></div>'
@@ -24878,7 +24887,7 @@ function newsSaveForm(){
   function v(id){ var e=document.getElementById(id); return e?e.value:''; }
   function mcq(i){ var a=document.querySelector('input[name="nfa'+i+'"]:checked'); return {q:v('nfq'+i).trim(), opts:[v('nfo'+i+'_0').trim(),v('nfo'+i+'_1').trim(),v('nfo'+i+'_2').trim()], ans:a?parseInt(a.value,10):0}; }
   var title=v('nfTitle').trim(); if(!title){ alert('Please add a headline.'); return; }
-  var story={ id:v('nfId')||newsUUID(), category:v('nfCat'), date:v('nfDate').trim()||'', reporter:v('nfReporter').trim(), lead:v('nfLead').trim(), title:title, article:v('nfArticle'),
+  var story={ id:v('nfId')||newsUUID(), category:v('nfCat'), date:v('nfDate').trim()||'', reporter:v('nfReporter').trim(), lead:v('nfLead').trim(), caption:v('nfCaption').trim(), title:title, article:v('nfArticle'),
     mcq:[mcq(0),mcq(1)].filter(function(m){return m.q;}), open:[v('nfOpen0').trim(),v('nfOpen1').trim()].filter(Boolean),
     fact:v('nfFact').trim(), act:v('nfAct').trim(),
     images:v('nfImages').split(/\r?\n/).map(function(x){return x.trim();}).filter(Boolean),
