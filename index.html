@@ -24659,14 +24659,14 @@ const NEWS_SEED = [
   open:['Why do you think countries spend money exploring space?','If you could send a rover anywhere, where would you send it, and why?'],
   fact:'Many of the engineers on the UAE’s space missions are under 35 years old.',
   act:'Design your own space rover on paper. Give it a name and label two things it can do.',
-  images:[],video:'https://www.youtube.com/results?search_query=UAE+space+mission+moon+rover'},
+  images:['https://images.unsplash.com/photo-1614315517650-3771cf72d18a?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1745688810809-5040dc0cd002?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1777399902480-5cb358e1d396?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1674616989861-b8dec3488ad1?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=UAE+space+mission+moon+rover'},
  {id:'nw_seed6',date:'Aug 2026',category:'Sport',title:'Padel: The Sport Taking Over the UAE', reporter:"iCAN Sport Desk", lead:"In sport tonight: a game few had heard of five years ago is now echoing across the Emirates.",
   article:"Walk past a sports club in the UAE these days, and you will probably hear the pop of a padel ball. Padel — a fast, fun mix of tennis and squash — has become one of the country's most popular sports.\n\nIt is played in pairs on a small court surrounded by glass walls, so the ball stays in play longer. It is easy to learn, friendly, and great exercise, which is why families, friends and even beginners love it.\n\nNew padel courts are opening across the Emirates, and local tournaments are drawing big crowds.\n\n“You can pick it up in one afternoon,” a coach said, “but you can spend years getting really good.”",
   mcq:[{q:'Padel is a mix of which two sports?',opts:['Football and running','Tennis and squash','Swimming and cycling'],ans:1},{q:'Why do beginners enjoy padel?',opts:['It is very hard to learn','It is easy to learn and friendly','It needs no movement'],ans:1}],
   open:['Why do you think a new sport can become popular so quickly?','What sport would you most like to try, and why?'],
   fact:'Padel is one of the fastest-growing sports in the world, played in more than 90 countries.',
   act:'Invent a simple new game your class could play at break time. Write three short rules for it.',
-  images:[],video:'https://www.youtube.com/results?search_query=padel+sport+how+to+play'},
+  images:['https://images.unsplash.com/photo-1759355456246-6937354a395d?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1646649853703-7645147474ba?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1709587824751-dd30420f5cf3?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1510846699902-9211b99dac11?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=padel+sport+how+to+play'},
  {id:'nw_seed7',date:'Aug 2026',category:'Careers & Jobs',title:'The Jobs That Do Not Exist Yet', reporter:"iCAN News · Special Report", lead:"A special report on your future: many of the jobs waiting for today's students have not been invented yet.",
   article:"Some of the jobs you will do one day have not even been invented. Experts say that many of today's students will work in careers that do not exist right now.\n\nAs technology changes, new jobs appear. A few years ago, there were no ‘drone pilots’, ‘app designers’ or ‘social-media managers’. Tomorrow, there may be ‘space guides’, ‘robot trainers’ or ‘climate engineers’.\n\nSo how do you prepare for a job nobody can name yet? Experts say the best skills are ones that never go out of date: curiosity, problem-solving, teamwork, and the ability to keep learning.\n\n“Don’t just learn facts,” one careers adviser said. “Learn how to learn.”",
   mcq:[{q:'What does the article say about many future jobs?',opts:['They already all exist','They have not been invented yet','They will disappear'],ans:1},{q:'Which skill does the adviser say matters most?',opts:['Memorising facts','Knowing how to keep learning','Typing quickly'],ans:1}],
@@ -24705,23 +24705,34 @@ function newsPlain(s){ return (s&&s.article||'').replace(/\s+/g,' ').trim(); }
 /* ---------- student: hub ---------- */
 ROUTES.news = function(){
   var list=newsAll();
-  var cards = list.length ? list.map(function(s){
-    return '<button class="news-card" onclick="go(\'newsStory\',\''+s.id+'\')" style="text-align:left;display:block;width:100%;border:1.5px solid var(--line);border-radius:14px;padding:16px;background:#fff;cursor:pointer;margin-bottom:12px">'
-      +'<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px"><span style="font-size:.75rem;font-weight:700;color:#c0392b;letter-spacing:.04em">'+newsCatEmoji(s.category)+' '+esc((s.category||'News').toUpperCase())+'</span><span style="font-size:.75rem;color:var(--muted)">'+esc(s.date||'')+'</span></div>'
-      +'<div style="font-size:1.25rem;font-weight:800;color:#1a2238;line-height:1.25">'+esc(s.title||'Untitled')+'</div>'
-      +'<div style="color:var(--muted);font-size:.9rem;margin-top:6px">'+esc(newsPlain(s).slice(0,120))+'…</div>'
-      +'<div style="margin-top:10px;color:var(--teal-dk);font-weight:700;font-size:.9rem">Read &amp; discuss →</div>'
-      +'</button>';
-  }).join('') : '<p style="color:var(--muted)">No news stories yet. Your teacher will add some soon.</p>';
+  var cats=[]; list.forEach(function(s){ if(s.category && cats.indexOf(s.category)<0) cats.push(s.category); });
+  var cur=window.__newsCat||'All'; if(cur!=='All' && cats.indexOf(cur)<0){ cur='All'; window.__newsCat='All'; }
+  function tab(label,val){ var on=(cur===val); return '<button onclick="newsFilter('+JSON.stringify(val)+')" style="border:0;background:none;cursor:pointer;padding:8px 2px;margin-right:18px;font-size:.95rem;font-weight:'+(on?'800':'600')+';color:'+(on?'#173a6b':'#7a8194')+';border-bottom:3px solid '+(on?'#f5a301':'transparent')+';white-space:nowrap">'+label+'</button>'; }
+  var tabs=tab('All','All')+cats.map(function(c){ return tab(newsCatEmoji(c)+' '+esc(c),c); }).join('');
+  var shown=list.filter(function(s){ return cur==='All'||s.category===cur; });
+  var rows=shown.length ? shown.map(function(s){
+    var em=newsCatEmoji(s.category);
+    var thumb='<div style="position:relative;flex:0 0 118px;height:84px;border-radius:8px;overflow:hidden;background:#eef1f6;display:flex;align-items:center;justify-content:center;font-size:1.9rem">'+em
+      +((s.images&&s.images[0])?'<img src="'+esc(s.images[0])+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.remove()">':'')+'</div>';
+    return '<button onclick="go(\'newsStory\',\''+s.id+'\')" style="display:flex;gap:14px;align-items:stretch;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:14px 2px;cursor:pointer">'
+      +thumb
+      +'<div style="flex:1;min-width:0">'
+        +'<div style="font-size:.72rem;font-weight:800;letter-spacing:.04em;color:#c0392b;margin-bottom:3px">'+esc((s.category||'News').toUpperCase())+'</div>'
+        +'<div style="font-size:1.05rem;font-weight:800;color:#1a2238;line-height:1.28">'+esc(s.title||'Untitled')+'</div>'
+        +'<div style="color:var(--muted);font-size:.8rem;margin-top:6px">'+esc(s.date||'')+' \u00b7 '+newsReadMins(s)+' min read</div>'
+      +'</div></button>';
+  }).join('') : '<p style="color:var(--muted);padding:16px 0">No stories in this section yet.</p>';
   app().innerHTML='<div class="wrap screen">'
-    +'<button class="back" onclick="go(\'waspkCats\')">← Prompt Library</button>'
-    +'<h1 style="font-size:2rem">📰 Current News</h1>'
-    +'<p style="color:var(--muted);max-width:680px">Read a real story, answer the questions, learn a fact — then share what <b>you</b> think.</p>'
-    +'<div style="margin-top:14px">'+cards+'</div></div>';
+    +'<button class="back" onclick="go(\'waspkCats\')">\u2190 Prompt Library</button>'
+    +'<h1 style="font-size:2rem;margin-bottom:2px">\ud83d\udcf0 Current News</h1>'
+    +'<p style="color:var(--muted);max-width:680px;margin-top:0">Pick a section, read a real story, then share what <b>you</b> think.</p>'
+    +'<div style="display:flex;overflow-x:auto;border-bottom:2px solid var(--line);margin:14px 0 2px">'+tabs+'</div>'
+    +'<div>'+rows+'</div></div>';
   try{window.scrollTo(0,0);}catch(e){}
 };
+function newsFilter(cat){ window.__newsCat=cat; ROUTES.news(); }
+function newsReadMins(s){ var w=(s.article||'').split(/\s+/).filter(Boolean).length; return Math.max(1, Math.round(w/170)); }
 
-/* ---------- student: story detail with tabs ---------- */
 ROUTES.newsStory = function(id){
   var s=newsFind(id); if(!s){ go('news'); return; }
   window.__NEWS_CUR=id; window.__newsSlideIdx=0;
