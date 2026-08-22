@@ -6423,8 +6423,10 @@ function loginAsRosterStudent(code, s){
 }
 /* ---- student login flow (class code -> name -> password) ---- */
 /* ---- guest access (teacher-permitted) ---- */
-function seniorCode(){ return (Store.get('ican_senior_code')||CONFIG.seniorCode||'SENIOR2026'); }
-function juniorCode(){ return (Store.get('ican_junior_code')||CONFIG.juniorCode||'JUNIOR2026'); }
+try{Store.set('ican_senior_code',null);Store.set('ican_junior_code',null);}catch(e){}
+function seniorCode(){ return (CONFIG.seniorCode||'SENIOR2026'); }
+function juniorCode(){ return (CONFIG.juniorCode||'JUNIOR2026'); }
+function studentApproved(name){ var norm=function(s){return String(s||'').trim().toLowerCase().replace(/\s+/g,' ');}; var t=norm(name); if(!t) return false; return (CONFIG.allowedStudents||[]).map(norm).some(function(n){ return n===t || n.indexOf(t+' ')===0 || t.indexOf(n+' ')===0; }); }
 function setSeniorCode(v){ v=(v||'').trim(); Store.set('ican_senior_code', v||'SENIOR2026'); }
 function setJuniorCode(v){ v=(v||'').trim(); Store.set('ican_junior_code', v||'JUNIOR2026'); }
 function classLocked(){ var o=Store.get('ican_lock'); return (o===true||o===false)? o : (CONFIG.lockClass!==false); }
@@ -6458,7 +6460,7 @@ function studentTierLogin(){
   if(!code){ if(err)err.textContent='Enter the class code your teacher gave you.'; return; }
   if(code.toUpperCase()!==String(want).toUpperCase()){ if(err)err.textContent='That code is not right for the '+(tier==='senior'?'Senior':'Junior')+' class. Please check with your teacher.'; return; }
   var allow=(CONFIG.allowedStudents||[]);
-  if(classLocked() && allow.length){ var okName=allow.some(function(n){ return String(n).trim().toLowerCase()===name.toLowerCase(); }); if(!okName){ if(err)err.textContent='Your name is not on the class list. Please ask your teacher to add you.'; return; } }
+  if(classLocked() && (CONFIG.allowedStudents||[]).length){ if(!studentApproved(name)){ if(err)err.textContent='Your name is not on the class list. Type it as your teacher listed it (first name is fine), or ask your teacher to add you.'; return; } }
   var parts=name.split(/\s+/);
   var id=(tier+'::'+name).toLowerCase();
   SESSION={role:'student', name:name, first:parts[0]||name, middle:parts.length>2?parts.slice(1,-1).join(' '):'', last:parts.length>1?parts[parts.length-1]:'', class:(tier==='senior'?'Senior':'Junior'), code:want, id:id, tier:tier};
