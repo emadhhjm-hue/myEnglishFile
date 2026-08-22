@@ -4856,34 +4856,23 @@ const ROUTES = {
       <div class="card" style="max-width:440px;width:100%">
         <button class="back" onclick="go('home')">← Back</button>
         <h2 style="font-size:1.8rem">Student Login</h2>
-        <p style="color:var(--muted);margin:6px 0 18px;font-size:.92rem">Sign in with your school Google account, or use the class code your teacher gave you.</p>
-        <button class="btn" id="gBtn" style="width:100%;background:#fff;color:#3c4043;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;gap:10px;font-weight:600" onclick="googleSignInStart()">
-          <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.9 2.4 30.3 0 24 0 14.6 0 6.4 5.4 2.5 13.3l7.9 6.1C12.2 13.2 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.5 3-2.2 5.5-4.7 7.2l7.3 5.7C43.9 37.9 46.5 31.7 46.5 24.5z"/><path fill="#FBBC05" d="M10.4 28.6c-.5-1.5-.8-3-.8-4.6s.3-3.1.8-4.6l-7.9-6.1C.9 16.5 0 20.1 0 24s.9 7.5 2.5 10.7l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.3 0 11.6-2.1 15.5-5.7l-7.3-5.7c-2 1.4-4.7 2.3-8.2 2.3-6.4 0-11.8-3.7-13.6-9l-7.9 6.1C6.4 42.6 14.6 48 24 48z"/></svg>
-          Sign in with Google
-        </button>
-        <div id="gEmailWrap" style="display:none;margin-top:12px;padding:12px;border:1.5px dashed var(--line);border-radius:10px">
-          <div class="field" style="margin:0 0 8px"><label>Your school email</label><input id="gEmail" type="email" placeholder="name@school.com" autocomplete="email" onkeydown="if(event.key==='Enter')emailSignIn()"></div>
-          <button class="btn" style="width:100%" onclick="emailSignIn()">Continue with email →</button>
+        <p style="color:var(--muted);margin:6px 0 16px;font-size:.92rem">Type your name, choose your class, and enter the class code your teacher gave you.</p>
+        <div class="field"><label>Your name</label><input id="sName" placeholder="e.g. Sara" autocomplete="off" onkeydown="if(event.key==='Enter')studentTierLogin()"></div>
+        <div class="field"><label>Your class</label>
+          <div style="display:flex;gap:10px">
+            <button type="button" id="tierSenior" class="btn" style="flex:1;background:#fff;color:#173a6b;border:2px solid var(--line)" onclick="pickLoginTier('senior')">🎓 Senior</button>
+            <button type="button" id="tierJunior" class="btn" style="flex:1;background:#fff;color:#173a6b;border:2px solid var(--line)" onclick="pickLoginTier('junior')">🌱 Junior</button>
+          </div>
         </div>
-        <div id="gBtnReal" style="margin-top:10px"></div>
-        <div style="text-align:center;color:var(--muted);margin:16px 0 12px;font-size:.9rem">— OR —</div>
-        <div class="field"><label>Class Code</label><input id="sCode" placeholder="e.g. 5ULDQ4" autocapitalize="characters" style="text-transform:uppercase" onkeydown="if(event.key==='Enter')studentCodeContinue()"></div>
+        <div class="field"><label>Class code</label><input id="sCode" placeholder="code from your teacher" onkeydown="if(event.key==='Enter')studentTierLogin()"></div>
         <div class="err" id="sErr"></div>
-        <button class="btn" style="width:100%" onclick="studentCodeContinue()">Continue →</button>
-        <div style="text-align:center;margin-top:14px"><a href="#" onclick="toggleGuestPanel();return false" style="font-size:.86rem;color:var(--muted)">🎫 Not on the class list? Guest access →</a></div>
-        <div id="guestPanel" style="display:none;margin-top:10px;padding:12px;border:1.5px dashed var(--line);border-radius:10px">
-          <p style="font-size:.84rem;color:var(--muted);margin:0 0 8px">Enter the guest code your teacher gave you and a name to show on your work.</p>
-          <div class="field" style="margin:0 0 8px"><label>Guest code</label><input id="gCode" placeholder="guest code" autocapitalize="none"></div>
-          <div class="field" style="margin:0 0 8px"><label>Your name</label><input id="gName" placeholder="e.g. Sara" onkeydown="if(event.key==='Enter')guestSignIn()"></div>
-          <div class="err" id="guestErr"></div>
-          <button class="btn" style="width:100%" onclick="guestSignIn()">Enter as guest →</button>
-        </div>
+        <button class="btn" style="width:100%" onclick="studentTierLogin()">Enter →</button>
         <p class="note" style="margin-top:16px">Not a student? <a href="#" onclick="go('teacherLogin');return false" style="color:var(--teal-dk);font-weight:600">Go to the Teacher Login</a></p>
       </div>
     </div>`;
-    try{ googleMaybeRenderButton(); }catch(e){}
+    window.__loginTier=null;
   },
-  studentPick(code){
+    studentPick(code){
     code=(code||'').toUpperCase();
     app().innerHTML = `
     <div class="center rwd-photo-bg">
@@ -6279,6 +6268,19 @@ const ROUTES = {
       </div>
 
       <div class="card" style="margin-bottom:20px">
+        <h3 style="font-size:1.2rem">🔑 Class codes — how students sign in</h3>
+        <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Students choose <b>Senior</b> or <b>Junior</b> and type the matching code. Set each class its own code here, then share it with that class.</p>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0 8px">
+          <span style="font-weight:700;min-width:120px">🎓 Senior code:</span>
+          <input id="seniorCodeField" style="padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;width:190px">
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px">
+          <span style="font-weight:700;min-width:120px">🌱 Junior code:</span>
+          <input id="juniorCodeField" style="padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;width:190px">
+        </div>
+        <button class="btn sm" onclick="setSeniorCode(val('seniorCodeField'));setJuniorCode(val('juniorCodeField'));renderTierCodes();alert('Class codes saved.')">Save codes</button>
+      </div>
+      <div class="card" style="margin-bottom:20px">
         <h3 style="font-size:1.2rem">🏫 Classes &amp; students</h3>
         <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Create a class code, then tap it to add your students’ names. Students sign in with the class code and <b>pick their name from the list</b> — they never type it.</p>
         <div id="codeList" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0"></div>
@@ -6356,7 +6358,7 @@ const ROUTES = {
         </div>
       </details>
     </div>`;
-    renderCodeList(); renderGuestControls(); renderNewsAdmin();
+    renderCodeList(); renderGuestControls(); renderNewsAdmin(); try{renderTierCodes();}catch(e){}
     if(online){ refreshCloud(()=>{ if(CURRENT_SCREEN==='teacher') { qaMergeCloudReplies(); const r2=allResults(); if(r2.length!==res.length){ ROUTES.teacher(); } else { if(typeof paintQA==='function') paintQA(); if(typeof paintAadJournals==='function') paintAadJournals(); } } }); }
   }
 };
@@ -6396,6 +6398,34 @@ function loginAsRosterStudent(code, s){
 }
 /* ---- student login flow (class code -> name -> password) ---- */
 /* ---- guest access (teacher-permitted) ---- */
+function seniorCode(){ return (Store.get('ican_senior_code')||'SENIOR2026'); }
+function juniorCode(){ return (Store.get('ican_junior_code')||'JUNIOR2026'); }
+function setSeniorCode(v){ v=(v||'').trim(); Store.set('ican_senior_code', v||'SENIOR2026'); }
+function setJuniorCode(v){ v=(v||'').trim(); Store.set('ican_junior_code', v||'JUNIOR2026'); }
+function renderTierCodes(){ var s=document.getElementById('seniorCodeField'); if(s) s.value=seniorCode(); var j=document.getElementById('juniorCodeField'); if(j) j.value=juniorCode(); }
+function pickLoginTier(t){ window.__loginTier=t;
+  var s=document.getElementById('tierSenior'), j=document.getElementById('tierJunior');
+  if(s){ s.style.borderColor=(t==='senior'?'#2b6cb0':'var(--line)'); s.style.background=(t==='senior'?'#eaf2fb':'#fff'); }
+  if(j){ j.style.borderColor=(t==='junior'?'#2BA84F':'var(--line)'); j.style.background=(t==='junior'?'#eafaef':'#fff'); }
+}
+function studentTierLogin(){
+  var err=document.getElementById('sErr');
+  var name=(val('sName')||'').trim();
+  var tier=window.__loginTier;
+  var code=(val('sCode')||'').trim();
+  if(!name){ if(err)err.textContent='Please type your name.'; return; }
+  if(!tier){ if(err)err.textContent='Please choose Senior or Junior.'; return; }
+  var want=(tier==='senior'?seniorCode():juniorCode());
+  if(!code){ if(err)err.textContent='Enter the class code your teacher gave you.'; return; }
+  if(code.toUpperCase()!==String(want).toUpperCase()){ if(err)err.textContent='That code is not right for the '+(tier==='senior'?'Senior':'Junior')+' class. Please check with your teacher.'; return; }
+  var parts=name.split(/\s+/);
+  var id=(tier+'::'+name).toLowerCase();
+  SESSION={role:'student', name:name, first:parts[0]||name, middle:parts.length>2?parts.slice(1,-1).join(' '):'', last:parts.length>1?parts[parts.length-1]:'', class:(tier==='senior'?'Senior':'Junior'), code:want, id:id, tier:tier};
+  try{ setStudent(id,{name:name, class:(tier==='senior'?'Senior':'Junior'), code:want, tier:tier}); }catch(e){}
+  try{ setStudentTier(tier); }catch(e){}
+  try{ if(typeof applyPlacement==='function') applyPlacement(); }catch(e){}
+  routeStudentHome();
+}
 function guestAllowed(){ return !!Store.get('ican_guest_allowed'); }
 function setGuestAllowed(v){ Store.set('ican_guest_allowed', !!v); }
 function guestCode(){ return (Store.get('ican_guest_code')||'guest1234'); }
@@ -24724,7 +24754,7 @@ const NEWS_SEED = [
   open:['Why do you think baby turtles head for the sea at night?','What is one small thing beach visitors could do to help turtles?'],
   fact:'Only about one in a thousand baby sea turtles survives to become an adult \u2014 so every nest matters.',
   act:'Design a beach sign that reminds visitors how to protect turtle nests.',
-  images:[],video:'https://www.youtube.com/results?search_query=sea+turtle+nesting+conservation'},
+  images:['https://images.unsplash.com/photo-1533374900843-76bbd8249901?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1558216629-a2f7fe856792?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=sea+turtle+nesting+conservation'},
  {id:'nw_seed17',date:'Aug 2026',category:'Wildlife',reporter:"iCAN Science Desk",lead:"Beneath the calm waters of the Gulf lies a colourful world that scientists are racing to protect.",title:'Coral Gardens Beneath the Gulf',caption:"Hidden reefs shelter fish, turtles and countless sea creatures.",
   article:"Below the surface of the Arabian Gulf grow gardens of coral \u2014 living rock built by tiny animals over hundreds of years. These reefs are home to fish, crabs, turtles and much more.\n\nWarm seas can harm coral, so scientists are growing new coral in nurseries and planting it back onto the reef.\n\n\u201cA reef is like an underwater city,\u201d a marine biologist said. \u201cIf we protect it, everything else survives too.\u201d",
   mcq:[{q:'What builds a coral reef?',opts:['Tiny living animals','Falling rocks','Machines'],ans:0},{q:'How are scientists helping damaged reefs?',opts:['By growing new coral and replanting it','By painting the coral','By removing all the fish'],ans:0}],
@@ -24759,7 +24789,7 @@ const NEWS_SEED = [
   open:['What is one goal you would like to set for this school year?','What helps you feel ready and calm before a big day?'],
   fact:'Setting one small, clear goal makes you far more likely to succeed than setting many at once.',
   act:'Write one goal for this term and three small steps to reach it.',
-  images:[],video:'https://www.youtube.com/results?search_query=back+to+school+tips+for+students'},
+  images:['https://images.unsplash.com/photo-1577896851231-70ef18881754?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1570616969692-54d6ba3d0397?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=back+to+school+tips+for+students'},
  {id:'nw_seed23',date:'Aug 2026',category:'Society',reporter:"iCAN News \u00b7 Community Desk",lead:"A simple idea is spreading through schools: what if kindness could be contagious?",title:'The Kindness Project',caption:"Small acts of kindness are changing the mood in whole schools.",
   article:"It started with one class leaving friendly notes for others. Soon, students across the school were doing small kind acts \u2014 helping a classmate, thanking a cleaner, welcoming a new student.\n\nTeachers noticed the whole school felt friendlier. Kindness, it turns out, spreads from person to person like a smile.\n\n\u201cYou never know how much one kind word can mean,\u201d a student said.",
   mcq:[{q:'How did the Kindness Project start?',opts:['With friendly notes from one class','With a big prize','With a new rule'],ans:0},{q:'What did teachers notice?',opts:['The school felt friendlier','Nothing changed','Students were louder'],ans:0}],
@@ -24780,7 +24810,7 @@ const NEWS_SEED = [
   open:['What subject would you most enjoy learning outdoors?','Why might a lesson you can touch be easier to remember?'],
   fact:'Spending time outdoors has been shown to improve both mood and concentration.',
   act:'Plan an outdoor lesson for your class. What would you learn, and where?',
-  images:[],video:'https://www.youtube.com/results?search_query=outdoor+learning+in+schools'},
+  images:['https://images.unsplash.com/photo-1570616969692-54d6ba3d0397?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=outdoor+learning+in+schools'},
  {id:'nw_seed29',date:'Aug 2026',category:'Technology & Internet',reporter:"iCAN Tech Desk",lead:"They can write, answer questions and even tell jokes \u2014 but how much should we trust the new AI chatbots?",title:'The Rise of the Chatbots',caption:"AI chatbots are powerful helpers \u2014 but they can be wrong.",
   article:"AI chatbots can answer questions, help with ideas and explain tricky topics in seconds. Many students already use them.\n\nBut chatbots are not always right. They can \u2018make things up\u2019 with great confidence. Experts say they are best used as a helper \u2014 to spark ideas \u2014 not as a source you trust blindly.\n\n\u201cUse it like a clever friend,\u201d a teacher said, \u201cbut always check its facts yourself.\u201d",
   mcq:[{q:'What is a weakness of AI chatbots?',opts:['They can be confidently wrong','They never answer','They only work at night'],ans:0},{q:'How do experts say we should use them?',opts:['Trust them blindly','As a helper, and check the facts','Never use them'],ans:1}],
@@ -24822,21 +24852,21 @@ const NEWS_SEED = [
   open:['Would you join a coding club? What would you build?','Why might \u2018solving problems step by step\u2019 help in any job?'],
   fact:'The word \u2018bug\u2019 for a computer error comes from a real moth found inside a computer in 1947.',
   act:'In plain words, write the step-by-step \u2018code\u2019 for making a cup of tea. Be very precise.',
-  images:[],video:'https://www.youtube.com/results?search_query=school+coding+club'},
+  images:['https://images.unsplash.com/photo-1598981457915-aea220950616?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1563394867331-e687a36112fd?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=school+coding+club'},
  {id:'nw_fix4',date:'Aug 2026',category:'Education',reporter:"iCAN Education Desk",lead:"The scratch of pen on paper is back: several schools have begun a daily hour dedicated to handwriting.",title:'Schools Trial a Daily \u2018Handwriting Hour\u2019',caption:"Teachers say writing by hand is helping students remember more.",
   article:"AL DHAFRA \u2014 Several schools began trialling a daily \u2018handwriting hour\u2019 this term, after teachers noticed that writing by hand seemed to help students remember what they learned.\n\nDuring the hour, students take notes and write short pieces with pen and paper instead of typing. Early results, teachers say, are promising.\n\n\u201cThe pen is slower,\u201d one teacher said, \u201cand sometimes slower is exactly what learning needs.\u201d",
   mcq:[{q:'What did the schools begin trialling?',opts:['A daily handwriting hour','A longer lunch','A no-homework week'],ans:0},{q:'Why did teachers start it?',opts:['Writing by hand seemed to aid memory','Pens were cheaper','Computers broke'],ans:0}],
   open:['Do you remember things better when you write them by hand?','When does writing something down help you most?'],
   fact:'Studies show students who take notes by hand often remember ideas better than those who type them.',
   act:'Write tomorrow\u2019s to-do list by hand. Notice whether you remember it better.',
-  images:[],video:'https://www.youtube.com/results?search_query=handwriting+in+schools'},
+  images:['https://images.unsplash.com/photo-1581726707445-75cbe4efc586?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1561089489-f13d5e730d72?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=handwriting+in+schools'},
  {id:'nw_fix5',date:'Aug 2026',category:'Education',reporter:"iCAN Education Desk",lead:"A new report is celebrating something many UAE students do every day without thinking \u2014 switching between two languages.",title:'Report Praises UAE\u2019s Bilingual Classrooms',caption:"Students who learn in two languages show a real edge, a report says.",
   article:"A new education report released this week has praised UAE schools for teaching in both Arabic and English, saying bilingual students show stronger focus and problem-solving.\n\nSwitching between languages, the report explains, exercises the brain like a daily workout \u2014 and helps students understand other points of view.\n\n\u201cEvery language a child learns,\u201d one researcher said, \u201copens a new window on the world.\u201d",
   mcq:[{q:'What did the report praise?',opts:['Teaching in two languages','Longer holidays','Bigger classrooms'],ans:0},{q:'What does switching languages do for the brain?',opts:['Exercises it like a workout','Tires it out for good','Nothing'],ans:0}],
   open:['Which languages do you speak, and which would you like to learn?','How does knowing more than one language help you?'],
   fact:'More than half the people in the world speak two or more languages every day.',
   act:'Teach a classmate three useful words in another language you know.',
-  images:[],video:'https://www.youtube.com/results?search_query=bilingual+education+benefits'},
+  images:['https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=bilingual+education+benefits'},
  {id:'nw_fix6',date:'Aug 2026',category:'Technology & Internet',reporter:"iCAN Tech Desk",lead:"Authorities have sounded the alarm this week over a new online trick aimed squarely at young people.",title:'Police Warn Students of a New Online Scam',caption:"Officials say a message that seems too good to be true usually is.",
   article:"ABU DHABI \u2014 Police issued a warning this week about a new online scam targeting young people with fake prizes and \u2018free\u2019 offers that ask for personal information.\n\nOfficials repeated a simple rule: think before you click, never share passwords, and tell a trusted adult if something feels wrong.\n\n\u201cThe internet never forgets,\u201d a safety officer said. \u201cA message that seems too good to be true usually is.\u201d",
   mcq:[{q:'What did police warn about?',opts:['A new online scam','A new road','A new game'],ans:0},{q:'What is the simple rule they repeated?',opts:['Think before you click','Click everything fast','Share your password'],ans:0}],
@@ -24850,7 +24880,7 @@ const NEWS_SEED = [
   open:['Would you be happy for your teacher to see everything you post? Why or why not?','How can you build a positive digital footprint?'],
   fact:'Content shared online can be copied and saved by others, even after you delete the original.',
   act:'Design a poster that teaches younger students about their digital footprint.',
-  images:[],video:'https://www.youtube.com/results?search_query=digital+safety+week+schools'},
+  images:['https://images.unsplash.com/photo-1758270705067-0d7edee57af0?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=digital+safety+week+schools'},
  {id:'nw_fix8',date:'Aug 2026',category:'Economy',reporter:"iCAN News \u00b7 Schools Desk",lead:"For one busy afternoon, a school corridor became a bustling marketplace \u2014 run entirely by students.",title:'Students Run a Bustling Market Day',caption:"Young sellers learned how business really works \u2014 by doing it.",
   article:"AL DHAFRA \u2014 School corridors turned into a marketplace this week as students ran their own Market Day, selling crafts, snacks and handmade goods they had prepared themselves.\n\nOrganisers said the event taught real lessons in money: setting a price, giving change, and deciding what to save and what to spend.\n\n\u201cYou do not need to be an adult to have a great idea,\u201d one young seller said with a grin.",
   mcq:[{q:'What did students do on Market Day?',opts:['Sold crafts, snacks and goods','Watched films','Sat exams'],ans:0},{q:'What money lesson did it teach?',opts:['Pricing, change and saving','How to fly','How to cook only'],ans:0}],
