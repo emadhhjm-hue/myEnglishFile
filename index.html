@@ -1717,6 +1717,17 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
    ========================================================================= */
 const CONFIG = {
   teacherCode: "iCAN2",      // <-- change this and keep it private
+  // === CLASS CODES students type to sign in (SAME on every device). ===
+  // Change these to whatever you like, then re-deploy. Give the Senior code
+  // to your senior class and the Junior code to your junior class.
+  seniorCode: "SENIOR2026",
+  juniorCode: "JUNIOR2026",
+  // === APPROVED STUDENTS (who may sign in). Leave [] to allow anyone with the
+  // code. Add names to allow ONLY those students; remove a name to block that
+  // student, then re-deploy. Matching ignores case and extra spaces. ===
+  allowedStudents: ["Mona Ibrahim","Hana Emad Ali","Habiba Emad Ali","Jana Emad Ali","Yusuf Emad Ali"],
+  // lockClass: true = only approved students may sign in.  false = open to anyone with the code.
+  lockClass: true,
   // Shown on certificates. Edit these to your school and your name.
   schoolName: "iCAN English Practice",
   teacherName: "Emad Ali Mohamed",
@@ -6269,16 +6280,30 @@ const ROUTES = {
 
       <div class="card" style="margin-bottom:20px">
         <h3 style="font-size:1.2rem">🔑 Class codes — how students sign in</h3>
-        <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Students choose <b>Senior</b> or <b>Junior</b> and type the matching code. Set each class its own code here, then share it with that class.</p>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0 8px">
-          <span style="font-weight:700;min-width:120px">🎓 Senior code:</span>
-          <input id="seniorCodeField" style="padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;width:190px">
+        <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Students choose <b>Senior</b> or <b>Junior</b> and type the matching code. These are the codes to give your classes:</p>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;margin:12px 0">
+          <div style="flex:1;min-width:150px;background:#eaf2fb;border:1.5px solid #cfe0f5;border-radius:10px;padding:12px 14px">
+            <div style="font-size:.8rem;color:var(--muted)">🎓 Senior class code</div>
+            <div id="seniorCodeShow" style="font-size:1.4rem;font-weight:800;color:#173a6b;letter-spacing:1px">—</div>
+          </div>
+          <div style="flex:1;min-width:150px;background:#eafaef;border:1.5px solid #cdeed6;border-radius:10px;padding:12px 14px">
+            <div style="font-size:.8rem;color:var(--muted)">🌱 Junior class code</div>
+            <div id="juniorCodeShow" style="font-size:1.4rem;font-weight:800;color:#1c7a3f;letter-spacing:1px">—</div>
+          </div>
         </div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 12px">
-          <span style="font-weight:700;min-width:120px">🌱 Junior code:</span>
-          <input id="juniorCodeField" style="padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;width:190px">
+        <div style="background:#fff6e9;border:1.5px solid #f5d79a;border-radius:10px;padding:10px 12px;font-size:.85rem;color:#7a5a12">
+          <b>To change these codes:</b> the app has no server, so the codes are built into the app file and shared by every device. Open <code>index.html</code>, find the two lines marked <b>CLASS CODES</b> near the top, edit them, and re-deploy. Setting a code only in your own browser will <b>not</b> reach students on other devices.
         </div>
-        <button class="btn sm" onclick="setSeniorCode(val('seniorCodeField'));setJuniorCode(val('juniorCodeField'));renderTierCodes();alert('Class codes saved.')">Save codes</button>
+      </div>
+      <div class="card" style="margin-bottom:20px">
+        <h3 style="font-size:1.2rem">🛡️ Who can sign in (eligibility)</h3>
+        <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Switch between <b>Locked</b> (only approved students) and <b>Open</b> (anyone with the code). This is how you add or remove who may use the platform.</p>
+        <div id="allowedShow" style="margin:10px 0"></div>
+        <div style="background:#fff6e9;border:1.5px solid #f5d79a;border-radius:10px;padding:10px 12px;font-size:.85rem;color:#7a5a12">
+          The <b>Locked / Open</b> switch above changes the mode on <b>this device</b> right away. To apply it to students on their own devices (there is no server), open <code>index.html</code> near the top, set <code>lockClass: true</code> (locked) or <code>false</code> (open) and edit the <b>APPROVED STUDENTS</b> list, then re-deploy.
+          <br>• <b>To remove a student:</b> delete their name from the list and re-deploy; also change the class code so they cannot rejoin.
+          <br><span style="color:#8a6d1f">No server means this is strong classroom control, not bank-level security.</span>
+        </div>
       </div>
       <div class="card" style="margin-bottom:20px">
         <h3 style="font-size:1.2rem">🏫 Classes &amp; students</h3>
@@ -6358,7 +6383,7 @@ const ROUTES = {
         </div>
       </details>
     </div>`;
-    renderCodeList(); renderGuestControls(); renderNewsAdmin(); try{renderTierCodes();}catch(e){}
+    renderCodeList(); renderGuestControls(); renderNewsAdmin(); try{renderTierCodes();}catch(e){} try{renderAllowed();}catch(e){}
     if(online){ refreshCloud(()=>{ if(CURRENT_SCREEN==='teacher') { qaMergeCloudReplies(); const r2=allResults(); if(r2.length!==res.length){ ROUTES.teacher(); } else { if(typeof paintQA==='function') paintQA(); if(typeof paintAadJournals==='function') paintAadJournals(); } } }); }
   }
 };
@@ -6398,11 +6423,25 @@ function loginAsRosterStudent(code, s){
 }
 /* ---- student login flow (class code -> name -> password) ---- */
 /* ---- guest access (teacher-permitted) ---- */
-function seniorCode(){ return (Store.get('ican_senior_code')||'SENIOR2026'); }
-function juniorCode(){ return (Store.get('ican_junior_code')||'JUNIOR2026'); }
+function seniorCode(){ return (Store.get('ican_senior_code')||CONFIG.seniorCode||'SENIOR2026'); }
+function juniorCode(){ return (Store.get('ican_junior_code')||CONFIG.juniorCode||'JUNIOR2026'); }
 function setSeniorCode(v){ v=(v||'').trim(); Store.set('ican_senior_code', v||'SENIOR2026'); }
 function setJuniorCode(v){ v=(v||'').trim(); Store.set('ican_junior_code', v||'JUNIOR2026'); }
-function renderTierCodes(){ var s=document.getElementById('seniorCodeField'); if(s) s.value=seniorCode(); var j=document.getElementById('juniorCodeField'); if(j) j.value=juniorCode(); }
+function classLocked(){ var o=Store.get('ican_lock'); return (o===true||o===false)? o : (CONFIG.lockClass!==false); }
+function setClassLock(v){ Store.set('ican_lock', !!v); try{renderAllowed();}catch(e){} }
+function renderAllowed(){ var el=document.getElementById('allowedShow'); if(!el) return;
+  var locked=classLocked(); var a=(CONFIG.allowedStudents||[]);
+  function b(on){ return on ? '' : 'background:#fff;color:#173a6b;border:1.5px solid var(--line)'; }
+  var toggle='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px"><span style="font-weight:700">Class access:</span>'
+    +'<button class="btn sm" style="'+b(locked)+'" onclick="setClassLock(true)">\ud83d\udd12 Locked</button>'
+    +'<button class="btn sm" style="'+b(!locked)+'" onclick="setClassLock(false)">\ud83d\udd13 Open</button></div>';
+  var body;
+  if(!locked){ body='<div style="background:#eafaef;border:1.5px solid #cdeed6;border-radius:10px;padding:10px 12px;font-size:.9rem"><b>Open</b> \u2014 anyone who has the class code can sign in.</div>'; }
+  else if(!a.length){ body='<div style="background:#fdecea;border:1.5px solid #f5c6cb;border-radius:10px;padding:10px 12px;font-size:.9rem"><b>Locked, but the approved list is empty</b> \u2014 no one can sign in. Add names to APPROVED STUDENTS in the file.</div>'; }
+  else { body='<div style="font-size:.85rem;color:var(--muted);margin-bottom:6px">Locked \u2014 only these '+a.length+' student(s) can sign in:</div><div style="display:flex;flex-wrap:wrap;gap:6px">'+a.map(function(n){return '<span style="background:#eaf2fb;border:1px solid #cfe0f5;border-radius:20px;padding:4px 12px;font-size:.9rem">'+esc(String(n))+'</span>';}).join('')+'</div>'; }
+  el.innerHTML=toggle+body;
+}
+function renderTierCodes(){ var s=document.getElementById('seniorCodeShow'); if(s) s.textContent=seniorCode(); var j=document.getElementById('juniorCodeShow'); if(j) j.textContent=juniorCode(); }
 function pickLoginTier(t){ window.__loginTier=t;
   var s=document.getElementById('tierSenior'), j=document.getElementById('tierJunior');
   if(s){ s.style.borderColor=(t==='senior'?'#2b6cb0':'var(--line)'); s.style.background=(t==='senior'?'#eaf2fb':'#fff'); }
@@ -6418,6 +6457,8 @@ function studentTierLogin(){
   var want=(tier==='senior'?seniorCode():juniorCode());
   if(!code){ if(err)err.textContent='Enter the class code your teacher gave you.'; return; }
   if(code.toUpperCase()!==String(want).toUpperCase()){ if(err)err.textContent='That code is not right for the '+(tier==='senior'?'Senior':'Junior')+' class. Please check with your teacher.'; return; }
+  var allow=(CONFIG.allowedStudents||[]);
+  if(classLocked() && allow.length){ var okName=allow.some(function(n){ return String(n).trim().toLowerCase()===name.toLowerCase(); }); if(!okName){ if(err)err.textContent='Your name is not on the class list. Please ask your teacher to add you.'; return; } }
   var parts=name.split(/\s+/);
   var id=(tier+'::'+name).toLowerCase();
   SESSION={role:'student', name:name, first:parts[0]||name, middle:parts.length>2?parts.slice(1,-1).join(' '):'', last:parts.length>1?parts[parts.length-1]:'', class:(tier==='senior'?'Senior':'Junior'), code:want, id:id, tier:tier};
