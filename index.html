@@ -1718,7 +1718,7 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
    iCAN — configuration you can change
    ========================================================================= */
 const CONFIG = {
-  teacherCode: "iCAN2",      // <-- change this and keep it private
+  teacherCode: "",           // moved server-side — checked by /api/login; no secret in source
   // === CLASS CODES students type to sign in (SAME on every device). ===
   // Change these to whatever you like, then re-deploy. Give the Senior code
   // to your senior class and the Junior code to your junior class.
@@ -4910,11 +4910,20 @@ const ROUTES = {
         <button class="back" onclick="go('home')">← Back</button>
         <h2 style="font-size:1.8rem">Teacher sign-in</h2>
         <p style="color:var(--muted);margin:6px 0 20px;font-size:.92rem">Enter your private teacher code.</p>
-        <div class="field"><label>Teacher code</label><input id="tCode" type="password" placeholder="••••••••"></div>
+        <div class="field"><label>Teacher code</label><input id="tCode" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doTeacherLogin()"></div>
         <div class="err" id="tErr"></div>
         <button class="btn dark" style="width:100%" onclick="doTeacherLogin()">Open dashboard →</button>
+        <div style="display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--muted);font-size:.85rem">
+          <span style="flex:1;height:1px;background:#e2e0ea"></span>or<span style="flex:1;height:1px;background:#e2e0ea"></span>
+        </div>
+        <a href="/api/auth/microsoft" class="btn" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;color:#3a3a3a;border:1px solid #cfcfcf;text-decoration:none;box-sizing:border-box">
+          <svg width="18" height="18" viewBox="0 0 21 21" aria-hidden="true"><rect width="9" height="9" x="1" y="1" fill="#F25022"/><rect width="9" height="9" x="11" y="1" fill="#7FBA00"/><rect width="9" height="9" x="1" y="11" fill="#00A4EF"/><rect width="9" height="9" x="11" y="11" fill="#FFB900"/></svg>
+          Sign in with Microsoft
+        </a>
       </div>
     </div>`;
+    var __ae=window.__teacherAuthError;
+    if(__ae){ var __e=document.getElementById('tErr'); if(__e){ __e.textContent=({auth_state:'Sign-in expired — please try again.',token:'Microsoft sign-in failed.',not_authorized:'That account is not authorised for teacher access.'})[__ae]||'Sign-in failed.'; } window.__teacherAuthError=null; }
   },
 
   /* ---------------- STUDENT DASHBOARD ---------------- */
@@ -6565,10 +6574,20 @@ function doStudentLogin(){
 }
 function doTeacherLogin(){
   const code=val('tCode'); const err=document.getElementById('tErr');
-  if(code!==CONFIG.teacherCode){ err.textContent="Incorrect teacher code."; return; }
-  SESSION={role:"teacher"};
-  if(cloudUrl()){ err.textContent="Loading online records…"; pullContent(()=>refreshCloud(()=>go('teacher'))); }
-  else go('teacher');
+  if(!code){ err.textContent="Enter your teacher code."; return; }
+  err.textContent="Checking…";
+  fetch('/api/login',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:code})})
+    .then(r=>r.json().then(d=>({ok:r.ok,d})))
+    .then(res=>{
+      if(res.ok && res.d && res.d.ok){
+        SESSION={role:"teacher"};
+        if(typeof cloudUrl==='function' && cloudUrl()){ err.textContent="Loading online records…"; pullContent(()=>refreshCloud(()=>go('teacher'))); }
+        else go('teacher');
+      } else {
+        err.textContent=(res.d && res.d.error) || "Incorrect teacher code.";
+      }
+    })
+    .catch(()=>{ err.textContent="Network error — please try again."; });
 }
 
 /* =========================================================================
@@ -14906,9 +14925,8 @@ function openBarPanel(key){
   const H=(ic,t,s)=>`<span style="font-size:1.4rem">${ic}</span><div><b>${t}</b><small>${s}</small></div><button class="coach-x" onclick="closeBarPanel()" aria-label="Close">✕</button>`;
 
   if(key==='taids' && !(SESSION&&SESSION.role==='teacher')){
-    const c=prompt('Teacher Aids are for teachers only.\nEnter the teacher code:');
-    if(c===null) return;
-    if(c!==CONFIG.teacherCode){ alert('That code is not correct.'); return; }
+    alert('Teacher Aids are for teachers only.\nPlease sign in as a teacher from the home page.');
+    return;
   }
 
   if(key==='spec'){ head.innerHTML=H('📘','RWD Project Specifications','Read → Write → Design … and back again'); body.innerHTML=specPanelHTML(); }
@@ -26287,6 +26305,32 @@ function waspkOpenPrint(html){ const w=window.open('','waspkPrint','width=760,he
 
 /* boot */
 go('home');
+
+/* If a teacher session already exists (password login earlier, or a fresh
+   return from Microsoft sign-in), open the dashboard automatically. This is
+   server-verified via /api/me — the ?teacher / ?auth_error params are only
+   UX hints. If the functions aren't reachable, we simply stay on home. */
+(function bootTeacherSession(){
+  var params=null; try{ params=new URLSearchParams(location.search); }catch(e){}
+  var authErr=params&&params.get('auth_error');
+  var teacherHint=params&&params.get('teacher')==='1';
+  function cleanUrl(){ try{ history.replaceState({},'',location.pathname); }catch(e){} }
+  try{
+    fetch('/api/me',{credentials:'same-origin'})
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        if(d&&d.authenticated&&d.role==='teacher'){
+          SESSION={role:'teacher'};
+          if(teacherHint||authErr) cleanUrl();
+          if(typeof cloudUrl==='function'&&cloudUrl()){ pullContent(function(){ refreshCloud(function(){ go('teacher'); }); }); }
+          else go('teacher');
+        } else if(authErr){
+          cleanUrl(); window.__teacherAuthError=authErr; go('teacherLogin');
+        }
+      })
+      .catch(function(){ /* functions not deployed / offline — stay on home */ });
+  }catch(e){}
+})();
 
 ROUTES.tierChoose = function(){
   var nm=(SESSION&&SESSION.first)?(', '+esc(SESSION.first)):'';
