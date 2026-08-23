@@ -1285,6 +1285,8 @@ body.rtm-nohl .rtm-w.rtm-now{background:none; color:inherit !important; box-shad
 @keyframes aadCirclePulse{0%,100%{transform:scale(1);box-shadow:0 8px 20px rgba(245,163,0,.45),0 0 0 0 rgba(245,163,0,.55)}50%{transform:scale(1.06);box-shadow:0 12px 26px rgba(245,163,0,.5),0 0 0 14px rgba(245,163,0,0)}}
 @media (prefers-reduced-motion:reduce){.aad-btn{animation:none}}
 .aad-panel{margin-top:10px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;width:320px;max-width:86vw;box-shadow:0 10px 26px rgba(0,0,0,.16);font-size:.9rem;line-height:1.5;position:absolute;right:0;top:calc(100% + 10px);z-index:50}
+.news-ticker-wrap{display:flex;align-items:center;background:#0e1116;color:#fff;border-radius:6px;overflow:hidden;margin:2px 0 14px;box-shadow:0 1px 4px rgba(0,0,0,.2)}.news-ticker-label{background:#c0392b;color:#fff;font-weight:800;font-size:.7rem;letter-spacing:.06em;padding:7px 10px;white-space:nowrap;flex:0 0 auto}.news-ticker-track{overflow:hidden;flex:1 1 auto;min-width:0}.news-ticker-text{display:inline-block;padding-left:100%;white-space:nowrap;font-size:.9rem;animation:newsTicker 20s linear infinite}.news-ticker-wrap:hover .news-ticker-text{animation-play-state:paused}@keyframes newsTicker{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}@media (prefers-reduced-motion:reduce){.news-ticker-text{animation:none;padding-left:0;white-space:normal}.news-ticker-track{white-space:normal}}
+.news-tips{float:right;max-width:235px;margin:0 0 12px 16px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 3px 12px rgba(0,0,0,.09);padding:12px 14px;font-size:.8rem;line-height:1.5;color:#33405a}@media (max-width:560px){.news-tips{float:none;max-width:none;margin:0 0 14px 0}}
 </style>
 <style id="waspk-css">
 /* =========================================================================
@@ -1812,7 +1814,7 @@ function allResults(){
   CLOUD_CACHE.forEach(r=>{ if(r && !seen.has(rkey(r))){ seen.add(rkey(r)); merged.push(r); } });
   return merged.sort((a,b)=>a.date-b.date);
 }
-function refreshCloud(then){ cloudList(data=>{ if(Array.isArray(data)) CLOUD_CACHE = data; try{ if(typeof mergeCloudWeeks==='function') mergeCloudWeeks(); }catch(e){} try{ if(typeof mergeCloudOverrides==='function') mergeCloudOverrides(); }catch(e){} try{ if(typeof applyPlacement==='function') applyPlacement(); }catch(e){} if(then) then(); }); }
+function refreshCloud(then){ cloudList(data=>{ if(Array.isArray(data)) CLOUD_CACHE = data; try{ if(typeof mergeCloudWeeks==='function') mergeCloudWeeks(); }catch(e){} try{ if(typeof mergeCloudOverrides==='function') mergeCloudOverrides(); }catch(e){} try{ if(typeof mergeCloudTeacherPrompts==='function') mergeCloudTeacherPrompts(); }catch(e){} try{ if(typeof applyPlacement==='function') applyPlacement(); }catch(e){} if(then) then(); }); }
 
 let SESSION = null; // {role, name, class, code, id}
 
@@ -6305,25 +6307,9 @@ const ROUTES = {
           <br><span style="color:#8a6d1f">No server means this is strong classroom control, not bank-level security.</span>
         </div>
       </div>
-      <div class="card" style="margin-bottom:20px">
+      <div class="card" style="margin-bottom:20px;background:#f6f8fc">
         <h3 style="font-size:1.2rem">🏫 Classes &amp; students</h3>
-        <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Create a class code, then tap it to add your students’ names. Students sign in with the class code and <b>pick their name from the list</b> — they never type it.</p>
-        <div id="codeList" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0"></div>
-        <div style="display:flex;gap:8px">
-          <input id="newCode" placeholder="NEW-CODE" style="flex:1;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;text-transform:uppercase">
-          <button class="btn sm" onclick="addCode()">Add code</button>
-        </div>
-        <p style="font-size:.82rem;color:var(--muted);margin:10px 0 0">Tap a code above to manage its <b>class list</b> — the names students pick from when they sign in.</p>
-        <div id="rosterPanel"></div>
-        <div style="border-top:1px solid var(--line);margin-top:16px;padding-top:12px">
-          <label style="display:flex;align-items:center;gap:8px;font-weight:600;cursor:pointer"><input type="checkbox" id="guestAllow" onchange="setGuestAllowed(this.checked)"> 🎫 Allow guest sign-in</label>
-          <p style="font-size:.82rem;color:var(--muted);margin:6px 0">Guests are learners who are not on any class list. When this is on, they sign in with the guest code below — give it out only when you need to.</p>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <span style="font-size:.85rem">Guest code:</span>
-            <input id="guestCodeField" style="padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;width:170px">
-            <button class="btn sm ghost" onclick="setGuestCode(val('guestCodeField'));renderGuestControls()">Save code</button>
-          </div>
-        </div>
+        <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Student sign-in is now handled by the two cards above — <b>🔑 Class codes</b> (Senior / Junior) and <b>🛡️ Who can sign in</b> (your approved list). The older class-list and guest-code system has been retired, so there is nothing to set here.</p>
       </div>
 
       <div class="card" style="margin-bottom:20px">
@@ -6383,7 +6369,7 @@ const ROUTES = {
         </div>
       </details>
     </div>`;
-    renderCodeList(); renderGuestControls(); renderNewsAdmin(); try{renderTierCodes();}catch(e){} try{renderAllowed();}catch(e){}
+    try{renderCodeList();}catch(e){} try{renderGuestControls();}catch(e){} renderNewsAdmin(); try{renderTierCodes();}catch(e){} try{renderAllowed();}catch(e){}
     if(online){ refreshCloud(()=>{ if(CURRENT_SCREEN==='teacher') { qaMergeCloudReplies(); const r2=allResults(); if(r2.length!==res.length){ ROUTES.teacher(); } else { if(typeof paintQA==='function') paintQA(); if(typeof paintAadJournals==='function') paintAadJournals(); } } }); }
   }
 };
@@ -24385,10 +24371,20 @@ function waspkDelBlob(key){ try{ IDB.open().then(db=>{ if(!db)return; try{ db.tr
 
 /* ---- Teacher-authored prompts (shared to students) --------------------- */
 function waspkTeacherPrompts(){ return Store.get('waspk_teacher')||[]; }
-function waspkSaveTeacherPrompts(a){ try{ Store.set('waspk_teacher',a); return true; }catch(e){ return false; } }
+var WASPK_DEFAULT_TEACHER=[{ __custom:true, id:'wt_dreamwish', kind:'video', youtube:'https://www.youtube.com/watch?v=OutyHXJQgR8', videoKey:null, img:null, statement:'', by:'Teacher', ts:1, title:'A Dream Wish Coming True', caption:'From a distant goal to a reality in hand. Dream big, work hard, and watch your own academic story unfold.', write:'Imagine your heart pounding as your name is finally called to walk across the stage. Write to describe this surreal moment.\n\nWriting points: What goal or milestone do you work toward? What are the biggest challenges along the way? How would you feel and celebrate your success?', speak:'Describe a time when you achieved a major goal or a dream wish.\n\nTalking points:\n1. What was the dream or goal you worked toward (e.g., graduating, winning a competition, learning a new skill)?\n2. What were some of the biggest challenges along the way?\n3. How did you feel the moment you succeeded, and how did you mark the occasion with family or friends?\n\nOr, talk about your biggest dream wish for the future.' }];
+function waspkAllTeacherPrompts(){ var local=Store.get('waspk_teacher')||[]; var ids={}; local.forEach(function(p){ if(p&&p.id) ids[p.id]=1; }); var defs=(WASPK_DEFAULT_TEACHER||[]).filter(function(p){ return !ids[p.id]; }); return defs.concat(local); }
+function waspkSaveTeacherPromptsLocal(a,date){ try{ Store.set('waspk_teacher',a); if(date) Store.set('waspk_teacher_date',date); return true; }catch(e){ return false; } }
+function waspkSaveTeacherPrompts(a){ var d=Date.now(); var ok=waspkSaveTeacherPromptsLocal(a,d);
+  try{ var s=JSON.stringify(a); if(typeof cloudUrl==='function' && cloudUrl() && s.length<45000){ cloudSave({type:'wa_prompts', data:s, date:d}); } }catch(e){}
+  return ok; }
+function mergeCloudTeacherPrompts(){ try{ var best=null;
+  (CLOUD_CACHE||[]).forEach(function(r){ if(r && r.type==='wa_prompts' && r.data){ if(!best || (r.date||0)>(best.date||0)) best=r; } });
+  if(best && (best.date||0) > (Store.get('waspk_teacher_date')||0)){ var list=JSON.parse(best.data);
+    if(Array.isArray(list)){ waspkSaveTeacherPromptsLocal(list, best.date);
+      try{ if(typeof CURRENT_SCREEN!=='undefined' && /waspk|talk/i.test(CURRENT_SCREEN||'') && typeof ROUTES!=='undefined'){ /* view refreshes on next open */ } }catch(e){} } } }catch(e){} }
 function waspkPromptById(id){
   if(WASPK_INDEX[id]) return { p:WASPK_INDEX[id].p, c:WASPK_INDEX[id].c, source:'builtin' };
-  const t=waspkTeacherPrompts().find(x=>x.id===id);
+  const t=waspkAllTeacherPrompts().find(x=>x.id===id);
   if(t) return { p:t, c:{name:'From my teacher', key:'teacher', grad:['#15183A','#26308a'], scene:'imagine'}, source:'teacher' };
   return null;
 }
@@ -24704,7 +24700,7 @@ const NEWS_SEED = [
   fact:'One area of mangroves can store up to four times more carbon than the same area of ordinary forest.',
   act:'Find out: does your neighbourhood have any trees or green spaces? Draw a simple map and mark them.',
   images:['img:mangroves','https://images.unsplash.com/photo-1618288389681-f135edea12db?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1623719647321-188ae37d7133?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1717292741426-d050f4f25503?w=1000&q=70&auto=format&fit=crop'],
-  video:'https://www.youtube.com/results?search_query=UAE+mangrove+planting'},
+  video:'https://www.youtube.com/watch?v=fQIUlWXvnwA'},
  {id:'nw_seed2',date:'Aug 2026',category:'Health',title:'Can AI Spot Illness Before Doctors Do?', reporter:"iCAN Health Desk", lead:"In health news tonight: the doctor of the future may have a new partner in the room — one made entirely of code.",
   article:"Doctors are getting a new helper in the clinic: artificial intelligence. New AI tools can look at a scan or an X-ray and point out tiny signs of illness that are easy to miss.\n\nIn several hospitals, AI now double-checks scans for early signs of disease. It does not replace the doctor — it works like a careful second pair of eyes. The doctor still makes the final decision.\n\nSupporters say this could help people get treatment earlier, when illnesses are easier to cure. Others worry about privacy, mistakes, and trusting a machine too much.\n\n“AI can help us, but it cannot care for a patient,” a nurse explained. “That is still a human job.”",
   mcq:[{q:'According to the article, what does the AI do?',opts:['Replaces the doctor completely','Acts as a careful second pair of eyes','Sends patients home without help'],ans:1},{q:'Why might spotting illness early be helpful?',opts:['It makes scans more colourful','Illnesses can be easier to cure early','It saves electricity'],ans:1}],
@@ -24712,7 +24708,7 @@ const NEWS_SEED = [
   fact:'Some AI tools can scan an X-ray in under two seconds — far faster than a human can.',
   act:'Ask a family member: what is one way technology has changed how they visit the doctor?',
   images:['https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1526628953301-3e589a6a8b74?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1504439468489-c8920d796a29?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1582560469781-1965b9af903d?w=1000&q=70&auto=format&fit=crop'],
-  video:'https://www.youtube.com/results?search_query=AI+in+medicine+explained+for+students'},
+  video:'https://www.youtube.com/watch?v=C5euaa4p4Pk'},
  {id:'nw_seed3',date:'Aug 2026',category:'Science & Discovery',title:'Students Build a Solar Water Cleaner', reporter:"iCAN Science Desk", lead:"And now, an invention story that began not in a laboratory, but with a group of teenagers and a problem they refused to ignore.",
   article:"A group of teenagers has invented a simple machine that turns dirty water into clean drinking water — using only sunlight.\n\nThe device is a small box with a clear lid. Dirty water goes in, the sun heats it, and clean water drips out the other side. The dirt and salt are left behind. It costs very little to build and needs no electricity.\n\nThe students hope their invention can help families in places where clean water is hard to find. They are now testing bigger versions that could serve a whole village.\n\n“We started with a problem we cared about,” said one young inventor. “Then we just kept trying until it worked.”",
   mcq:[{q:'What powers the students’ water cleaner?',opts:['Electricity from the wall','Sunlight','A large battery'],ans:1},{q:'What is left behind when the water is cleaned?',opts:['The dirt and salt','The clean water','The sunlight'],ans:0}],
@@ -24720,240 +24716,240 @@ const NEWS_SEED = [
   fact:'Around the world, billions of people still lack safe water at home — so simple, low-cost inventions matter.',
   act:'Sketch your own idea for a machine that solves a problem you see every day. Give it a name.',
   images:['img:solar'],
-  video:'https://www.youtube.com/results?search_query=solar+still+clean+water+science+project'},
+  video:'https://www.youtube.com/watch?v=ugGXTkV8Gag'},
  {id:'nw_seed4',date:'Aug 2026',category:'Wildlife',title:'Saving the Arabian Oryx', reporter:"iCAN News · The Desert Reserve", lead:"This just in from the desert: an animal that had almost vanished is walking the sands once more.",
   article:"Not long ago, the Arabian oryx — a beautiful white desert antelope — had almost vanished from the wild. By the 1970s, hunting had wiped out the last wild ones.\n\nThen a bold plan began. A few oryx were kept safe in special reserves and carefully bred. Year by year, their numbers grew. Today, thousands roam protected areas across the Arabian Peninsula once again.\n\nThe oryx is now a symbol of hope. It shows that when people decide to protect a species, even an animal on the edge of extinction can be brought back.\n\n“We nearly lost it forever,” a ranger said. “Now children can see it living wild again.”",
   mcq:[{q:'What almost happened to the Arabian oryx?',opts:['It became too common','It nearly vanished from the wild','It grew much larger'],ans:1},{q:'How were the oryx brought back?',opts:['They were left completely alone','They were kept safe and carefully bred','They were moved to the city'],ans:1}],
   open:['Why do you think it matters to protect animals from extinction?','What is one animal near you that you would like to protect?'],
   fact:'The Arabian oryx was once declared extinct in the wild — and is now the first animal ever to recover from that status.',
   act:'Choose an endangered animal, find one fact about it, and share why it is worth saving.',
-  images:['https://images.unsplash.com/photo-1542872952-864cfa8e97af?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1730444002198-3021cba96637?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1619827479015-bb7b3a0b4643?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1711622469223-0f14851df58b?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=Arabian+oryx+conservation'},
+  images:['https://images.unsplash.com/photo-1542872952-864cfa8e97af?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1730444002198-3021cba96637?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1619827479015-bb7b3a0b4643?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1711622469223-0f14851df58b?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/watch?v=MicCVUTimgc'},
  {id:'nw_seed5',date:'Aug 2026',category:'Science & Discovery',title:'The UAE Reaches for the Moon', reporter:"iCAN Science Desk", lead:"Turning to science: the UAE has set its sights on a target far beyond the desert horizon — the Moon.",
   article:"The UAE has set its eyes far beyond Earth. After sending a spacecraft to orbit Mars, the country is now working on missions to explore the Moon.\n\nEngineers are building small robotic rovers designed to roll across the Moon's dusty surface, take pictures, and study the soil. Young Emirati scientists — many of them still in their twenties — are leading the work.\n\nSpace missions are hard, and not every attempt succeeds. But each try teaches something new, and inspires students to study science, maths and engineering.\n\n“We are showing young people that the sky is not the limit,” one team member said.",
   mcq:[{q:'Which planet did the UAE already send a spacecraft to orbit?',opts:['Jupiter','Mars','Saturn'],ans:1},{q:'What are the Moon rovers designed to do?',opts:['Carry passengers','Study the surface and take pictures','Grow plants'],ans:1}],
   open:['Why do you think countries spend money exploring space?','If you could send a rover anywhere, where would you send it, and why?'],
   fact:'Many of the engineers on the UAE’s space missions are under 35 years old.',
   act:'Design your own space rover on paper. Give it a name and label two things it can do.',
-  images:['img:hazza','https://images.unsplash.com/photo-1745688810809-5040dc0cd002?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1674616989861-b8dec3488ad1?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=UAE+space+mission+moon+rover'},
+  images:['img:hazza','https://images.unsplash.com/photo-1745688810809-5040dc0cd002?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1674616989861-b8dec3488ad1?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/watch?v=j8Hix69QEW4'},
  {id:'nw_seed6',date:'Aug 2026',category:'Sport',title:'Padel: The Sport Taking Over the UAE', reporter:"iCAN Sport Desk", lead:"In sport tonight: a game few had heard of five years ago is now echoing across the Emirates.",
   article:"Walk past a sports club in the UAE these days, and you will probably hear the pop of a padel ball. Padel — a fast, fun mix of tennis and squash — has become one of the country's most popular sports.\n\nIt is played in pairs on a small court surrounded by glass walls, so the ball stays in play longer. It is easy to learn, friendly, and great exercise, which is why families, friends and even beginners love it.\n\nNew padel courts are opening across the Emirates, and local tournaments are drawing big crowds.\n\n“You can pick it up in one afternoon,” a coach said, “but you can spend years getting really good.”",
   mcq:[{q:'Padel is a mix of which two sports?',opts:['Football and running','Tennis and squash','Swimming and cycling'],ans:1},{q:'Why do beginners enjoy padel?',opts:['It is very hard to learn','It is easy to learn and friendly','It needs no movement'],ans:1}],
   open:['Why do you think a new sport can become popular so quickly?','What sport would you most like to try, and why?'],
   fact:'Padel is one of the fastest-growing sports in the world, played in more than 90 countries.',
   act:'Invent a simple new game your class could play at break time. Write three short rules for it.',
-  images:['https://images.unsplash.com/photo-1759355456246-6937354a395d?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1646649853703-7645147474ba?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1709587824751-dd30420f5cf3?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1510846699902-9211b99dac11?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=padel+sport+how+to+play'},
+  images:['https://images.unsplash.com/photo-1759355456246-6937354a395d?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1646649853703-7645147474ba?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1709587824751-dd30420f5cf3?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1510846699902-9211b99dac11?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/watch?v=XFkmXnDwOmQ'},
  {id:'nw_seed7',date:'Aug 2026',category:'Careers & Jobs',title:'The Jobs That Do Not Exist Yet', reporter:"iCAN News · Special Report", lead:"A special report on your future: many of the jobs waiting for today's students have not been invented yet.",
   article:"Some of the jobs you will do one day have not even been invented. Experts say that many of today's students will work in careers that do not exist right now.\n\nAs technology changes, new jobs appear. A few years ago, there were no ‘drone pilots’, ‘app designers’ or ‘social-media managers’. Tomorrow, there may be ‘space guides’, ‘robot trainers’ or ‘climate engineers’.\n\nSo how do you prepare for a job nobody can name yet? Experts say the best skills are ones that never go out of date: curiosity, problem-solving, teamwork, and the ability to keep learning.\n\n“Don’t just learn facts,” one careers adviser said. “Learn how to learn.”",
   mcq:[{q:'What does the article say about many future jobs?',opts:['They already all exist','They have not been invented yet','They will disappear'],ans:1},{q:'Which skill does the adviser say matters most?',opts:['Memorising facts','Knowing how to keep learning','Typing quickly'],ans:1}],
   open:['What job would you like to have — and what skills will it need?','Why might “learning how to learn” be more useful than memorising facts?'],
   fact:'Experts estimate that a large share of today’s primary-school children will work in jobs that do not exist yet.',
   act:'Invent a job of the future. Give it a name and describe what that person would do all day.',
-  images:['https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=jobs+of+the+future+for+students'},
+  images:['https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/watch?v=gT7aw__uMIA'},
  {id:'nw_seed8',date:'Aug 2026',category:'World & Local',reporter:"iCAN News Desk · Abu Dhabi",lead:"Breaking news on the roads tonight: authorities have announced tough new penalties aimed at keeping every driver safe.",title:'Tough New Fines to Keep Roads Safe',
   article:"ABU DHABI — Authorities have announced strict new fines for the most dangerous driving offences. Drivers who travel the wrong way down a road, or who cross onto a fast highway on foot, now face heavy penalties.\n\nOfficials say the rules are not about punishment, but about protection. Driving against the traffic, or walking across high-speed roads, causes some of the most serious accidents — and almost all of them are preventable.\n\n“One careless moment can change a family forever,” a road-safety officer explained. “These rules exist so that everyone gets home safely.”\n\nDrivers are reminded to follow the signs, wear their seatbelts, keep a safe distance, and never use a phone at the wheel.",
   mcq:[{q:'What is one offence now facing a heavy fine?',opts:['Driving the wrong way down a road','Parking neatly','Driving a little slowly'],ans:0},{q:'According to the officer, the rules are mainly about…',opts:['Collecting money','Protecting people','Slowing everyone down'],ans:1}],
   open:['Why do you think some drivers still break road rules — and how could we encourage safer driving?','What is one road-safety rule you believe everyone should follow?'],
   fact:'Wearing a seatbelt can cut the risk of serious injury in a crash by roughly half.',
   act:'Design a short road-safety poster with one clear message for drivers or for pedestrians.',
-  images:['img:traffic'],video:'https://www.youtube.com/results?search_query=road+safety+rules+explained'},
+  images:['img:traffic'],video:'https://www.youtube.com/watch?v=Iwgi4a8qf9g'},
  {id:'nw_seed9',date:'Aug 2026',category:'Science & Discovery',reporter:"iCAN Science Desk",lead:"A scientific breakthrough is making headlines around the world — one that could change how we think about clean water forever.",title:'Scientists Pull Drinking Water Straight from the Air',
   article:"GENEVA — Scientists have unveiled a device that can pull clean drinking water out of thin air — even in dry, desert climates.\n\nThe machine uses a special material that quietly soaks up tiny amounts of water vapour from the air at night, then releases it as liquid water when it is warmed by the sun. No pipes, no wells, and very little electricity are needed.\n\nResearchers hope the invention could one day bring water to remote villages and disaster zones where clean water is scarce.\n\n“The air around us holds more water than all our rivers combined,” one scientist said. “The challenge was reaching it — and now we can.”",
   mcq:[{q:'Where does the new device get its water?',opts:['Deep underground','Water vapour in the air','The nearest ocean'],ans:1},{q:'What makes the device release the water?',opts:['A powerful engine','Heat from the sun','A city power line'],ans:1}],
   open:['Where in the world could an invention like this help the most, and why?','What everyday problem would you most like scientists to solve next?'],
   fact:'The air always holds water vapour — even high above a hot desert.',
   act:'In three simple steps, explain how you think the device turns air into water.',
-  images:['img:waterair'],video:'https://www.youtube.com/results?search_query=harvesting+drinking+water+from+air'},
+  images:['img:waterair'],video:'https://www.youtube.com/watch?v=eveXU4Q4O6Y'},
  {id:'nw_seed10',date:'Aug 2026',category:'World & Local',reporter:"iCAN News · Al Dhafra",lead:"A safety warning tonight after a dramatic morning on the motorway — and a reminder that could save your life.",title:'Sandstorm Slows Traffic — Officials Urge Caution',
   article:"AL DHAFRA — A thick sandstorm swept across the region this morning, cutting visibility on major roads and slowing traffic to a crawl. Thankfully, no serious injuries were reported.\n\nPolice praised the drivers who slowed down, switched on their lights, and kept a safe distance from the cars ahead. They warned that low visibility is one of the most dangerous conditions on the road.\n\nExperts advise drivers caught in a sandstorm to reduce speed, turn on their hazard lights, and — if visibility disappears completely — pull over safely and wait for the dust to pass.\n\n“Arriving a few minutes later is always better than not arriving at all,” an officer said.",
   mcq:[{q:'What made driving dangerous this morning?',opts:['Heavy snow','A sandstorm cutting visibility','A city-wide power cut'],ans:1},{q:'What did the police praise drivers for doing?',opts:['Driving faster to escape it','Slowing down and keeping a safe distance','Turning off their lights'],ans:1}],
   open:['Why is it so important to stay calm during an emergency on the road?','What is one thing your family does to stay safe in bad weather?'],
   fact:'In low visibility, drivers should switch on hazard lights and slow down — never speed up to “get through it”.',
   act:'Write three short safety tips for driving or walking during a sandstorm.',
-  images:['img:sandstorm'],video:'https://www.youtube.com/results?search_query=driving+safely+in+low+visibility'},
+  images:['img:sandstorm'],video:'https://www.youtube.com/watch?v=Zo7rUKcQXkI'},
  {id:'nw_seed11',date:'Aug 2026',category:'Society',reporter:"iCAN News \u00b7 Abu Dhabi",lead:"In heritage news: for one Emirati falconer, a bird\u2019s true worth is measured not in dirhams, but in the patience it teaches.",title:'Behind the Bid: Why Falconers Chase the Right Bird',caption:"A calm, well-behaved falcon can be worth far more than a nervous one.",
   article:"ABU DHABI \u2014 For Emirati falconer Mohammed Al Kaabi, a falcon\u2019s value is not measured only by the number on its auction tag. Sometimes, he says, it is measured by how much patience the bird teaches you.\n\nAl Kaabi, who has practised falconry since he was in Year 6, explains that the bond between falcon and falconer is built slowly \u2014 sometimes over hours of simply sitting together. \u201cWhen you first get it, the bird does not know you,\u201d he said. \u201cYou have to break that barrier of fear.\u201d\n\nWith a new bird, he may spend four or five hours a day just keeping it on his hand, even turning on the television so it grows used to everyday sounds and people. The message he tries to send is simple: I am not going to hurt you; I am going to be with you.\n\nA calm, well-behaved bird is worth more. A falcon that might otherwise fetch around Dh50,000 could be valued closer to Dh100,000 if it has the right qualities. But for Al Kaabi, the real reward is not the price. \u201cIt teaches you patience,\u201d he said. \u201cIf you are an impulsive person, the bird makes you calm down.\u201d",
   mcq:[{q:'How does the falconer say a falcon\u2019s value can be measured?',opts:['Only by its auction price','By the patience it teaches','By its colour'],ans:1},{q:'What quality can make a falcon worth more?',opts:['Being calm and well behaved','Being very loud','Being the largest'],ans:0}],
   open:['What is something in your life that has taught you patience?','Why do you think building trust with an animal takes time?'],
   fact:'Falconry is a centuries-old tradition in the UAE and is recognised by UNESCO as part of humanity\u2019s cultural heritage.',
   act:'Think of a skill that takes patience to learn. Write three tips you would give a beginner who is just starting out.',
-  images:['img:falcon0','img:falcon1','img:falcon2'],video:'https://www.youtube.com/results?search_query=falconry+UAE+heritage+tradition'},
+  images:['img:falcon0','img:falcon1','img:falcon2'],video:'https://www.youtube.com/watch?v=11ikPFZqHgI'},
  {id:'nw_seed12',date:'Aug 2026',category:'Environment',reporter:"iCAN News \u00b7 Abu Dhabi",lead:"In environment news: a bold plan is turning stretches of bare desert into living green land.",title:'Turning the Desert Green',caption:"New planting projects aim to green the sands and cool the air.",
   article:"ABU DHABI \u2014 Across the UAE, teams are planting hardy trees and shrubs that can survive the heat and thrive on very little water.\n\nThe goal is to hold the soil together, give shade, and create cool green spaces for people and animals. Special drip systems deliver just enough water to each plant, wasting almost none.\n\n\u201cA green desert is not a dream,\u201d one project leader said. \u201cIt is a plan we are building, one tree at a time.\u201d",
   mcq:[{q:'What kind of plants are being used?',opts:['Plants that need lots of water','Hardy plants that survive heat','Plants that grow only in cold'],ans:1},{q:'How is water delivered to each plant?',opts:['By flooding the desert','With drip systems that waste almost none','By waiting for rain'],ans:1}],
   open:['Why is shade so valuable in a hot country?','What is one green space you would like to see near your home?'],
   fact:'Trees can cool the air around them by several degrees, acting like natural air conditioners.',
   act:'Design a small garden that could survive on very little water. Label three plants you would choose.',
-  images:[],video:'https://www.youtube.com/results?search_query=greening+the+desert+UAE'},
+  images:[],video:'https://www.youtube.com/watch?v=fXQ-04lG1wc'},
  {id:'nw_seed13',date:'Aug 2026',category:'Environment',reporter:"iCAN Science Desk",lead:"A quiet revolution is happening underground: the city that uses the same water twice.",title:'The City That Recycles Its Water',caption:"Cleaned water is reused to keep parks and streets green.",
   article:"In a country with little rain, every drop counts. That is why engineers now clean used water and send it back out \u2014 not for drinking, but to water parks, trees and gardens.\n\nThe water is filtered through several stages until it is clean and safe for plants. This saves huge amounts of fresh water for homes and hospitals.\n\n\u201cWaste water is not waste at all,\u201d an engineer explained. \u201cIt is a resource we simply forgot to use.\u201d",
   mcq:[{q:'What is the recycled water mainly used for?',opts:['Drinking','Watering parks and gardens','Filling swimming pools'],ans:1},{q:'Why does this matter in the UAE?',opts:['Because there is little rain','Because it is always cold','Because there are no plants'],ans:0}],
   open:['What is one way your family could save water at home?','Why is it smart to reuse things instead of throwing them away?'],
   fact:'Recycling water for parks can save enough fresh water to supply thousands of homes.',
   act:'List three ways your school could use less water. Pick the easiest one to start.',
-  images:[],video:'https://www.youtube.com/results?search_query=water+recycling+explained+for+students'},
+  images:[],video:'https://www.youtube.com/watch?v=sOFgxZWInx8'},
  {id:'nw_seed16',date:'Aug 2026',category:'Wildlife',reporter:"iCAN News \u00b7 The Coast",lead:"Good news from the shoreline: an ancient traveller is returning to nest on our beaches.",title:'Turtles Return to Our Beaches',caption:"Sea turtles are hatching again on protected UAE shores.",
   article:"Each summer, sea turtles crawl up quiet beaches to lay their eggs in the warm sand. For years, their numbers fell. Now, thanks to protected beaches, they are coming back.\n\nRangers mark and guard the nests. Weeks later, tiny hatchlings dig their way out and rush to the sea under the moonlight.\n\n\u201cWhen you see a hatchling reach the water,\u201d a ranger said, \u201cyou understand why we protect these beaches.\u201d",
   mcq:[{q:'Where do sea turtles lay their eggs?',opts:['In the sea','In the warm sand on beaches','In trees'],ans:1},{q:'Why are turtle numbers rising again?',opts:['Because beaches are protected','Because the sea got warmer','Because there are fewer plants'],ans:0}],
   open:['Why do you think baby turtles head for the sea at night?','What is one small thing beach visitors could do to help turtles?'],
   fact:'Only about one in a thousand baby sea turtles survives to become an adult \u2014 so every nest matters.',
   act:'Design a beach sign that reminds visitors how to protect turtle nests.',
-  images:['https://images.unsplash.com/photo-1533374900843-76bbd8249901?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1558216629-a2f7fe856792?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=sea+turtle+nesting+conservation'},
+  images:['https://images.unsplash.com/photo-1533374900843-76bbd8249901?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1437622368342-7a3d73a34c8f?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1558216629-a2f7fe856792?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/watch?v=MB5p2B3ytHw'},
  {id:'nw_seed17',date:'Aug 2026',category:'Wildlife',reporter:"iCAN Science Desk",lead:"Beneath the calm waters of the Gulf lies a colourful world that scientists are racing to protect.",title:'Coral Gardens Beneath the Gulf',caption:"Hidden reefs shelter fish, turtles and countless sea creatures.",
   article:"Below the surface of the Arabian Gulf grow gardens of coral \u2014 living rock built by tiny animals over hundreds of years. These reefs are home to fish, crabs, turtles and much more.\n\nWarm seas can harm coral, so scientists are growing new coral in nurseries and planting it back onto the reef.\n\n\u201cA reef is like an underwater city,\u201d a marine biologist said. \u201cIf we protect it, everything else survives too.\u201d",
   mcq:[{q:'What builds a coral reef?',opts:['Tiny living animals','Falling rocks','Machines'],ans:0},{q:'How are scientists helping damaged reefs?',opts:['By growing new coral and replanting it','By painting the coral','By removing all the fish'],ans:0}],
   open:['Why might a reef be called an \u201cunderwater city\u201d?','Why is it important to protect places we cannot easily see?'],
   fact:'Coral reefs cover less than 1% of the ocean floor but support about a quarter of all sea life.',
   act:'Draw an underwater reef scene and label three creatures that live there.',
-  images:[],video:'https://www.youtube.com/results?search_query=coral+reef+restoration+for+students'},
+  images:[],video:'https://www.youtube.com/watch?v=59Q9L_U9ALA'},
  {id:'nw_seed18',date:'Aug 2026',category:'Sport',reporter:"iCAN Sport Desk",lead:"In sport tonight: a martial art built on skill and respect has become a favourite in UAE schools.",title:'Jiu-Jitsu: A Sport for Every School',caption:"Students learn balance, respect and self-control on the mat.",
   article:"In gyms and schools across the UAE, students in white uniforms practise jiu-jitsu \u2014 a martial art that uses skill and technique rather than size or strength.\n\nCoaches say it builds confidence, discipline and respect. Smaller students learn they can hold their own against bigger ones by using clever moves.\n\n\u201cIt teaches you to stay calm under pressure,\u201d a coach said. \u201cThat helps on the mat and in life.\u201d",
   mcq:[{q:'What does jiu-jitsu rely on most?',opts:['Size and strength','Skill and technique','Speed only'],ans:1},{q:'What do coaches say it builds?',opts:['Confidence and respect','Only muscles','Nothing useful'],ans:0}],
   open:['What sport or activity has taught you discipline?','Why might staying calm under pressure be a useful skill?'],
   fact:'Jiu-jitsu is part of the school curriculum in the UAE, taught to thousands of students.',
   act:'Think of a challenge where staying calm helped you. Write what you did and what happened.',
-  images:[],video:'https://www.youtube.com/results?search_query=jiu+jitsu+in+UAE+schools'},
+  images:[],video:'https://www.youtube.com/watch?v=JtQJogME5MA'},
  {id:'nw_seed19',date:'Aug 2026',category:'Sport',reporter:"iCAN Sport Desk",lead:"On two wheels and open tracks, more people than ever are discovering the joy of cycling.",title:'Cycling Across the Emirates',caption:"New cycling tracks make riding safe, fun and healthy.",
   article:"Early in the morning, before the heat rises, cyclists roll along smooth new tracks that stretch for kilometres across the desert and the city.\n\nCycling is cheap, healthy and kind to the planet \u2014 it produces no pollution. New protected tracks keep riders safely away from cars.\n\n\u201cYou see the sunrise, you clear your head, and you get fit,\u201d one rider said. \u201cWhat is not to love?\u201d",
   mcq:[{q:'Why do many cyclists ride early in the morning?',opts:['Before the heat rises','Because tracks close later','To avoid the sunrise'],ans:0},{q:'Why is cycling kind to the planet?',opts:['It produces no pollution','It uses lots of fuel','It needs a big engine'],ans:0}],
   open:['What do you enjoy most about being active outdoors?','How could your neighbourhood become more bike-friendly?'],
   fact:'Cycling for just 30 minutes a day can noticeably improve heart health and mood.',
   act:'Plan a safe cycling or walking route near your home. Note one thing that would make it safer.',
-  images:[],video:'https://www.youtube.com/results?search_query=cycling+tracks+UAE'},
+  images:[],video:'https://www.youtube.com/watch?v=JgcCSdmLtFU'},
  {id:'nw_seed20',date:'Aug 2026',category:'Careers & Jobs',reporter:"iCAN News \u00b7 Special Report",lead:"A special report on your future: the fastest-growing jobs are the ones helping the planet.",title:'Green Jobs Are Booming',caption:"Clean energy and sustainability are creating brand-new careers.",
   article:"As the world moves to clean energy, whole new careers are appearing: solar engineers, wind technicians, recycling designers and sustainability planners.\n\nThese \u2018green jobs\u2019 help protect the planet while paying well. Experts say they will be some of the most in-demand jobs of the next twenty years.\n\n\u201cIf you care about the Earth,\u201d a careers adviser said, \u201cthere has never been a better time to build a career around it.\u201d",
   mcq:[{q:'What are \u2018green jobs\u2019?',opts:['Jobs that harm the planet','Jobs that help protect the planet','Jobs only outdoors'],ans:1},{q:'What does the adviser say about them?',opts:['They are disappearing','They will be in high demand','They pay nothing'],ans:1}],
   open:['Would you like a job that helps the planet? What might it be?','Why do you think green jobs are growing so fast?'],
   fact:'Renewable energy already employs millions of people worldwide, and the number keeps rising.',
   act:'Invent a green job for the future. Give it a name and describe what that person would do.',
-  images:[],video:'https://www.youtube.com/results?search_query=green+jobs+of+the+future'},
+  images:[],video:'https://www.youtube.com/watch?v=-Q8IYYmSLAw'},
  {id:'nw_seed22',date:'Aug 2026',category:'World & Local',reporter:"iCAN News \u00b7 Abu Dhabi",lead:"As the summer holidays end, families are getting ready for the busiest week of the year.",title:'Back to School: A Fresh Start',caption:"A new school year brings new bags, new books and new goals.",
   article:"Shops are full of pencils, bags and uniforms as families prepare for the new school year. For many students, it is a chance to start fresh.\n\nTeachers say the best start is a calm one: sort out your bag the night before, sleep early, and set one clear goal for the term.\n\n\u201cA good habit in week one,\u201d a teacher said, \u201coften lasts the whole year.\u201d",
   mcq:[{q:'What do teachers say makes the best start?',opts:['A calm, organised one','A rushed one','Skipping the first week'],ans:0},{q:'What is one tip from the article?',opts:['Sleep early and prepare your bag','Stay up all night','Forget your goals'],ans:0}],
   open:['What is one goal you would like to set for this school year?','What helps you feel ready and calm before a big day?'],
   fact:'Setting one small, clear goal makes you far more likely to succeed than setting many at once.',
   act:'Write one goal for this term and three small steps to reach it.',
-  images:['https://images.unsplash.com/photo-1577896851231-70ef18881754?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1570616969692-54d6ba3d0397?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=back+to+school+tips+for+students'},
+  images:['https://images.unsplash.com/photo-1577896851231-70ef18881754?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1570616969692-54d6ba3d0397?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/watch?v=0sQWSEB2-KY'},
  {id:'nw_seed23',date:'Aug 2026',category:'Society',reporter:"iCAN News \u00b7 Community Desk",lead:"A simple idea is spreading through schools: what if kindness could be contagious?",title:'The Kindness Project',caption:"Small acts of kindness are changing the mood in whole schools.",
   article:"It started with one class leaving friendly notes for others. Soon, students across the school were doing small kind acts \u2014 helping a classmate, thanking a cleaner, welcoming a new student.\n\nTeachers noticed the whole school felt friendlier. Kindness, it turns out, spreads from person to person like a smile.\n\n\u201cYou never know how much one kind word can mean,\u201d a student said.",
   mcq:[{q:'How did the Kindness Project start?',opts:['With friendly notes from one class','With a big prize','With a new rule'],ans:0},{q:'What did teachers notice?',opts:['The school felt friendlier','Nothing changed','Students were louder'],ans:0}],
   open:['What is one kind thing someone did for you that you still remember?','How could your class start its own kindness project?'],
   fact:'Doing a kind act releases feel-good chemicals in the brain \u2014 for the giver as well as the receiver.',
   act:'Do one small, kind act today. Afterwards, write how it made you and the other person feel.',
-  images:[],video:'https://www.youtube.com/results?search_query=kindness+project+in+schools'},
+  images:[],video:'https://www.youtube.com/watch?v=i1NYtCb8YHQ'},
  {id:'nw_seed24',date:'Aug 2026',category:'Society',reporter:"iCAN News \u00b7 Community Desk",lead:"Across the country, young people are giving their time to help others \u2014 and discovering they gain too.",title:'Volunteering: Small Acts, Big Change',caption:"Young volunteers are making a real difference in their communities.",
   article:"From cleaning beaches to reading with younger children, more students than ever are volunteering their free time to help others.\n\nVolunteers say they get back as much as they give: new friends, new skills, and the good feeling of making a difference.\n\n\u201cYou do not need to be rich or grown-up to help,\u201d one young volunteer said. \u201cYou just need to care and show up.\u201d",
   mcq:[{q:'What is one thing volunteers in the story do?',opts:['Clean beaches and read with children','Only watch television','Charge money to help'],ans:0},{q:'What do volunteers say they gain?',opts:['New friends, skills and a good feeling','Nothing at all','Only money'],ans:0}],
   open:['What cause would you most like to volunteer for, and why?','Why do you think helping others can make us feel good?'],
   fact:'Studies show that people who volunteer regularly tend to feel happier and less stressed.',
   act:'Plan a small volunteering activity you could do this month. Write who it would help.',
-  images:[],video:'https://www.youtube.com/results?search_query=youth+volunteering+community'},
+  images:[],video:'https://www.youtube.com/watch?v=4Ybrwm51oas'},
  {id:'nw_seed27',date:'Aug 2026',category:'Education',reporter:"iCAN News \u00b7 Schools Desk",lead:"Some of the best lessons this term are happening with no walls, no ceiling \u2014 and plenty of fresh air.",title:'Learning Beyond the Classroom Walls',caption:"Outdoor lessons make learning active and memorable.",
   article:"More schools are taking lessons outside \u2014 measuring shadows in the yard, studying insects in a garden, or reading under a tree.\n\nTeachers say learning outdoors keeps students active and curious, and helps ideas stick. A science lesson you can touch is hard to forget.\n\n\u201cThe world is the biggest classroom there is,\u201d one teacher said.",
   mcq:[{q:'What is one example of outdoor learning in the story?',opts:['Measuring shadows in the yard','Watching television','Sleeping in class'],ans:0},{q:'Why do teachers like outdoor lessons?',opts:['They keep students active and curious','They are always easier','They need no thinking'],ans:0}],
   open:['What subject would you most enjoy learning outdoors?','Why might a lesson you can touch be easier to remember?'],
   fact:'Spending time outdoors has been shown to improve both mood and concentration.',
   act:'Plan an outdoor lesson for your class. What would you learn, and where?',
-  images:['https://images.unsplash.com/photo-1570616969692-54d6ba3d0397?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=outdoor+learning+in+schools'},
+  images:['https://images.unsplash.com/photo-1570616969692-54d6ba3d0397?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/watch?v=LzGRQQWOn9Y'},
  {id:'nw_seed29',date:'Aug 2026',category:'Technology & Internet',reporter:"iCAN Tech Desk",lead:"They can write, answer questions and even tell jokes \u2014 but how much should we trust the new AI chatbots?",title:'The Rise of the Chatbots',caption:"AI chatbots are powerful helpers \u2014 but they can be wrong.",
   article:"AI chatbots can answer questions, help with ideas and explain tricky topics in seconds. Many students already use them.\n\nBut chatbots are not always right. They can \u2018make things up\u2019 with great confidence. Experts say they are best used as a helper \u2014 to spark ideas \u2014 not as a source you trust blindly.\n\n\u201cUse it like a clever friend,\u201d a teacher said, \u201cbut always check its facts yourself.\u201d",
   mcq:[{q:'What is a weakness of AI chatbots?',opts:['They can be confidently wrong','They never answer','They only work at night'],ans:0},{q:'How do experts say we should use them?',opts:['Trust them blindly','As a helper, and check the facts','Never use them'],ans:1}],
   open:['Have you used an AI chatbot? What was helpful, and what was not?','Why is it important to check facts, even from clever tools?'],
   fact:'AI chatbots do not truly \u2018know\u2019 facts \u2014 they predict likely words, so they can sound sure but be wrong.',
   act:'Ask an AI a question you already know the answer to. Check how accurate its reply is.',
-  images:[],video:'https://www.youtube.com/results?search_query=how+ai+chatbots+work+for+students'},
+  images:[],video:'https://www.youtube.com/watch?v=kmDQQzOpHRo'},
  {id:'nw_seed32',date:'Aug 2026',category:'Economy',reporter:"iCAN News \u00b7 Money Desk",lead:"Coins and notes are becoming a rarer sight as more of the country pays with a tap.",title:'The Cashless Country',caption:"A quick tap is replacing coins and notes across the UAE.",
   article:"From shops to buses, more payments in the UAE are now made with a card or phone rather than cash. A quick tap, and it is done.\n\nGoing cashless can be fast and convenient. But experts remind us it is still real money \u2014 and it can be easy to overspend when you do not see the notes leave your hand.\n\n\u201cTap-to-pay is quick,\u201d an adviser said, \u201cso it is even more important to keep track of what you spend.\u201d",
   mcq:[{q:'How are more people in the UAE paying?',opts:['With a card or phone','Only with coins','With gold'],ans:0},{q:'What is one risk of cashless spending?',opts:['It can be easy to overspend','It is always slower','It is never allowed'],ans:0}],
   open:['Do you think a fully cashless world would be a good thing? Why or why not?','How could someone keep track of cashless spending?'],
   fact:'The very first credit cards appeared in the 1950s \u2014 before that, almost everything was paid in cash.',
   act:'Keep a list of everything you (or your family) buy for one day. Were any purchases a surprise?',
-  images:[],video:'https://www.youtube.com/results?search_query=how+cashless+payments+work'},
+  images:[],video:'https://www.youtube.com/watch?v=ufbqO_JwETM'},
  {id:'nw_seed33',date:'Aug 2026',category:'Economy',reporter:"iCAN News \u00b7 Money Desk",lead:"Some of the country\u2019s newest business owners are still in school \u2014 and full of big ideas.",title:'From Idea to Business: Young Entrepreneurs',caption:"Students are turning bright ideas into real projects.",
   article:"Across the UAE, students are starting small businesses \u2014 baking, crafts, coding, and more. School markets let them sell what they make and learn how business really works.\n\nAn entrepreneur is simply someone who spots a problem and builds a solution. The best ideas often start small and solve something people truly need.\n\n\u201cYou do not need to be an adult to have a great idea,\u201d one young founder said.",
   mcq:[{q:'What is an entrepreneur?',opts:['Someone who spots a problem and builds a solution','Someone who only spends money','Someone who avoids new ideas'],ans:0},{q:'Where do the best ideas often start?',opts:['Small, solving a real need','Huge and expensive','With no plan at all'],ans:0}],
   open:['What problem would you most like to solve with a business idea?','Why might it be smart to start a business idea small?'],
   fact:'Many of the world\u2019s biggest companies began as a tiny idea in a bedroom or garage.',
   act:'Invent a small business you could run. Name it and describe the problem it solves.',
-  images:[],video:'https://www.youtube.com/results?search_query=young+entrepreneurs+students'},
+  images:[],video:'https://www.youtube.com/watch?v=UD_o3U4YAbU'},
  {id:'nw_fix1',date:'Aug 2026',category:'Health',reporter:"iCAN Health Desk",lead:"Doctors issued a fresh warning this week: too many teenagers are running on far too little sleep.",title:'Doctors Urge Teenagers to Sleep More',caption:"A new advisory says most teens are missing hours of vital sleep.",
   article:"ABU DHABI \u2014 Doctors have urged teenagers to get more sleep, warning that many are missing the eight to ten hours their growing bodies need.\n\nIn a new advisory, they said that too little sleep makes it harder to focus, remember and stay in a good mood \u2014 and that screens late at night are a common cause.\n\n\u201cSleep is when the brain does some of its most important work,\u201d one doctor said. \u201cIt is not a luxury; it is a need.\u201d",
   mcq:[{q:'What did the doctors warn about?',opts:['Teens getting too little sleep','Teens sleeping too much','Teens eating too much'],ans:0},{q:'What did they name as a common cause?',opts:['Screens late at night','Too much exercise','Reading books'],ans:0}],
   open:['How many hours do you usually sleep on a school night?','What is one change that could help you sleep better?'],
   fact:'Losing just one hour of sleep a night can measurably lower concentration the next day.',
   act:'Plan a simple bedtime routine that would help you sleep better. Write three steps.',
-  images:[],video:'https://www.youtube.com/results?search_query=teenagers+sleep+advice'},
+  images:[],video:'https://www.youtube.com/watch?v=Hmv4gVGvDWU'},
  {id:'nw_fix2',date:'Aug 2026',category:'Health',reporter:"iCAN Health Desk",lead:"Eye clinics are reporting a sharp rise in a very modern complaint \u2014 tired, dry eyes from too much screen time.",title:'Clinics Report a Rise in \u2018Screen Strain\u2019',caption:"More young people are visiting clinics with tired, dry eyes.",
   article:"Eye clinics say they are seeing more young people with sore, dry eyes \u2014 a problem nicknamed \u2018screen strain\u2019 \u2014 after long hours on phones and computers.\n\nDoctors recommend a simple habit: every 20 minutes, look at something about six metres away for 20 seconds. It gives the eyes a rest.\n\n\u201cYour eyes are muscles too,\u201d one optician said. \u201cThey need little breaks, just like the rest of you.\u201d",
   mcq:[{q:'What are clinics reporting more of?',opts:['Tired, dry eyes from screens','Broken bones','Coughs and colds'],ans:0},{q:'What break do doctors recommend?',opts:['Look far away every 20 minutes','Never blink','Stare closer'],ans:0}],
   open:['How many hours a day do you spend on screens? Is it too much?','What is one screen-free activity you enjoy?'],
   fact:'We blink far less when staring at screens, which is one reason eyes feel dry and tired.',
   act:'Try the 20-minute eye-rest habit for one afternoon, then write how your eyes felt.',
-  images:[],video:'https://www.youtube.com/results?search_query=screen+eye+strain+advice'},
+  images:[],video:'https://www.youtube.com/watch?v=hExpfvzUsCI'},
  {id:'nw_fix3',date:'Aug 2026',category:'Careers & Jobs',reporter:"iCAN News \u00b7 Schools Desk",lead:"A new after-school craze is spreading through the country\u2019s classrooms \u2014 and it is all about code.",title:'Coding Clubs Open Across UAE Schools',caption:"New clubs let students build their own apps and games.",
   article:"New coding clubs are opening in schools across the UAE this term, giving students the chance to build their own apps, games and websites.\n\nOrganisers say the clubs teach far more than programming \u2014 they teach students to solve problems step by step, a skill useful in almost any job.\n\n\u201cWe are not just making coders,\u201d one club leader said. \u201cWe are making problem-solvers.\u201d",
   mcq:[{q:'What are the new clubs teaching?',opts:['Coding and problem-solving','Only football','Cooking'],ans:0},{q:'Why do organisers value coding?',opts:['It teaches step-by-step problem-solving','It is easy money','It replaces reading'],ans:0}],
   open:['Would you join a coding club? What would you build?','Why might \u2018solving problems step by step\u2019 help in any job?'],
   fact:'The word \u2018bug\u2019 for a computer error comes from a real moth found inside a computer in 1947.',
   act:'In plain words, write the step-by-step \u2018code\u2019 for making a cup of tea. Be very precise.',
-  images:['https://images.unsplash.com/photo-1598981457915-aea220950616?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1563394867331-e687a36112fd?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=school+coding+club'},
+  images:['https://images.unsplash.com/photo-1598981457915-aea220950616?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1563394867331-e687a36112fd?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/watch?v=eK6ZK6nhD64'},
  {id:'nw_fix4',date:'Aug 2026',category:'Education',reporter:"iCAN Education Desk",lead:"The scratch of pen on paper is back: several schools have begun a daily hour dedicated to handwriting.",title:'Schools Trial a Daily \u2018Handwriting Hour\u2019',caption:"Teachers say writing by hand is helping students remember more.",
   article:"AL DHAFRA \u2014 Several schools began trialling a daily \u2018handwriting hour\u2019 this term, after teachers noticed that writing by hand seemed to help students remember what they learned.\n\nDuring the hour, students take notes and write short pieces with pen and paper instead of typing. Early results, teachers say, are promising.\n\n\u201cThe pen is slower,\u201d one teacher said, \u201cand sometimes slower is exactly what learning needs.\u201d",
   mcq:[{q:'What did the schools begin trialling?',opts:['A daily handwriting hour','A longer lunch','A no-homework week'],ans:0},{q:'Why did teachers start it?',opts:['Writing by hand seemed to aid memory','Pens were cheaper','Computers broke'],ans:0}],
   open:['Do you remember things better when you write them by hand?','When does writing something down help you most?'],
   fact:'Studies show students who take notes by hand often remember ideas better than those who type them.',
   act:'Write tomorrow\u2019s to-do list by hand. Notice whether you remember it better.',
-  images:['https://images.unsplash.com/photo-1581726707445-75cbe4efc586?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1561089489-f13d5e730d72?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=handwriting+in+schools'},
+  images:['https://images.unsplash.com/photo-1581726707445-75cbe4efc586?w=1000&q=70&auto=format&fit=crop','https://images.unsplash.com/photo-1561089489-f13d5e730d72?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/watch?v=pu0PSZ_EwII'},
  {id:'nw_fix5',date:'Aug 2026',category:'Education',reporter:"iCAN Education Desk",lead:"A new report is celebrating something many UAE students do every day without thinking \u2014 switching between two languages.",title:'Report Praises UAE\u2019s Bilingual Classrooms',caption:"Students who learn in two languages show a real edge, a report says.",
   article:"A new education report released this week has praised UAE schools for teaching in both Arabic and English, saying bilingual students show stronger focus and problem-solving.\n\nSwitching between languages, the report explains, exercises the brain like a daily workout \u2014 and helps students understand other points of view.\n\n\u201cEvery language a child learns,\u201d one researcher said, \u201copens a new window on the world.\u201d",
   mcq:[{q:'What did the report praise?',opts:['Teaching in two languages','Longer holidays','Bigger classrooms'],ans:0},{q:'What does switching languages do for the brain?',opts:['Exercises it like a workout','Tires it out for good','Nothing'],ans:0}],
   open:['Which languages do you speak, and which would you like to learn?','How does knowing more than one language help you?'],
   fact:'More than half the people in the world speak two or more languages every day.',
   act:'Teach a classmate three useful words in another language you know.',
-  images:['https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=bilingual+education+benefits'},
+  images:['https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/watch?v=FUwIqWPW9ZE'},
  {id:'nw_fix6',date:'Aug 2026',category:'Technology & Internet',reporter:"iCAN Tech Desk",lead:"Authorities have sounded the alarm this week over a new online trick aimed squarely at young people.",title:'Police Warn Students of a New Online Scam',caption:"Officials say a message that seems too good to be true usually is.",
   article:"ABU DHABI \u2014 Police issued a warning this week about a new online scam targeting young people with fake prizes and \u2018free\u2019 offers that ask for personal information.\n\nOfficials repeated a simple rule: think before you click, never share passwords, and tell a trusted adult if something feels wrong.\n\n\u201cThe internet never forgets,\u201d a safety officer said. \u201cA message that seems too good to be true usually is.\u201d",
   mcq:[{q:'What did police warn about?',opts:['A new online scam','A new road','A new game'],ans:0},{q:'What is the simple rule they repeated?',opts:['Think before you click','Click everything fast','Share your password'],ans:0}],
   open:['What is one rule your family has about being online?','Why is it risky to share personal information with strangers online?'],
   fact:'Many online scams work by creating a false sense of urgency to make you click without thinking.',
   act:'Write three golden rules for staying safe online and share them with a younger student.',
-  images:[],video:'https://www.youtube.com/results?search_query=online+scam+warning+students'},
+  images:[],video:'https://www.youtube.com/watch?v=k8UVnkh8i0c'},
  {id:'nw_fix7',date:'Aug 2026',category:'Technology & Internet',reporter:"iCAN Tech Desk",lead:"Classrooms turned their attention online this week as schools across the country marked Digital-Safety Week.",title:'Schools Mark Digital-Safety Week',caption:"Students learned how to protect themselves \u2014 and their data \u2014 online.",
   article:"Schools across the UAE marked Digital-Safety Week with lessons, posters and assemblies about staying safe on the internet.\n\nStudents learned that everything they post leaves a lasting \u2018digital footprint\u2019, and that it is wise to post only what they would be happy for anyone to see.\n\n\u201cThink of the internet as written in ink, not pencil,\u201d one teacher reminded students.",
   mcq:[{q:'What did schools mark this week?',opts:['Digital-Safety Week','Sports Day','A holiday'],ans:0},{q:'What is a \u2018digital footprint\u2019?',opts:['The trail you leave online','A type of shoe','A game'],ans:0}],
   open:['Would you be happy for your teacher to see everything you post? Why or why not?','How can you build a positive digital footprint?'],
   fact:'Content shared online can be copied and saved by others, even after you delete the original.',
   act:'Design a poster that teaches younger students about their digital footprint.',
-  images:['https://images.unsplash.com/photo-1758270705067-0d7edee57af0?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/results?search_query=digital+safety+week+schools'},
+  images:['https://images.unsplash.com/photo-1758270705067-0d7edee57af0?w=1000&q=70&auto=format&fit=crop'],video:'https://www.youtube.com/watch?v=ZtgEwQdVrtw'},
  {id:'nw_fix8',date:'Aug 2026',category:'Economy',reporter:"iCAN News \u00b7 Schools Desk",lead:"For one busy afternoon, a school corridor became a bustling marketplace \u2014 run entirely by students.",title:'Students Run a Bustling Market Day',caption:"Young sellers learned how business really works \u2014 by doing it.",
   article:"AL DHAFRA \u2014 School corridors turned into a marketplace this week as students ran their own Market Day, selling crafts, snacks and handmade goods they had prepared themselves.\n\nOrganisers said the event taught real lessons in money: setting a price, giving change, and deciding what to save and what to spend.\n\n\u201cYou do not need to be an adult to have a great idea,\u201d one young seller said with a grin.",
   mcq:[{q:'What did students do on Market Day?',opts:['Sold crafts, snacks and goods','Watched films','Sat exams'],ans:0},{q:'What money lesson did it teach?',opts:['Pricing, change and saving','How to fly','How to cook only'],ans:0}],
   open:['What would you make and sell at a school market?','Why is it smart to save some of the money you earn?'],
   fact:'Many of the world\u2019s biggest companies began as a tiny idea run by young people.',
   act:'Invent a small stall for a market day. Name it and describe what it would sell.',
-  images:[],video:'https://www.youtube.com/results?search_query=school+market+day+students'},
+  images:[],video:'https://www.youtube.com/watch?v=1JF0O2Qiso8'},
  {id:'nw_fix9',date:'Aug 2026',category:'Film & Media',reporter:"iCAN Arts Desk",lead:"Lights, camera \u2014 classroom: a visiting film crew pulled back the curtain on how movies are really made.",title:'Film Crew Opens Its Set to Students',caption:"Students saw first-hand how a single scene is filmed.",
   article:"A visiting film crew opened its set to students this week, showing how a single scene is planned, lit and filmed \u2014 sometimes over and over until it is right.\n\nStudents met the camera team, the sound crew and the editor, discovering that a two-hour film can take a huge team many months to make.\n\n\u201cA movie is a team sport,\u201d the director told them. \u201cEveryone\u2019s job matters.\u201d",
   mcq:[{q:'What did the film crew show students?',opts:['How a scene is filmed','How to sell tickets','How to act only'],ans:0},{q:'What did students learn about making films?',opts:['It takes a big team and time','It is done in minutes','One person does it all'],ans:0}],
   open:['If you made a short film, what story would you tell?','Which job on a film set would you most like to do, and why?'],
   fact:'A single minute of a big film can take a whole day or more to shoot.',
   act:'Plan a 30-second film. Write three shots (scenes) you would need to tell your story.',
-  images:[],video:'https://www.youtube.com/results?search_query=behind+the+scenes+film+set'},
+  images:[],video:'https://www.youtube.com/watch?v=QNEfYw3TytY'},
  {id:'nw_fix10',date:'Aug 2026',category:'Film & Media',reporter:"iCAN Arts Desk",lead:"A hush fell over the hall as young directors nervously screened their very first films.",title:'Young Directors Screen Their First Films',caption:"Student filmmakers shared true stories that made audiences think.",
   article:"A school hall fell silent this week as young directors screened their first short documentaries \u2014 true stories about their families, their city and the causes they care about.\n\nUnlike films made only to entertain, documentaries show real life. Several in the audience said the films changed how they saw everyday things.\n\n\u201cTruth,\u201d one young filmmaker said, \u201ccan be the most powerful story of all.\u201d",
   mcq:[{q:'What kind of films did the students screen?',opts:['True documentaries','Cartoons only','Adverts'],ans:0},{q:'What do documentaries show?',opts:['Real people, places and events','Only made-up heroes','Nothing real'],ans:0}],
   open:['What real-life topic would you love to make a documentary about?','Why can a true story sometimes be more powerful than a made-up one?'],
   fact:'Some nature documentaries take several years to film, waiting patiently for rare moments.',
   act:'Choose a topic you care about. Plan a short documentary and list three things you would film.',
-  images:[],video:'https://www.youtube.com/results?search_query=student+documentary+screening'},
+  images:[],video:'https://www.youtube.com/watch?v=YmwxhnJ-SQM'},
  {id:'nw_fix11',date:'Aug 2026',category:'Film & Media',reporter:"iCAN Media Desk",lead:"Newsrooms and schools have joined forces this week in a drive to help readers tell fact from fiction.",title:'A New Drive to Fight Fake News',caption:"Students learned simple checks to spot false stories online.",
   article:"Newsrooms and schools have launched a joint drive to help young people spot \u2018fake news\u2019 \u2014 false stories that look real and spread quickly online.\n\nStudents practised simple checks: Who wrote it? Do other trusted sources agree? Does it try to make you angry or scared very fast? Pausing to check, they learned, can stop a false story in its tracks.\n\n\u201cBefore you share,\u201d one journalist told them, \u201cmake sure it is true.\u201d",
   mcq:[{q:'What is the new drive helping people do?',opts:['Spot fake news','Make films','Sell papers'],ans:0},{q:'What is one way to check a story?',opts:['See if trusted sources agree','Share it at once','Believe the scariest one'],ans:0}],
   open:['Have you ever seen a story online that turned out to be false?','Why do you think false stories can spread so quickly?'],
   fact:'Studies have found that false news can spread faster online than true news, because it is often more surprising.',
   act:'Find a surprising online claim. List two ways you could check whether it is true.',
-  images:[],video:'https://www.youtube.com/results?search_query=how+to+spot+fake+news'}
+  images:[],video:'https://www.youtube.com/watch?v=y7eCB2F89K8'}
 ];
-var NEWS_SEED_VERSION=8;
+var NEWS_SEED_VERSION=9;
 function newsAll(){ var n=Store.get('ican_news'); if(!Array.isArray(n) || Store.get('ican_news_v')!==NEWS_SEED_VERSION){ n=NEWS_SEED.slice(); Store.set('ican_news',n); Store.set('ican_news_v',NEWS_SEED_VERSION); } return n; }
 function newsSetAll(list){ Store.set('ican_news', list); }
 function newsFind(id){ return newsAll().find(function(s){return s.id===id;}); }
@@ -24963,6 +24959,7 @@ function newsPlain(s){ return (s&&s.article||'').replace(/\s+/g,' ').trim(); }
 /* ---------- student: hub ---------- */
 ROUTES.news = function(){
   var list=newsAll();
+  var numOf={}; list.forEach(function(s,i){ numOf[s.id]=i+1; });
   var cats=[]; list.forEach(function(s){ if(s.category && cats.indexOf(s.category)<0) cats.push(s.category); });
   var cur=window.__newsCat||'All'; if(cur!=='All' && cats.indexOf(cur)<0){ cur='All'; window.__newsCat='All'; }
   function tab(label,val){ var on=(cur===val); return '<button onclick="newsFilter(\''+esc(val)+'\')" style="border:0;background:none;cursor:pointer;padding:8px 2px;margin-right:18px;font-size:.95rem;font-weight:'+(on?'800':'600')+';color:'+(on?'#173a6b':'#7a8194')+';border-bottom:3px solid '+(on?'#f5a301':'transparent')+';white-space:nowrap">'+label+'</button>'; }
@@ -24970,7 +24967,7 @@ ROUTES.news = function(){
   var shown=list.filter(function(s){ return cur==='All'||s.category===cur; });
   var rows=shown.length ? shown.map(function(s){
     var em=newsCatEmoji(s.category);
-    var hero='<div style="position:relative;width:100%;height:150px;background:#eef1f6;display:flex;align-items:center;justify-content:center;font-size:2.4rem">'+em
+    var hero='<div style="position:relative;width:100%;height:150px;background:#eef1f6;display:flex;align-items:center;justify-content:center;font-size:2.4rem"><span style="position:absolute;top:8px;left:8px;z-index:2;background:#c0392b;color:#fff;font-weight:800;font-size:.78rem;padding:2px 9px;border-radius:5px;box-shadow:0 1px 4px rgba(0,0,0,.35)">'+numOf[s.id]+'</span>'+em
       +((s.images&&s.images[0])?'<img src="'+esc(newsImg(s.images[0]))+'" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.remove()">':'')+'</div>';
     return '<button onclick="go(\'newsStory\',\''+s.id+'\')" style="text-align:left;background:#fff;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;padding:0">'
       +hero
@@ -24990,6 +24987,7 @@ ROUTES.news = function(){
 };
 function newsFilter(cat){ window.__newsCat=cat; ROUTES.news(); }
 function newsReadMins(s){ var w=(s.article||'').split(/\s+/).filter(Boolean).length; return Math.max(1, Math.round(w/170)); }
+function newsNumber(id){ var l=newsAll(); for(var i=0;i<l.length;i++){ if(l[i].id===id) return i+1; } return 0; }
 
 ROUTES.newsStory = function(id){
   var s=newsFind(id); if(!s){ go('news'); return; }
@@ -24998,9 +24996,9 @@ ROUTES.newsStory = function(id){
   var tabbar=tabs.map(function(t){return '<button class="news-tab" data-tab="'+t[0]+'" onclick="newsTab(\''+id+'\',\''+t[0]+'\')" style="border:0;background:#eef1f6;color:#33405a;font-weight:700;font-size:.85rem;padding:8px 12px;border-radius:999px;cursor:pointer">'+t[1]+'</button>';}).join(' ');
   app().innerHTML='<div class="wrap screen">'
     +'<button class="back" onclick="go(\'news\')">← Current News</button>'
-    +'<div style="margin-top:6px"><span style="background:#c0392b;color:#fff;font-size:.66rem;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:4px">● iCAN NEWS</span> <span style="font-size:.78rem;font-weight:700;color:#c0392b;letter-spacing:.04em">'+newsCatEmoji(s.category)+' '+esc((s.category||'News').toUpperCase())+' · '+esc(s.date||'')+'</span></div>'
+    +'<aside class="news-tips"><div style="font-weight:800;color:#c0392b;font-size:.72rem;letter-spacing:.06em;margin-bottom:8px">📣 FOR STUDENTS</div><div style="font-weight:700;margin-bottom:7px;color:#1a2238">Deliver it like a reporter:</div><div style="display:flex;gap:6px;margin-bottom:5px"><span>🎤</span><span><b>Speak with confidence</b> — steady voice, look up, don’t rush.</span></div><div style="display:flex;gap:6px;margin-bottom:5px"><span>✍️</span><span><b>Jot, don’t read</b> — note key words, then say them your way.</span></div><div style="display:flex;gap:6px;margin-bottom:5px"><span>🗣️</span><span><b>Make them believe you</b> — a clear, serious reporter’s tone.</span></div><div style="display:flex;gap:6px"><span>💡</span><span><b>Call viewers to act</b> — end by asking them to think or do something.</span></div></aside>'+'<div style="margin-top:6px"><span style="background:#111;color:#fff;font-size:.66rem;font-weight:800;padding:2px 8px;border-radius:4px;margin-right:6px">REPORT #'+newsNumber(id)+'</span><span style="background:#c0392b;color:#fff;font-size:.66rem;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:4px">● iCAN NEWS</span> <span style="font-size:.78rem;font-weight:700;color:#c0392b;letter-spacing:.04em">'+newsCatEmoji(s.category)+' '+esc((s.category||'News').toUpperCase())+' · '+esc(s.date||'')+'</span></div>'
     +'<h1 style="font-size:1.9rem;line-height:1.2;margin:4px 0 6px">'+esc(s.title||'')+'</h1>'+(s.reporter?'<div style="font-size:.82rem;color:var(--muted);margin-bottom:12px">🎙️ '+esc(s.reporter)+'</div>':'')
-    +'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">'+tabbar+'</div>'
+    +(s.lead?'<div class="news-ticker-wrap"><span class="news-ticker-label">● LIVE</span><div class="news-ticker-track"><span class="news-ticker-text">'+esc(s.lead)+'</span></div></div>':'')+'<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">'+tabbar+'</div>'
     +'<div id="newsBody"></div></div>';
   newsTab(id,'read');
   try{window.scrollTo(0,0);}catch(e){}
@@ -25171,7 +25169,7 @@ ROUTES.waspkCats = function(cat){
   if(!sel){
     content='<div class="wa-libhint">\uD83D\uDC46 Tap a category to see its prompts. Each one opens its own set \u2014 read or watch, then write, speak and publish.</div>';
   } else if(sel==='teacher'){
-    var tp=waspkTeacherPrompts();
+    var tp=waspkAllTeacherPrompts();
     content = tp.length
       ? '<div class="wa-cathead"><span class="ce">\uD83D\uDC69\u200D\uD83C\uDFEB</span><h2>From my teacher</h2></div><div class="wa-grid">'+tp.map(function(p){return '<div class="wa-tile" onclick="go(\'waspkDo\',\''+p.id+'\')">'+waspkTileVisual(waspkVO({p, c:{name:'From my teacher',key:'teacher',grad:['#15183A','#26308a'],scene:'imagine'}}))+waspkStatusBadge(p.id,true)+'</div>';}).join('')+'</div>'
       : '<div class="wa-libhint">Your teacher has not added any prompts yet. Try another category above.</div>';
@@ -26169,7 +26167,7 @@ function waspkTeacherSave(){
   const d=waspkBuilderRead('t'); const msg=document.getElementById('waspktMsg');
   if(!d.title){ if(msg){msg.style.color='#b23c78';msg.textContent='Give your prompt a title.';} return; }
   if(d.kind==='pic' && !d.img){ if(msg){msg.style.color='#b23c78';msg.textContent='Add a picture (or switch prompt type).';} return; }
-  if(d.kind==='video' && !d.videoKey){ if(msg){msg.style.color='#b23c78';msg.textContent='Add a short video (or switch prompt type).';} return; }
+  if(d.kind==='video' && !d.videoKey && !(d.youtube && typeof waspkYTId==='function' && waspkYTId(d.youtube))){ if(msg){msg.style.color='#b23c78';msg.textContent='Add a short video, or paste a valid YouTube link.';} return; }
   if((d.kind==='puzzle'||d.kind==='debate') && !d.statement){ if(msg){msg.style.color='#b23c78';msg.textContent='Write the '+(d.kind==='debate'?'debate':'puzzle')+' statement.';} return; }
   if(!d.write) d.write='Look at this prompt and write freely about it.';
   if(!d.speak) d.speak='Now speak about it in your own words.';
