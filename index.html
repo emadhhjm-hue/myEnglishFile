@@ -24965,9 +24965,19 @@ const NEWS_SEED = [
   open:['Have you ever seen a story online that turned out to be false?','Why do you think false stories can spread so quickly?'],
   fact:'Studies have found that false news can spread faster online than true news, because it is often more surprising.',
   act:'Find a surprising online claim. List two ways you could check whether it is true.',
-  images:[],video:'https://www.youtube.com/watch?v=y7eCB2F89K8'}
+  images:[],video:'https://www.youtube.com/watch?v=y7eCB2F89K8'},
+ {id:'nw_seed34',date:'Aug 2026',category:'Technology & Internet',reporter:"iCAN News · Special Report",lead:"BREAKING · China unveils humanoid robots built to work beside us — and the numbers are staggering.",title:'The Robots Report for Work',caption:"A special report on your future: humanoid robots are stepping out of science fiction and entering our daily lives and workplaces.",
+  article:"At the recent World Robot Conference in Beijing, China stunned global observers by showing just how far humanoid robotics has come. “What we are seeing here is not the future — it is already the present,” one analyst said, as machines walked, sorted and served across the exhibition floor.\n\nWhile many Western tech companies have focused mainly on software, Chinese firms have gone further — building specialised training centres and factories where robots are taught complex human tasks, from sorting goods in warehouses to handling chores at home. “We do not just program these robots,” one engineer explained. “We train them, the way you would train a new worker.”\n\nBut it was the scale that surprised experts most. Figures shared at the conference showed China shipped more than 19,000 humanoid robots — capturing an astonishing 97% of global shipments. And that may only be the beginning. “By 2030, we expect around 500,000 units,” one official predicted. “This is the start of a new workforce.”",
+  mcq:[{q:'What surprised experts most at the conference?',opts:['The colour of the robots','The scale — the shipments and the future numbers','The price of the tickets'],ans:1},{q:'How are Chinese firms said to prepare their robots?',opts:['Only by writing software','By training them in special centres, like new workers','By keeping them switched off'],ans:1},{q:'What share of global humanoid-robot shipments did China capture?',opts:['About 10%','About half','About 97%'],ans:2}],
+  open:['THE BIG QUESTION — How do you think a world filled with millions of humanoid workers will change everyday life, society, and your future career? Reflect on the story and connect it to your own life.','FUTURE CAREERS — Which job do you want, and could a robot do it by 2030? Is it smarter to learn what robots can do, or what they cannot?','MILITARY & FUTURE WARS — Should machines ever be allowed to fight? If no soldiers die, do leaders start wars more easily?','HUMAN CONNECTION — If robots become our helpers and friends, will we talk to each other less? Can a machine truly understand you, or only pretend to?'],
+  fact:'At one recent count, China shipped over 19,000 humanoid robots — about 97% of the world’s total — with some forecasts reaching 500,000 units a year by 2030.',
+  act:'You are the reporter. Write a 20-second “breaking news” bulletin about robots arriving in your town: a bold headline, two sentences of report, and a final line telling viewers what to think or do.',
+  images:[],
+  videos:[{url:'https://www.youtube.com/shorts/hlSR2HgX-Cw',cap:'Inside the World Robot Conference, where humanoid machines walk, sort and work in front of the world.',q:'If robots can already do these jobs, what will be left for you to do — and what could you do that a robot never will?'},{url:'https://www.youtube.com/shorts/LVz1BRKgbMc',cap:'From factory floors to the battlefield — humanoid robots and four-legged “robot dogs” are already moving into fields once done only by people.',q:'Should machines ever be sent to fight? And once robots can do almost any job, which fields should stay human?'},{url:'https://www.youtube.com/shorts/hjp6Yryb5As',cap:'As robots learn to talk, smile and respond, the line between human and machine begins to blur.',q:'If a robot can hold a conversation, can it ever really be a friend — or does something human get lost?'}],
+  watchLead:"Three short reports, one big question: should we welcome this new workforce — or fear it? Watch each clip, then decide.",
+  video:'https://www.youtube.com/watch?v=hlSR2HgX-Cw'}
 ];
-var NEWS_SEED_VERSION=9;
+var NEWS_SEED_VERSION=10;
 function newsAll(){ var n=Store.get('ican_news'); if(!Array.isArray(n) || Store.get('ican_news_v')!==NEWS_SEED_VERSION){ n=NEWS_SEED.slice(); Store.set('ican_news',n); Store.set('ican_news_v',NEWS_SEED_VERSION); } return n; }
 function newsSetAll(list){ Store.set('ican_news', list); }
 function newsFind(id){ return newsAll().find(function(s){return s.id===id;}); }
@@ -25021,6 +25031,21 @@ ROUTES.newsStory = function(id){
   newsTab(id,'read');
   try{window.scrollTo(0,0);}catch(e){}
 };
+function newsWatchMulti(s){
+  var vids=(s.videos||[]).filter(function(v){ return v && (v.url||'').trim(); });
+  if(!vids.length) return '<div class="card"><p style="color:var(--muted)">No videos yet for this story. Your teacher can add video links.</p></div>';
+  var cards=vids.map(function(v){
+    var emb=(typeof waspkYTEmbed==='function')?waspkYTEmbed(v.url):'';
+    var frame= emb
+      ? '<iframe src="'+emb+'" title="video" frameborder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;aspect-ratio:16/9;border-radius:10px"></iframe>'
+      : '<a class="btn sm" href="'+esc(v.url)+'" target="_blank" rel="noopener">🎬 Watch →</a>';
+    var cap=(v.cap||v.caption)?'<p style="font-size:.82rem;color:var(--muted);font-style:italic;margin:8px 2px 6px">'+esc(v.cap||v.caption)+'</p>':'';
+    var q=(v.q||v.question)?'<div style="background:#eef4ff;border-left:3px solid #2B5FA6;border-radius:6px;padding:8px 10px;margin-top:4px"><span style="font-weight:800;font-size:.7rem;letter-spacing:.06em;color:#2B5FA6">🤔 THINK</span><p style="margin:4px 0 0;font-size:.92rem;line-height:1.5">'+esc(v.q||v.question)+'</p></div>':'';
+    return '<div style="min-width:0">'+frame+cap+q+'</div>';
+  }).join('');
+  var lead=(s.watchLead||'These short reports share one big question. Watch each one, then decide what you think.');
+  return '<div class="card"><p style="color:var(--muted);margin:0 0 12px">'+esc(lead)+'</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;align-items:start">'+cards+'</div></div>';
+}
 function newsTab(id, tab){
   var s=newsFind(id); if(!s) return;
   document.querySelectorAll('.news-tab').forEach(function(b){ var on=b.getAttribute('data-tab')===tab; b.style.background=on?'#2B5FA6':'#eef1f6'; b.style.color=on?'#fff':'#33405a'; });
@@ -25052,12 +25077,15 @@ function newsTab(id, tab){
         +(imgs.length>1?'<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><button class="btn sm ghost" onclick="newsSlide(\''+id+'\',-1)">← Prev</button><span style="color:var(--muted)">'+(i+1)+' / '+imgs.length+'</span><button class="btn sm ghost" onclick="newsSlide(\''+id+'\',1)">Next →</button></div>':'')+'</div></div>';
     } else { h='<div class="card"><p style="color:var(--muted)">No images yet for this story. Your teacher can add image links.</p></div>'; }
   } else if(tab==='watch'){
+    if(Array.isArray(s.videos) && s.videos.length){ h=newsWatchMulti(s); }
+    else {
     var v=(s.video||'').trim();
     if(v && typeof waspkYTId==='function' && waspkYTId(v)){
       h='<div class="card"><div class="wa-video"><iframe src="'+waspkYTEmbed(v)+'" title="video" frameborder="0" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="width:100%;aspect-ratio:16/9;border-radius:10px"></iframe></div></div>';
     } else if(v){
       h='<div class="card"><p style="color:var(--muted)">Watch a video about this story:</p><a class="btn" href="'+esc(v)+'" target="_blank" rel="noopener">🎬 Watch →</a></div>';
     } else { h='<div class="card"><p style="color:var(--muted)">No video yet for this story. Your teacher can add a video link.</p></div>'; }
+    }
   } else if(tab==='discuss'){
     window.__newsSpoke=false; window.__newsWStarted=false; if(window.__newsWInt)clearInterval(window.__newsWInt); if(window.__newsSpkInt)clearInterval(window.__newsSpkInt);
     h='<div class="card"><h3 style="margin:0 0 6px">🗣️ What do you think?</h3>'
