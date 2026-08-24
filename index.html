@@ -4910,7 +4910,14 @@ const ROUTES = {
         <button class="back" onclick="go('home')">← Back</button>
         <h2 style="font-size:1.8rem">Teacher sign-in</h2>
         <p style="color:var(--muted);margin:6px 0 20px;font-size:.92rem">Enter your private teacher code.</p>
-        <div class="field"><label>Teacher code</label><input id="tCode" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doTeacherLogin()"></div>
+        <div class="field"><label>Teacher code</label>
+          <div style="position:relative">
+            <input id="tCode" type="password" placeholder="••••••••" style="padding-right:44px;box-sizing:border-box" onkeydown="if(event.key==='Enter')doTeacherLogin()">
+            <button type="button" aria-label="Show code for 3 seconds" title="Show code for 3 seconds" style="position:absolute;top:50%;right:8px;transform:translateY(-50%);background:none;border:0;cursor:pointer;padding:6px;line-height:0;color:var(--muted)" onclick="var i=document.getElementById('tCode'); i.type='text'; this.style.color='var(--teal-dk,#0c8a72)'; var b=this; clearTimeout(window.__tCodePeek); window.__tCodePeek=setTimeout(function(){ i.type='password'; b.style.color='var(--muted)'; },3000);">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
         <div class="err" id="tErr"></div>
         <button class="btn dark" style="width:100%" onclick="doTeacherLogin()">Open dashboard →</button>
       </div>
