@@ -24977,7 +24977,7 @@ const NEWS_SEED = [
   watchLead:"Three short reports, one big question: should we welcome this new workforce — or fear it? Watch each clip, then decide.",
   video:'https://www.youtube.com/watch?v=hlSR2HgX-Cw'}
 ];
-var NEWS_SEED_VERSION=10;
+var NEWS_SEED_VERSION=11;
 function newsAll(){ var n=Store.get('ican_news'); if(!Array.isArray(n) || Store.get('ican_news_v')!==NEWS_SEED_VERSION){ n=NEWS_SEED.slice(); Store.set('ican_news',n); Store.set('ican_news_v',NEWS_SEED_VERSION); } return n; }
 function newsSetAll(list){ Store.set('ican_news', list); }
 function newsFind(id){ return newsAll().find(function(s){return s.id===id;}); }
