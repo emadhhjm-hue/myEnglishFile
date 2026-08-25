@@ -1755,8 +1755,8 @@ const CONFIG = {
 const Store = {
   mem:{},
   _ok(){ try{ const k="__t"; localStorage.setItem(k,"1"); localStorage.removeItem(k); return true; }catch(e){ return false; } },
-  get(k){ if(this._ok()){ const v=localStorage.getItem(k); return v?JSON.parse(v):null; } return this.mem[k]??null; },
-  set(k,v){ if(this._ok()){ localStorage.setItem(k,JSON.stringify(v)); } else { this.mem[k]=v; } }
+  get(k){ try{ if(this._ok()){ const v=localStorage.getItem(k); if(v!=null) return JSON.parse(v); } }catch(e){} return (k in this.mem)?this.mem[k]:null; },
+  set(k,v){ try{ if(this._ok()){ localStorage.setItem(k,JSON.stringify(v)); return; } }catch(e){} this.mem[k]=v; }
 };
 function getResults(){ return Store.get("ican_results")||[]; }
 function getCodes(){ const stored=Store.get("ican_codes")||[]; return Array.from(new Set([...(CONFIG.classCodes||[]), ...stored])); }
@@ -24981,9 +24981,22 @@ const NEWS_SEED = [
   watchLead:"Three short reports, one big question: should we welcome this new workforce — or fear it? Watch each clip, then decide.",
   video:'https://www.youtube.com/watch?v=hlSR2HgX-Cw'}
 ];
-var NEWS_SEED_VERSION=15;
-function newsAll(){ var n=Store.get('ican_news'); if(!Array.isArray(n) || Store.get('ican_news_v')!==NEWS_SEED_VERSION){ n=NEWS_SEED.slice(); Store.set('ican_news',n); Store.set('ican_news_v',NEWS_SEED_VERSION); } return n; }
-function newsSetAll(list){ Store.set('ican_news', list); }
+var NEWS_SEED_VERSION=16;
+function newsSeedImages(id){ var s=NEWS_SEED.find(function(x){return x.id===id;}); return s?(s.images||[]):[]; }
+/* Keep heavy base64 seed images OUT of localStorage (they blow the ~5MB quota and
+   would blank the whole list). Each seed story's images collapse to a light '@seed'
+   marker for storage and are re-attached from NEWS_SEED (in memory) on read.
+   Teacher-added stories use image URLs, which stay as-is. */
+function newsStripImgs(list){ return list.map(function(s){
+  if(s && s.images && s.images.some(function(u){return typeof u==='string' && u.indexOf('data:')===0;})){
+    var c=Object.assign({}, s); c.images=['@seed']; return c;
+  } return s; }); }
+function newsHydrateImgs(list){ return list.map(function(s){
+  if(s && s.images && s.images.length===1 && s.images[0]==='@seed'){
+    var c=Object.assign({}, s); c.images=newsSeedImages(s.id); return c;
+  } return s; }); }
+function newsAll(){ var n=Store.get('ican_news'); if(!Array.isArray(n) || Store.get('ican_news_v')!==NEWS_SEED_VERSION){ n=NEWS_SEED.slice(); Store.set('ican_news', newsStripImgs(n)); Store.set('ican_news_v',NEWS_SEED_VERSION); return n; } return newsHydrateImgs(n); }
+function newsSetAll(list){ Store.set('ican_news', newsStripImgs(list)); }
 function newsFind(id){ return newsAll().find(function(s){return s.id===id;}); }
 function newsUUID(){ return 'nw'+Date.now().toString(36)+Math.random().toString(36).slice(2,5); }
 function newsPlain(s){ return (s&&s.article||'').replace(/\s+/g,' ').trim(); }
