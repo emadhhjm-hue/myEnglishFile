@@ -8233,6 +8233,8 @@ if(typeof window!=='undefined' && !window.__dictBound){
     if(HL) return;                                       /* highlighter has the text */
     const host=ev.target.closest && ev.target.closest('[data-dict]');
     if(!host){ hideDictPop(); return; }
+    /* never look up a word when the tap lands on a control (MCQ option, button, chip, input) */
+    if(ev.target.closest('button, a, input, textarea, select, label, summary, [contenteditable], [onclick], [role="button"], [role="radio"], [role="checkbox"], [role="tab"], [role="option"], .btn, .opt, .chip, .back, .qm, .tool, .mlq-opt, .grc-opt, .mzc-opt, .mz-opt, .hp-choice, .cv-opt')){ hideDictPop(); return; }
     if(ev.target.closest('.aad-key') || ev.target.closest('.ylw')) return;   /* these have their own pop-ups */
     hideDictPop();
     const hit=wordAtPoint(ev.clientX, ev.clientY);
