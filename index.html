@@ -27842,7 +27842,7 @@ function openReel(i){
   feed.innerHTML=""; countEl.textContent="0 comments";
   rail.querySelectorAll(".n").forEach(n=>n.textContent="0");
   $("#modal").classList.add("open"); openSheet(false);
-  if(DEMO) startDemo(S, r); else subscribeLive(r.id);
+  startDemo(S, r); if(!DEMO) subscribeLive(r.id);
 }
 function closeReel(){ $("#modal").classList.remove("open"); player.src=""; clearDemo(); if(unsub){unsub();unsub=null;} }
 $("#winClose").onclick=closeReel;
