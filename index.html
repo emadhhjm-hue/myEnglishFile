@@ -27569,6 +27569,10 @@ const SCAFFOLD={
     frames:["I am grateful for…","This reminds me to…","It makes me feel…","In my life, I want to…"],
     quick:["🙏 grateful","So peaceful","This reminds me to…"],
     demo:[["Salem A.","I am grateful for my family 🙏"],["Omar Y.","This reminds me to be humble."],["Zayed H.","It makes me feel peaceful."]] },
+  tech:{ words:["futuristic","impressive","unbelievable","clever","exciting","a little scary"],
+    frames:["In the future, I think…","I was amazed because…","This could help us…","I can't believe that…"],
+    quick:["😮 amazed","Wow!","In the future…"],
+    demo:[["Omar Y.","This is unbelievable 🤖"],["Zayed H.","So futuristic!"],["Khalifa S.","This could help people one day."]] },
 };
 const REELS=[
   { id:"15RBPQ67jj4", tab:"Nature", title:"Nature's landing", cap:"Why nature is our greatest teacher 🕊️",
@@ -27613,6 +27617,14 @@ const REELS=[
   { id:"NUsqYCWh9Zs", tab:"Mindset", title:"Keep going, don't quit", cap:"Keep going — don't quit 🔥", kind:"grit" },
   { id:"GOlwFZlv9Fk", tab:"Heart", title:"A true Muslim's day", cap:"A true Muslim's day 🕌", kind:"heart" },
   { id:"JmXO-1K_M0M", tab:"Heart", title:"Don't waste your life", cap:"Don't waste your life ⏳", kind:"heart" },
+  { id:"Al4ymlqrw1c", tab:"Wisdom", title:"Ali's curious mind", cap:"Muhammad Ali's curious mind 🧠", kind:"grit" },
+  { id:"aq_VGzLNZ80", tab:"Mindset", title:"The price of success", cap:"The price of success 🏆", kind:"grit" },
+  { id:"lDwhnRaKV8M", tab:"Dream", title:"You can do it", cap:"Never let anyone say you can't 💪", kind:"dream" },
+  { id:"rpWQbBYpaUw", tab:"Future", title:"What humanoids can do", cap:"What humanoids can really do 🤖", kind:"tech" },
+  { id:"7hO8G6QRbwQ", tab:"Future", title:"Robot run", cap:"Robot run 🤖", kind:"tech" },
+  { id:"3biHuGYhPas", tab:"Heart", title:"Hope inside", cap:"The hope inside you ✨", kind:"heart" },
+  { id:"oNd7CR5S658", tab:"Mindset", title:"Never trust anyone?", cap:"Never trust anyone? 🤔", kind:"grit" },
+  { id:"PgVAUZ10TmM", tab:"Mindset", title:"5 choices change life", cap:"5 choices that change your life 🔑", kind:"grit" },
 ];
 function scaf(r){ const d=SCAFFOLD[r.kind]||{}; return { words:r.words||d.words||[], frames:r.frames||d.frames||[], quick:r.quick||d.quick||[], demo:r.demo||d.demo||[] }; }
 const REACTIONS=[["👍","like"],["❤️","love"],["😮","amazed"],["😂","funny"],["🤔","thinking"]];
@@ -27678,7 +27690,7 @@ function openReel(i){
   current=i; const r=REELS[i], S=scaf(r); session=[]; localCount=0;
   $("#winTitle").textContent="Reel "+(i+1)+" · "+r.title;
   $("#capH").textContent=r.cap;
-  player.src=`https://www.youtube.com/embed/${r.id}?playsinline=1`;
+  player.src=`https://www.youtube.com/embed/${r.id}?playsinline=1&loop=1&playlist=${r.id}&rel=0`;
   fillChips("#grpWords",S.words,false); fillChips("#grpFrames",S.frames,true); fillChips("#grpReply",REPLY_FRAMES,true); fillQuick(S.quick);
   feed.innerHTML=""; countEl.textContent="0 comments";
   rail.querySelectorAll(".n").forEach(n=>n.textContent="0");
