@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iCAN Reels — Class Wall (Firebase-ready)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --stage:#0b0e13; --panel:#141922; --panel-2:#1b2230; --line:#28303f;
+    --ink:#eef2f7; --ink-soft:#a7b0c0; --ink-mute:#6b7686;
+    --help:#2dd4bf; --help-deep:#0f766e;
+    --love:#ff5a7a; --ok:#39d98a; --pending:#f0a848; --r:16px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;color:var(--ink);font-family:"Inter",system-ui,sans-serif;line-height:1.45;
+    background:radial-gradient(1100px 600px at 82% -8%,#17202e 0,transparent 60%),
+      radial-gradient(900px 500px at -6% 110%,#14201f 0,transparent 55%),#070a0f;}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+  .topbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 20px;border-bottom:1px solid var(--line);
+    background:rgba(10,13,19,.7);backdrop-filter:blur(8px);position:sticky;top:0;z-index:40}
+  .brand{display:flex;align-items:baseline;gap:9px}
+  .brand b{font-family:"Space Grotesk";font-weight:700;font-size:19px;letter-spacing:-.02em}
+  .brand .play{color:var(--help)} .brand small{color:var(--ink-mute);font-size:12px}
+  .room{display:inline-flex;align-items:center;gap:7px;padding:5px 11px;border:1px solid var(--line);border-radius:999px;
+    background:var(--panel);font-size:12.5px;color:var(--ink-soft);font-weight:500}
+  .room .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px rgba(57,217,138,.14)}
+  .mode{font-size:11px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--ink-mute)}
+  .mode.live{color:#bff5ec;border-color:var(--help);background:#0f2420}
+  .spacer{flex:1}
+  .modtoggle{display:inline-flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-soft);cursor:pointer;user-select:none}
+  .switch{width:42px;height:24px;border-radius:999px;background:var(--panel-2);border:1px solid var(--line);position:relative;transition:.2s}
+  .switch::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--ink-mute);transition:.2s}
+  .modtoggle.on .switch{background:var(--help-deep);border-color:var(--help)}
+  .modtoggle.on .switch::after{left:20px;background:var(--help)}
+
+  .stage{max-width:1120px;margin:20px auto;padding:0 18px 40px;display:grid;grid-template-columns:minmax(300px,360px) 1fr;gap:26px;align-items:start}
+  @media(max-width:820px){.stage{grid-template-columns:1fr;gap:20px}}
+
+  /* reel switcher */
+  .switcher{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .pill{border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);padding:6px 12px;border-radius:999px;
+    font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:.15s}
+  .pill:hover{border-color:var(--help);color:#bff5ec}
+  .pill.active{background:linear-gradient(180deg,#5eead4,#2dd4bf);color:#04201d;border-color:#7ff0e2}
+
+  .phone{position:relative;aspect-ratio:9/16;width:100%;border-radius:22px;overflow:hidden;background:#000;
+    border:1px solid var(--line);box-shadow:0 30px 70px -30px rgba(0,0,0,.9)}
+  .phone iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .caption{position:absolute;left:12px;right:64px;bottom:14px;z-index:3;pointer-events:none;font-size:13.5px;text-shadow:0 1px 6px rgba(0,0,0,.8)}
+  .caption .h{font-family:"Space Grotesk";font-weight:600}
+  .caption .tags{color:#9fd;font-size:12px}
+
+  .rail{position:absolute;right:10px;bottom:18px;z-index:4;display:flex;flex-direction:column;gap:14px;align-items:center}
+  .react{border:0;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;color:#fff}
+  .react .bubble{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:22px;
+    background:rgba(20,25,34,.7);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(4px);transition:transform .12s,background .2s}
+  .react:hover .bubble{transform:translateY(-2px)} .react:active .bubble{transform:scale(.9)}
+  .react.pop .bubble{animation:pop .4s ease}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+  .react .n{font-size:11px;font-weight:600;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+  .fly{position:absolute;right:24px;bottom:70px;font-size:22px;pointer-events:none;z-index:6;animation:fly 1s ease-out forwards}
+  @keyframes fly{0%{opacity:0;transform:translateY(0) scale(.6)}20%{opacity:1}100%{opacity:0;transform:translateY(-90px) scale(1.3)}}
+
+  .horn{position:absolute;left:10px;bottom:18px;z-index:5;display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+    padding:9px 13px 9px 11px;border-radius:999px;color:#04201d;font-weight:700;font-size:13px;
+    background:linear-gradient(180deg,#5eead4,#2dd4bf);border:1px solid #7ff0e2;box-shadow:0 8px 24px -6px rgba(45,212,191,.6);
+    animation:breathe 3.2s ease-in-out infinite}
+  @keyframes breathe{0%,100%{box-shadow:0 8px 24px -6px rgba(45,212,191,.55)}50%{box-shadow:0 8px 30px -4px rgba(45,212,191,.9)}}
+  .horn:hover{filter:brightness(1.05)} .horn .ic{font-size:16px}
+
+  .sheet{position:absolute;inset:auto 0 0 0;z-index:20;transform:translateY(102%);transition:transform .32s cubic-bezier(.2,.8,.2,1);
+    background:linear-gradient(180deg,#101722,#0c1119);border:1px solid var(--help);border-bottom:0;border-radius:20px 20px 0 0;
+    padding:16px 16px 20px;max-height:82%;overflow:auto;box-shadow:0 -20px 50px -20px rgba(0,0,0,.9)}
+  .sheet.open{transform:translateY(0)}
+  .sheet h4{margin:0 0 3px;font-family:"Space Grotesk";font-size:15px;display:flex;align-items:center;gap:7px}
+  .sheet .sub{color:var(--ink-mute);font-size:12px;margin:0 0 12px}
+  .grp{margin-top:14px} .grp .lab{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--help);font-weight:600;margin-bottom:8px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px}
+  .chip{border:1px solid var(--line);background:var(--panel-2);color:var(--ink);padding:6px 11px;border-radius:999px;
+    font-size:13px;cursor:pointer;font-family:inherit;transition:.15s}
+  .chip:hover{border-color:var(--help);color:#bff5ec;background:#12211f}
+  .chip.frame{background:#101a24;border-style:dashed}
+  .closex{position:absolute;top:12px;right:14px;background:transparent;border:0;color:var(--ink-mute);font-size:22px;cursor:pointer;line-height:1}
+
+  .wall{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;min-height:560px}
+  .wall .head{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px}
+  .wall .head b{font-family:"Space Grotesk";font-size:15px}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--love);font-weight:700;letter-spacing:.04em}
+  .live .d{width:7px;height:7px;border-radius:50%;background:var(--love);animation:blink 1.4s infinite}
+  @keyframes blink{50%{opacity:.25}}
+  .count{margin-left:auto;color:var(--ink-mute);font-size:12.5px}
+  .feed{flex:1;overflow:auto;padding:8px 8px 4px}
+  .cmt{display:flex;gap:10px;padding:9px 8px;border-radius:12px;animation:slidein .35s ease}
+  .cmt.reply{margin-left:40px}
+  @keyframes slidein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .av{width:32px;height:32px;border-radius:50%;flex:0 0 32px;display:grid;place-items:center;font-weight:700;font-size:13px;color:#06231f;font-family:"Space Grotesk"}
+  .cbody{flex:1;min-width:0}
+  .cmeta{display:flex;align-items:center;gap:8px;font-size:12px}
+  .cmeta .name{font-weight:600;color:var(--ink)} .cmeta .t{color:var(--ink-mute)}
+  .badge-you{font-size:10px;background:var(--help-deep);color:#c9fff5;padding:1px 6px;border-radius:6px;font-weight:600}
+  .badge-pend{font-size:10px;background:rgba(240,168,72,.16);color:var(--pending);padding:1px 6px;border-radius:6px;font-weight:600;border:1px solid rgba(240,168,72,.35)}
+  .ctext{font-size:14px;margin:2px 0 4px} .cact{display:flex;gap:14px;font-size:12px;color:var(--ink-mute)}
+  .cact button{background:0;border:0;color:inherit;cursor:pointer;font:inherit;display:inline-flex;align-items:center;gap:4px;padding:0}
+  .cact button:hover{color:var(--ink-soft)} .cact .approve{color:var(--ok);font-weight:600}
+
+  .composer{border-top:1px solid var(--line);padding:12px}
+  .quickchips{display:flex;gap:7px;overflow:auto;padding-bottom:10px;scrollbar-width:none}
+  .quickchips::-webkit-scrollbar{display:none} .quickchips .chip{flex:0 0 auto}
+  .inrow{display:flex;gap:9px;align-items:flex-end}
+  .inrow .me{width:32px;height:32px;border-radius:50%;flex:0 0 32px;display:grid;place-items:center;font-weight:700;font-size:12px;color:#06231f;background:linear-gradient(180deg,#7dd3fc,#5aa9ff);font-family:"Space Grotesk"}
+  textarea{flex:1;resize:none;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;color:var(--ink);font:inherit;font-size:14px;padding:9px 12px;min-height:42px;max-height:120px}
+  textarea:focus{outline:2px solid var(--help);outline-offset:1px;border-color:transparent}
+  .send{border:0;border-radius:12px;padding:0 16px;height:42px;cursor:pointer;font-weight:700;font-family:"Space Grotesk";background:linear-gradient(180deg,#5eead4,#2dd4bf);color:#04201d}
+  .send:disabled{opacity:.4;cursor:not-allowed}
+  .hint{font-size:11.5px;color:var(--ink-mute);margin-top:8px}
+  .posting-as{font-size:11.5px;color:var(--ink-mute);margin-top:8px;display:flex;gap:6px;align-items:center}
+  .posting-as b{color:var(--ink-soft)} .posting-as a{color:var(--help);cursor:pointer;text-decoration:underline}
+  .join{position:fixed;inset:0;z-index:80;display:grid;place-items:center;padding:20px;background:rgba(6,9,14,.86);backdrop-filter:blur(6px)}
+  .join.hidden{display:none}
+  .joincard{width:100%;max-width:380px;background:linear-gradient(180deg,#141b26,#0e131c);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 30px 80px -30px #000}
+  .joincard h3{font-family:"Space Grotesk";margin:0 0 4px;font-size:19px}
+  .joincard p{margin:0 0 16px;color:var(--ink-mute);font-size:13px}
+  .joincard .room{margin-bottom:16px}
+  .joincard input{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:12px;color:var(--ink);font:inherit;font-size:15px;padding:11px 13px}
+  .joincard input:focus{outline:2px solid var(--help);outline-offset:1px;border-color:transparent}
+  .joincard .err{color:var(--pending);font-size:12px;margin:8px 2px 0;min-height:15px}
+  .joincard button{width:100%;margin-top:14px;border:0;border-radius:12px;padding:12px;cursor:pointer;font-weight:700;font-family:"Space Grotesk";font-size:15px;background:linear-gradient(180deg,#5eead4,#2dd4bf);color:#04201d}
+  .joincard .note{margin-top:14px;font-size:11.5px;color:var(--ink-mute);line-height:1.5}
+  .shield{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:20px;background:rgba(6,9,14,.86);backdrop-filter:blur(6px)}
+  .shield.hidden{display:none}
+  .shieldcard{width:100%;max-width:360px;text-align:center;background:linear-gradient(180deg,#1a1420,#140e12);border:1px solid #7a2f45;border-radius:20px;padding:26px 24px;box-shadow:0 30px 80px -30px #000;animation:spop .28s ease}
+  @keyframes spop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:none}}
+  .shieldicon{font-size:40px;margin-bottom:6px}
+  .shieldcard h3{font-family:"Space Grotesk";margin:0 0 8px;font-size:19px}
+  .shieldcard p{margin:0 0 18px;color:var(--ink-soft);font-size:13.5px;line-height:1.6}
+  .shieldcard button{width:100%;border:0;border-radius:12px;padding:12px;cursor:pointer;font-weight:700;font-family:"Space Grotesk";font-size:15px;background:linear-gradient(180deg,#ff8fa3,#ff5a7a);color:#2a0512}
+  .footnote{max-width:1120px;margin:0 auto;padding:0 18px 40px;color:var(--ink-mute);font-size:12.5px;line-height:1.6}
+  .footnote b{color:var(--ink-soft)} .k{color:var(--help)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><b><span class="play">▶</span> iCAN Reels</b><small>Talkabout · mixed set</small></div>
+  <span class="room"><span class="dot"></span> Room 10B · Class only</span>
+  <span class="mode" id="modeTag">demo mode</span>
+  <div class="spacer"></div>
+  <div class="modtoggle" id="modToggle" role="switch" aria-checked="false" tabindex="0">
+    <span>Teacher moderation</span><span class="switch"></span>
+  </div>
+</div>
+
+<div class="stage">
+  <div>
+    <div class="switcher" id="switcher"></div>
+    <div class="phone">
+      <iframe id="player" title="Reel" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
+      <div class="caption"><div class="h" id="capH"></div><div class="tags" id="capT"></div></div>
+      <div class="rail" id="rail"></div>
+      <button class="horn" id="hornBtn" aria-expanded="false" aria-controls="sheet"><span class="ic">📣</span> Help me say it</button>
+      <div class="sheet" id="sheet" role="dialog" aria-label="Help with words">
+        <button class="closex" id="sheetClose" aria-label="Close help">×</button>
+        <h4>📣 How does this make you feel?</h4>
+        <p class="sub">Tap a word or a starter — it drops into your comment. Change it, make it yours.</p>
+        <div class="grp"><div class="lab">Describing words</div><div class="chips" id="grpWords"></div></div>
+        <div class="grp"><div class="lab">Sentence starters</div><div class="chips" id="grpFrames"></div></div>
+        <div class="grp"><div class="lab">Reply to a friend</div><div class="chips" id="grpReply"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wall">
+    <div class="head"><b>Class wall</b><span class="live"><span class="d"></span>LIVE</span><span class="count" id="count">0 comments</span></div>
+    <div class="feed" id="feed"></div>
+    <div class="composer">
+      <div class="quickchips" id="quick"></div>
+      <div class="inrow">
+        <div class="me" id="meAv">?</div>
+        <textarea id="input" placeholder="Say how it makes you feel…" rows="1"></textarea>
+        <button class="send" id="send" disabled>Post</button>
+      </div>
+      <div class="posting-as" id="postingAs" style="display:none">Posting as <b id="paName"></b> · <a id="paChange">change</a></div>
+      <div class="hint" id="hint">🔒 Only Room 10B can see this. Be kind — this is a class space.</div>
+    </div>
+  </div>
+</div>
+
+<div class="footnote">
+  <b>To go live across real devices:</b> paste your Firebase config into <span class="k">firebaseConfig</span> at the top of the script and reload — the badge flips to <b>LIVE</b> and the wall syncs to every student in the room via <span class="k">onSnapshot</span>. With the placeholder left in, it runs in demo mode (simulated peers). Firestore security rules and the schema are in the chat.
+</div>
+
+<div class="join" id="join">
+  <div class="joincard">
+    <h3>Join the class wall</h3>
+    <p>Type how you'd like your name to show on comments.</p>
+    <div class="room"><span class="dot"></span> Room 10B · Class only</div>
+    <input id="joinName" type="text" placeholder="First name + initial, e.g. Salem A." maxlength="24" autocomplete="off">
+    <div class="err" id="joinErr"></div>
+    <button id="joinBtn">Enter the wall</button>
+    <div class="note">🔒 Your name stays inside Room 10B. Please don't use your full name — first name and initial is enough.</div>
+  </div>
+</div>
+
+<div class="shield hidden" id="shield">
+  <div class="shieldcard">
+    <div class="shieldicon">🛡️</div>
+    <h3>Let's keep it kind</h3>
+    <p>That message can't be posted. This wall is a respectful, clean space — please rephrase without rude or hurtful language and try again.</p>
+    <button id="shieldOk">Okay, I'll rephrase</button>
+  </div>
+</div>
+
+<script type="module">
+/* ========================================================================
+   1) FIREBASE CONFIG  — paste yours here. Leave the placeholder for demo mode.
+   ======================================================================== */
+const firebaseConfig = {
+  apiKey: "PASTE_YOUR_API_KEY",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "your-project",
+  appId: "1:xxxx:web:xxxx"
+};
+const ROOM = "10B";                       // one wall per class room
+const DEMO = firebaseConfig.apiKey.startsWith("PASTE"); // auto-detect
+
+/* ========================================================================
+   2) REELS  — reorder / swap IDs freely. Each reel carries its own scaffold.
+   ======================================================================== */
+const REELS = [
+  { id:"15RBPQ67jj4", tab:"Nature", cap:"Why nature is our greatest teacher 🕊️",
+    words:["graceful","elegant","clever","inspiring","peaceful","effortless","beautiful"],
+    frames:["Nature is amazing because…","We can learn from…","It reminds me that…","I never noticed that…"],
+    quick:["😮 amazed","So graceful!","I think…"],
+    demo:[["Salem A.","The bird lands so gracefully 🕊️"],["Rashid M.","Nature really is a great teacher."],
+          ["Omar Y.","I never noticed how planes copy birds."]] },
+  { id:"DvvbgGltJpw", tab:"Ali · Wisdom", cap:"Muhammad Ali — wise and funny 🥊",
+    words:["wise","clever","brave","funny","powerful","thoughtful","inspiring","true"],
+    frames:["He makes a good point about…","I admire him because…","This makes me think about…","I agree that…"],
+    quick:["👏 respect","I admire…","In my opinion…"],
+    demo:[["Hamdan K.","He is so wise and funny at the same time."],["Zayed H.","I admire how brave he was."],
+          ["Khalifa S.","Good point — he really makes you think."]] },
+  { id:"T9mKp9uUkW8", tab:"The Greatest", cap:"The Greatest vs the challenger 🥊",
+    words:["legendary","powerful","determined","respectful","skilful","brave","unstoppable"],
+    frames:["The greatest thing was…","I was impressed when…","It takes courage to…","A real champion…"],
+    quick:["🔥 legend","Respect!","I was impressed when…"],
+    demo:[["Salem A.","Ali was truly the greatest 🥊"],["Rashid M.","That was real sportsmanship."],
+          ["Hamdan K.","It takes courage to never give up."]] },
+  { id:"Ppf63oTGP3U", tab:"Robot", cap:"Humanoid robot runs the 100m 🤖",
+    words:["futuristic","unbelievable","impressive","a little scary","exciting","mind-blowing","clever"],
+    frames:["In the future, I think…","I was amazed because…","I can't believe that…","This could help us…"],
+    quick:["😮 amazed","Wow!","In the future…"],
+    demo:[["Omar Y.","This is unbelievable 🤖"],["Zayed H.","A little scary for the future honestly."],
+          ["Khalifa S.","So futuristic — I want to build one one day."]] } ];
+
+const REACTIONS = [["👍","like"],["❤️","love"],["😮","amazed"],["😂","funny"],["🤔","thinking"]];
+const REPLY_FRAMES = ["I agree with you because…","Good point, but…","That's true! I also…"];
+
+/* ========================================================================
+   3) STATE + DOM
+   ======================================================================== */
+let reelIx = 0, moderated = false, unsub = null, db=null, auth=null, uid=null;
+let handle = null;   // this student's display name for the session
+const $ = s => document.querySelector(s);
+const feed=$("#feed"), input=$("#input"), send=$("#send"), hint=$("#hint"),
+      count=$("#count"), player=$("#player"), rail=$("#rail");
+let localCount=0;
+
+const palette=["#5eead4","#7dd3fc","#fca5a5","#fcd34d","#c4b5fd","#86efac","#f9a8d4"];
+const pc=n=>palette[(n||"?").charCodeAt(0)%palette.length];
+const initials=n=>(n||"?").replace(/[^A-Za-z ]/g,"").split(" ").map(w=>w[0]||"").join("").slice(0,2).toUpperCase();
+const reel=()=>REELS[reelIx];
+
+/* ---- build reel switcher + reactions once ---- */
+REELS.forEach((r,i)=>{ const b=document.createElement("button"); b.className="pill"+(i===0?" active":"");
+  b.textContent=r.tab; b.onclick=()=>selectReel(i); $("#switcher").appendChild(b); });
+REACTIONS.forEach(([e,label])=>{ const b=document.createElement("button"); b.className="react"; b.setAttribute("aria-label",label);
+  b.innerHTML=`<span class="bubble">${e}</span><span class="n">0</span>`;
+  b.onclick=()=>{ const n=b.querySelector(".n"); n.textContent=+n.textContent+1;
+    b.classList.remove("pop"); void b.offsetWidth; b.classList.add("pop");
+    const f=document.createElement("span"); f.className="fly"; f.textContent=e; $(".phone").appendChild(f); setTimeout(()=>f.remove(),1000);
+    /* LIVE version → increment a counters doc: updateDoc(reactionRef,{[label]:increment(1)}) */ };
+  rail.appendChild(b); });
+
+/* ========================================================================
+   4) RENDER A COMMENT (shared by demo + live)
+   ======================================================================== */
+function renderComment({name,text,you=false,pending=false,reply=false}){
+  const el=document.createElement("div"); el.className="cmt"+(reply?" reply":"");
+  el.innerHTML=`<div class="av" style="background:linear-gradient(180deg,${pc(name)},#0d9488)">${initials(name)}</div>
+    <div class="cbody"><div class="cmeta"><span class="name"></span>
+      ${you?'<span class="badge-you">you</span>':''}${pending?'<span class="badge-pend">pending approval</span>':''}
+      <span class="t">now</span></div><div class="ctext"></div>
+      <div class="cact"><button>❤ <span class="lk">0</span></button><button class="rep">↩ Reply</button>
+      ${pending?'<button class="approve">✓ Approve</button>':''}</div></div>`;
+  el.querySelector(".name").textContent=name;      // safe (no HTML injection)
+  el.querySelector(".ctext").textContent=text;
+  const lk=el.querySelector(".lk"); el.querySelector(".cact button").onclick=()=>lk.textContent=+lk.textContent+1;
+  el.querySelector(".rep").onclick=()=>{ input.value=`@${(name||"").split(" ")[0]} `; input.focus(); sync(); };
+  const ap=el.querySelector(".approve");
+  if(ap) ap.onclick=()=>{ el.querySelector(".badge-pend")?.remove(); ap.remove(); el.style.opacity=1; };
+  if(pending) el.style.opacity=.6;
+  feed.appendChild(el); feed.scrollTop=feed.scrollHeight;
+  localCount++; count.textContent=localCount+" comment"+(localCount!==1?"s":"");
+}
+
+/* ========================================================================
+   5) SELECT A REEL — swaps video + scaffold, re-subscribes the wall
+   ======================================================================== */
+function selectReel(i){
+  reelIx=i; const r=reel();
+  [...$("#switcher").children].forEach((p,k)=>p.classList.toggle("active",k===i));
+  player.src=`https://www.youtube.com/embed/${r.id}?playsinline=1`;
+  $("#capH").textContent=r.cap; $("#capT").textContent="#reel · How does this make you feel?";
+  fillChips("#grpWords",r.words,false); fillChips("#grpFrames",r.frames,true);
+  fillChips("#grpReply",REPLY_FRAMES,true); fillQuick(r.quick);
+  feed.innerHTML=""; localCount=0; count.textContent="0 comments";
+  if(DEMO) startDemo(r); else subscribeLive(r.id);
+  openSheet(false);
+}
+function fillChips(sel,arr,frame){ const box=$(sel); box.innerHTML="";
+  arr.forEach(t=>{ const c=document.createElement("button"); c.className="chip"+(frame?" frame":""); c.textContent=t;
+    c.onclick=()=>{ inject(t); if(sel!=="#quick") setTimeout(()=>openSheet(false),120); }; box.appendChild(c); }); }
+function fillQuick(arr){ const box=$("#quick"); box.innerHTML="";
+  arr.forEach(t=>{ const c=document.createElement("button"); c.className="chip"; c.textContent=t; c.onclick=()=>inject(t); box.appendChild(c); }); }
+
+/* ========================================================================
+   6) DEMO MODE (simulated peers)  — used when no Firebase config
+   ======================================================================== */
+let demoTimer=null;
+function startDemo(r){ clearTimeout(demoTimer); let k=0;
+  const push=()=>{ if(k>=r.demo.length) return; const [n,t]=r.demo[k++];
+    renderComment({name:n,text:t,reply:t.startsWith("Good point")}); demoTimer=setTimeout(push,3000+Math.random()*2500); };
+  renderComment({name:r.demo[0][0],text:r.demo[0][1]}); k=1; demoTimer=setTimeout(push,1600); }
+
+/* ========================================================================
+   7) LIVE MODE (Firebase)  — dynamic import so demo works fully offline
+   ======================================================================== */
+async function initFirebase(){
+  const [{initializeApp},fs,{getAuth,signInAnonymously,onAuthStateChanged}] = await Promise.all([
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"),
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js") ]);
+  window._fs=fs;                              // keep helpers handy
+  const app=initializeApp(firebaseConfig); db=fs.getFirestore(app); auth=getAuth(app);
+  await signInAnonymously(auth);
+  uid=auth.currentUser.uid;
+  $("#modeTag").textContent="LIVE"; $("#modeTag").classList.add("live");
+}
+function subscribeLive(reelId){
+  const {collection,query,where,orderBy,onSnapshot}=window._fs;
+  if(unsub) unsub();
+  // students see approved comments; a teacher view would also listen for status=="pending"
+  const q=query(collection(db,`rooms/${ROOM}/reels/${reelId}/comments`),
+                where("status","==","approved"), orderBy("createdAt","asc"));
+  unsub=onSnapshot(q,snap=>{ snap.docChanges().forEach(ch=>{ if(ch.type==="added"){
+    const d=ch.doc.data(); renderComment({name:d.name,text:d.text,you:d.uid===uid,reply:!!d.replyTo}); }});});
+}
+async function postLive(text){
+  const {collection,addDoc,serverTimestamp}=window._fs;
+  await addDoc(collection(db,`rooms/${ROOM}/reels/${reel().id}/comments`),{
+    name:handle, uid, text, replyTo:null, likes:0,
+    status: moderated ? "pending" : "approved",
+    createdAt: serverTimestamp() });
+}
+
+/* ========================================================================
+   BULLYING SHIELD  — client-side content filter (first line of defence).
+   Extend BLOCKLIST with local / Arabizi / Arabic terms for your context.
+   ======================================================================== */
+const BLOCKLIST = [
+  // strong profanity
+  "fuck","shit","bitch","bastard","dick","piss","pussy","cunt","slut","whore","prick","wanker","bollocks",
+  // compounds & phrases
+  "asshole","dumbass","jackass","motherfucker","bullshit","dickhead","shutup",
+  // milder — remove if too strict for a language class
+  "ass","damn","crap",
+  // slurs (anti-bullying — extend for your context)
+  "retard","faggot",
+  // add local-language terms here, e.g. "kus","khara", ...
+];
+// benign words that must never trip the filter
+const ALLOWLIST = ["class","classroom","pass","password","assess","assessment","assassin","assignment","assist","assume","associate","assure","grass","glass","bass","brass","mass","compass","embarrass","assemble","assembly","assef"];
+const BAD_EMOJI = /\u{1F595}/u;   // 🖕  (add other offensive glyphs as needed)
+
+// obfuscation-tolerant matcher: catches f*ck, f u c k, sh1t, fuuuck, b!tch …
+function shieldPattern(w){
+  const sub={a:"a@4",b:"b8",e:"e3",g:"g9",i:"i1!l",l:"l1|",o:"o0",s:"s$5z",t:"t7+",u:"u*v",c:"c("};
+  const esc=s=>s.replace(/[-\]\\^]/g,"\\$&");
+  const body=w.split("").map(ch=>`[${esc(sub[ch]||ch)}]+[\\W_]*`).join("");
+  // require a boundary on both sides so "class"/"assess" never match "ass"
+  return new RegExp(`(?:^|[^a-z0-9])${body}(?=[^a-z0-9]|$)`,"i");
+}
+const PATTERNS = BLOCKLIST.map(shieldPattern);
+
+function screenText(raw){
+  if(BAD_EMOJI.test(raw)) return true;
+  let t=" "+raw.toLowerCase()+" ";
+  ALLOWLIST.forEach(a=>{ t=t.replace(new RegExp(`\\b${a}\\b`,"g")," "); }); // clear safe words first
+  return PATTERNS.some(re=>re.test(t));
+}
+
+const shield=$("#shield");
+function showShield(){ shield.classList.remove("hidden"); }
+$("#shieldOk").onclick=()=>{ shield.classList.add("hidden"); input.focus(); };
+
+/* ========================================================================
+   8) COMPOSER + SHEET + MODERATION
+   ======================================================================== */
+function sync(){ send.disabled=!input.value.trim(); input.style.height="auto"; input.style.height=Math.min(input.scrollHeight,120)+"px"; }
+function inject(txt){ const cur=input.value, sep=cur&&!cur.endsWith(" ")?" ":""; input.value=cur+sep+txt+" "; input.focus(); sync(); }
+async function post(){ const t=input.value.trim(); if(!t) return;
+  if(!handle){ showJoin(); return; }
+  if(screenText(t)){ showShield(); return; }
+  if(DEMO){ renderComment({name:handle,text:t,you:true,pending:moderated}); }
+  else{ try{ await postLive(t);}catch(e){ hint.textContent="Couldn't post — check connection."; return; } }
+  input.value=""; sync();
+  if(moderated) flash("Sent to teacher for approval ✓"); }
+input.addEventListener("input",sync);
+input.addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();post();} });
+send.onclick=post;
+function flash(m){ hint.textContent=m; hint.style.color="var(--pending)"; setTimeout(()=>{hint.style.color="";hint.textContent=defHint();},2200); }
+const defHint=()=>moderated?"👩‍🏫 Moderation on — comments wait for teacher approval.":"🔒 Only Room 10B can see this. Be kind — this is a class space.";
+
+const sheet=$("#sheet"), horn=$("#hornBtn");
+function openSheet(o){ sheet.classList.toggle("open",o); horn.setAttribute("aria-expanded",o); }
+horn.onclick=()=>openSheet(!sheet.classList.contains("open"));
+$("#sheetClose").onclick=()=>openSheet(false);
+
+const mt=$("#modToggle");
+function setMod(v){ moderated=v; mt.classList.toggle("on",v); mt.setAttribute("aria-checked",v); hint.textContent=defHint(); }
+mt.onclick=()=>setMod(!moderated);
+mt.onkeydown=e=>{ if(e.key===" "||e.key==="Enter"){e.preventDefault();setMod(!moderated);} };
+
+/* ========================================================================
+   9) NAME HANDLE  (session identity — no personal data stored server-side)
+   ======================================================================== */
+const HKEY="ican_handle_"+ROOM;
+function loadHandle(){ try{ return localStorage.getItem(HKEY); }catch(e){ return handle; } }
+function saveHandle(v){ handle=v; try{ localStorage.setItem(HKEY,v); }catch(e){} applyHandle(); }
+function applyHandle(){ if(!handle) return;
+  $("#meAv").textContent=initials(handle);
+  $("#paName").textContent=handle; $("#postingAs").style.display="flex"; }
+const join=$("#join"), joinName=$("#joinName"), joinErr=$("#joinErr");
+function showJoin(){ join.classList.remove("hidden"); joinName.value=handle||""; setTimeout(()=>joinName.focus(),50); }
+function hideJoin(){ join.classList.add("hidden"); }
+function submitJoin(){ const v=joinName.value.trim().replace(/\s+/g," ");
+  if(v.length<2){ joinErr.textContent="Please type a name so classmates know who's talking."; return; }
+  joinErr.textContent=""; saveHandle(v); hideJoin(); input.focus(); }
+$("#joinBtn").onclick=submitJoin;
+joinName.addEventListener("keydown",e=>{ if(e.key==="Enter"){e.preventDefault();submitJoin();} });
+$("#paChange").onclick=showJoin;
+
+/* ========================================================================
+   10) BOOT
+   ======================================================================== */
+(async ()=>{ if(!DEMO){ try{ await initFirebase(); }catch(e){ console.warn("Firebase init failed, staying in demo:",e); } }
+  selectReel(0);
+  handle=loadHandle();
+  if(handle){ applyHandle(); hideJoin(); } else { showJoin(); }
+})();
+</script>
+</body>
+</html>
