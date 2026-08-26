@@ -27573,6 +27573,10 @@ const SCAFFOLD={
     frames:["In the future, I think…","I was amazed because…","This could help us…","I can't believe that…"],
     quick:["😮 amazed","Wow!","In the future…"],
     demo:[["Omar Y.","This is unbelievable 🤖"],["Zayed H.","So futuristic!"],["Khalifa S.","This could help people one day."]] },
+  biz:{ words:["ambitious","smart","bold","driven","successful","hard-working"],
+    frames:["A good entrepreneur…","To succeed, you must…","My business idea is…","I would…"],
+    quick:["💼 smart","So true!","My idea is…"],
+    demo:[["David R.","tbh this is solid advice 💼"],["Wei L.","to succeed u must take risks imo"],["Fatima A.","i would start a small online shop first 😊"]] },
 };
 const REELS=[
   { id:"15RBPQ67jj4", tab:"Nature", title:"Nature's landing", cap:"Why nature is our greatest teacher 🕊️",
@@ -27625,10 +27629,60 @@ const REELS=[
   { id:"3biHuGYhPas", tab:"Heart", title:"Hope inside", cap:"The hope inside you ✨", kind:"heart" },
   { id:"oNd7CR5S658", tab:"Mindset", title:"Never trust anyone?", cap:"Never trust anyone? 🤔", kind:"grit" },
   { id:"PgVAUZ10TmM", tab:"Mindset", title:"5 choices change life", cap:"5 choices that change your life 🔑", kind:"grit" },
+  { id:"7Ui_hsXEWqI", tab:"Business", title:"The entrepreneurial mind", cap:"The entrepreneurial mind 💼", kind:"biz" },
+  { id:"wxxJlOoPSnw", tab:"Business", title:"Hire smart people", cap:"Hire smart people for a great business 💼", kind:"biz" },
+  { id:"QNQQATMQT5M", tab:"Learning", title:"Learning a second language", cap:"Learning a second language 📚",
+    words:["useful","important","challenging","exciting","worth it","powerful"],
+    frames:["Learning English helps me…","The hardest part for me is…","My tip for learning is…","I want to speak…"],
+    quick:["📚 so true","English is…","My tip is…"],
+    demo:[["Nguyen T.","learning english change my life honestly 📚"],["Priya N.","the hardest part for me is speaking, but practice helps a lot"],["Sara K.","my tip: watch shows with subtitles, it really works!"]] },
+  { id:"4IHAGl3sd00", tab:"Business", title:"Become a successful entrepreneur", cap:"How to become a successful entrepreneur 💼", kind:"biz" },
+  { id:"OAk5E-PWsIg", tab:"Heart", title:"Don't waste your life (2)", cap:"Don't waste your life ⏳", kind:"heart" },
+  { id:"qUhrPQKBCHQ", tab:"Mindset", title:"Why smart people have fewer friends", cap:"Why intelligent people keep smaller circles 🧠", kind:"grit" },
+  { id:"9FP6BooVg14", tab:"Mindset", title:"The 3S rule", cap:"The 3S-rule explained ✨", kind:"grit" },
+  { id:"Tilg_ZVyhmg", tab:"Mindset", title:"The godfather's advice", cap:"The best advice, godfather style 🎩", kind:"grit" },
+  { id:"CDPFMS3uzKo", tab:"Mindset", title:"Born in the storm", cap:"Born in the storm ⛈️", kind:"grit" },
+  { id:"37bD5HjPSIA", tab:"Mindset", title:"Master your mind", cap:"Master your mind 🧠", kind:"grit" },
+  { id:"KVhciOZW3e4", tab:"Heart", title:"Love or dignity", cap:"Love or dignity? 🤔", kind:"heart" },
+  { id:"CBgiBwFIwVE", tab:"Business", title:"Focus on what to earn next", cap:"Focus on what to earn next 💼", kind:"biz" },
+  { id:"Qcz8VuLkiwY", tab:"Mindset", title:"People who push you", cap:"People who push you forward 🙌", kind:"grit" },
+  { id:"Ie4vLKJlkfQ", tab:"Mindset", title:"Pressure changes everything", cap:"Pressure changes everything 💎", kind:"grit" },
+  { id:"yxLnaqLpw2I", tab:"Mindset", title:"When people judge you", cap:"When people judge you 🤷", kind:"grit" },
+  { id:"6Lz3kqQpMd8", tab:"Mindset", title:"Going the extra mile", cap:"Going the extra mile 🏃", kind:"grit" },
 ];
 function scaf(r){ const d=SCAFFOLD[r.kind]||{}; return { words:r.words||d.words||[], frames:r.frames||d.frames||[], quick:r.quick||d.quick||[], demo:r.demo||d.demo||[] }; }
 const REACTIONS=[["👍","like"],["❤️","love"],["😮","amazed"],["😂","funny"],["🤔","thinking"]];
 const REPLY_FRAMES=["I agree with you because…","Good point, but…","That's true! I also…"];
+/* A global mix of model commenters — varied names, fluency levels, typos & abbreviations,
+   longer reasoning and threaded replies. Shown in demo mode to model a real, welcoming reel wall. */
+const GLOBAL_POOL=[
+ {name:"David R.", text:"tbh this hit different 🔥 needed to hear this today"},
+ {name:"Wei L.", text:"so true. i think success comes from never giving up, even when its really hard"},
+ {name:"Fatima A.", text:"this is realy inspiring 🙏 thank u for sharing"},
+ {name:"Mateo G.", text:"facts 💯"},
+ {name:"Priya N.", text:"imo the hardest part is just starting. once u start, it gets easier", reply:{name:"David R.", text:"@Priya so true, the first step is always the scariest"}},
+ {name:"Kwame A.", text:"wow this motivate me alot 💪"},
+ {name:"Taylor M.", text:"ngl i used to think the opposite lol but this changed my mind"},
+ {name:"Nguyen T.", text:"my english is not perfect but i want to say this is a very good message for me 🙏", reply:{name:"Lara S.", text:"@Nguyen your english is great, keep going!! 👏"}},
+ {name:"Sofia R.", text:"this reminds me of my father, he always say work hard and be patient 😊"},
+ {name:"Ali M.", text:"💯💯💯"},
+ {name:"Emre Y.", text:"brooo this is deep 😮"},
+ {name:"Lara S.", text:"honestly needed this reminder. been struggling lately but im gonna keep going"},
+ {name:"Mei C.", text:"thx for this, i will try my best from now on"},
+ {name:"Reza F.", text:"i agree but sometimes its not that easy tbh"},
+ {name:"Chidi E.", text:"This is the truth. Many people give up far too early, right before things start to get better."},
+ {name:"Kenji T.", text:"i think discipline beats motivation. motivation fades but a good habit stays with u forever"},
+ {name:"Ravi K.", text:"nice but i have a question… what if u fail many times? do u still keep going?", reply:{name:"Kenji T.", text:"@Ravi yes bro, every fail teach u something new. thats how u grow"}},
+ {name:"Amara O.", text:"yesss 🙌 keep going everyone, we got this"},
+ {name:"Diego M.", text:"real talk 👌"},
+ {name:"Layla H.", text:"beautiful words 🤲 may God give us all strength"},
+ {name:"Chloe B.", text:"saving this for when i feel down 💛"},
+ {name:"Thabo D.", text:"this really speak to me 🔥"},
+ {name:"Hiro S.", text:"ganbatte everyone!! (it means 'do your best' in japanese 😊)"},
+ {name:"Camila V.", text:"me encanta 😍 so inspiring, greetings from Mexico"},
+ {name:"Youssef E.", text:"wallah this is so true 😅 hard work never lies"},
+ {name:"Aria P.", text:"omg 😭 why is this so motivational"},
+];
 
 /* ================= BULLYING SHIELD (client filter — tested) ====================== */
 const BLOCKLIST=[
@@ -27697,15 +27751,27 @@ function openReel(i){
   $("#modal").classList.add("open"); openSheet(false);
   if(DEMO) startDemo(S); else subscribeLive(r.id);
 }
-function closeReel(){ $("#modal").classList.remove("open"); player.src=""; clearTimeout(demoTimer); if(unsub){unsub();unsub=null;} }
+function closeReel(){ $("#modal").classList.remove("open"); player.src=""; clearDemo(); if(unsub){unsub();unsub=null;} }
 $("#winClose").onclick=closeReel;
 $("#modal").addEventListener("click",e=>{ if(e.target.id==="modal") closeReel(); });
 
 /* ================= DEMO PEERS =================================================== */
-let demoTimer=null;
-function startDemo(r){ clearTimeout(demoTimer); let k=0;
-  const push=()=>{ if(k>=r.demo.length) return; const [n,t]=r.demo[k++]; renderComment({name:n,text:t,reply:t.startsWith("Good point")}); demoTimer=setTimeout(push,3200+Math.random()*2400); };
-  renderComment({name:r.demo[0][0],text:r.demo[0][1]}); k=1; demoTimer=setTimeout(push,1600);
+let demoTimer=null, demoTimers=[];
+function clearDemo(){ clearTimeout(demoTimer); demoTimers.forEach(clearTimeout); demoTimers=[]; }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function startDemo(S){
+  clearDemo();
+  const specific=(S.demo||[]).map(x=>({name:x[0],text:x[1]}));      // on-topic openers
+  const queue=specific.concat(shuffle(GLOBAL_POOL).slice(0,9));     // then a global mix
+  let k=0;
+  const step=()=>{
+    if(k>=queue.length) return;
+    const c=queue[k++];
+    renderComment({name:c.name,text:c.text});
+    if(c.reply){ const t=setTimeout(()=>renderComment({name:c.reply.name,text:c.reply.text,reply:true}), 1400+Math.random()*1600); demoTimers.push(t); }
+    demoTimer=setTimeout(step, 2500+Math.random()*2300);
+  };
+  demoTimer=setTimeout(step, 800);
 }
 
 /* ================= LIVE (Firebase) ============================================= */
