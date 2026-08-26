@@ -27579,22 +27579,22 @@ const SCAFFOLD={
     demo:[["David R.","tbh this is solid advice 💼"],["Wei L.","to succeed u must take risks imo"],["Fatima A.","i would start a small online shop first 😊"]] },
 };
 const REELS=[
-  { id:"15RBPQ67jj4", tab:"Nature", title:"Nature's landing", cap:"Why nature is our greatest teacher 🕊️",
+  { id:"15RBPQ67jj4", tab:"Nature", title:"Nature's landing", cap:"Why nature is our greatest teacher 🕊️", kind:"nature",
     words:["graceful","elegant","clever","inspiring","peaceful","effortless"],
     frames:["Nature is amazing because…","We can learn from…","It reminds me that…"],
     quick:["😮 amazed","So graceful!","I think…"],
     demo:[["Salem A.","The bird lands so gracefully 🕊️"],["Rashid M.","Nature really is a great teacher."],["Omar Y.","I never noticed how planes copy birds."]] },
-  { id:"DvvbgGltJpw", tab:"Wisdom", title:"Ali's wisdom", cap:"Muhammad Ali — wise and funny 🥊",
+  { id:"DvvbgGltJpw", tab:"Wisdom", title:"Ali's wisdom", cap:"Muhammad Ali — wise and funny 🥊", kind:"wisdom",
     words:["wise","clever","brave","funny","powerful","thoughtful","inspiring"],
     frames:["He makes a good point about…","I admire him because…","This makes me think about…"],
     quick:["👏 respect","I admire…","In my opinion…"],
     demo:[["Hamdan K.","He is so wise and funny at the same time."],["Zayed H.","I admire how brave he was."],["Khalifa S.","Good point — he makes you think."]] },
-  { id:"T9mKp9uUkW8", tab:"Champion", title:"The Greatest", cap:"The Greatest vs the challenger 🥊",
+  { id:"T9mKp9uUkW8", tab:"Champion", title:"The Greatest", cap:"The Greatest vs the challenger 🥊", kind:"champion",
     words:["legendary","powerful","determined","respectful","skilful","brave"],
     frames:["The greatest thing was…","I was impressed when…","It takes courage to…"],
     quick:["🔥 legend","Respect!","I was impressed when…"],
     demo:[["Salem A.","Ali was truly the greatest 🥊"],["Rashid M.","That was real sportsmanship."],["Hamdan K.","It takes courage to never give up."]] },
-  { id:"Ppf63oTGP3U", tab:"Future", title:"Robot runner", cap:"Humanoid robot runs the 100m 🤖",
+  { id:"Ppf63oTGP3U", tab:"Future", title:"Robot runner", cap:"Humanoid robot runs the 100m 🤖", kind:"tech",
     words:["futuristic","unbelievable","impressive","a little scary","exciting","mind-blowing"],
     frames:["In the future, I think…","I was amazed because…","I can't believe that…"],
     quick:["😮 amazed","Wow!","In the future…"],
@@ -27621,7 +27621,7 @@ const REELS=[
   { id:"NUsqYCWh9Zs", tab:"Mindset", title:"Keep going, don't quit", cap:"Keep going — don't quit 🔥", kind:"grit" },
   { id:"GOlwFZlv9Fk", tab:"Heart", title:"A true Muslim's day", cap:"A true Muslim's day 🕌", kind:"heart" },
   { id:"JmXO-1K_M0M", tab:"Heart", title:"Don't waste your life", cap:"Don't waste your life ⏳", kind:"heart" },
-  { id:"Al4ymlqrw1c", tab:"Wisdom", title:"Ali's curious mind", cap:"Muhammad Ali's curious mind 🧠", kind:"grit" },
+  { id:"Al4ymlqrw1c", tab:"Wisdom", title:"Ali's curious mind", cap:"Muhammad Ali's curious mind 🧠", kind:"wisdom" },
   { id:"aq_VGzLNZ80", tab:"Mindset", title:"The price of success", cap:"The price of success 🏆", kind:"grit" },
   { id:"lDwhnRaKV8M", tab:"Dream", title:"You can do it", cap:"Never let anyone say you can't 💪", kind:"dream" },
   { id:"rpWQbBYpaUw", tab:"Future", title:"What humanoids can do", cap:"What humanoids can really do 🤖", kind:"tech" },
@@ -27631,7 +27631,7 @@ const REELS=[
   { id:"PgVAUZ10TmM", tab:"Mindset", title:"5 choices change life", cap:"5 choices that change your life 🔑", kind:"grit" },
   { id:"7Ui_hsXEWqI", tab:"Business", title:"The entrepreneurial mind", cap:"The entrepreneurial mind 💼", kind:"biz" },
   { id:"wxxJlOoPSnw", tab:"Business", title:"Hire smart people", cap:"Hire smart people for a great business 💼", kind:"biz" },
-  { id:"QNQQATMQT5M", tab:"Learning", title:"Learning a second language", cap:"Learning a second language 📚",
+  { id:"QNQQATMQT5M", tab:"Learning", title:"Learning a second language", cap:"Learning a second language 📚", kind:"learning",
     words:["useful","important","challenging","exciting","worth it","powerful"],
     frames:["Learning English helps me…","The hardest part for me is…","My tip for learning is…","I want to speak…"],
     quick:["📚 so true","English is…","My tip is…"],
@@ -27655,34 +27655,102 @@ const REACTIONS=[["👍","like"],["❤️","love"],["😮","amazed"],["😂","fu
 const REPLY_FRAMES=["I agree with you because…","Good point, but…","That's true! I also…"];
 /* A global mix of model commenters — varied names, fluency levels, typos & abbreviations,
    longer reasoning and threaded replies. Shown in demo mode to model a real, welcoming reel wall. */
-const GLOBAL_POOL=[
- {name:"David R.", text:"tbh this hit different 🔥 needed to hear this today"},
- {name:"Wei L.", text:"so true. i think success comes from never giving up, even when its really hard"},
- {name:"Fatima A.", text:"this is realy inspiring 🙏 thank u for sharing"},
- {name:"Mateo G.", text:"facts 💯"},
- {name:"Priya N.", text:"imo the hardest part is just starting. once u start, it gets easier", reply:{name:"David R.", text:"@Priya so true, the first step is always the scariest"}},
- {name:"Kwame A.", text:"wow this motivate me alot 💪"},
- {name:"Taylor M.", text:"ngl i used to think the opposite lol but this changed my mind"},
- {name:"Nguyen T.", text:"my english is not perfect but i want to say this is a very good message for me 🙏", reply:{name:"Lara S.", text:"@Nguyen your english is great, keep going!! 👏"}},
- {name:"Sofia R.", text:"this reminds me of my father, he always say work hard and be patient 😊"},
- {name:"Ali M.", text:"💯💯💯"},
- {name:"Emre Y.", text:"brooo this is deep 😮"},
- {name:"Lara S.", text:"honestly needed this reminder. been struggling lately but im gonna keep going"},
- {name:"Mei C.", text:"thx for this, i will try my best from now on"},
- {name:"Reza F.", text:"i agree but sometimes its not that easy tbh"},
- {name:"Chidi E.", text:"This is the truth. Many people give up far too early, right before things start to get better."},
- {name:"Kenji T.", text:"i think discipline beats motivation. motivation fades but a good habit stays with u forever"},
- {name:"Ravi K.", text:"nice but i have a question… what if u fail many times? do u still keep going?", reply:{name:"Kenji T.", text:"@Ravi yes bro, every fail teach u something new. thats how u grow"}},
- {name:"Amara O.", text:"yesss 🙌 keep going everyone, we got this"},
- {name:"Diego M.", text:"real talk 👌"},
- {name:"Layla H.", text:"beautiful words 🤲 may God give us all strength"},
- {name:"Chloe B.", text:"saving this for when i feel down 💛"},
- {name:"Thabo D.", text:"this really speak to me 🔥"},
- {name:"Hiro S.", text:"ganbatte everyone!! (it means 'do your best' in japanese 😊)"},
- {name:"Camila V.", text:"me encanta 😍 so inspiring, greetings from Mexico"},
- {name:"Youssef E.", text:"wallah this is so true 😅 hard work never lies"},
- {name:"Aria P.", text:"omg 😭 why is this so motivational"},
-];
+const POOLS={
+ tech:[
+  {name:"David R.", text:"ok this is actually insane 🤯 robots running faster than humans??"},
+  {name:"Wei L.", text:"the technology improve so fast, few years ago this was impossible"},
+  {name:"Fatima A.", text:"this is amazing but also a little scary tbh 🤖"},
+  {name:"Kenji T.", text:"impressive engineering. the balance and speed control is the hardest part imo"},
+  {name:"Priya N.", text:"wow the future is here 😮 imagine what they can do in 10 years", reply:{name:"Ravi K.", text:"@Priya exactly, maybe robots in every home soon"}},
+  {name:"Kwame A.", text:"this is so futuristic, i cant believe it 🔥"},
+  {name:"Mei C.", text:"cool but will they take our jobs one day? 😅"},
+  {name:"Emre Y.", text:"the way it moves is so smooth broo 😮"},
+  {name:"Layla H.", text:"subhanallah, the human mind can build amazing things 🤲"},
+  {name:"Diego M.", text:"we live in the future fr 👌"},
+ ],
+ grit:[
+  {name:"David R.", text:"needed this today fr 🔥 never giving up"},
+  {name:"Wei L.", text:"so true, the ones who keep going are the ones who win in the end"},
+  {name:"Fatima A.", text:"this is realy motivating 🙏 thank u"},
+  {name:"Kenji T.", text:"discipline beats motivation. motivation fades but a good habit stays with u"},
+  {name:"Priya N.", text:"imo the hardest part is just starting. after that it gets easier", reply:{name:"David R.", text:"@Priya facts, the first step is always the scariest"}},
+  {name:"Ravi K.", text:"but what if u fail many times? do u still keep going?", reply:{name:"Kenji T.", text:"@Ravi yes bro, every fail teach u something new"}},
+  {name:"Kwame A.", text:"this motivate me alot 💪"},
+  {name:"Lara S.", text:"been struggling lately but im gonna keep pushing 💛"},
+  {name:"Amara O.", text:"yesss keep going everyone 🙌"},
+  {name:"Youssef E.", text:"wallah hard work never lies 😤"},
+ ],
+ dream:[
+  {name:"David R.", text:"never let anyone tell u what u cant do 🔥"},
+  {name:"Fatima A.", text:"my dream is to become a teacher inshallah 🙏"},
+  {name:"Nguyen T.", text:"i want to become engineer, this give me hope 😊", reply:{name:"Lara S.", text:"@Nguyen you can do it!! believe in yourself 👏"}},
+  {name:"Priya N.", text:"believe in your dream even when others dont, thats the key imo"},
+  {name:"Mateo G.", text:"dream big 💯"},
+  {name:"Wei L.", text:"if u can imagine it u can achieve it, i really believe that"},
+  {name:"Kwame A.", text:"this give me so much hope for my future 💪"},
+  {name:"Camila V.", text:"sueña en grande 😍 dream big everyone"},
+ ],
+ heart:[
+  {name:"Fatima A.", text:"beautiful words 🤲 alhamdulillah for everything"},
+  {name:"Layla H.", text:"this remind me to be grateful and humble 🙏"},
+  {name:"Chloe B.", text:"saving this 💛 needed the reminder to appreciate life"},
+  {name:"Sofia R.", text:"my mother always say be kind and thankful, so true 😊"},
+  {name:"Priya N.", text:"happiness come from inside, not from things imo"},
+  {name:"Hiro S.", text:"arigatou for this 🙏 stay humble everyone"},
+  {name:"Kwame A.", text:"family and health, thats the real wealth ❤️"},
+  {name:"Amara O.", text:"so peaceful 🕊️ thank u for sharing"},
+ ],
+ biz:[
+  {name:"David R.", text:"solid business advice tbh 💼"},
+  {name:"Wei L.", text:"to succeed u must take risks and hire people smarter than u imo"},
+  {name:"Fatima A.", text:"i would start a small online shop first 😊"},
+  {name:"Kenji T.", text:"cashflow and patience is everything, most people quit too early"},
+  {name:"Mateo G.", text:"real entrepreneurs solve problems 💯", reply:{name:"Priya N.", text:"@Mateo exactly, find a problem then fix it"}},
+  {name:"Kwame A.", text:"this motivate me to start my own business one day 💪"},
+  {name:"Reza F.", text:"true but capital is the hard part for many people tbh"},
+  {name:"Diego M.", text:"work smart not just hard 👌"},
+ ],
+ wisdom:[
+  {name:"David R.", text:"the man was a genius, not just a boxer 🐐"},
+  {name:"Fatima A.", text:"so much wisdom in few words 🙏"},
+  {name:"Kenji T.", text:"he think differently, thats what made him great imo"},
+  {name:"Wei L.", text:"true wisdom, this still apply even today"},
+  {name:"Youssef E.", text:"legend 🥊 respect"},
+  {name:"Priya N.", text:"i love how he stayed curious his whole life, we should all do that", reply:{name:"David R.", text:"@Priya yes, curiosity keeps the mind young"}},
+  {name:"Amara O.", text:"powerful words 🙌"},
+  {name:"Mei C.", text:"i learn something new from him everytime"},
+ ],
+ champion:[
+  {name:"David R.", text:"the GOAT 🐐🥊 nobody like him"},
+  {name:"Youssef E.", text:"what a legend, real champion mentality 🔥"},
+  {name:"Kwame A.", text:"the way he never gave up in the ring 💪"},
+  {name:"Kenji T.", text:"his footwork and mind was ahead of his time imo"},
+  {name:"Emre Y.", text:"broo goosebumps 😮"},
+  {name:"Mateo G.", text:"true sportsmanship 👏", reply:{name:"Priya N.", text:"@Mateo yes, respect for both fighters"}},
+  {name:"Amara O.", text:"champions are built not born 🙌"},
+  {name:"Diego M.", text:"greatest of all time fr 👌"},
+ ],
+ nature:[
+  {name:"David R.", text:"nature is the best teacher fr 🕊️"},
+  {name:"Fatima A.", text:"subhanallah so beautiful and graceful 🙏"},
+  {name:"Wei L.", text:"amazing how engineers learn from birds to design planes"},
+  {name:"Priya N.", text:"so peaceful to watch 😊 nature always amaze me"},
+  {name:"Mei C.", text:"the way it land so smooth 😮"},
+  {name:"Kwame A.", text:"we can learn so much from nature if we just observe 🌿", reply:{name:"Lara S.", text:"@Kwame so true, nature solved these problems millions of years ago"}},
+  {name:"Hiro S.", text:"beautiful 🕊️ respect to nature"},
+  {name:"Amara O.", text:"this is so calming 🌿"},
+ ],
+ learning:[
+  {name:"Nguyen T.", text:"learning english change my life honestly 📚"},
+  {name:"Priya N.", text:"the hardest part for me is speaking, but practice helps a lot 😊", reply:{name:"Lara S.", text:"@Priya keep talking, mistakes are how we learn!"}},
+  {name:"Sara K.", text:"my tip: watch shows with subtitles, it really works!"},
+  {name:"Wei L.", text:"reading everyday helped my vocabulary so much"},
+  {name:"Fatima A.", text:"dont be shy to make mistakes, its part of learning 🙏"},
+  {name:"Mei C.", text:"i still make many mistake but i keep trying 💪"},
+  {name:"Youssef E.", text:"speaking with friends helped me more than grammar books tbh"},
+  {name:"Camila V.", text:"learning languages open so many doors 😍"},
+ ],
+};
 
 /* ================= BULLYING SHIELD (client filter — tested) ====================== */
 const BLOCKLIST=[
@@ -27749,7 +27817,7 @@ function openReel(i){
   feed.innerHTML=""; countEl.textContent="0 comments";
   rail.querySelectorAll(".n").forEach(n=>n.textContent="0");
   $("#modal").classList.add("open"); openSheet(false);
-  if(DEMO) startDemo(S); else subscribeLive(r.id);
+  if(DEMO) startDemo(S, r); else subscribeLive(r.id);
 }
 function closeReel(){ $("#modal").classList.remove("open"); player.src=""; clearDemo(); if(unsub){unsub();unsub=null;} }
 $("#winClose").onclick=closeReel;
@@ -27759,10 +27827,11 @@ $("#modal").addEventListener("click",e=>{ if(e.target.id==="modal") closeReel();
 let demoTimer=null, demoTimers=[];
 function clearDemo(){ clearTimeout(demoTimer); demoTimers.forEach(clearTimeout); demoTimers=[]; }
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
-function startDemo(S){
+function startDemo(S, r){
   clearDemo();
-  const specific=(S.demo||[]).map(x=>({name:x[0],text:x[1]}));      // on-topic openers
-  const queue=specific.concat(shuffle(GLOBAL_POOL).slice(0,9));     // then a global mix
+  const openers=(S.demo||[]).map(x=>({name:x[0],text:x[1]}));       // reel-specific openers
+  const themed=POOLS[r&&r.kind]||POOLS.grit;                        // voices matched to the reel's theme
+  const queue=openers.concat(shuffle(themed).slice(0,10));
   let k=0;
   const step=()=>{
     if(k>=queue.length) return;
