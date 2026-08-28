@@ -10314,7 +10314,14 @@ function drawCert(o){
   let tf=30; x.font="bold "+tf+"px Georgia"; while(x.measureText(o.titleText).width>W-340 && tf>17){ tf-=2; x.font="bold "+tf+"px Georgia"; }
   x.fillStyle=t.ink; x.fillText(o.titleText, W/2, 578);
   x.fillStyle=t.a; x.font="bold 30px Georgia"; x.fillText(o.statText, W/2, 640);
-  drawSeal(x, W/2, 700, t);
+  if(o.words){
+    var _rt=(o.words.right||[]).slice(), _wr=(o.words.wrong||[]).slice();
+    x.textAlign="center"; x.font="12px 'Lexend',sans-serif";
+    var _fit=function(pre,arr){ var s=arr.join(", "); while(arr.length && x.measureText(pre+s).width>W-360){ arr=arr.slice(0,-1); s=arr.join(", ")+" \u2026"; } return pre+(arr.length?s:"none"); };
+    x.fillStyle="#1a7a44"; x.fillText(_fit("\u2714 Spelt correctly:  ",_rt), W/2, 668);
+    x.fillStyle="#b03636"; x.fillText(_fit("\u270e To practise:  ",_wr), W/2, 686);
+  }
+  drawSeal(x, W/2, o.words?724:700, t);
   const yb=812; x.strokeStyle=t.ink; x.lineWidth=2;
   x.beginPath(); x.moveTo(150,yb); x.lineTo(470,yb); x.stroke();
   x.beginPath(); x.moveTo(W-470,yb); x.lineTo(W-150,yb); x.stroke();
@@ -10335,16 +10342,28 @@ function drawCert(o){
 }
 try{ if(typeof document!=='undefined'&&document.fonts&&document.fonts.load){ document.fonts.load("400 90px 'Great Vibes'"); } }catch(e){}
 function makeCertificate(o){
-  const theme = o.band==="Outstanding" ? {a:"#b8860b",b:"#e7c766",ink:"#5a4500",seal:"#caa12e",soft:"#fbf3da"}
-              : o.band==="At-level"   ? {a:"#0c8a72",b:"#7ec9b6",ink:"#073d33",seal:"#0c8a72",soft:"#e6f4f0"}
-              :                          {a:"#2b5fa6",b:"#9bbdee",ink:"#10294d",seal:"#2b5fa6",soft:"#e8f0fb"};
+  /* Certificate tier is driven by the SCORE, not by any passed-in band:
+       90-100 gold (Top-Level, Distinction) · 80-89 green (Advanced)
+       70-79 bronze (At-Level) · 60-69 white/silver (Sub-Level). */
+  const _p = (o.percent==null ? 100 : +o.percent);
+  let theme, _band, _sub;
+  if(_p>=90){ theme={a:"#b8860b",b:"#e7c766",ink:"#5a4500",seal:"#caa12e",soft:"#fbf3da"}; _band="TOP-LEVEL"; _sub="Certificate of Distinction"; }
+  else if(_p>=80){ theme={a:"#1a7a44",b:"#8fd0a6",ink:"#0a3d22",seal:"#1a7a44",soft:"#e7f4ec"}; _band="ADVANCED"; _sub="Certificate of Achievement"; }
+  else if(_p>=70){ theme={a:"#a9713b",b:"#d8a877",ink:"#5a3a1c",seal:"#b3702f",soft:"#f7ece0"}; _band="AT-LEVEL"; _sub="Certificate of Achievement"; }
+  else { theme={a:"#8a8f98",b:"#cfd4da",ink:"#3a3f45",seal:"#9aa0a8",soft:"#f6f7f9"}; _band="SUB-LEVEL"; _sub="Certificate of Achievement"; }
+  if(/design/i.test((o.skill||'')+' '+(o.title||''))) _sub="Design \u2014 a Core Literacy";
   let _wmSrc=(o.skill||o.title||'').toString();
   let _wm=_wmSrc.split(/\s[·—–:|-]\s/)[0].replace(/\s+\d+$/,'').replace(/\s+[IVXLC]+$/,'').trim()||'iCAN';
-  return drawCert({motif:(o.skill||o.title||''), watermark:_wm, variant:o.variant||'', serial:certSerial({name:o.name, skill:(o.skill||o.title), activity:o.title, percent:o.percent, dateMs:Date.now()}), band:o.band.toUpperCase(), subtitle:(/design/i.test((o.skill||'')+' '+(o.title||''))?"Design \u2014 a Core Literacy":"Certificate of Achievement"), name:o.name||"Student",
+  return drawCert({motif:(o.skill||o.title||''), watermark:_wm, variant:o.variant||'', serial:certSerial({name:o.name, skill:(o.skill||o.title), activity:o.title, percent:o.percent, dateMs:Date.now()}), band:_band, subtitle:_sub, words:o.words, name:o.name||"Student",
     line1:"has successfully completed", titleText:o.title||"an iCAN activity",
     statText:`Score  ${o.percent}%   ·   ${o.score}/${o.max}`, date:o.date||new Date().toLocaleDateString(), theme});
 }
 function certificateHTML(o){
+  if(o && o.percent!=null && +o.percent < CERT_PASS){
+    return `<div class="note" style="text-align:center;padding:16px;border:1.5px dashed var(--line);border-radius:12px">
+      <b>No certificate yet.</b> A certificate needs at least ${CERT_PASS}% — you scored ${Math.round(+o.percent)}%.
+      Review the feedback and try again to earn one.</div>`;
+  }
   let url; try{ url=makeCertificate(o); }catch(e){ return `<p class="note">Certificate image couldn't be generated in this browser.</p>`; }
   const fname=`iCAN-certificate-${(o.name||'student').replace(/\s+/g,'-')}.png`;
   return `<div style="text-align:center">
@@ -14335,6 +14354,7 @@ function makeSerial(){
 function mintCert(o){
   if(!(SESSION && SESSION.role==='student')) return null;
   const pct = (typeof o.percent==='number') ? o.percent : (o.max>0 ? Math.round((o.score/o.max)*100) : 0);
+  if(!o.participation && pct < CERT_PASS) return null;   /* no certificate below the pass mark */
   const lvl = o.participation ? {code:'\u2713', color:'#2d6e4f'} : levelBand(pct);
   const tier= o.participation ? 'Participation' : certTier(lvl.code);
   const skill = o.skill || 'RWD';
@@ -14440,9 +14460,17 @@ function certCopyrightCanvas(x, W, yBottom){
   lines.forEach(function(L){ x.fillText(L, W/2, y); y+=lh; });
   x.restore();
 }
+function certPaletteByPct(pct){
+  pct=+pct||0;
+  if(pct>=90) return {primary:'#a17825', dark:'#5a3f0c', gold:'#d4af37', bg:'#fefaf0', accent:'#f7ecd0'};   /* gold — Top-Level */
+  if(pct>=80) return {primary:'#1a7a44', dark:'#0a3d22', gold:'#2fae6a', bg:'#f2fbf6', accent:'#dcf1e6'};   /* green — Advanced */
+  if(pct>=70) return {primary:'#a9713b', dark:'#5a3a1c', gold:'#c98a3c', bg:'#fbf5ee', accent:'#f0e0cd'};   /* bronze — At-Level */
+  return               {primary:'#6b7280', dark:'#374151', gold:'#9aa0a8', bg:'#fbfbfc', accent:'#eef1f4'};  /* white — Sub-Level */
+}
+function certLevelName(pct){ pct=+pct||0; return pct>=90?'Top-Level':pct>=80?'Advanced':pct>=70?'At-Level':'Sub-Level'; }
 function drawEarnedCert(cert){
   const tier = normTier(cert.tier || certTier(cert.level));
-  const pal  = tierPalette(tier);
+  const pal  = (tier==='Participation') ? tierPalette(tier) : certPaletteByPct(+cert.percent||0);
   const W=1400, H=1040;
   const cv=document.createElement('canvas'); cv.width=W; cv.height=H;
   const x = cv.getContext('2d');
@@ -14524,7 +14552,7 @@ function drawEarnedCert(cert){
   x.beginPath(); x.moveTo(rX+rW,rY+rH/2); x.lineTo(rX+rW+24,rY+rH+8); x.lineTo(rX+rW,rY+rH); x.closePath(); x.fill();
   // ribbon text
   x.fillStyle='#fff'; x.font='800 24px Georgia'; x.textAlign='center';
-  x.fillText(tier==='Participation' ? 'CERTIFICATE OF PARTICIPATION' : 'CERTIFICATE OF ACHIEVEMENT', W/2, rY+rH/2+9);
+  x.fillText(tier==='Participation' ? 'CERTIFICATE OF PARTICIPATION' : ((+cert.percent>=90) ? 'CERTIFICATE OF DISTINCTION' : 'CERTIFICATE OF ACHIEVEMENT'), W/2, rY+rH/2+9);
   // presented to
   x.fillStyle='#555'; x.font='500 20px Georgia';
   x.fillText(tier==='Participation' ? 'This certificate of participation is awarded to' : 'This certificate of achievement is awarded to', W/2, rY+rH+56);
