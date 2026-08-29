@@ -7264,10 +7264,12 @@ function finishSpell(){
   /* Cards mirror the Vocabulary.com deck: flip through, shuffle, or open fullscreen. */
   window.CARDS = { items:s.items.map((it,i)=>({ ...it, ok:(s.log[i]&&s.log[i].ok)!==false })), i:0 };
   var _certBlock='';
-  if(s.type==='sentence' && !s._certDone && SESSION && SESSION.role==='student'){
+  if((s.type==='sentence' || s.type==='word') && !s._certDone && SESSION && SESSION.role==='student'){
     s._certDone=true;
     var _band = pct>=80?'Outstanding':(pct>=50?'At-level':'Emerging');
-    try{ if(typeof mintCert==='function') mintCert({ skill:'Spelling', activity:s.label, percent:pct, score:s.first+s.second, max:N }); }catch(e){}
+    var _wr=[], _ww=[];
+    s.items.forEach(function(it,i){ var lab=((it&&(it.word||it.text||it.answer))||'').toString().trim(); if(!lab) return; if(lab.length>20) lab=lab.slice(0,20)+'\u2026'; ((s.log[i]&&s.log[i].ok)?_wr:_ww).push(lab); });
+    try{ if(typeof mintCert==='function') mintCert({ skill:'Spelling', activity:s.label, percent:pct, score:s.first+s.second, max:N, wordsRight:_wr, wordsWrong:_ww }); }catch(e){}
     try{ _certBlock='<h3 class="sub" style="text-align:center;margin-top:24px">🏅 Your certificate</h3><p style="text-align:center;color:var(--muted);font-size:.85rem;margin-top:0">Saved to <b>My Certificates</b>.</p>'+certificateHTML({name:SESSION.name, band:_band, title:s.label, skill:'Spelling', percent:pct, score:s.first+s.second, max:N, date:new Date().toLocaleDateString()}); }catch(e){ _certBlock=''; }
   }
   app().innerHTML=`<div class="wrap screen"><button class="back" onclick="go(spellBack())">← ${spellBackLabel()}</button>
@@ -14482,7 +14484,7 @@ function mintCert(o){
     sig1: CONFIG.teacherName || 'Teacher / Mentor', sig1t: CONFIG.teacherTitle || 'Teacher / Mentor',
     sig2: CONFIG.principalName || '', sig2t: 'Principal',
     ideas: Array.isArray(o.ideas)? o.ideas.filter(Boolean) : [],
-    words: Array.isArray(o.words)? o.words.filter(Boolean) : []
+    words: Array.isArray(o.words)? o.words.filter(Boolean) : [], wordsRight: Array.isArray(o.wordsRight)?o.wordsRight:[], wordsWrong: Array.isArray(o.wordsWrong)?o.wordsWrong:[]
   };
   try{ cert.honorary = honoraryV2(cert); }catch(_e){ cert.honorary = ''; }
   const all = allCerts(); all.push(cert); Store.set('ican_certificates', all);
@@ -14696,6 +14698,21 @@ function drawEarnedCert(cert){
   if(isAAD && hasWork){
     _workEndY = drawAadWorkTable(x, cert, W, recEndY+26) || recEndY;
   }
+  const _isSpell = /spell/i.test(cert.skill||'');
+  let _spellDrawn=false;
+  if(_isSpell && ((cert.wordsRight&&cert.wordsRight.length) || (cert.wordsWrong&&cert.wordsWrong.length))){
+    x.textAlign='center';
+    var _sy = recEndY + 40;
+    var _fitLine=function(pre,arr,colour){
+      var a=(arr||[]).slice(), s=a.join(', ');
+      x.font="13px Georgia";
+      while(a.length && x.measureText(pre+s).width>W-380){ a=a.slice(0,-1); s=a.join(', ')+' \u2026'; }
+      x.fillStyle=colour; x.fillText(pre+(a.length?s:'none'), W/2, _sy); _sy+=24;
+    };
+    _fitLine('\u2714 Spelt correctly:  ', cert.wordsRight, '#1a7a44');
+    _fitLine('\u270e To practise:  ', cert.wordsWrong, '#b03636');
+    _workEndY = _sy; _spellDrawn=true;
+  }
 
   // motto — short, catchy cursive script. Smaller than before, and when a work
   // table is present it drops just below it (clamped clear of the date band) so
@@ -14705,7 +14722,7 @@ function drawEarnedCert(cert){
   { const _motto='iCAN connect, author, and nurture the world';
     const _mfont=n=>"700 "+n+"px 'Great Vibes','Snell Roundhand','Brush Script MT','Segoe Script',cursive";
     let _mottoY = H-256;                                   // default: plenty of clearance
-    if(isAAD && hasWork){ _mottoY = Math.min(H-228, Math.max(H-256, _workEndY+28)); }
+    if((isAAD && hasWork) || _spellDrawn){ _mottoY = Math.min(H-228, Math.max(H-256, _workEndY+28)); }
     let _mf=32; x.font=_mfont(_mf);
     while(x.measureText(_motto).width>W*0.82 && _mf>16){ _mf-=2; x.font=_mfont(_mf); }
     x.fillText(_motto, W/2, _mottoY); }
