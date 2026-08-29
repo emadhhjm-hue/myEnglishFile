@@ -28127,10 +28127,10 @@ ROUTES.ylAAD = function(){
           <iframe id="player" title="Reel" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
           <div class="caption"><div class="h" id="capH"></div></div>
           <div class="rail" id="rail"></div>
-          <button class="horn" id="hornBtn" aria-expanded="false"><span>📣</span> How to join in</button>
+          <button class="horn" id="hornBtn" aria-expanded="false"><span>📣</span> Socialize!</button>
           <div class="sheet" id="sheet" role="dialog" aria-label="How to join in and helping words">
             <button class="sheetclose" id="sheetClose" aria-label="Close">×</button>
-            <h4>📣 How to join in</h4>
+            <h4>📣 Socialize! — join in &amp; react</h4>
             <div class="rulebox">
               <div class="lab">React &amp; comment</div>
               <ul>
@@ -28150,6 +28150,7 @@ ROUTES.ylAAD = function(){
             <div class="grp"><div class="lab">Describing words</div><div class="chips" id="grpWords"></div></div>
             <div class="grp"><div class="lab">Sentence starters</div><div class="chips" id="grpFrames"></div></div>
             <div class="grp"><div class="lab">Reply to a friend</div><div class="chips" id="grpReply"></div></div>
+            <div class="grp" id="grpGuide" style="margin-top:6px"></div>
           </div>
         </div>
       </div>
@@ -28620,10 +28621,48 @@ send.onclick=post;
 function flash(m){ hint.textContent=m; hint.style.color="var(--pending)"; setTimeout(()=>{hint.style.color="";hint.textContent=defHint();},2200); }
 const defHint=()=>moderated?"👩‍🏫 Moderation on — comments wait for teacher approval.":"🔒 Only your class can see this. Be kind — this is a class space.";
 
+
+const MOOD_SLANG=[
+ ["\ud83d\ude14 Down / low",["smh","tbh","rip","sigh"]],
+ ["\ud83d\ude32 Surprised / shocked",["omg","rn","fr","wait"]],
+ ["\ud83d\ude10 Moody / brooding",["nvm","idc","smh","tbh"]],
+ ["\ud83e\udd2f Mind-blown / amazed",["fr","ngl","imo","icymi"]],
+ ["\ud83d\ude04 Excited / hyped",["omg","rn","ngl","ftw"]],
+ ["\ud83d\ude30 Anxious / nervous",["idk","omg","tmi","smh"]],
+ ["\ud83d\ude2e\u200d\ud83d\udca8 Exhausted / drained",["rn","afk","smh","tbh"]],
+ ["\ud83c\udf42 Nostalgic / sentimental",["tbt","imo","tbh","irl"]],
+ ["\ud83d\ude36 Indifferent / unbothered",["idc","nvm","meh","tbh"]],
+ ["\ud83d\udcaa Inspired / motivated",["fr","ngl","imo","wbu"]],
+ ["\ud83d\ude2c Awkward / cringing",["tfw","mfw","smh","yikes"]],
+ ["\ud83e\udd2b Secretive / mysterious",["sus","iykyk","tbh","ngl"]],
+ ["\ud83d\ude02 Amused / laughing",["lol","rofl","haha","icymi"]],
+ ["\ud83d\ude0e Confident / bold",["flex","period","fr","imo"]]
+];
+const SLANG_MEAN={smh:"shaking my head",tbh:"to be honest",rip:"rest in peace (for effect)",sigh:"a sigh",omg:"oh my god",rn:"right now",fr:"for real",wait:"pause / hold on",nvm:"never mind",idc:"I don't care",ngl:"not gonna lie",imo:"in my opinion",icymi:"in case you missed it",ftw:"for the win",idk:"I don't know",tmi:"too much information",afk:"away / checked out",tbt:"throwback",irl:"in real life",meh:"indifferent",wbu:"what about you",tfw:"that feeling when",mfw:"my face when",yikes:"yikes",sus:"suspicious",iykyk:"if you know, you know",lol:"laugh out loud",rofl:"rolling on the floor laughing",haha:"laughing",flex:"showing off",period:"end of discussion"};
+const FEEL_STARTERS=[
+ ["\ud83e\udd2f Awe, shock & futuristic wonder",["This makes me feel completely mind-blown, especially when\u2026","It is futuristic yet so scary to think that\u2026","I honestly didn't expect to see\u2026","Watching this leaves me speechless because fr, the reality is\u2026","It feels surreal, like stepping into a sci-fi movie where\u2026"]],
+ ["\ud83d\udcaa Motivation, drive & energy",["This is so motivating because it proves that\u2026","I can't agree more that we need to stop making excuses and\u2026","Watching this gives me a rush of energy to finally\u2026","It's a hard truth, but ngl, this is the push I needed to\u2026","This makes me feel unstoppable, as if anything is possible if\u2026"]],
+ ["\ud83d\udca7 Sadness & heavy reflection",["This hits close to home and makes me feel heavy-hearted about\u2026","It's a tough reality, but tbh, life really does\u2026","This makes me reflect on how fast time flies when\u2026","There is a quiet sadness here, reminding me of\u2026","It touches on a deep fear I have regarding\u2026"]],
+ ["\ud83d\ude30 Anxiety, hesitation & fear",["This triggers nervousness because stepping into the unknown\u2026","I feel hesitant about this, because idk if I could ever\u2026","It's terrifying to admit, but I've always struggled with\u2026","Watching this makes my stomach turn, thinking about\u2026","The pressure here feels overwhelming, making me wonder if\u2026"]],
+ ["\ud83e\udd28 Doubt & moody contemplation",["I'm not entirely sure about this, because imo\u2026","This leaves me doubtful and skeptical about whether\u2026","Something about this feels off, like people only show\u2026","It makes me feel guarded, considering how hard it is to\u2026","I want to agree, but smh, it's just not that simple in real life\u2026"]],
+ ["\u2728 Joy, positivity & uplifting vibes",["This brings an instant smile to my face because fr\u2026","I love the energy of this clip; it feels refreshing to see\u2026","This makes me feel deeply uplifted and grateful for\u2026","It's a wholesome reminder that even small things can\u2026","Watching this clears my head and makes me feel peaceful about\u2026"]]
+];
+function fillGuide(){
+  var box=document.getElementById("grpGuide"); if(!box) return;
+  function det(label,inner){ return '<details style="margin:4px 0;border:1px solid var(--line,#e8e8ef);border-radius:10px;padding:2px 10px"><summary style="cursor:pointer;font-weight:700;font-size:.9rem;padding:6px 0;list-style:none">'+label+'</summary><div class="chips" style="padding:2px 0 8px">'+inner+'</div></details>'; }
+  var html='<div class="lab">Slang by mood <span style="font-weight:400;opacity:.65">\u2014 tap a word to add it</span></div>';
+  html+=MOOD_SLANG.map(function(r){ return det(r[0], r[1].map(function(a){ return '<button class="chip" data-t="'+a+'" title="'+(SLANG_MEAN[a]||'')+'">'+a+'</button>'; }).join('')); }).join('');
+  html+='<div class="lab" style="margin-top:12px">Reaction starters by feeling <span style="font-weight:400;opacity:.65">\u2014 tap one to begin your post</span></div>';
+  html+=FEEL_STARTERS.map(function(r){ return det(r[0], r[1].map(function(f){ return '<button class="chip frame" data-t="'+f.replace(/"/g,'&quot;')+'">'+f+'</button>'; }).join('')); }).join('');
+  html+='<div class="rulebox" style="margin-top:12px"><div class="lab">Teacher tip \u00b7 Emotion Wheel</div><ul><li>Name the feeling the reel gave you.</li><li>Open that feeling above and tap a starter or a slang word.</li><li>Then keep writing for 3 minutes without stopping.</li></ul></div>';
+  box.innerHTML=html;
+  Array.prototype.forEach.call(box.querySelectorAll(".chip[data-t]"), function(c){ c.onclick=function(){ inject(c.getAttribute("data-t")); openSheet(false); }; });
+}
 const sheet=$("#sheet"), horn=$("#hornBtn");
 function openSheet(o){ sheet.classList.toggle("open",o); horn.setAttribute("aria-expanded",o); }
 horn.onclick=()=>openSheet(!sheet.classList.contains("open"));
 $("#sheetClose").onclick=()=>openSheet(false);
+try{ fillGuide(); }catch(e){}
 
 const mt=$("#modToggle");
 function setMod(v){ moderated=v; mt.classList.toggle("on",v); mt.setAttribute("aria-checked",v); hint.textContent=defHint(); }
