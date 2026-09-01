@@ -6680,8 +6680,6 @@ function loginAsRosterStudent(code, s){
 try{Store.set('ican_senior_code',null);Store.set('ican_junior_code',null);}catch(e){}
 function seniorCode(){ return (CONFIG.seniorCode||'SENIOR2026'); }
 function juniorCode(){ return (CONFIG.juniorCode||'JUNIOR2026'); }
-function teacherCode(){ return (Store.get('ican_teacher_code')||CONFIG.teacherCode||'TEACHER2026'); }
-function setTeacherCode(v){ v=(v||'').trim(); Store.set('ican_teacher_code', v||'TEACHER2026'); }
 function rosterExtra(){ var r=Store.get('ican_roster'); return Array.isArray(r)?r.slice():[]; }
 function rosterBlocked(){ var b=Store.get('ican_roster_blocked'); return Array.isArray(b)?b:[]; }
 function rosterNorm(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
@@ -6691,7 +6689,7 @@ function rosterAddMany(text){ var names=String(text||'').split(/[\n,;]+/).map(fu
 function rosterRemove(name){ var k=rosterNorm(name); Store.set('ican_roster', rosterExtra().filter(function(n){ return rosterNorm(n)!==k; })); var blocked=rosterBlocked(); if(blocked.indexOf(k)<0){ blocked.push(k); Store.set('ican_roster_blocked',blocked); } try{renderAllowed();}catch(e){} }
 function rosterAddFromInput(){ var i=document.getElementById('rosterName'); if(i&&i.value.trim()){ rosterAdd(i.value); i.value=''; } }
 function rosterAddPaste(){ var t=document.getElementById('rosterPaste'); if(t&&t.value.trim()){ rosterAddMany(t.value); t.value=''; } }
-function studentApproved(name){ var t=rosterNorm(name); if(!t) return false; return rosterAll().map(rosterNorm).indexOf(t)>=0; }
+function studentApproved(name){ var t=rosterNorm(name); if(!t) return false; return rosterAll().map(rosterNorm).some(function(n){ return n===t || n.indexOf(t+' ')===0 || t.indexOf(n+' ')===0; }); }
 function setSeniorCode(v){ v=(v||'').trim(); Store.set('ican_senior_code', v||'SENIOR2026'); }
 function setJuniorCode(v){ v=(v||'').trim(); Store.set('ican_junior_code', v||'JUNIOR2026'); }
 function classLocked(){ var o=Store.get('ican_lock'); return (o===true||o===false)? o : (CONFIG.lockClass!==false); }
@@ -6853,14 +6851,21 @@ function doStudentLogin(){
 var TEACHER_HASH="e4b77d7d3a75b94becd81bc7a37bee6b1b0c03777a5da0372d93983f964873de";
 function lsSha256(str){ try{ return crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(str))).then(function(buf){ return Array.prototype.map.call(new Uint8Array(buf),function(x){return x.toString(16).padStart(2,'0');}).join(''); }); }catch(e){ return Promise.reject(e); } }
 function doTeacherLogin(){
-  var code=val('tCode'); var err=document.getElementById('tErr');
+  const code=val('tCode'); const err=document.getElementById('tErr');
   if(!code){ err.textContent="Enter your teacher code."; return; }
   err.textContent="Checking\u2026";
-  function ok(){ SESSION={role:"teacher"}; if(typeof cloudUrl==='function' && cloudUrl()){ err.textContent="Loading online records\u2026"; try{ pullContent(function(){ refreshCloud(function(){ go('teacher'); }); }); }catch(e){ go('teacher'); } } else { go('teacher'); } }
   fetch('/api/login',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:code})})
-    .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
-    .then(function(res){ if(res.ok && res.d && res.d.ok){ ok(); } else if(res.ok && res.d){ err.textContent=(res.d.error||"Incorrect teacher code."); } else { throw new Error('no-server'); } })
-    .catch(function(){ lsSha256(String(code).trim()).then(function(hex){ if(hex===TEACHER_HASH){ ok(); } else { err.textContent="Incorrect teacher code."; } }).catch(function(){ err.textContent="Incorrect teacher code."; }); });
+    .then(r=>r.json().then(d=>({ok:r.ok,d})))
+    .then(res=>{
+      if(res.ok && res.d && res.d.ok){
+        SESSION={role:"teacher"};
+        if(typeof cloudUrl==='function' && cloudUrl()){ err.textContent="Loading online records\u2026"; pullContent(()=>refreshCloud(()=>go('teacher'))); }
+        else go('teacher');
+      } else {
+        err.textContent=(res.d && res.d.error) || "Incorrect teacher code.";
+      }
+    })
+    .catch(()=>{ err.textContent="Network error \u2014 please try again."; });
 }
 
 /* =========================================================================
