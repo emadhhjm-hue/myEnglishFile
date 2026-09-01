@@ -6691,7 +6691,7 @@ function rosterAddMany(text){ var names=String(text||'').split(/[\n,;]+/).map(fu
 function rosterRemove(name){ var k=rosterNorm(name); Store.set('ican_roster', rosterExtra().filter(function(n){ return rosterNorm(n)!==k; })); var blocked=rosterBlocked(); if(blocked.indexOf(k)<0){ blocked.push(k); Store.set('ican_roster_blocked',blocked); } try{renderAllowed();}catch(e){} }
 function rosterAddFromInput(){ var i=document.getElementById('rosterName'); if(i&&i.value.trim()){ rosterAdd(i.value); i.value=''; } }
 function rosterAddPaste(){ var t=document.getElementById('rosterPaste'); if(t&&t.value.trim()){ rosterAddMany(t.value); t.value=''; } }
-function studentApproved(name){ var norm=function(s){return String(s||'').trim().toLowerCase().replace(/\s+/g,' ');}; var t=norm(name); if(!t) return false; return rosterAll().map(norm).some(function(n){ return n===t || n.indexOf(t+' ')===0 || t.indexOf(n+' ')===0; }); }
+function studentApproved(name){ var t=rosterNorm(name); if(!t) return false; return rosterAll().map(rosterNorm).indexOf(t)>=0; }
 function setSeniorCode(v){ v=(v||'').trim(); Store.set('ican_senior_code', v||'SENIOR2026'); }
 function setJuniorCode(v){ v=(v||'').trim(); Store.set('ican_junior_code', v||'JUNIOR2026'); }
 function classLocked(){ var o=Store.get('ican_lock'); return (o===true||o===false)? o : (CONFIG.lockClass!==false); }
@@ -6733,7 +6733,7 @@ function studentTierLogin(){
   if(!code){ if(err)err.textContent='Enter the class code your teacher gave you.'; return; }
   if(code.toUpperCase()!==String(want).toUpperCase()){ if(err)err.textContent='That code is not right for the '+(tier==='senior'?'Senior':'Junior')+' class. Please check with your teacher.'; return; }
   var allow=(CONFIG.allowedStudents||[]);
-  if(classLocked() && rosterAll().length){ if(!studentApproved(name)){ if(err)err.textContent='Your name is not on the class list. Type it as your teacher listed it (first name is fine), or ask your teacher to add you.'; return; } }
+  if(classLocked() && rosterAll().length){ if(!studentApproved(name)){ if(err)err.textContent='Your name is not on the class list. Type your FULL name exactly as your teacher entered it, or ask your teacher to add you.'; return; } }
   var parts=name.split(/\s+/);
   var id=(tier+'::'+name).toLowerCase();
   SESSION={role:'student', name:name, first:parts[0]||name, middle:parts.length>2?parts.slice(1,-1).join(' '):'', last:parts.length>1?parts[parts.length-1]:'', class:(tier==='senior'?'Senior':'Junior'), code:want, id:id, tier:tier};
@@ -6850,16 +6850,17 @@ function doStudentLogin(){
   if(cloudUrl()){ err.textContent="Loading your online record…"; pullContent(()=>refreshCloud(()=>{ applyPlacement(); go('tierChoose'); })); }
   else { applyPlacement(); go('tierChoose'); }
 }
+var TEACHER_HASH="e4b77d7d3a75b94becd81bc7a37bee6b1b0c03777a5da0372d93983f964873de";
+function lsSha256(str){ try{ return crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(str))).then(function(buf){ return Array.prototype.map.call(new Uint8Array(buf),function(x){return x.toString(16).padStart(2,'0');}).join(''); }); }catch(e){ return Promise.reject(e); } }
 function doTeacherLogin(){
-  const code=val('tCode'); const err=document.getElementById('tErr');
+  var code=val('tCode'); var err=document.getElementById('tErr');
   if(!code){ err.textContent="Enter your teacher code."; return; }
-  if(String(code).trim().toUpperCase()===String(teacherCode()).toUpperCase()){
-    SESSION={role:"teacher"};
-    if(typeof cloudUrl==='function' && cloudUrl()){ err.textContent="Loading online records\u2026"; try{ pullContent(function(){ refreshCloud(function(){ go('teacher'); }); }); }catch(e){ go('teacher'); } }
-    else { go('teacher'); }
-    return;
-  }
-  err.textContent="Incorrect teacher code.";
+  err.textContent="Checking\u2026";
+  function ok(){ SESSION={role:"teacher"}; if(typeof cloudUrl==='function' && cloudUrl()){ err.textContent="Loading online records\u2026"; try{ pullContent(function(){ refreshCloud(function(){ go('teacher'); }); }); }catch(e){ go('teacher'); } } else { go('teacher'); } }
+  fetch('/api/login',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:code})})
+    .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+    .then(function(res){ if(res.ok && res.d && res.d.ok){ ok(); } else if(res.ok && res.d){ err.textContent=(res.d.error||"Incorrect teacher code."); } else { throw new Error('no-server'); } })
+    .catch(function(){ lsSha256(String(code).trim()).then(function(hex){ if(hex===TEACHER_HASH){ ok(); } else { err.textContent="Incorrect teacher code."; } }).catch(function(){ err.textContent="Incorrect teacher code."; }); });
 }
 
 /* =========================================================================
@@ -25756,9 +25757,9 @@ function lsBlock(b){
   if(b.t==="kwl") return ["K \u2014 what I already KNOW about managing money","W \u2014 what I WANT to learn today","L \u2014 what I LEARNED (fill in at the end)"].map(function(lab){return '<label style="display:block;font-weight:700;margin:10px 0 4px">'+esc(lab)+'</label><textarea rows="2" style="width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font-family:inherit"></textarea>';}).join('');
   if(b.t==="reflect") return b.items.map(function(x){return '<label style="display:block;font-weight:700;margin:10px 0 4px">'+esc(x)+'</label><textarea rows="2" style="width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px;font-family:inherit"></textarea>';}).join('');
   if(b.t==="rating") return '<p style="font-weight:700;margin:12px 0 4px">'+esc(b.label)+'</p><div class="ls-rate" style="font-size:1.7rem;letter-spacing:6px;cursor:pointer;color:#F2A93B;user-select:none" onclick="lsStar(event,this)">\u2606\u2606\u2606\u2606\u2606</div>';
-  if(b.t==="match"){ var opts=[]; b.pairs.forEach(function(p){ if(opts.indexOf(p[1])<0) opts.push(p[1]); });
+  if(b.t==="match"){ var opts=[]; b.pairs.forEach(function(p){ if(opts.indexOf(p[1])<0) opts.push(p[1]); }); for(var _q=opts.length-1;_q>0;_q--){var _r=Math.floor(Math.random()*(_q+1)),_s=opts[_q];opts[_q]=opts[_r];opts[_r]=_s;}
     return '<div class="ls-graded"><p style="font-weight:700">'+esc(b.intro)+'</p>'+b.pairs.map(function(p){ var a=opts.indexOf(p[1]); return '<div style="display:flex;gap:10px;align-items:center;margin:7px 0;flex-wrap:wrap"><span style="flex:1;min-width:220px">'+p[0]+'</span><select class="ls-a" data-ans="'+a+'" style="padding:8px 10px;border:1.5px solid var(--line);border-radius:9px;font-family:inherit;min-width:180px"><option value="">\u2014 choose \u2014</option>'+opts.map(function(o,j){return '<option value="'+j+'">'+esc(o)+'</option>';}).join('')+'</select></div>'; }).join('')+'<button class="btn sm" onclick="lsGrade(this)" style="margin-top:8px">Check</button><div class="ls-fb" style="display:none;margin-top:8px"></div></div>'; }
-  if(b.t==="mcq") return '<div class="ls-graded">'+(b.intro?'<p style="font-weight:700">'+esc(b.intro)+'</p>':'')+b.qs.map(function(q){ return '<div style="margin:10px 0"><div style="margin-bottom:4px">'+esc(q.q)+'</div><select class="ls-a" data-ans="'+q.ans+'" style="padding:8px 10px;border:1.5px solid var(--line);border-radius:9px;font-family:inherit;min-width:200px"><option value="">\u2014 choose \u2014</option>'+q.opts.map(function(o,j){return '<option value="'+j+'">'+esc(o)+'</option>';}).join('')+'</select></div>'; }).join('')+'<button class="btn sm" onclick="lsGrade(this)" style="margin-top:8px">Check</button><div class="ls-fb" style="display:none;margin-top:8px"></div></div>';
+  if(b.t==="mcq") return '<div class="ls-graded">'+(b.intro?'<p style="font-weight:700">'+esc(b.intro)+'</p>':'')+b.qs.map(function(q){ var _ord=q.opts.map(function(o,j){return j;}); for(var _z=_ord.length-1;_z>0;_z--){var _w=Math.floor(Math.random()*(_z+1)),_v=_ord[_z];_ord[_z]=_ord[_w];_ord[_w]=_v;} return '<div style="margin:10px 0"><div style="margin-bottom:4px">'+esc(q.q)+'</div><select class="ls-a" data-ans="'+_ord.indexOf(q.ans)+'" style="padding:8px 10px;border:1.5px solid var(--line);border-radius:9px;font-family:inherit;min-width:200px"><option value="">\u2014 choose \u2014</option>'+_ord.map(function(oi,j){return '<option value="'+j+'">'+esc(q.opts[oi])+'</option>';}).join('')+'</select></div>'; }).join('')+'<button class="btn sm" onclick="lsGrade(this)" style="margin-top:8px">Check</button><div class="ls-fb" style="display:none;margin-top:8px"></div></div>';
   if(b.t==="dialogue") return '<div class="ls-graded"><p style="font-weight:700">'+esc(b.intro)+'</p><div style="border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fcfcff">'+b.lines.map(function(ln){ var txt=esc(ln[1]).replace(/\[\[(.+?)\]\]/g,function(m,w){return '<input class="ls-a" data-ans="'+w.toLowerCase()+'" autocomplete="off" style="width:'+Math.max(70,w.length*13)+'px;border:0;border-bottom:2px solid #2B5FA6;font-family:inherit;font-size:1em;text-align:center;background:#f4f7ff">';}); return '<p style="margin:6px 0;line-height:1.9"><b style="color:#2B5FA6">'+esc(ln[0])+':</b> '+txt+'</p>'; }).join('')+'</div><button class="btn sm" onclick="lsGrade(this)" style="margin-top:8px">Check</button><div class="ls-fb" style="display:none;margin-top:8px"></div></div>';
   return '';
 }
