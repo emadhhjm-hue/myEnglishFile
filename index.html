@@ -29118,32 +29118,37 @@ archiveOv.addEventListener("click",e=>{ if(e.target.id==="archive") archiveOv.cl
   var SYNC_KEYS = {}; Object.keys(MAP).forEach(function (f) { SYNC_KEYS[MAP[f]] = f; });
 
   function isTeacher() { try { return !!(SESSION && SESSION.role === "teacher"); } catch (e) { return false; } }
-  var applying = false, pushTimer = null;
+  var applying = false, pushTimer = null, pending = {}, lastPush = 0;
 
-  // ---- push (teacher only) ----
+  // ---- push (teacher only) — sends ONLY the settings changed on this device,
+  //      so an older tab/device can never overwrite newer settings it didn't touch ----
   function push() {
-    var body = {};
-    Object.keys(MAP).forEach(function (f) {
+    var body = {}, any = false;
+    Object.keys(pending).forEach(function (f) {
       var v = null; try { v = Store.get(MAP[f]); } catch (e) {}
-      if (v !== null && v !== undefined) body[f] = v;
+      if (v !== null && v !== undefined) { body[f] = v; any = true; }
     });
+    pending = {};
+    if (!any) return;
+    lastPush = Date.now();
     fetch("/api/state", {
       method: "POST", credentials: "same-origin",
       headers: { "Content-Type": "application/json" }, body: JSON.stringify(body)
     }).catch(function () {});
   }
-  function pushSoon() { clearTimeout(pushTimer); pushTimer = setTimeout(push, 800); }
+  function pushSoon(f) { if (f) pending[f] = 1; clearTimeout(pushTimer); pushTimer = setTimeout(push, 800); }
 
   // Any teacher change to a synced key auto-syncs — no need to touch setters.
   var _set = Store.set.bind(Store);
   Store.set = function (k, v) {
     _set(k, v);
-    if (!applying && SYNC_KEYS[k] && isTeacher()) pushSoon();
+    if (!applying && SYNC_KEYS[k] && isTeacher()) pushSoon(SYNC_KEYS[k]);
     return v;
   };
 
   // ---- pull (everyone) ----
   window.ICAN_SYNC_PULL = function (cb, noRepaint) {
+    if (isTeacher() && Date.now() - lastPush < 8000) { if (cb) cb(false); return; } // let our own save land first
     fetch("/api/state", { credentials: "same-origin", cache: "no-store" })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
@@ -29163,22 +29168,22 @@ archiveOv.addEventListener("click",e=>{ if(e.target.id==="archive") archiveOv.cl
             return;
           }
           var before = JSON.stringify(Store.get(MAP[f]));
+          if (pending[f]) return; // a local change is about to be sent — keep it
           var after = JSON.stringify(d[f]);
           if (before !== after) { _set(MAP[f], d[f]); changed = true; }
         });
         applying = false;
         if (isTeacher()) {
-          var missing = Object.keys(MAP).some(function (f) {
-            if (f in d) return false;
+          Object.keys(MAP).forEach(function (f) {
+            if (f in d) return;
             var v = null; try { v = Store.get(MAP[f]); } catch (e) {}
-            return v !== null && v !== undefined;
+            if (v !== null && v !== undefined) pushSoon(f);
           });
-          if (missing) pushSoon();
         }
         // repaint the current screen so new locks/unlocks show immediately
         if (changed && !noRepaint) {
           try { if (typeof paintGates === "function") paintGates(); } catch (e) {}
-          try { var _cs = (typeof CURRENT_SCREEN !== "undefined") ? CURRENT_SCREEN : null; if (_cs && typeof go === "function") go(_cs); } catch (e) {}
+          try { var _cs = (typeof CURRENT_SCREEN !== "undefined") ? CURRENT_SCREEN : null; var _ca = (typeof CURRENT_ARG !== "undefined") ? CURRENT_ARG : undefined; if (_cs && typeof go === "function") go(_cs, _ca); } catch (e) {}
         }
         if (cb) cb(changed);
       })
@@ -29188,7 +29193,9 @@ archiveOv.addEventListener("click",e=>{ if(e.target.id==="archive") archiveOv.cl
   // pull once on load, then keep students fresh without a manual refresh
   function boot() {
     window.ICAN_SYNC_PULL();
-    setInterval(function () { if (!isTeacher()) window.ICAN_SYNC_PULL(); }, 60000);
+    // everyone (teacher too) stays in step with the server: every 60s and whenever the tab is reopened
+    setInterval(function () { window.ICAN_SYNC_PULL(); }, 60000);
+    document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") window.ICAN_SYNC_PULL(); });
   }
   if (document.readyState === "complete") boot();
   else window.addEventListener("load", boot);
