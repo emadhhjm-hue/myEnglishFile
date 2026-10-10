@@ -1789,7 +1789,7 @@ function icanListProjects(){ var a=getProjects()[projKey()]||[]; return a.map(fu
 function icanLoadProject(id){ var a=getProjects()[projKey()]||[]; for(var i=0;i<a.length;i++){ if(a[i].id===id) return a[i]; } return null; }
 
 /* ---- Online sync (Google Sheet web app). Local always works as a backup. ---- */
-function cloudUrl(){ return Store.get("ican_cloud_url") || CONFIG.cloudUrl || ""; }
+function cloudUrl(){ return CONFIG.cloudUrl || Store.get("ican_cloud_url") || ""; }
 function setCloudUrl(u){ Store.set("ican_cloud_url", u.trim()); }
 function cloudSave(rec){
   /* Every result / message is POSTed to the class store on Cloudflare (same origin).
@@ -6538,23 +6538,11 @@ const ROUTES = {
 
       <div class="card" style="margin-bottom:16px">
         <h3 style="font-size:1.2rem">🔗 Online sync ${online?'<span class="pill done">connected</span>':''}</h3>
-        <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Paste your Google Sheet web-app URL to save every student's results online (so any device — student or teacher — keeps the same record). Leave empty to stay local.</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <input id="cloudInput" value="${esc(cloudUrl())}" placeholder="https://script.google.com/macros/s/..../exec" style="flex:1;min-width:240px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;font-size:.85rem">
-          <button class="btn sm" onclick="saveCloudUrl()">Save &amp; connect</button>
-          ${online?'<button class="btn sm ghost" onclick="testCloud()">Test</button>':''}
+        <p style="color:var(--muted);font-size:.9rem;margin:4px 0 10px">Every student's results and your class settings (class codes, student list, lesson locks) are saved on your <b>iCAN server</b> (Cloudflare). Any device &mdash; student or teacher &mdash; sees the same record. Nothing to set up.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <span class="kbd">Server: ${esc(cloudUrl()||'/api')}</span>
+          <button class="btn sm ghost" onclick="testCloud()">Test connection</button>
         </div>
-        <div id="cloudMsg" style="font-size:.82rem;color:var(--muted);margin-top:8px"></div>
-        <details style="margin-top:10px"><summary style="cursor:pointer;font-size:.85rem;color:var(--teal-dk);font-weight:700">▸ How to set up online sync (Google Sheet)</summary>
-          <ol style="font-size:.85rem;color:var(--slate);margin:8px 0 0;padding-left:20px;line-height:1.65">
-            <li>Create a new <b>Google Sheet</b> — this is where results are stored.</li>
-            <li>In the Sheet, open <b>Extensions → Apps Script</b>.</li>
-            <li>Paste the iCAN sync script (in the project notes), then <b>Deploy → New deployment → Web app</b>. Set <i>Execute as: Me</i> and <i>Who has access: Anyone</i>.</li>
-            <li>Copy the <b>Web app URL</b> (it ends in <span class="kbd">/exec</span>), paste it in the box above, and press <b>Save &amp; connect</b>.</li>
-            <li>Press <b>Test</b> to confirm. Every attempt now syncs to your Sheet, and any device using this app reads the same record.</li>
-          </ol>
-          <p style="font-size:.8rem;color:var(--muted);margin:8px 0 0">No URL yet? Leave it empty — the app keeps a full local record on this device.</p>
-        </details>
       </div>
 
       <div class="card" style="margin-bottom:20px">
@@ -6570,18 +6558,22 @@ const ROUTES = {
             <div id="juniorCodeShow" style="font-size:1.4rem;font-weight:800;color:#1c7a3f;letter-spacing:1px">—</div>
           </div>
         </div>
-        <div style="background:#fff6e9;border:1.5px solid #f5d79a;border-radius:10px;padding:10px 12px;font-size:.85rem;color:#7a5a12">
-          <b>To change these codes:</b> the app has no server, so the codes are built into the app file and shared by every device. Open <code>index.html</code>, find the two lines marked <b>CLASS CODES</b> near the top, edit them, and re-deploy. Setting a code only in your own browser will <b>not</b> reach students on other devices.
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--line);padding-top:12px">
+          <span style="font-weight:700;font-size:.9rem">Change codes:</span>
+          <input id="seniorCodeIn" placeholder="New Senior code" style="flex:1;min-width:140px;padding:9px 12px;border:1.5px solid var(--line);border-radius:9px;font-family:inherit;text-transform:uppercase">
+          <input id="juniorCodeIn" placeholder="New Junior code" style="flex:1;min-width:140px;padding:9px 12px;border:1.5px solid var(--line);border-radius:9px;font-family:inherit;text-transform:uppercase">
+          <button class="btn sm" onclick="saveTierCodes()">Save codes</button>
         </div>
+        <div id="tierCodeMsg" style="font-size:.82rem;color:var(--muted);margin-top:6px">Leave a box empty to keep that code. New codes reach every student device within about a minute &mdash; no re-deploy needed.</div>
       </div>
       <div class="card" style="margin-bottom:20px">
         <h3 style="font-size:1.2rem">🛡️ Who can sign in (eligibility)</h3>
         <p style="color:var(--muted);font-size:.9rem;margin-top:4px">Switch between <b>Locked</b> (only approved students) and <b>Open</b> (anyone with the code). This is how you add or remove who may use the platform.</p>
         <div id="allowedShow" style="margin:10px 0"></div>
-        <div style="background:#fff6e9;border:1.5px solid #f5d79a;border-radius:10px;padding:10px 12px;font-size:.85rem;color:#7a5a12">
-          The <b>Locked / Open</b> switch above changes the mode on <b>this device</b> right away. To apply it to students on their own devices (there is no server), open <code>index.html</code> near the top, set <code>lockClass: true</code> (locked) or <code>false</code> (open) and edit the <b>APPROVED STUDENTS</b> list, then re-deploy.
-          <br>• <b>To remove a student:</b> delete their name from the list and re-deploy; also change the class code so they cannot rejoin.
-          <br><span style="color:#8a6d1f">No server means this is strong classroom control, not bank-level security.</span>
+        <div style="background:#eafaef;border:1.5px solid #cdeed6;border-radius:10px;padding:10px 12px;font-size:.85rem;color:#1c5a33">
+          Changes here are saved on the iCAN server and apply to <b>every device</b> &mdash; no re-deploy needed. A newly added student can sign in straight away (allow up to a minute on a device that already had the page open).
+          <br>&bull; <b>To add a student:</b> type their full name and press <b>+ Add</b>. They sign in with that name and their class code.
+          <br>&bull; <b>To remove a student:</b> press the &times; next to their name. They can no longer sign in.
         </div>
       </div>
       <div class="card" style="margin-bottom:20px;background:#f6f8fc">
@@ -6686,9 +6678,17 @@ function loginAsRosterStudent(code, s){
 }
 /* ---- student login flow (class code -> name -> password) ---- */
 /* ---- guest access (teacher-permitted) ---- */
-try{Store.set('ican_senior_code',null);Store.set('ican_junior_code',null);}catch(e){}
-function seniorCode(){ return (CONFIG.seniorCode||'SENIOR2026'); }
-function juniorCode(){ return (CONFIG.juniorCode||'JUNIOR2026'); }
+function tierCodesSynced(){ var t=Store.get('ican_tier_codes'); return (t&&typeof t==='object')?t:{}; }
+function seniorCode(){ return (tierCodesSynced().senior||CONFIG.seniorCode||'SENIOR2026'); }
+function juniorCode(){ return (tierCodesSynced().junior||CONFIG.juniorCode||'JUNIOR2026'); }
+function saveTierCodes(){ var si=document.getElementById('seniorCodeIn'), ji=document.getElementById('juniorCodeIn'), msg=document.getElementById('tierCodeMsg');
+  var sv=((si&&si.value)||'').trim().toUpperCase().replace(/\s+/g,''), jv=((ji&&ji.value)||'').trim().toUpperCase().replace(/\s+/g,'');
+  if(!sv&&!jv){ if(msg) msg.textContent='Type a new code in at least one box first.'; return; }
+  var ns=sv||seniorCode(), nj=jv||juniorCode();
+  if(ns.toUpperCase()===nj.toUpperCase()){ if(msg) msg.textContent='The Senior and Junior codes must be different.'; return; }
+  Store.set('ican_tier_codes',{senior:ns, junior:nj});
+  if(si) si.value=''; if(ji) ji.value=''; try{renderTierCodes();}catch(e){}
+  if(msg) msg.innerHTML='<span style="color:var(--teal-dk)">\u2713 Saved. Give students the new code(s); the old ones stop working.</span>'; }
 function rosterExtra(){ var r=Store.get('ican_roster'); return Array.isArray(r)?r.slice():[]; }
 function rosterBlocked(){ var b=Store.get('ican_roster_blocked'); return Array.isArray(b)?b:[]; }
 function rosterNorm(s){ return String(s||'').trim().toLowerCase().replace(/\s+/g,' '); }
@@ -6699,16 +6699,16 @@ function rosterRemove(name){ var k=rosterNorm(name); Store.set('ican_roster', ro
 function rosterAddFromInput(){ var i=document.getElementById('rosterName'); if(i&&i.value.trim()){ rosterAdd(i.value); i.value=''; } }
 function rosterAddPaste(){ var t=document.getElementById('rosterPaste'); if(t&&t.value.trim()){ rosterAddMany(t.value); t.value=''; } }
 function studentApproved(name){ var t=rosterNorm(name); if(!t) return false; return rosterAll().map(rosterNorm).some(function(n){ return n===t || n.indexOf(t+' ')===0 || t.indexOf(n+' ')===0; }); }
-function setSeniorCode(v){ v=(v||'').trim(); Store.set('ican_senior_code', v||'SENIOR2026'); }
-function setJuniorCode(v){ v=(v||'').trim(); Store.set('ican_junior_code', v||'JUNIOR2026'); }
+function setSeniorCode(v){ v=(v||'').trim().toUpperCase(); var t=tierCodesSynced(); Store.set('ican_tier_codes',{senior:v||'SENIOR2026', junior:t.junior||juniorCode()}); }
+function setJuniorCode(v){ v=(v||'').trim().toUpperCase(); var t=tierCodesSynced(); Store.set('ican_tier_codes',{senior:t.senior||seniorCode(), junior:v||'JUNIOR2026'}); }
 function classLocked(){ var o=Store.get('ican_lock'); return (o===true||o===false)? o : (CONFIG.lockClass!==false); }
 function setClassLock(v){ Store.set('ican_lock', !!v); try{renderAllowed();}catch(e){} }
 function renderAllowed(){ var el=document.getElementById('allowedShow'); if(!el) return;
   var locked=classLocked(); var a=rosterAll();
   function b(on){ return on ? '' : 'background:#fff;color:#173a6b;border:1.5px solid var(--line)'; }
   var toggle='<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px"><span style="font-weight:700">Class access:</span>'
-    +'<button class="btn sm" style="'+b(locked)+'" onclick="setClassLock(true)">\U0001f512 Locked</button>'
-    +'<button class="btn sm" style="'+b(!locked)+'" onclick="setClassLock(false)">\U0001f513 Open</button></div>';
+    +'<button class="btn sm" style="'+b(locked)+'" onclick="setClassLock(true)">\uD83D\uDD12 Locked</button>'
+    +'<button class="btn sm" style="'+b(!locked)+'" onclick="setClassLock(false)">\uD83D\uDD13 Open</button></div>';
   var status = locked
     ? '<div style="font-size:.85rem;color:var(--muted);margin:2px 0 6px">Locked \u2014 only these '+a.length+' student(s) can sign in:</div>'
     : '<div style="background:#eafaef;border:1.5px solid #cdeed6;border-radius:10px;padding:10px 12px;font-size:.9rem;margin-bottom:8px"><b>Open</b> \u2014 anyone with the class code can sign in. The list below is used when you switch to Locked.</div>';
@@ -6729,8 +6729,15 @@ function pickLoginTier(t){ window.__loginTier=t;
   if(s){ s.style.borderColor=(t==='senior'?'#2b6cb0':'var(--line)'); s.style.background=(t==='senior'?'#eaf2fb':'#fff'); }
   if(j){ j.style.borderColor=(t==='junior'?'#2BA84F':'var(--line)'); j.style.background=(t==='junior'?'#eafaef':'#fff'); }
 }
-function studentTierLogin(){
+function studentTierLogin(_fresh){
   var err=document.getElementById('sErr');
+  function retry(msg){
+    if(!_fresh && typeof window.ICAN_SYNC_PULL==='function'){
+      if(err) err.textContent='Checking with the class list\u2026';
+      window.ICAN_SYNC_PULL(function(){ studentTierLogin(true); }, true); return;
+    }
+    if(err) err.textContent=msg;
+  }
   var name=(val('sName')||'').trim();
   var tier=window.__loginTier;
   var code=(val('sCode')||'').trim();
@@ -6738,9 +6745,9 @@ function studentTierLogin(){
   if(!tier){ if(err)err.textContent='Please choose Senior or Junior.'; return; }
   var want=(tier==='senior'?seniorCode():juniorCode());
   if(!code){ if(err)err.textContent='Enter the class code your teacher gave you.'; return; }
-  if(code.toUpperCase()!==String(want).toUpperCase()){ if(err)err.textContent='That code is not right for the '+(tier==='senior'?'Senior':'Junior')+' class. Please check with your teacher.'; return; }
+  if(code.toUpperCase()!==String(want).toUpperCase()){ retry('That code is not right for the '+(tier==='senior'?'Senior':'Junior')+' class. Please check with your teacher.'); return; }
   var allow=(CONFIG.allowedStudents||[]);
-  if(classLocked() && rosterAll().length){ if(!studentApproved(name)){ if(err)err.textContent='Your name is not on the class list. Type your FULL name exactly as your teacher entered it, or ask your teacher to add you.'; return; } }
+  if(classLocked() && rosterAll().length){ if(!studentApproved(name)){ retry('Your name is not on the class list. Type your FULL name exactly as your teacher entered it, or ask your teacher to add you.'); return; } }
   var parts=name.split(/\s+/);
   var id=(tier+'::'+name).toLowerCase();
   SESSION={role:'student', name:name, first:parts[0]||name, middle:parts.length>2?parts.slice(1,-1).join(' '):'', last:parts.length>1?parts[parts.length-1]:'', class:(tier==='senior'?'Senior':'Junior'), code:want, id:id, tier:tier};
@@ -7676,8 +7683,8 @@ function saveCloudUrl(){
 function testCloud(){
   const msg=document.getElementById('cloudMsg'); msg.textContent="Testing…";
   cloudList(data=>{
-    if(Array.isArray(data)) msg.innerHTML=`<span style="color:var(--teal-dk)">✓ Connected — read ${data.length} record(s) from the sheet.</span>`;
-    else msg.innerHTML=`<span style="color:var(--coral-dk)">Couldn't read from that URL. Check the deployment is set to "Anyone" access and the URL ends in /exec.</span>`;
+    if(Array.isArray(data)) msg.innerHTML=`<span style="color:var(--teal-dk)">✓ Connected — read ${data.length} record(s) from the iCAN server.</span>`;
+    else msg.innerHTML=`<span style="color:var(--coral-dk)">Couldn't reach the iCAN server. Check you are signed in as teacher and the site is deployed with the ICAN storage binding.</span>`;
   });
 }
 function renderCodeList(){
@@ -29104,7 +29111,8 @@ archiveOv.addEventListener("click",e=>{ if(e.target.id==="archive") archiveOv.cl
     codes:     "ican_codes",
     roster:    "ican_roster",
     blocked:   "ican_roster_blocked",
-    classLock: "ican_lock"
+    classLock: "ican_lock",
+    tierCodes: "ican_tier_codes"
   };
   var SYNC_KEYS = {}; Object.keys(MAP).forEach(function (f) { SYNC_KEYS[MAP[f]] = f; });
 
@@ -29134,8 +29142,8 @@ archiveOv.addEventListener("click",e=>{ if(e.target.id==="archive") archiveOv.cl
   };
 
   // ---- pull (everyone) ----
-  window.ICAN_SYNC_PULL = function (cb) {
-    fetch("/api/state", { credentials: "same-origin" })
+  window.ICAN_SYNC_PULL = function (cb, noRepaint) {
+    fetch("/api/state", { credentials: "same-origin", cache: "no-store" })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (d) {
         if (!d) { if (cb) cb(false); return; }
@@ -29159,7 +29167,7 @@ archiveOv.addEventListener("click",e=>{ if(e.target.id==="archive") archiveOv.cl
         });
         applying = false;
         // repaint the current screen so new locks/unlocks show immediately
-        if (changed) {
+        if (changed && !noRepaint) {
           try { if (typeof paintGates === "function") paintGates(); } catch (e) {}
           try { var _cs = (typeof CURRENT_SCREEN !== "undefined") ? CURRENT_SCREEN : null; if (_cs && typeof go === "function") go(_cs); } catch (e) {}
         }
