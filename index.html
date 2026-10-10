@@ -1745,7 +1745,7 @@ const CONFIG = {
   // from the Teacher dashboard. When set, every result is saved online and the
   // teacher dashboard reads everyone's records from the cloud. Leave "" for
   // local-only mode (still fully works + Excel export).
-  cloudUrl: ""
+  cloudUrl: "/api"   /* same-origin Cloudflare Pages Functions; sync is always on */
 };
 
 /* =========================================================================
@@ -1792,21 +1792,30 @@ function icanLoadProject(id){ var a=getProjects()[projKey()]||[]; for(var i=0;i<
 function cloudUrl(){ return Store.get("ican_cloud_url") || CONFIG.cloudUrl || ""; }
 function setCloudUrl(u){ Store.set("ican_cloud_url", u.trim()); }
 function cloudSave(rec){
-  const url = cloudUrl(); if(!url) return;
-  try{ fetch(url, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(rec)}); }
-  catch(e){ /* offline; local copy is kept */ }
+  /* Every result / message is POSTed to the class store on Cloudflare (same origin).
+     Fire-and-forget — the local copy in ican_results is always the backup. */
+  try{
+    fetch("/api/progress", {method:"POST", credentials:"same-origin",
+      headers:{"Content-Type":"application/json"}, body:JSON.stringify(rec)});
+  }catch(e){ /* offline; local copy is kept */ }
 }
 let _cbN = 0, CLOUD_CACHE = [];
 function cloudList(cb){
-  const url = cloudUrl(); if(!url){ cb(null); return; }
-  const name = "__icanCb" + (++_cbN);
-  const s = document.createElement("script");
-  let done = false;
-  window[name] = function(data){ done=true; try{ s.remove(); }catch(e){} delete window[name]; cb(data); };
-  s.onerror = ()=>{ if(!done){ try{ s.remove(); }catch(e){} cb(null); } };
-  s.src = url + (url.includes("?")?"&":"?") + "action=list&callback=" + name + "&t=" + Date.now();
-  document.body.appendChild(s);
-  setTimeout(()=>{ if(!done){ try{ s.remove(); }catch(e){} cb(null); } }, 8000);
+  /* Pull records from the class store. The teacher gets the WHOLE class (?all=1);
+     a student gets their own history plus shared items (teacher replies, prompts). */
+  var q = "";
+  try{
+    if(typeof SESSION!=='undefined' && SESSION && SESSION.role==='teacher'){ q = "?all=1"; }
+    else if(typeof SESSION!=='undefined' && SESSION){
+      q = "?id=" + encodeURIComponent(SESSION.id||"") +
+          "&code=" + encodeURIComponent(SESSION.code||"") +
+          "&name=" + encodeURIComponent((SESSION.name||"").toLowerCase());
+    }
+  }catch(e){}
+  fetch("/api/progress" + q, {credentials:"same-origin"})
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(d){ cb(d && Array.isArray(d.records) ? d.records : null); })
+    .catch(function(){ cb(null); });
 }
 function rkey(r){ return r.date+"|"+(r.name||"")+"|"+(r.activity||"")+"|"+(r.skill||""); }
 function allResults(){
@@ -4865,14 +4874,14 @@ function mergedCustom(kind){
   return local.concat(cloud.filter(x=>x&&!ids.has(x.id)));
 }
 function publishContent(cb){
-  const url=cloudUrl(); if(!url){ if(cb)cb(false); return; }
+  const url=cloudUrl(); if(!url || !/^https?:\/\//i.test(url)){ if(cb)cb(false); return; }
   const payload={reading:getCustom('reading'),design:getCustom('design'),writing:getCustom('writing'),speaking:getCustom('speaking')};
   try{ fetch(url,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({_content:true,payload})}); if(cb)cb(true); }
   catch(e){ if(cb)cb(false); }
 }
 let _ccbN=0;
 function pullContent(cb){
-  const url=cloudUrl(); if(!url){ if(cb)cb(); return; }
+  const url=cloudUrl(); if(!url || !/^https?:\/\//i.test(url)){ if(cb)cb(); return; }
   const name="__icanCC"+(++_ccbN); let done=false;
   const s=document.createElement("script");
   window[name]=function(data){ done=true; try{s.remove();}catch(e){} delete window[name]; if(data&&typeof data==='object'){ ["reading","design","writing","speaking"].forEach(k=>{ if(Array.isArray(data[k])) CLOUD_CONTENT[k]=data[k]; }); } if(cb)cb(); };
@@ -14912,9 +14921,11 @@ function gateKeyOfNav(screen, arg){
 }
 function gateOpen(k){
   const g = gates();
-  // Diagnostics that stay LOCKED until the teacher opens them: mid-year & end-year (both streams).
+  // Open by DEFAULT: a section is hidden only when the teacher explicitly locks it, and
+  // that choice reaches every student through /api/state sync. An empty/first-run state is
+  // therefore fully open — the old "not activated yet" can't come back on its own.
+  // One exception: mid/end diagnostics stay locked until the teacher activates each checkpoint.
   if(k==='diag:mid' || k==='diag:post' || k==='ylDiag:middle' || k==='ylDiag:final') return g[k] === true;
-  // Everything else — including start-of-year checkpoints — is OPEN by default; the teacher can lock it (sets false).
   return g[k] !== false;
 }
 function setGate(k,v){ const g=gates(); g[k]=!!v; Store.set('ican_gates',g); paintGates(); if(CURRENT_SCREEN==='dashboard') injectBars('dashboard'); }
@@ -29131,7 +29142,17 @@ archiveOv.addEventListener("click",e=>{ if(e.target.id==="archive") archiveOv.cl
         var changed = false;
         applying = true;
         Object.keys(MAP).forEach(function (f) {
-          if (!(f in d)) return;
+          var hasField = (f in d);
+          // For students the server is the single source of truth for gating: if it does
+          // NOT define gates/locks, wipe any stale local copy so a lesson can never stay
+          // "locked" on a student device after the teacher has opened it.
+          if (!hasField) {
+            if (!isTeacher() && (f === "gates" || f === "locks")) {
+              var cur = Store.get(MAP[f]);
+              if (cur && JSON.stringify(cur) !== "{}") { _set(MAP[f], {}); changed = true; }
+            }
+            return;
+          }
           var before = JSON.stringify(Store.get(MAP[f]));
           var after = JSON.stringify(d[f]);
           if (before !== after) { _set(MAP[f], d[f]); changed = true; }
