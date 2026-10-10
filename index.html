@@ -29112,7 +29112,8 @@ archiveOv.addEventListener("click",e=>{ if(e.target.id==="archive") archiveOv.cl
     roster:    "ican_roster",
     blocked:   "ican_roster_blocked",
     classLock: "ican_lock",
-    tierCodes: "ican_tier_codes"
+    tierCodes: "ican_tier_codes",
+    itemGates: "ican_item_gates"
   };
   var SYNC_KEYS = {}; Object.keys(MAP).forEach(function (f) { SYNC_KEYS[MAP[f]] = f; });
 
@@ -29166,6 +29167,14 @@ archiveOv.addEventListener("click",e=>{ if(e.target.id==="archive") archiveOv.cl
           if (before !== after) { _set(MAP[f], d[f]); changed = true; }
         });
         applying = false;
+        if (isTeacher()) {
+          var missing = Object.keys(MAP).some(function (f) {
+            if (f in d) return false;
+            var v = null; try { v = Store.get(MAP[f]); } catch (e) {}
+            return v !== null && v !== undefined;
+          });
+          if (missing) pushSoon();
+        }
         // repaint the current screen so new locks/unlocks show immediately
         if (changed && !noRepaint) {
           try { if (typeof paintGates === "function") paintGates(); } catch (e) {}
