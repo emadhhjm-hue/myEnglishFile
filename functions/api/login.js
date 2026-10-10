@@ -1,50 +1,30 @@
-// POST /api/login   { "password": "..." }
-// Checks the typed password against a hash stored as an env secret,
-// then issues a teacher session cookie. The password itself never
-// appears in the HTML or in this code.
+/* /api/login  —  teacher sign-in.
+ * The app already POSTs { password } here and expects { ok:true } on success.
+ * On success we set a signed, HttpOnly cookie that /api/state trusts for writes.
+ * Requires two encrypted environment variables on the Pages project:
+ *   TEACHER_PASSWORD  – the teacher code you type in the app
+ *   ADMIN_SECRET      – any long random string (used only to sign the cookie)
+ */
+const json = (o, s = 200, h = {}) =>
+  new Response(JSON.stringify(o), { status: s, headers: { "Content-Type": "application/json", ...h } });
 
-import { sha256Hex, timingSafeEqual, createSession, cookie } from '../../lib/session.js';
-
-export async function onRequestPost({ request, env }) {
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    body = {};
-  }
-  const password = (body.password || '').toString();
-
-  if (!password) {
-    return json({ ok: false, error: 'Password required' }, 400);
-  }
-  if (!env.SESSION_SECRET || !env.TEACHER_PASSWORD_HASH) {
-    return json({ ok: false, error: 'Server not configured' }, 500);
-  }
-
-  const submittedHash = await sha256Hex(password);
-  const expected = env.TEACHER_PASSWORD_HASH.toLowerCase();
-
-  if (!timingSafeEqual(submittedHash, expected)) {
-    return json({ ok: false, error: 'Incorrect password' }, 401);
-  }
-
-  const token = await createSession(
-    { role: 'teacher', via: 'password', email: env.TEACHER_EMAIL || null },
-    env.SESSION_SECRET
-  );
-
-  return new Response(JSON.stringify({ ok: true }), {
-    status: 200,
-    headers: {
-      'Content-Type': 'application/json',
-      'Set-Cookie': cookie('ican_session', token, 60 * 60 * 8),
-    },
-  });
+async function sign(value, secret) {
+  const key = await crypto.subtle.importKey(
+    "raw", new TextEncoder().encode(secret),
+    { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sig = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(value));
+  return [...new Uint8Array(sig)].map(b => b.toString(16).padStart(2, "0")).join("");
 }
 
-function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj), {
-    status,
-    headers: { 'Content-Type': 'application/json' },
-  });
+export async function onRequestPost({ request, env }) {
+  let pw = "";
+  try { pw = (await request.json()).password || ""; } catch (_) {}
+  if (!env.TEACHER_PASSWORD || !env.ADMIN_SECRET)
+    return json({ error: "Server not configured yet." }, 500);
+  if (pw !== env.TEACHER_PASSWORD)
+    return json({ error: "Incorrect teacher code." }, 401);
+
+  const token = await sign("teacher", env.ADMIN_SECRET);
+  const cookie = `ican_admin=${token}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=${60 * 60 * 12}`;
+  return json({ ok: true }, 200, { "Set-Cookie": cookie });
 }
