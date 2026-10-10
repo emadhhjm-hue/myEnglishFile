@@ -13,7 +13,7 @@
  *   classLock ← ican_lock           (class open / approved-only)
  */
 const KEY = "class:default";
-const FIELDS = ["gates", "locks", "tiers", "codes", "roster", "blocked", "classLock"];
+const FIELDS = ["gates", "locks", "tiers", "codes", "roster", "blocked", "classLock", "tierCodes"];
 
 const json = (o, s = 200) =>
   new Response(JSON.stringify(o), { status: s, headers: { "Content-Type": "application/json" } });
