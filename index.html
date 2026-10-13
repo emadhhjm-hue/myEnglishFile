@@ -59,10 +59,15 @@ button{font-family:inherit; cursor:pointer; font-size:1rem}
 .rwd-why-play{display:grid; place-items:center; width:34px; height:34px; flex:0 0 34px; color:#fff; border-radius:50%; background:#ff5a5f; font-size:.85rem; padding-left:2px;
   animation:rwdWhyPulse 1.8s ease-out infinite}
 @keyframes rwdWhyPulse{0%{box-shadow:0 0 0 0 rgba(255,90,95,.6)} 100%{box-shadow:0 0 0 12px rgba(255,90,95,0)}}
-@media (max-width:999px){ .lr-brand{flex-wrap:wrap; justify-content:center} .rwd-why{margin:12px auto 0!important; align-self:center!important} }
+@media (max-width:999px){ .lr-brand{flex-wrap:wrap; justify-content:center} .rwd-whys{margin:12px auto 0!important; align-self:center!important; gap:18px} }
 #rwdIntro{position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center; background:transparent}
 #rwdIntro.open{display:flex; animation:rwdFade .25s ease}
 @keyframes rwdFade{from{opacity:0} to{opacity:1}}
+.rwd-whys{display:flex; gap:2px; align-self:flex-start; margin-left:8px}
+.rwd-whys .rwd-why{margin-left:0!important; padding-left:6px; padding-right:6px}
+.rwd-why-play.ov{background:#7a35cf; animation-name:rwdWhyPulse2}
+@keyframes rwdWhyPulse2{0%{box-shadow:0 0 0 0 rgba(122,53,207,.55)} 100%{box-shadow:0 0 0 12px rgba(122,53,207,0)}}
+#rwdIntro .ri-box.wide{height:auto; width:min(92vw,1100px,150vh); aspect-ratio:16/9}
 #rwdIntro .ri-box{position:relative; height:min(86vh,820px); aspect-ratio:9/16; max-width:94vw; border-radius:18px; overflow:hidden; background:transparent; box-shadow:0 18px 50px rgba(20,24,58,.35)}
 #rwdIntro video{width:100%; height:100%; object-fit:contain; display:block; background:transparent}
 #rwdIntro .ri-title{position:absolute; top:10px; left:10px; padding:6px 12px; border-radius:999px; color:#fff; font:700 .85rem 'Lexend',system-ui,sans-serif;
@@ -5095,7 +5100,12 @@ function go(screen, arg){
    Pops up automatically once per browser session on the sign-in/home page and closes
    itself when the video ends. The "Why RWD matters?!" button replays it any time. */
 var RWD_INTRO_SRC='rwd-intro.mp4';
-function openRwdIntro(byUser){
+var RWD_VIDEOS={
+  why:     {src:'rwd-intro.mp4',    title:'Why RWD matters?!',          wide:false},
+  overview:{src:'rwd-overview.mp4', title:'RWD Overview \u00b7 iCAN Academy', wide:true}
+};
+function openRwdIntro(byUser, key){
+  var V=RWD_VIDEOS[key]||RWD_VIDEOS.why; RWD_INTRO_SRC=V.src;
   var m=document.getElementById('rwdIntro');
   if(!m){
     m=document.createElement('div'); m.id='rwdIntro'; m.setAttribute('role','dialog'); m.setAttribute('aria-label','Why RWD matters — intro video');
@@ -5111,7 +5121,7 @@ function openRwdIntro(byUser){
       if(!m.dataset.manual){ closeRwdIntro(); return; }          /* auto pop-up: just close quietly */
       var box=m.querySelector('.ri-box'), n=document.getElementById('rwdIntroErr');
       if(!n){ n=document.createElement('div'); n.id='rwdIntroErr'; n.className='ri-err'; box.appendChild(n); }
-      n.innerHTML='<b>The intro video could not be loaded.</b><br>The file <code>'+RWD_INTRO_SRC+'</code> was not found next to the app. Please upload it to the same folder as <code>index.html</code> (exact name, lower-case).';
+      n.innerHTML='<b>The video could not be loaded.</b><br>The file <code>'+RWD_INTRO_SRC+'</code> was not found next to the app. Please upload it to the same folder as <code>index.html</code> (exact name, lower-case).';
       var s2=document.getElementById('rwdIntroSound'); if(s2) s2.style.display='none';
     });
     document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeRwdIntro(); });
@@ -5119,7 +5129,9 @@ function openRwdIntro(byUser){
   var v=document.getElementById('rwdIntroVid'), snd=document.getElementById('rwdIntroSound');
   m.dataset.manual = byUser ? '1' : '';
   var oldErr=document.getElementById('rwdIntroErr'); if(oldErr) oldErr.remove();
-  if(!v.getAttribute('src') || v.error){ v.setAttribute('src',RWD_INTRO_SRC); v.load(); }
+  if(v.getAttribute('src')!==V.src || v.error){ v.setAttribute('src',V.src); v.load(); }
+  m.querySelector('.ri-title').textContent=V.title; m.setAttribute('aria-label',V.title+' — video');
+  m.querySelector('.ri-box').classList.toggle('wide',!!V.wide);
   try{ v.currentTime=0; }catch(e){}
   m.classList.add('open'); snd.style.display='none';
   v.muted=false;
@@ -5193,7 +5205,7 @@ const ROUTES = {
     <div class="landing-rwd rwd-photo-bg">
       <div class="lr-grid">
         <div class="lr-left">
-          <div class="lr-brand">${tree}<div><h1 class="rwd-title">RWD</h1><div class="rwd-sub">READ · WRITE · DESIGN</div></div><button class="rwd-why" onclick="openRwdIntro(true)" aria-label="Watch: Why RWD matters"><span class="rwd-why-play">▶</span><span><b>Why RWD<br>matters?!</b><small>Watch</small></span></button></div>
+          <div class="lr-brand">${tree}<div><h1 class="rwd-title">RWD</h1><div class="rwd-sub">READ · WRITE · DESIGN</div></div><div class="rwd-whys"><button class="rwd-why" onclick="openRwdIntro(true,'why')" aria-label="Watch: Why RWD matters"><span class="rwd-why-play">▶</span><span><b>Why RWD<br>matters?!</b><small>Watch</small></span></button><button class="rwd-why" onclick="openRwdIntro(true,'overview')" aria-label="Watch: RWD Overview"><span class="rwd-why-play ov">▶</span><span><b>RWD<br>Overview</b><small>Watch</small></span></button></div></div>
           <p class="rwd-cap">A multiliteracies learning space for EFL where learners read, write, and design.</p>
           <p class="rwd-slogan">iCAN, where learners belong and grow!</p>
           <div class="lr-roles">
