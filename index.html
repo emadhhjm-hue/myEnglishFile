@@ -52,22 +52,24 @@ button{font-family:inherit; cursor:pointer; font-size:1rem}
 @media (min-width:1100px) and (max-width:1399px){ .lr-brand{gap:12px} .lr-brand .rwd-logo{width:78px} .lr-brand .rwd-sub{letter-spacing:.12em} .rwd-why{margin-left:6px} }
 @media (min-width:1000px){ .lr-brand{flex-wrap:nowrap; overflow:visible} .lr-brand > *{flex-shrink:0} }
 .rwd-why{display:inline-flex; flex-direction:column; align-items:center; gap:5px; margin-left:12px; align-self:flex-start; padding:9px 10px 8px; border-radius:16px!important; text-align:center; border:0; border-radius:999px;
-  background:#15183A; color:#fff; font-family:'Lexend',system-ui,sans-serif; cursor:pointer; box-shadow:0 6px 18px rgba(21,24,58,.28); transition:transform .15s}
+  background:transparent; color:#15183A; font-family:'Lexend',system-ui,sans-serif; cursor:pointer; box-shadow:none; transition:transform .15s}
 .rwd-why:hover{transform:translateY(-2px)}
-.rwd-why b{display:block; font-size:.74rem; font-weight:700; line-height:1.15; white-space:nowrap}
-.rwd-why small{display:block; font-size:.64rem; opacity:.8; margin-top:2px}
-.rwd-why-play{display:grid; place-items:center; width:28px; height:28px; flex:0 0 28px; border-radius:50%; background:#ff5a5f; font-size:.85rem; padding-left:2px;
+.rwd-why b{display:block; font-size:.8rem; font-weight:700; line-height:1.15; white-space:nowrap}
+.rwd-why small{display:block; font-size:.66rem; font-weight:600; color:#7a4d05; margin-top:2px}
+.rwd-why-play{display:grid; place-items:center; width:34px; height:34px; flex:0 0 34px; color:#fff; border-radius:50%; background:#ff5a5f; font-size:.85rem; padding-left:2px;
   animation:rwdWhyPulse 1.8s ease-out infinite}
 @keyframes rwdWhyPulse{0%{box-shadow:0 0 0 0 rgba(255,90,95,.6)} 100%{box-shadow:0 0 0 12px rgba(255,90,95,0)}}
-@media (max-width:700px){ .lr-brand{flex-wrap:wrap; justify-content:center} .rwd-why{margin:12px 0 0} }
-#rwdIntro{position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center; background:rgba(10,12,30,.78); backdrop-filter:blur(4px)}
+@media (max-width:999px){ .lr-brand{flex-wrap:wrap; justify-content:center} .rwd-why{margin:12px auto 0!important; align-self:center!important} }
+#rwdIntro{position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center; background:transparent}
 #rwdIntro.open{display:flex; animation:rwdFade .25s ease}
 @keyframes rwdFade{from{opacity:0} to{opacity:1}}
-#rwdIntro .ri-box{position:relative; height:min(86vh,820px); aspect-ratio:9/16; max-width:94vw; border-radius:18px; overflow:hidden; background:#000; box-shadow:0 20px 60px rgba(0,0,0,.5)}
-#rwdIntro video{width:100%; height:100%; object-fit:contain; display:block; background:#000}
-#rwdIntro .ri-title{position:absolute; top:0; left:0; right:0; padding:12px 50px 22px 16px; color:#fff; font:700 .95rem 'Lexend',system-ui,sans-serif;
-  background:linear-gradient(rgba(0,0,0,.6),transparent); pointer-events:none}
+#rwdIntro .ri-box{position:relative; height:min(86vh,820px); aspect-ratio:9/16; max-width:94vw; border-radius:18px; overflow:hidden; background:transparent; box-shadow:0 18px 50px rgba(20,24,58,.35)}
+#rwdIntro video{width:100%; height:100%; object-fit:contain; display:block; background:transparent}
+#rwdIntro .ri-title{position:absolute; top:10px; left:10px; padding:6px 12px; border-radius:999px; color:#fff; font:700 .85rem 'Lexend',system-ui,sans-serif;
+  background:transparent; color:#15183A; text-shadow:0 0 4px #fff,0 0 8px #fff,0 0 12px rgba(255,255,255,.9); pointer-events:none; z-index:2}
 #rwdIntro .ri-x{position:absolute; top:8px; right:8px; width:36px; height:36px; border-radius:50%; border:0; background:rgba(255,255,255,.92); color:#15183A; font-size:1.3rem; font-weight:800; cursor:pointer; z-index:2}
+#rwdIntro .ri-err{position:absolute; left:16px; right:16px; top:40%; padding:14px 16px; border-radius:12px; background:#fff; color:#15183A; font:500 .88rem/1.45 'Lexend',system-ui,sans-serif; z-index:3}
+#rwdIntro .ri-err code{background:#f1effa; padding:1px 5px; border-radius:5px}
 #rwdIntro .ri-sound{position:absolute; left:50%; bottom:64px; transform:translateX(-50%); border:0; border-radius:999px; padding:10px 18px; background:#ff5a5f; color:#fff;
   font:700 .9rem 'Lexend',system-ui,sans-serif; cursor:pointer; box-shadow:0 6px 18px rgba(0,0,0,.35); display:none; z-index:2}
 /* ---- RWD brand logo under the top-left mark (sign-in, student & teacher home) ---- */
@@ -5105,11 +5107,19 @@ function openRwdIntro(byUser){
     document.body.appendChild(m);
     var v0=m.querySelector('video');
     v0.addEventListener('ended',closeRwdIntro);
-    v0.addEventListener('error',function(){ if(!byUser) closeRwdIntro(); });
+    v0.addEventListener('error',function(){
+      if(!m.dataset.manual){ closeRwdIntro(); return; }          /* auto pop-up: just close quietly */
+      var box=m.querySelector('.ri-box'), n=document.getElementById('rwdIntroErr');
+      if(!n){ n=document.createElement('div'); n.id='rwdIntroErr'; n.className='ri-err'; box.appendChild(n); }
+      n.innerHTML='<b>The intro video could not be loaded.</b><br>The file <code>'+RWD_INTRO_SRC+'</code> was not found next to the app. Please upload it to the same folder as <code>index.html</code> (exact name, lower-case).';
+      var s2=document.getElementById('rwdIntroSound'); if(s2) s2.style.display='none';
+    });
     document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeRwdIntro(); });
   }
   var v=document.getElementById('rwdIntroVid'), snd=document.getElementById('rwdIntroSound');
-  if(!v.getAttribute('src')) v.setAttribute('src',RWD_INTRO_SRC);
+  m.dataset.manual = byUser ? '1' : '';
+  var oldErr=document.getElementById('rwdIntroErr'); if(oldErr) oldErr.remove();
+  if(!v.getAttribute('src') || v.error){ v.setAttribute('src',RWD_INTRO_SRC); v.load(); }
   try{ v.currentTime=0; }catch(e){}
   m.classList.add('open'); snd.style.display='none';
   v.muted=false;
