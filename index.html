@@ -60,14 +60,16 @@ button{font-family:inherit; cursor:pointer; font-size:1rem}
   animation:rwdWhyPulse 1.8s ease-out infinite}
 @keyframes rwdWhyPulse{0%{box-shadow:0 0 0 0 rgba(255,90,95,.6)} 100%{box-shadow:0 0 0 12px rgba(255,90,95,0)}}
 @media (max-width:999px){ .lr-brand{flex-wrap:wrap; justify-content:center} .rwd-whys{margin:12px auto 0!important; align-self:center!important; gap:18px} }
-#rwdIntro{position:fixed; inset:0; z-index:9999; display:none; align-items:center; justify-content:center; background:transparent}
-#rwdIntro.open{display:flex; animation:rwdFade .25s ease}
+#rwdIntro{position:fixed; inset:0; z-index:9999; display:none; background:transparent; pointer-events:none; opacity:0; transition:opacity .6s ease}
+#rwdIntro .ri-box{position:absolute!important; pointer-events:auto}
+#rwdIntro.closing{opacity:0!important}
+#rwdIntro.open{display:block; opacity:1; animation:rwdFade .6s ease}
 @keyframes rwdFade{from{opacity:0} to{opacity:1}}
 .rwd-whys{display:flex; gap:2px; align-self:flex-start; margin-left:8px}
 .rwd-whys .rwd-why{margin-left:0!important; padding-left:6px; padding-right:6px}
 .rwd-why-play.ov{background:#7a35cf; animation-name:rwdWhyPulse2}
 @keyframes rwdWhyPulse2{0%{box-shadow:0 0 0 0 rgba(122,53,207,.55)} 100%{box-shadow:0 0 0 12px rgba(122,53,207,0)}}
-#rwdIntro .ri-box.wide{height:auto; width:min(92vw,1100px,150vh); aspect-ratio:16/9}
+#rwdIntro .ri-box.wide{aspect-ratio:16/9}
 #rwdIntro .ri-box{position:relative; height:min(86vh,820px); aspect-ratio:9/16; max-width:94vw; border-radius:18px; overflow:hidden; background:transparent; box-shadow:0 18px 50px rgba(20,24,58,.35)}
 #rwdIntro video{width:100%; height:100%; object-fit:contain; display:block; background:transparent}
 #rwdIntro .ri-title{position:absolute; top:10px; left:10px; padding:6px 12px; border-radius:999px; color:#fff; font:700 .85rem 'Lexend',system-ui,sans-serif;
@@ -5089,23 +5091,21 @@ function go(screen, arg){
   }
   ROUTES[screen](arg); updateWho();
   try{ injectBrandLogo(screen); }catch(e){}
-  try{ maybeAutoRwdIntro(screen); }catch(e){}
   if(typeof injectBars==='function') injectBars(screen);
   if(typeof lockAllItems==='function') requestAnimationFrame(lockAllItems);
   requestAnimationFrame(positionKnobs);
   if(typeof maybeInjectBulkLock==='function') maybeInjectBulkLock();
 }
 
-/* ===== "Why RWD matters?!" intro video (file: rwd-intro.mp4, next to index.html) =====
+/* ===== RWD Overview video (file: rwd-overview.mp4, next to index.html) — opens on click only =====
    Pops up automatically once per browser session on the sign-in/home page and closes
    itself when the video ends. The "Why RWD matters?!" button replays it any time. */
-var RWD_INTRO_SRC='rwd-intro.mp4';
+var RWD_INTRO_SRC='rwd-overview.mp4';
 var RWD_VIDEOS={
-  why:     {src:'rwd-intro.mp4',    title:'Why RWD matters?!',          wide:false},
   overview:{src:'rwd-overview.mp4', title:'RWD Overview \u00b7 iCAN Academy', wide:true}
 };
 function openRwdIntro(byUser, key){
-  var V=RWD_VIDEOS[key]||RWD_VIDEOS.why; RWD_INTRO_SRC=V.src;
+  var V=RWD_VIDEOS[key]||RWD_VIDEOS.overview; RWD_INTRO_SRC=V.src;
   var m=document.getElementById('rwdIntro');
   if(!m){
     m=document.createElement('div'); m.id='rwdIntro'; m.setAttribute('role','dialog'); m.setAttribute('aria-label','Why RWD matters — intro video');
@@ -5113,7 +5113,6 @@ function openRwdIntro(byUser, key){
       +'<button class="ri-x" aria-label="Close video" onclick="closeRwdIntro()">\u00d7</button>'
       +'<video id="rwdIntroVid" playsinline preload="metadata" controls></video>'
       +'<button class="ri-sound" id="rwdIntroSound" onclick="rwdIntroUnmute()">\ud83d\udd0a Tap for sound</button></div>';
-    m.addEventListener('click',function(e){ if(e.target===m) closeRwdIntro(); });
     document.body.appendChild(m);
     var v0=m.querySelector('video');
     v0.addEventListener('ended',closeRwdIntro);
@@ -5133,7 +5132,7 @@ function openRwdIntro(byUser, key){
   m.querySelector('.ri-title').textContent=V.title; m.setAttribute('aria-label',V.title+' — video');
   m.querySelector('.ri-box').classList.toggle('wide',!!V.wide);
   try{ v.currentTime=0; }catch(e){}
-  m.classList.add('open'); snd.style.display='none';
+  clearTimeout(m._t); m.classList.remove('closing'); m.classList.add('open'); placeRwdBox(); snd.style.display='none';
   v.muted=false;
   var p=v.play();
   if(p&&p.catch) p.catch(function(){            /* browser blocked sound before any click: play muted */
@@ -5142,7 +5141,32 @@ function openRwdIntro(byUser, key){
   });
 }
 function rwdIntroUnmute(){ var v=document.getElementById('rwdIntroVid'); if(!v) return; v.muted=false; v.play(); var s=document.getElementById('rwdIntroSound'); if(s) s.style.display='none'; }
-function closeRwdIntro(){ var m=document.getElementById('rwdIntro'); if(!m) return; var v=document.getElementById('rwdIntroVid'); try{ v.pause(); }catch(e){} m.classList.remove('open'); }
+function closeRwdIntro(){ var m=document.getElementById('rwdIntro'); if(!m||!m.classList.contains('open')) return; var v=document.getElementById('rwdIntroVid'); try{ v.pause(); }catch(e){}
+  m.classList.add('closing'); clearTimeout(m._t); m._t=setTimeout(function(){ m.classList.remove('open','closing'); },650); }
+/* Fit the video in the biggest free area that does NOT cover the RWD wheel (.lr-web). */
+function placeRwdBox(){
+  var m=document.getElementById('rwdIntro'); if(!m||!m.classList.contains('open')) return;
+  var box=m.querySelector('.ri-box'); var W=window.innerWidth, H=window.innerHeight, pad=16, top=72;
+  var wide=box.classList.contains('wide'), ar=wide?16/9:9/16;
+  var areas=[{x:pad,y:top,w:W-2*pad,h:H-top-pad}];
+  var wh=document.querySelector('.lr-web');
+  if(wh && (typeof CURRENT_SCREEN==='undefined' || CURRENT_SCREEN==='home')){
+    var r=wh.getBoundingClientRect();
+    if(r.width && r.bottom>top && r.top<H){
+      areas=[ {x:pad,y:top,w:r.left-2*pad,h:H-top-pad},                 /* left of the wheel  */
+              {x:r.right+pad,y:top,w:W-r.right-2*pad,h:H-top-pad},      /* right of the wheel */
+              {x:pad,y:top,w:W-2*pad,h:r.top-top-pad},                  /* above the wheel    */
+              {x:pad,y:r.bottom+pad,w:W-2*pad,h:H-r.bottom-2*pad} ];    /* below the wheel    */
+    }
+  }
+  var best=null;
+  areas.forEach(function(a){ if(a.w<120||a.h<80) return; var bw=Math.min(a.w, a.h*ar, wide?1100:420), bh=bw/ar;
+    if(!best||bw*bh>best.bw*best.bh) best={a:a,bw:bw,bh:bh}; });
+  if(!best){ var bw=Math.min(W-2*pad,(H-top-pad)*ar); best={a:{x:pad,y:top,w:W-2*pad,h:H-top-pad},bw:bw,bh:bw/ar}; }
+  box.style.width=Math.round(best.bw)+'px'; box.style.height=Math.round(best.bh)+'px';
+  box.style.left=Math.round(best.a.x+(best.a.w-best.bw)/2)+'px'; box.style.top=Math.round(best.a.y+(best.a.h-best.bh)/2)+'px';
+}
+window.addEventListener('resize',placeRwdBox); window.addEventListener('scroll',placeRwdBox,{passive:true});
 function maybeAutoRwdIntro(screen){
   if(screen!=='home' || (typeof SESSION!=='undefined' && SESSION)) return;
   try{ if(sessionStorage.getItem('ican_intro_seen')) return; sessionStorage.setItem('ican_intro_seen','1'); }catch(e){}
@@ -5205,7 +5229,7 @@ const ROUTES = {
     <div class="landing-rwd rwd-photo-bg">
       <div class="lr-grid">
         <div class="lr-left">
-          <div class="lr-brand">${tree}<div><h1 class="rwd-title">RWD</h1><div class="rwd-sub">READ · WRITE · DESIGN</div></div><div class="rwd-whys"><button class="rwd-why" onclick="openRwdIntro(true,'why')" aria-label="Watch: Why RWD matters"><span class="rwd-why-play">▶</span><span><b>Why RWD<br>matters?!</b><small>Watch</small></span></button><button class="rwd-why" onclick="openRwdIntro(true,'overview')" aria-label="Watch: RWD Overview"><span class="rwd-why-play ov">▶</span><span><b>RWD<br>Overview</b><small>Watch</small></span></button></div></div>
+          <div class="lr-brand">${tree}<div><h1 class="rwd-title">RWD</h1><div class="rwd-sub">READ · WRITE · DESIGN</div></div><div class="rwd-whys"><button class="rwd-why" onclick="openRwdIntro(true,'overview')" aria-label="Watch: RWD Overview — why RWD matters"><span class="rwd-why-play ov">▶</span><span><b>RWD<br>Overview</b><small>Why it matters</small></span></button></div></div>
           <p class="rwd-cap">A multiliteracies learning space for EFL where learners read, write, and design.</p>
           <p class="rwd-slogan">iCAN, where learners belong and grow!</p>
           <div class="lr-roles">
