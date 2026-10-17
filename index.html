@@ -63,6 +63,10 @@ button{font-family:inherit; cursor:pointer; font-size:1rem}
 #rwdIntro{position:fixed; inset:0; z-index:9999; display:none; background:transparent; pointer-events:none; opacity:0; transition:opacity .6s ease}
 #rwdIntro .ri-box{position:absolute!important; pointer-events:auto}
 #rwdIntro.closing{opacity:0!important}
+.lr-grid>*{transition:opacity .6s ease}
+body.rwdv-on .lr-grid>*{opacity:0; pointer-events:none}
+#rwdIntro .ri-title{display:none!important}
+body.rwdv-on #rwdIntro .ri-box{box-shadow:0 0 0 2px rgba(255,255,255,.85), 0 0 30px 8px rgba(255,255,255,.55), 0 0 70px 18px rgba(255,226,140,.45)!important}
 #rwdIntro.open{display:block; opacity:1; animation:rwdFade .6s ease}
 @keyframes rwdFade{from{opacity:0} to{opacity:1}}
 .rwd-whys{display:flex; gap:2px; align-self:flex-start; margin-left:8px}
@@ -5260,7 +5264,7 @@ function openRwdIntro(byUser, key){
   m.querySelector('.ri-title').textContent=V.title; m.setAttribute('aria-label',V.title+' — video');
   m.querySelector('.ri-box').classList.toggle('wide',!!V.wide);
   try{ v.currentTime=0; }catch(e){}
-  clearTimeout(m._t); m.classList.remove('closing'); m.classList.add('open'); placeRwdBox(); snd.style.display='none';
+  clearTimeout(m._t); m.classList.remove('closing'); m.classList.add('open'); document.body.classList.add('rwdv-on'); placeRwdBox(); snd.style.display='none';
   v.muted=false;
   var p=v.play();
   if(p&&p.catch) p.catch(function(){            /* browser blocked sound before any click: play muted */
@@ -5270,13 +5274,20 @@ function openRwdIntro(byUser, key){
 }
 function rwdIntroUnmute(){ var v=document.getElementById('rwdIntroVid'); if(!v) return; v.muted=false; v.play(); var s=document.getElementById('rwdIntroSound'); if(s) s.style.display='none'; }
 function closeRwdIntro(){ var m=document.getElementById('rwdIntro'); if(!m||!m.classList.contains('open')) return; var v=document.getElementById('rwdIntroVid'); try{ v.pause(); }catch(e){}
-  m.classList.add('closing'); clearTimeout(m._t); m._t=setTimeout(function(){ m.classList.remove('open','closing'); },650); }
+  m.classList.add('closing'); document.body.classList.remove('rwdv-on'); clearTimeout(m._t); m._t=setTimeout(function(){ m.classList.remove('open','closing'); },650); }
 /* Fit the video in the biggest free area that does NOT cover the RWD wheel (.lr-web). */
 function placeRwdBox(){
   var m=document.getElementById('rwdIntro'); if(!m||!m.classList.contains('open')) return;
   var box=m.querySelector('.ri-box'); var W=window.innerWidth, H=window.innerHeight, pad=16, top=72;
   var wide=box.classList.contains('wide'), ar=wide?16/9:9/16;
   var areas=[{x:pad,y:top,w:W-2*pad,h:H-top-pad}];
+  var gb=document.querySelector('#app .lr-grid');
+  if(gb && (typeof CURRENT_SCREEN==='undefined' || CURRENT_SCREEN==='home')){   /* sit centred on the glowing banner */
+    var g=gb.getBoundingClientRect(), gx=Math.max(g.left,pad), gy=Math.max(g.top,top), gr=Math.min(g.right,W-pad), gbm=Math.min(g.bottom,H-pad);
+    if(gr-gx>200 && gbm-gy>120){ var bw0=Math.min(gr-gx-8,(gbm-gy-8)*ar,1100), bh0=bw0/ar;
+      box.style.width=Math.round(bw0)+'px'; box.style.height=Math.round(bh0)+'px';
+      box.style.left=Math.round(gx+(gr-gx-bw0)/2)+'px'; box.style.top=Math.round(gy+(gbm-gy-bh0)/2)+'px'; return; }
+  }
   var wh=document.querySelector('.lr-web');
   if(wh && (typeof CURRENT_SCREEN==='undefined' || CURRENT_SCREEN==='home')){
     var r=wh.getBoundingClientRect();
