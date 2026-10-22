@@ -63,6 +63,30 @@ button{font-family:inherit; cursor:pointer; font-size:1rem}
 #rwdIntro{position:fixed; inset:0; z-index:9999; display:none; background:transparent; pointer-events:none; opacity:0; transition:opacity .6s ease}
 #rwdIntro .ri-box{position:absolute!important; pointer-events:auto}
 #rwdIntro.closing{opacity:0!important}
+#bgmHost{position:fixed; left:0; bottom:0; width:200px; height:200px; opacity:0; pointer-events:none; z-index:-1; overflow:hidden}
+#bgmCtl{position:fixed; right:18px; bottom:16px; z-index:90; display:flex; flex-direction:column; align-items:center; font-family:'Lexend',system-ui,sans-serif}
+#bgmCtl .bgm-pill{display:flex; align-items:center; gap:6px; height:32px; padding:0 13px; border-radius:999px; cursor:pointer; color:#fff;
+  background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.55); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  box-shadow:0 4px 14px rgba(0,0,0,.18), 0 0 12px rgba(255,214,120,.35); transition:.2s}
+#bgmCtl .bgm-pill:hover{background:rgba(240,160,40,.38)}
+#bgmCtl .bgm-note{font-size:1rem; line-height:1; text-shadow:0 1px 3px rgba(0,0,0,.4)}
+#bgmCtl .bgm-eq{display:flex; align-items:flex-end; gap:2px; height:12px}
+#bgmCtl .bgm-eq i{width:3px; height:4px; border-radius:2px; background:#ffe3a6}
+#bgmCtl.playing .bgm-eq i{animation:bgmEq .9s ease-in-out infinite}
+#bgmCtl.playing .bgm-eq i:nth-child(2){animation-delay:.3s} #bgmCtl.playing .bgm-eq i:nth-child(3){animation-delay:.6s}
+@keyframes bgmEq{0%,100%{height:3px} 50%{height:12px}}
+#bgmCtl .bgm-panel{display:flex; flex-direction:column; align-items:center; gap:6px; width:44px; padding:10px 0 8px; margin-bottom:8px; border-radius:22px;
+  background:rgba(20,26,50,.42); border:1px solid rgba(255,255,255,.4); -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px);
+  opacity:0; transform:translateY(12px) scaleY(.6); transform-origin:bottom center; pointer-events:none; transition:.25s ease}
+#bgmCtl.open .bgm-panel{opacity:1; transform:none; pointer-events:auto}
+@media (hover:hover){ #bgmCtl:hover .bgm-panel{opacity:1; transform:none; pointer-events:auto} }
+#bgmCtl .bgm-pc{color:#fff; font-size:.66rem; font-weight:600}
+#bgmCtl input[type=range]{writing-mode:vertical-lr; direction:rtl; width:20px; height:110px; margin:0; accent-color:#f0a020; cursor:pointer}
+#bgmCtl .bgm-pp{width:28px; height:28px; border-radius:50%; border:0; cursor:pointer; background:rgba(255,255,255,.9); color:#2b3152; font-size:.7rem; font-weight:800; display:grid; place-items:center}
+@media (max-width:879px){ #bgmCtl{right:8px; bottom:auto; top:70px; flex-direction:column-reverse} #bgmCtl .bgm-panel{margin:8px 0 0; transform-origin:top center; transform:translateY(-12px) scaleY(.6)} }
+@media (prefers-reduced-motion:reduce){ #bgmCtl.playing .bgm-eq i{animation:none; height:8px} }
+body.rwdv-on #bgmCtl{opacity:.35}
+
 #starVid{position:fixed; inset:0; z-index:9999; display:none; pointer-events:none; opacity:0; transition:opacity .6s ease}
 #starVid.open{display:block; opacity:1; animation:rwdFade .6s ease}
 #starVid.closing{opacity:0!important}
@@ -5263,6 +5287,7 @@ function go(screen, arg){
   ROUTES[screen](arg); updateWho();
   try{ injectBrandLogo(screen); }catch(e){}
   if(typeof injectBars==='function') injectBars(screen);
+  try{ bgmOnScreen(screen); }catch(e){}
   if(typeof lockAllItems==='function') requestAnimationFrame(lockAllItems);
   requestAnimationFrame(positionKnobs);
   if(typeof maybeInjectBulkLock==='function') maybeInjectBulkLock();
@@ -5303,7 +5328,7 @@ function openRwdIntro(byUser, key){
   m.querySelector('.ri-title').textContent=V.title; m.setAttribute('aria-label',V.title+' — video');
   m.querySelector('.ri-box').classList.toggle('wide',!!V.wide);
   try{ v.currentTime=0; }catch(e){}
-  clearTimeout(m._t); m.classList.remove('closing'); m.classList.add('open'); document.body.classList.add('rwdv-on'); placeRwdBox(); snd.style.display='none';
+  clearTimeout(m._t); m.classList.remove('closing'); m.classList.add('open'); document.body.classList.add('rwdv-on'); try{bgmDuck(true);}catch(e){} placeRwdBox(); snd.style.display='none';
   v.muted=false;
   var p=v.play();
   if(p&&p.catch) p.catch(function(){            /* browser blocked sound before any click: play muted */
@@ -5313,7 +5338,7 @@ function openRwdIntro(byUser, key){
 }
 function rwdIntroUnmute(){ var v=document.getElementById('rwdIntroVid'); if(!v) return; v.muted=false; v.play(); var s=document.getElementById('rwdIntroSound'); if(s) s.style.display='none'; }
 function closeRwdIntro(){ var m=document.getElementById('rwdIntro'); if(!m||!m.classList.contains('open')) return; var v=document.getElementById('rwdIntroVid'); try{ v.pause(); }catch(e){}
-  m.classList.add('closing'); document.body.classList.remove('rwdv-on'); clearTimeout(m._t); m._t=setTimeout(function(){ m.classList.remove('open','closing'); },650); }
+  m.classList.add('closing'); document.body.classList.remove('rwdv-on'); try{bgmDuck(false);}catch(e){} clearTimeout(m._t); m._t=setTimeout(function(){ m.classList.remove('open','closing'); },650); }
 /* Fit the video in the biggest free area that does NOT cover the RWD wheel (.lr-web). */
 function placeRwdBox(){
   var m=document.getElementById('rwdIntro'); if(!m||!m.classList.contains('open')) return;
@@ -5368,10 +5393,10 @@ function openStarVid(key){
   m.setAttribute('aria-label',V.title||'Video');
   var t=m.querySelector('.sv-title'); t.textContent=V.title||''; t.style.display=V.title?'':'none';
   m.querySelector('.sv-frame').innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+V.id+'?autoplay=1&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3" title="'+(V.title||'Video')+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>';
-  clearTimeout(m._t); m.classList.remove('closing'); m.classList.add('open'); document.body.classList.add('rwdv-on'); placeStarVid();
+  clearTimeout(m._t); m.classList.remove('closing'); m.classList.add('open'); document.body.classList.add('rwdv-on'); try{bgmDuck(true);}catch(e){} placeStarVid();
 }
 function closeStarVid(){ var m=document.getElementById('starVid'); if(!m||!m.classList.contains('open')) return;
-  m.classList.add('closing'); document.body.classList.remove('rwdv-on'); clearTimeout(m._t);
+  m.classList.add('closing'); document.body.classList.remove('rwdv-on'); try{bgmDuck(false);}catch(e){} clearTimeout(m._t);
   m._t=setTimeout(function(){ m.classList.remove('open','closing'); m.querySelector('.sv-frame').innerHTML=''; },600); }
 function placeStarVid(){
   var m=document.getElementById('starVid'); if(!m||!m.classList.contains('open')) return;
@@ -5384,6 +5409,102 @@ function placeStarVid(){
   box.style.left=Math.round(Math.min(Math.max(cx-w/2,12),W-w-12))+'px'; box.style.top=Math.round(top+(Math.max(200,bot-top)-h)/2)+'px';
 }
 window.addEventListener('resize',placeStarVid); window.addEventListener('scroll',placeStarVid,{passive:true});
+/* ===== Home-page background music (YouTube audio, hidden player) =====
+   Starts ~10 s after the home page loads (browsers allow sound only after the visitor
+   has clicked/tapped once — if blocked, it starts on the first click/tap/key instead).
+   Ducks to silence while any video plays, and comes back when the video closes.
+   The small oval button (♪) opens a vertical volume slider. */
+var BGM={id:'J8K6nBUXKk4', vol:28, player:null, ready:false, want:false, duck:false, cur:0, fadeT:null, started:false, onHome:false, timer:null};
+try{ var _bv=parseInt(localStorage.getItem('ican_bgm_vol'),10); if(!isNaN(_bv)) BGM.vol=_bv; }catch(e){}
+function bgmUserOff(){ try{ return localStorage.getItem('ican_bgm_off')==='1'; }catch(e){ return false; } }
+function bgmLoadApi(){
+  if(window.YT && YT.Player){ bgmMake(); return; }
+  if(document.getElementById('ytApiScript')) return;
+  var t=document.createElement('script'); t.id='ytApiScript'; t.src='https://www.youtube.com/iframe_api'; document.head.appendChild(t);
+  var prev=window.onYouTubeIframeAPIReady;
+  window.onYouTubeIframeAPIReady=function(){ try{ prev&&prev(); }catch(e){} bgmMake(); };
+}
+function bgmMake(){
+  if(BGM.player) return;
+  var d=document.createElement('div'); d.id='bgmHost'; d.setAttribute('aria-hidden','true');
+  d.innerHTML='<div id="bgmPlayer"></div>'; document.body.appendChild(d);
+  BGM.player=new YT.Player('bgmPlayer',{width:200,height:200,videoId:BGM.id,
+    playerVars:{autoplay:0,controls:0,disablekb:1,fs:0,loop:1,playlist:BGM.id,modestbranding:1,rel:0,playsinline:1,iv_load_policy:3},
+    events:{
+      onReady:function(){ BGM.ready=true; try{ BGM.player.setVolume(0); }catch(e){} if(BGM.want) bgmStart(); },
+      onStateChange:function(ev){ if(ev.data===1){ BGM.started=true; bgmPaint(); bgmFadeTo(BGM.duck?0:BGM.vol); } else bgmPaint(); },
+      onError:function(){ BGM.failed=true; bgmPaint(); }
+    }});
+}
+function bgmStart(){
+  BGM.want=true;
+  if(!BGM.ready){ bgmLoadApi(); return; }
+  if(!BGM.onHome || bgmUserOff()) return;
+  try{ BGM.player.setVolume(BGM.cur); BGM.player.unMute(); BGM.player.playVideo(); }catch(e){}
+  setTimeout(function(){ if(!bgmPlaying() && BGM.onHome && !bgmUserOff()) bgmArmGesture(); },1500);
+}
+function bgmPlaying(){ try{ return BGM.player && BGM.player.getPlayerState()===1; }catch(e){ return false; } }
+function bgmArmGesture(){            /* browser blocked sound: start on the first click / tap / key */
+  if(BGM.armed) return; BGM.armed=true;
+  var go=function(){ BGM.armed=false; ['pointerdown','keydown','touchstart'].forEach(function(t){ document.removeEventListener(t,go,true); });
+    if(BGM.onHome && !bgmUserOff()) bgmStart(); };
+  ['pointerdown','keydown','touchstart'].forEach(function(t){ document.addEventListener(t,go,true); });
+}
+function bgmFadeTo(target,done){
+  clearInterval(BGM.fadeT);
+  BGM.fadeT=setInterval(function(){
+    var step=target>BGM.cur?2:-3; BGM.cur+=step;
+    if((step>0&&BGM.cur>=target)||(step<0&&BGM.cur<=target)){ BGM.cur=target; clearInterval(BGM.fadeT); if(done) done(); }
+    try{ BGM.player.setVolume(Math.max(0,BGM.cur)); }catch(e){}
+  },60);
+}
+function bgmDuck(on){
+  BGM.duck=on; if(!BGM.player||!BGM.ready) return;
+  if(on){ if(bgmPlaying()) bgmFadeTo(0,function(){ try{ BGM.player.pauseVideo(); }catch(e){} }); }
+  else if(BGM.onHome && BGM.started && !bgmUserOff()){ try{ BGM.player.playVideo(); }catch(e){} bgmFadeTo(BGM.vol); }
+}
+function bgmToggle(){
+  if(bgmPlaying()){ try{ localStorage.setItem('ican_bgm_off','1'); }catch(e){} bgmFadeTo(0,function(){ try{ BGM.player.pauseVideo(); }catch(e){} bgmPaint(); }); }
+  else { try{ localStorage.removeItem('ican_bgm_off'); }catch(e){} bgmStart(); }
+  setTimeout(bgmPaint,300);
+}
+function bgmSetVol(v){
+  BGM.vol=+v; try{ localStorage.setItem('ican_bgm_vol',String(BGM.vol)); }catch(e){}
+  if(bgmPlaying() && !BGM.duck){ clearInterval(BGM.fadeT); BGM.cur=BGM.vol; try{ BGM.player.setVolume(BGM.vol); }catch(e){} }
+  bgmPaint();
+}
+function bgmPaint(){
+  var b=document.getElementById('bgmCtl'); if(!b) return;
+  var on=bgmPlaying(); b.classList.toggle('playing',on);
+  var pp=b.querySelector('.bgm-pp'); if(pp){ pp.textContent=on?'❚❚':'▶'; pp.setAttribute('aria-label',on?'Pause music':'Play music'); }
+  var sl=b.querySelector('input'); if(sl && +sl.value!==BGM.vol) sl.value=BGM.vol;
+  var pc=b.querySelector('.bgm-pc'); if(pc) pc.textContent=BGM.vol;
+}
+function bgmControl(){
+  var b=document.getElementById('bgmCtl'); if(b) return b;
+  b=document.createElement('div'); b.id='bgmCtl';
+  b.innerHTML='<div class="bgm-panel"><span class="bgm-pc">'+BGM.vol+'</span>'
+    +'<input type="range" min="0" max="100" step="1" value="'+BGM.vol+'" aria-label="Music volume" oninput="bgmSetVol(this.value)">'
+    +'<button type="button" class="bgm-pp" onclick="bgmToggle()" aria-label="Play music">▶</button></div>'
+    +'<button type="button" class="bgm-pill" aria-label="Background music" onclick="bgmPill()"><span class="bgm-note">♫</span><span class="bgm-eq"><i></i><i></i><i></i></span></button>';
+  document.body.appendChild(b);
+  document.addEventListener('pointerdown',function(e){ if(!b.contains(e.target)) b.classList.remove('open'); });
+  return b;
+}
+function bgmPill(){
+  var b=document.getElementById('bgmCtl'); b.classList.toggle('open');
+  if(!BGM.started && !bgmUserOff()) bgmStart();
+}
+function bgmOnScreen(screen){
+  BGM.onHome = (screen==='home');
+  var b=bgmControl(); b.style.display=BGM.onHome?'':'none'; b.classList.remove('open');
+  if(!BGM.onHome){ clearTimeout(BGM.timer); if(BGM.player&&bgmPlaying()) bgmFadeTo(0,function(){ try{ BGM.player.pauseVideo(); }catch(e){} bgmPaint(); }); return; }
+  if(bgmUserOff()){ bgmLoadApi(); bgmPaint(); return; }
+  if(BGM.started){ bgmDuck(false); return; }
+  bgmLoadApi();
+  clearTimeout(BGM.timer); BGM.timer=setTimeout(function(){ if(BGM.onHome && !BGM.duck) bgmStart(); else BGM.want=true; },10000);
+}
+
 window.addEventListener('resize',placeRwdBox); window.addEventListener('scroll',placeRwdBox,{passive:true});
 function maybeAutoRwdIntro(screen){
   if(screen!=='home' || (typeof SESSION!=='undefined' && SESSION)) return;
