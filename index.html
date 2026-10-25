@@ -68,7 +68,12 @@ button{font-family:inherit; cursor:pointer; font-size:1rem}
 #sceneHost .scene-vid{position:absolute; opacity:0; transition:opacity 1.6s ease}
 #sceneHost.live .scene-vid{opacity:1}
 #sceneHost iframe{width:100%; height:100%; border:0; display:block; pointer-events:none}
-.lr-role{padding:10px 20px!important; font-size:.95rem!important; gap:8px!important; box-shadow:0 6px 16px rgba(60,35,5,.28)!important}
+.lr-role{padding:11px 30px!important; font-size:.95rem!important; gap:8px!important; border-radius:0!important; box-shadow:none!important;
+  clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,14px 100%,0 50%); filter:drop-shadow(0 4px 8px rgba(60,35,5,.35))}
+.lr-role:hover{filter:drop-shadow(0 6px 12px rgba(60,35,5,.45)) brightness(1.06)}
+.lr-left .rwd-slogan{margin-top:18px!important}
+.lr-left .rwd-slogan .rs-a{font-size:clamp(1.02rem,1.55vw,1.25rem)!important; letter-spacing:.01em}
+.lr-left .rwd-slogan .rs-b{font-size:clamp(.9rem,1.25vw,1rem)!important}
 .role-student{background:#cfa982!important; color:#2b1a0b!important}
 .role-teacher{background:#f6c85a!important; color:#3a2504!important}
 .lr-roles{flex-wrap:nowrap!important; gap:12px!important}
@@ -5848,7 +5853,7 @@ const ROUTES = {
       <div class="lr-grid">
         <div class="lr-left">
           <div class="lr-brand"><span class="rl-wrap">${tree}<button type="button" class="brain-hot" aria-label="Play or stop the recitation" onclick="openQuran()"></button></span></div>
-          <h1 class="rwd-slogan"><span class="rs-a">Multimodal learning space</span><span class="rs-b">where minds grow and ideas glow!</span></h1>
+          <h1 class="rwd-slogan"><span class="rs-a">A Multimodal Learning Space</span><span class="rs-b">where minds grow and ideas glow!</span></h1>
           <div class="lr-roles">
             <button class="lr-role role-student" onclick="go('studentLogin')"><span class="lr-ic">🎓</span> I'm a student</button>
             <button class="lr-role role-teacher" onclick="go('teacherLogin')"><span class="lr-ic">📋</span> I'm a teacher</button>
