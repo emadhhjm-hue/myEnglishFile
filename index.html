@@ -68,9 +68,18 @@ button{font-family:inherit; cursor:pointer; font-size:1rem}
 #sceneHost .scene-vid{position:absolute; opacity:0; transition:opacity 1.6s ease}
 #sceneHost.live .scene-vid{opacity:1}
 #sceneHost iframe{width:100%; height:100%; border:0; display:block; pointer-events:none}
-.lr-role{padding:11px 30px!important; font-size:.95rem!important; gap:8px!important; border-radius:0!important; box-shadow:none!important;
-  clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 50%,calc(100% - 14px) 100%,14px 100%,0 50%); filter:drop-shadow(0 4px 8px rgba(60,35,5,.35))}
-.lr-role:hover{filter:drop-shadow(0 6px 12px rgba(60,35,5,.45)) brightness(1.06)}
+.lr-roles .lr-role{background:none!important; color:#fff!important; padding:0!important; border-radius:0!important; box-shadow:none!important; clip-path:none; filter:none;
+  display:inline-flex!important; flex-direction:column; align-items:center; gap:6px!important; font-size:inherit!important}
+.lr-roles{gap:26px!important}
+.lr-hex{width:56px; height:49px; display:grid; place-items:center; clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%); transition:transform .2s}
+.role-student .lr-hex{background:#cfa982} .role-teacher .lr-hex{background:#f6c85a}
+.lr-hex .lr-ic{font-size:1.25rem!important}
+.lr-roles .lr-role:hover .lr-hex{transform:translateY(-2px) scale(1.06)}
+.lr-roles .lr-role:hover{transform:none!important}
+.lr-hexwrap{filter:drop-shadow(0 4px 8px rgba(40,25,5,.4))}
+.lr-lab{font:600 .72rem/1 'Lexend',system-ui,sans-serif; letter-spacing:.14em; color:#fff; text-shadow:0 1px 4px rgba(0,0,0,.55)}
+.role-student,.role-teacher{background:none!important}
+@media (max-width:879px){ .lr-roles{justify-content:center} }
 .lr-left .rwd-slogan{margin-top:18px!important}
 .lr-left .rwd-slogan .rs-a{font-size:clamp(1.02rem,1.55vw,1.25rem)!important; letter-spacing:.01em}
 .lr-left .rwd-slogan .rs-b{font-size:clamp(.9rem,1.25vw,1rem)!important}
@@ -5855,8 +5864,8 @@ const ROUTES = {
           <div class="lr-brand"><span class="rl-wrap">${tree}<button type="button" class="brain-hot" aria-label="Play or stop the recitation" onclick="openQuran()"></button></span></div>
           <h1 class="rwd-slogan"><span class="rs-a">A Multimodal Learning Space</span><span class="rs-b">where minds grow and ideas glow!</span></h1>
           <div class="lr-roles">
-            <button class="lr-role role-student" onclick="go('studentLogin')"><span class="lr-ic">🎓</span> I'm a student</button>
-            <button class="lr-role role-teacher" onclick="go('teacherLogin')"><span class="lr-ic">📋</span> I'm a teacher</button>
+            <button class="lr-role role-student" onclick="go('studentLogin')" aria-label="I'm a student"><span class="lr-hex"><span class="lr-ic">🎓</span></span><span class="lr-lab">STUDENT</span></button>
+            <button class="lr-role role-teacher" onclick="go('teacherLogin')" aria-label="I'm a teacher"><span class="lr-hex"><span class="lr-ic">📋</span></span><span class="lr-lab">TEACHER</span></button>
           </div>
           <div class="phd-stars-m"><span class="phd-stars"><button type="button" class="gstar g1" aria-label="Star" onclick="openStarVid('phd')"><span></span><em class="gcap">PhD</em></button><button type="button" class="gstar g2" aria-label="Star" onclick="openStarVid('msc')"><span></span><em class="gcap">MA</em></button></span></div>
           <div class="lr-copyright">
