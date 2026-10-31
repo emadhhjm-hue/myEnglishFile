@@ -5660,7 +5660,7 @@ function openStarVid(key){
   else {                                                  /* YouTube via the player API so we know when it ends */
     fr.innerHTML='<div id="svPlayer"></div>'; var token=(STAR_VID_TOKEN=(STAR_VID_TOKEN||0)+1);
     var plain=function(){ if(token!==STAR_VID_TOKEN||!m.classList.contains('open')) return; if(!fr.querySelector('iframe')) fr.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+V.id+'?autoplay=1&rel=0&modestbranding=1&playsinline=1&iv_load_policy=3'+(V.start?'&start='+V.start:'')+(V.end?'&end='+V.end:'')+'" title="'+(V.title||'Video')+'" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>'; };
-    var fb=setTimeout(plain,3500);
+    var fb=setTimeout(plain,8000);
     try{ ytReady(function(){ setTimeout(function(){ if(token!==STAR_VID_TOKEN||!m.classList.contains('open')||!document.getElementById('svPlayer')) return; clearTimeout(fb);
       var pv={autoplay:1,rel:0,modestbranding:1,playsinline:1,iv_load_policy:3}; if(V.start) pv.start=V.start; if(V.end) pv.end=V.end;
       STAR_PLAYER=new YT.Player('svPlayer',{host:'https://www.youtube-nocookie.com',width:'100%',height:'100%',videoId:V.id,playerVars:pv,
