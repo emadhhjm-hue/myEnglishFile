@@ -32610,15 +32610,12 @@ var GR_HARD=[{"q":"By the time the inspectors arrive, the staff ___ every record
       if(d.length<2){ var few=[cor].concat(d); setO(it,few); setA(it,0); return; }
       var pos=Math.min(t[i],2), three=d.slice(); three.splice(pos,0,cor); setO(it,three); setA(it,pos); }); }
 
-  /* 3) rich challenges 1–8: balance + trim to 3 on every open */
+  /* 3) rich challenges 1–8: balance + trim to 3 ONCE, in place, so every render path is fixed */
   var MT=['mcq','correct','punct','compound'];
-  if(typeof startGrRichChallenge==='function'){ var _rich=startGrRichChallenge;
-    window.startGrRichChallenge=function(c){ var orig=GR_RICH_ITEMS[c.id];
-      if(orig){ var clones=orig.map(function(it){ var n={}; for(var k in it) n[k]=it[k]; if(MT.indexOf(it.t)>=0&&it.o) n.o=it.o.slice(); return n; });
-        var mcq=clones.filter(function(it){ return MT.indexOf(it.t)>=0 && it.o && it.o.length>=2; });
-        prep(mcq,function(it){return it.o;},function(it){return it.a;},function(it,v){it.o=v;},function(it,v){it.a=v;}, (c.id*1000+131));
-        GR_RICH_ITEMS[c.id]=clones; }
-      try{ _rich(c); } finally { if(orig) GR_RICH_ITEMS[c.id]=orig; } }; }
+  try{ Object.keys(GR_RICH_ITEMS).forEach(function(id){ var items=GR_RICH_ITEMS[id]; if(!items||items.__balanced) return;
+    var mcq=items.filter(function(it){ return MT.indexOf(it.t)>=0 && it.o && it.o.length>=2; });
+    prep(mcq,function(it){return it.o;},function(it){return it.a;},function(it,v){it.o=v;},function(it,v){it.a=v;}, (parseInt(id,10)*1000+131));
+    items.__balanced=1; }); }catch(e){}
 
   /* 4) exam papers 9–10: weight hard (advanced + rich first, a little intermediate/beginner), then balance */
   function clone(q){ var n={}; for(var k in q) n[k]=q[k]; n.options=q.options.slice(); return n; }
