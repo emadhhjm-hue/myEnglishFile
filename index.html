@@ -2455,7 +2455,7 @@ html body #icanBrandLogo.logo-hit .ibl-badge{animation:iblWhite 3s ease-out!impo
 .wcc2-org{font-size:.75rem;letter-spacing:4px;text-transform:uppercase;color:#0b6b3a;font-weight:800;margin-top:4px}
 .wcc2-title{font-family:"Cinzel Decorative",Georgia,serif;font-weight:900;font-size:2.5rem;color:#0b6b3a;line-height:1.1;margin-top:6px}
 .wcc2-sub{font-size:.85rem;letter-spacing:3px;text-transform:uppercase;color:#8a6a10;font-weight:800;margin-top:4px}
-.wcc2-orn{color:#C9A227;font-size:1.4rem;line-height:1;margin:6px 0 2px}
+.wcc2-orn{color:#C9A227;font-size:2.4rem;line-height:1;margin:4px 0 2px}
 .wcc2-rule{width:420px;max-width:70%;height:2px;margin:2px auto 8px;background:linear-gradient(90deg,transparent,#C9A227,transparent)}
 .wcc2 .wcc-name{font-family:"Cinzel Decorative",Georgia,serif!important;font-size:2.3rem!important;margin:4px 0 0!important}
 .wcc2 .wcc-stmt{max-width:700px;font-size:.92rem!important;margin:0 auto 10px!important}
@@ -2541,7 +2541,7 @@ html body #icanBrandLogo.logo-hit .ibl-badge{animation:iblWhite 3s ease-out!impo
 .wcc-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:10px}
 .wcc-foot>div{text-align:center;min-width:220px}
 .wcc-line{border-bottom:1.5px solid #3a2a00;padding:0 8px 2px;font-weight:700;color:#24352c}
-.wcc-sig{font-family:"Brush Script MT","Segoe Script",cursive;font-size:1.35rem;font-weight:400;color:#0b3d6b}
+.wcc-sig{font-family:"Brush Script MT","Segoe Script",cursive;font-size:1.08rem;font-weight:700;color:#0b3d6b}
 .wcc-foot small{font-size:.7rem;color:#5a6b60}
 .wcc-mid{font-size:.75rem;color:#5a6b60;font-weight:700}
 .wcc-copy{text-align:center;font-size:.68rem;color:#7a6a40;margin-top:6px;letter-spacing:1px}
@@ -32074,7 +32074,7 @@ function wcCertHTML(c){ var nm=c.name||"Emad Ali Mohamed";
  var tier=c.pct>=97?'gold':(c.pct>=70?'orange':'white');
  return '<div class="wcc-page wcc-t-'+tier+'"><div class="wcc-frame wcc2">'
   +'<div class="wcc2-corner tl"></div><div class="wcc2-corner tr"></div><div class="wcc2-corner bl"></div><div class="wcc2-corner br"></div>'
-  +(_ser?'<div class="wcc2-serial" style="position:absolute;left:13px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font-family:Lexend,\'Courier New\',monospace;font-size:.56rem;font-weight:600;letter-spacing:.14em;color:#8f8a7e;opacity:.9;white-space:nowrap;pointer-events:none;z-index:3">Serial · '+_ser+'</div>':'')
+  +(_ser?'<div class="wcc2-serial" style="position:absolute;left:13px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font-family:Lexend,\'Courier New\',monospace;font-size:.6rem;font-weight:800;letter-spacing:.12em;color:#0a0a0a;white-space:nowrap;pointer-events:none;z-index:3"><b style="font-weight:900">S.N.: -</b> '+_ser+'</div>':'')
   +'<div class="wcc2-logo"><div class="ican-logo"><div class="ican-logo-img"></div><svg class="ican-dip" viewBox="0 0 580 520" aria-hidden="true"><circle cx="290" cy="212" r="196" fill="none" class="orb"/><path id="dipC2R" d="M128.9,305.0 A186,186 0 0 1 264.1,27.8" fill="none"/><path id="dipC2W" d="M315.9,27.8 A186,186 0 0 1 451.1,305.0" fill="none"/><path id="dipC2D" d="M101.2,321.0 A218,218 0 0 0 478.8,321.0" fill="none"/><text class="lr"><textPath href="#dipC2R" xlink:href="#dipC2R" startOffset="50%" text-anchor="middle">Read-View</textPath></text><text class="lw"><textPath href="#dipC2W" xlink:href="#dipC2W" startOffset="50%" text-anchor="middle">Write-Represent</textPath></text><text class="ld"><textPath href="#dipC2D" xlink:href="#dipC2D" startOffset="50%" text-anchor="middle">Design-Innovate</textPath></text></svg></div></div>'
   +'<div class="wcc2-bee">'+wcBeeBig()+'<div class="cap">I’m a Buzzing Bee!</div></div>'
   +'<div class="wcc2-org">iCAN Academy · Word Club</div>'
@@ -32086,7 +32086,7 @@ function wcCertHTML(c){ var nm=c.name||"Emad Ali Mohamed";
   +'<div class="wcc2-rule"></div>'
   +'<div class="wcc-stmt">'+esc(wcCertStatement(c))+'</div>'
   +'<div class="wcc2-hint"><p><b class="g">✔ '+(c.type==="s"?"Sentences":"Words")+' spelt well:</b> '+(goods.length?goods.join(", "):"—")+'</p><p><b class="r">✎ Misspelt — to review:</b> '+(miss.length?miss.join(", "):"none — perfect round!")+'</p></div>'+'</div>'
-  +'<div class="wcc-foot wcc2-foot"><div><div class="wcc-line">'+esc(c.date)+'</div><small>Date of award</small></div><div class="wcc-mid">'+esc(c.track)+'<br>'+esc(c.level)+' · Round '+c.round+'</div><div><div class="wcc-line wcc-sig">Emad Ali Mohamed, Dr.</div><small>Teacher · PhD in Language and Literacy Education</small></div></div>'
+  +'<div class="wcc-foot wcc2-foot"><div><div class="wcc-line">'+esc(c.date)+'</div><small>Date of award</small></div><div class="wcc-mid">'+esc(c.track)+'<br>'+esc(c.level)+' · Round '+c.round+'</div><div><div class="wcc-line wcc-sig">Emad Ali Mohamed</div><small>PhD in Language and Literacy Education</small></div></div>'
   +'<div class="wcc-copy">Copyright © iCAN Academy, 2026</div></div></div>'; }
 function wcShortS(t){ var w=String(t).split(/\s+/); return w.length>5?w.slice(0,5).join(' ')+'…':t; }
 function wcCertOpen(id){ var C=wcCerts(), c=C.filter(function(x){return x.id===id;})[0]; if(!c) return;
