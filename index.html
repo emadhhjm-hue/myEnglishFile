@@ -32068,11 +32068,13 @@ function wcBeeBig(){ return '<svg viewBox="0 0 220 200" class="wcc-beesvg" aria-
  +'<path d="M52 124q14 16 28 0" stroke="#3a2a00" stroke-width="4" fill="#c0392b" stroke-linecap="round"/>'
  +'<path d="M96 160l-6 16M120 168l-2 16M146 166l4 16" stroke="#3a2a00" stroke-width="4" stroke-linecap="round"/></svg>'; }
 function wcCertHTML(c){ var nm=c.name||"Emad Ali Mohamed";
+ var _ser=(typeof certSerial==='function')?certSerial({name:nm,skill:'Spelling',activity:(c.track||'')+' '+(c.level||'')+' Round '+c.round,percent:c.pct,dateMs:(Date.parse(c.date)||Date.now())}):'';
  var goods=(c.good||[]).map(function(g){ var w=typeof g==="string"?g:g.w, a=typeof g==="string"?0:g.a; w=c.type==="s"?wcShortS(w):w; return (a?'<span class="wcc-att a'+a+'" title="'+(a===1?'1st':'2nd')+' attempt">'+(a===1?'1st':'2nd')+'</span>':'')+esc(w); });
  var miss=(c.miss||[]).map(function(m){ return esc(c.type==="s"?wcShortS(m.w):m.w); });
  var tier=c.pct>=97?'gold':(c.pct>=70?'orange':'white');
  return '<div class="wcc-page wcc-t-'+tier+'"><div class="wcc-frame wcc2">'
   +'<div class="wcc2-corner tl"></div><div class="wcc2-corner tr"></div><div class="wcc2-corner bl"></div><div class="wcc2-corner br"></div>'
+  +(_ser?'<div class="wcc2-serial" style="position:absolute;left:13px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font-family:Lexend,\'Courier New\',monospace;font-size:.56rem;font-weight:600;letter-spacing:.14em;color:#8f8a7e;opacity:.9;white-space:nowrap;pointer-events:none;z-index:3">Serial · '+_ser+'</div>':'')
   +'<div class="wcc2-logo"><div class="ican-logo"><div class="ican-logo-img"></div><svg class="ican-dip" viewBox="0 0 580 520" aria-hidden="true"><circle cx="290" cy="212" r="196" fill="none" class="orb"/><path id="dipC2R" d="M128.9,305.0 A186,186 0 0 1 264.1,27.8" fill="none"/><path id="dipC2W" d="M315.9,27.8 A186,186 0 0 1 451.1,305.0" fill="none"/><path id="dipC2D" d="M101.2,321.0 A218,218 0 0 0 478.8,321.0" fill="none"/><text class="lr"><textPath href="#dipC2R" xlink:href="#dipC2R" startOffset="50%" text-anchor="middle">Read-View</textPath></text><text class="lw"><textPath href="#dipC2W" xlink:href="#dipC2W" startOffset="50%" text-anchor="middle">Write-Represent</textPath></text><text class="ld"><textPath href="#dipC2D" xlink:href="#dipC2D" startOffset="50%" text-anchor="middle">Design-Innovate</textPath></text></svg></div></div>'
   +'<div class="wcc2-bee">'+wcBeeBig()+'<div class="cap">I’m a Buzzing Bee!</div></div>'
   +'<div class="wcc2-org">iCAN Academy · Word Club</div>'
@@ -32243,7 +32245,7 @@ var HH_SETS={"intro":"Which set is “the largest” depends on accent and on ho
   var LVN={A:['Level A','Foundation','l1'],B:['Level B','Intermediate','l2'],C:['Level C','Champion','l3']};
   var CSS='<style id="hh-css">'
    +'.hh-tabs{display:flex;gap:8px;margin:6px 0 14px;flex-wrap:wrap}.hh-tab{border:1.5px solid #cfe8d7;background:#fff;border-radius:999px;padding:8px 16px;font:800 .86rem "Segoe UI",sans-serif;color:#0b6b3a;cursor:pointer}.hh-tab.on{background:#0b6b3a;color:#fff;border-color:#0b6b3a}'
-   +'.hh-lv{background:linear-gradient(#ffffff,#eef7f1);border:1px solid #cfe8d7;border-radius:18px;padding:12px 14px;margin-bottom:14px;box-shadow:0 10px 26px rgba(11,107,58,.16),0 2px 6px rgba(11,107,58,.1);width:fit-content;max-width:100%}.hh-lv h4{margin:0 0 10px;font-family:Georgia,serif;color:#123f2c;font-size:1.05rem}.hh-lv h4 span{font:700 .74rem "Segoe UI",sans-serif;color:#4d7a64;margin-left:6px}'
+   +'.hh-lv{background:linear-gradient(#ffffff,#eef7f1);border:1px solid #cfe8d7;border-radius:18px;padding:12px 14px;margin:0 14px 14px 0;box-shadow:0 10px 26px rgba(11,107,58,.16),0 2px 6px rgba(11,107,58,.1);width:fit-content;max-width:100%;display:inline-block;vertical-align:top}.hh-lv h4{margin:0 0 10px;font-family:Georgia,serif;color:#123f2c;font-size:1.05rem}.hh-lv h4 span{font:700 .74rem "Segoe UI",sans-serif;color:#4d7a64;margin-left:6px}'
    +'.hh-row{display:grid;grid-template-columns:repeat(4,100px);gap:10px 12px;justify-items:center}'
    +'.hh-bub{border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;font-family:"Segoe UI",sans-serif;padding:0;width:100px}'
    +'.hh-bub i{font-style:normal;width:80px;height:80px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:1.25rem;color:#123f2c;box-shadow:inset -8px -10px 18px rgba(0,0,0,.12),inset 6px 6px 12px rgba(255,255,255,.8),0 8px 18px rgba(11,107,58,.16);transition:.15s;position:relative}'
@@ -32309,8 +32311,11 @@ var HH_SETS={"intro":"Which set is “the largest” depends on accent and on ho
   function split(s){ var m=s.match(/^([\s\S]*?)_{4,}\s*\[([^\]]*)\]([\s\S]*)$/); return m?{a:m[1],opts:m[2].replace(/,?\s+or\s+/,', ').split(/\s*,\s*/).filter(Boolean),b:m[3]}:{a:s,opts:[],b:''}; }
   window.hhStart=function(tr,id,list){ css(); var b=HH_DATA[tr].filter(function(x){ return x.id===id; })[0]; if(!b) return;
     HS={tr:tr,id:id,b:b,items:(list||b.r).slice(),i:0,att:0,pts:0,res:[],ans:[],open:{},retry:!!list}; hhCard(); };
-  function say(){ var r=HS.items[HS.i], p=split(r[0]), full=(p.a+r[1]+p.b).replace(/\s+/g,' ');
-    wcSpeak(full,.88); }
+  function say(){ var r=HS.items[HS.i], p=split(r[0]), full=(p.a+r[1]+p.b).replace(/\s+/g,' ').trim();
+    if(HS.att){ /* second attempt: read the sentence again, word by word, with a small pause */
+      var ws=full.split(/\s+/);
+      (function step(i){ if(i>=ws.length) return; wcSpeak(ws[i],.8,function(){ setTimeout(function(){ step(i+1); },190); }); })(0);
+    } else { wcSpeak(full,.8); } }
   window.hhSay=function(){ wcStop(); say(); };
   function details(){ var r=HS.items[HS.i], n=lvc(r[1]); return '<b>Clues</b> &nbsp; <b>Letters:</b> '+n[0]+' &nbsp;·&nbsp; <b>Word class:</b> '+esc(r[2])+'<br><b>Meaning:</b> '+esc(r[3]); }
   function worth(){ return HS.att?5:10; }
@@ -32639,5 +32644,40 @@ var GR_HARD=[{"q":"By the time the inspectors arrive, the staff ___ every record
 })();
 
 </script>
-<style>body.ic-inside #coach,body.ic-inside .a11y{display:none!important}</style><script>(function(){function mk(){try{document.body.classList.toggle("ic-inside",!!(typeof SESSION!=="undefined"&&SESSION));}catch(e){}}var _g=window.go;if(typeof _g==="function"){window.go=function(){var r=_g.apply(this,arguments);mk();return r;};}document.addEventListener("DOMContentLoaded",mk);setTimeout(mk,0);})();</script></body>
+<style>body.ic-inside #coach,body.ic-inside .a11y{display:none!important}</style><script>(function(){function mk(){try{document.body.classList.toggle("ic-inside",!!(typeof SESSION!=="undefined"&&SESSION));}catch(e){}}var _g=window.go;if(typeof _g==="function"){window.go=function(){var r=_g.apply(this,arguments);mk();return r;};}document.addEventListener("DOMContentLoaded",mk);setTimeout(mk,0);})();</script><style id="certbarCss">.cert-wrap .cert-namebar{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin:0 0 12px}.cert-wrap .cert-nameinput{border:1.5px solid #cfd6e4;border-radius:8px;padding:7px 11px;font:inherit;font-size:.92rem;min-width:210px}@media print{.cert-wrap .cert-namebar{display:none!important}}</style><script id="certbar">/* Add an editable "Set name" bar to every standard (canvas) certificate,
+   matching the Word Club certificate. Wraps certificateHTML so the bar is
+   injected wherever a certificate is shown; re-renders the image (and its
+   serial, which binds to the name) when the teacher edits the name. */
+(function(){
+  if(typeof window.certificateHTML!=='function' || typeof window.makeCertificate!=='function') return;
+  var _orig = window.certificateHTML;
+  window.__certStore = window.__certStore || {};
+  function _esc(s){ return (typeof esc==='function') ? esc(s) : (''+(s==null?'':s)).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];}); }
+  window.certificateHTML = function(o){
+    var h = _orig.apply(this, arguments);
+    if(!/<img/.test(h)) return h;               /* the "no certificate yet" note — leave it */
+    var id = 'cb'+Math.random().toString(36).slice(2,9);
+    try{ window.__certStore[id] = JSON.parse(JSON.stringify(o||{})); }catch(e){ window.__certStore[id] = o||{}; }
+    var nm = (o && o.name) || '';
+    var bar = '<div class="cert-namebar">'
+      + '<input class="cert-nameinput" id="'+id+'_in" value="'+_esc(nm)+'" placeholder="Student name" aria-label="Student name"/>'
+      + '<button type="button" class="btn sm" onclick="certSetName(\''+id+'\')">✔ Set name</button>'
+      + '</div>';
+    return '<div class="cert-wrap" id="'+id+'">'+bar+h+'</div>';
+  };
+  window.certSetName = function(id){
+    var o = window.__certStore[id]; if(!o) return;
+    var inp = document.getElementById(id+'_in'); if(!inp) return;
+    var nm = (inp.value||'').trim(); if(!nm) return;
+    o.name = nm; window.__certStore[id] = o;
+    var w = document.getElementById(id); if(!w) return;
+    try{
+      var url = window.makeCertificate(o);
+      var img = w.querySelector('img'); if(img) img.src = url;
+      var a = w.querySelector('a[download]');
+      if(a){ a.href = url; a.setAttribute('download','iCAN-certificate-'+nm.replace(/\s+/g,'-')+'.png'); }
+    }catch(e){}
+  };
+})();
+</script></body>
 </html>
