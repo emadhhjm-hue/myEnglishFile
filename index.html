@@ -6122,7 +6122,7 @@ function mlWriteClose(){ var o=document.getElementById('mlwOv'); if(o) o.remove(
 
 function go(screen, arg){
   CURRENT_SCREEN = screen; CURRENT_ARG = arg;
-  stopSpeak(); turnOffHighlighter(); clearSpellTimer(); clearExamTimer(); window.scrollTo(0,0);
+  stopSpeak(); if(typeof wcStop==='function'){ try{ wcStop(); }catch(e){} } turnOffHighlighter(); clearSpellTimer(); clearExamTimer(); window.scrollTo(0,0);
   /* Auth guard: only these screens are reachable without a login. Everything
      else (including Article-A-Day) requires a student or teacher session, so
      no activity can be opened by bypassing the login. */
@@ -32248,20 +32248,19 @@ var HH_SETS={"intro":"Which set is “the largest” depends on accent and on ho
    +'.hh-lv{background:linear-gradient(#ffffff,#eef7f1);border:1px solid #cfe8d7;border-radius:18px;padding:12px 14px;margin:0 14px 14px 0;box-shadow:0 10px 26px rgba(11,107,58,.16),0 2px 6px rgba(11,107,58,.1);width:fit-content;max-width:100%;display:inline-block;vertical-align:top}.hh-lv h4{margin:0 0 10px;font-family:Georgia,serif;color:#123f2c;font-size:1.05rem}.hh-lv h4 span{font:700 .74rem "Segoe UI",sans-serif;color:#4d7a64;margin-left:6px}'
    +'.hh-row{display:grid;grid-template-columns:repeat(4,100px);gap:10px 12px;justify-items:center}'
    +'.hh-bub{border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;font-family:"Segoe UI",sans-serif;padding:0;width:100px}'
-   +'.hh-bub i{font-style:normal;width:80px;height:80px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:1.25rem;color:#123f2c;box-shadow:inset -8px -10px 18px rgba(0,0,0,.12),inset 6px 6px 12px rgba(255,255,255,.8),0 8px 18px rgba(11,107,58,.16);transition:.15s;position:relative}'
-   +'.hh-bub i:after{content:"";position:absolute;left:20%;top:14%;width:26%;height:16%;border-radius:50%;background:rgba(255,255,255,.75);transform:rotate(-28deg)}'
-   +'.hh-bub:hover i{transform:translateY(-3px) scale(1.05)}.hh-bub.l1 i{background:radial-gradient(circle at 35% 30%,#f2fff6,#bdebcb 60%,#7fd39b)}.hh-bub.l2 i{background:radial-gradient(circle at 35% 30%,#fffbea,#ffe9a6 60%,#f4c543)}.hh-bub.l3 i{background:radial-gradient(circle at 35% 30%,#fff1ee,#ffc9bd 60%,#f08d78)}'
-   +'.hh-bub i small{font-size:.66rem;font-weight:800;color:#2c5b44}.hh-bub b{font-size:.8rem;color:#123f2c;text-align:center;line-height:1.2}.hh-bub em{font-style:normal;font-size:.7rem;color:#b07a00;min-height:1em}'
+   +'.hh-bub i{font-style:normal;width:88px;height:78px;clip-path:polygon(50% 0,100% 22%,100% 78%,50% 100%,0 78%,0 22%);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:1.2rem;color:#123f2c;transition:.15s;position:relative}'
+   +'.hh-bub:hover i{transform:scale(1.06)}.hh-bub.l1 i{background:#d9f4e3;color:#0d6b3b}.hh-bub.l2 i{background:#ffefbd;color:#7a4f00}.hh-bub.l3 i{background:#ffd9cf;color:#972a12}'
+   +'.hh-bub i small{font-size:.64rem;font-weight:800;color:inherit;opacity:.82}.hh-bub b{font-size:.8rem;color:#123f2c;text-align:center;line-height:1.2}.hh-bub em{font-style:normal;font-size:.7rem;color:#b07a00;min-height:1em}'
    +'.hh-play{max-width:860px;margin:0 auto}.hh-top{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;font-weight:700;color:#2c5b44;margin-bottom:8px;gap:8px;flex-wrap:wrap}'
    +'.hh-card{background:#fff;border:1px solid #d6eedd;border-radius:20px;padding:20px 22px;box-shadow:0 10px 26px rgba(11,107,58,.1)}'
    +'.hh-sent{font-family:Georgia,serif;font-size:1.42rem;line-height:1.7;color:#123f2c;margin:4px 0 10px}.hh-gap{display:inline-block;min-width:110px;border-bottom:3px solid #F5B400;margin:0 4px;text-align:center;color:#0b6b3a;font-weight:800}'
    +'.hh-opts{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:12px;font-size:.8rem;color:#4d7a64}.hh-opt{background:#fff6d6;border:1px solid #f1d98a;border-radius:999px;padding:3px 11px;font-weight:800;color:#7a4f00;font-size:.9rem}'
    +'.hh-in{flex:1;min-width:180px;font:700 1.25rem "Courier New",monospace;padding:10px 12px;border:2px solid #119a55;border-radius:10px;outline:none}.hh-in.shake{animation:hhShake .3s}@keyframes hhShake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}'
    +'.hh-rowi{display:flex;gap:9px;flex-wrap:wrap;align-items:center}'
-   +'.hh-det{margin:12px 2px 2px;font-size:.92rem;line-height:1.7;color:#2c5b44;background:#f5fcf7;border:1px dashed #bfe3cf;border-radius:10px;padding:9px 12px}.hh-det b{color:#0b6b3a}.hh-rev{display:block;margin-top:5px;font-weight:600;color:#8a5a00;font-size:.9rem}.hh-grp{margin-bottom:10px}.hh-badge{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;font-family:Georgia,serif;font-weight:900;font-size:1.25rem;color:#fff;box-shadow:inset -3px -4px 8px rgba(0,0,0,.18),0 4px 10px rgba(0,0,0,.14)}.hh-badge.l1{background:radial-gradient(circle at 35% 30%,#9ee6b4,#2ea36a)}.hh-badge.l2{background:radial-gradient(circle at 35% 30%,#ffd86b,#e0a21a)}.hh-badge.l3{background:radial-gradient(circle at 35% 30%,#ff9d8a,#e0603f)}.hh-chips{display:none}.hh-chip{border:1.5px dashed #9fd3b3;background:#f5fcf7;border-radius:11px;padding:7px 11px;font:700 .78rem "Segoe UI",sans-serif;color:#2c5b44;cursor:pointer}.hh-chip.open{border-style:solid;background:#e3f3e8;cursor:default}.hh-chip b{color:#0b6b3a}'
+   +'.hh-det{margin:12px 2px 2px;font-size:.92rem;line-height:1.7;color:#2c5b44;background:#f5fcf7;border:1px dashed #bfe3cf;border-radius:10px;padding:9px 12px}.hh-det b{color:#0b6b3a}.hh-rev{display:block;margin-top:5px;font-weight:600;color:#8a5a00;font-size:.9rem}.hh-grp{margin-bottom:10px;display:flex;align-items:center;gap:10px}.hh-badge{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;font-family:Georgia,serif;font-weight:900;font-size:1.25rem;color:#fff;box-shadow:inset -3px -4px 8px rgba(0,0,0,.18),0 4px 10px rgba(0,0,0,.14)}.hh-badge.l1{background:radial-gradient(circle at 35% 30%,#9ee6b4,#2ea36a)}.hh-badge.l2{background:radial-gradient(circle at 35% 30%,#ffd86b,#e0a21a)}.hh-badge.l3{background:radial-gradient(circle at 35% 30%,#ff9d8a,#e0603f)}.hh-chips{display:none}.hh-chip{border:1.5px dashed #9fd3b3;background:#f5fcf7;border-radius:11px;padding:7px 11px;font:700 .78rem "Segoe UI",sans-serif;color:#2c5b44;cursor:pointer}.hh-chip.open{border-style:solid;background:#e3f3e8;cursor:default}.hh-chip b{color:#0b6b3a}'
    +'.hh-fb{min-height:1.5em;font-weight:800;margin-top:10px}.hh-fb.ok{color:#0b8a48}.hh-fb.mid{color:#b07a00}.hh-fb.no{color:#c0392b}'
    +'table.hh-tbl{table-layout:auto}table.hh-tbl th:nth-child(n){width:auto}table.hh-tbl td.w{white-space:normal}'
-   +'@media (max-width:640px){.hh-row{grid-template-columns:repeat(2,100px)}.hh-sent{font-size:1.15rem}.hh-bub i{width:76px;height:76px}}'
+   +'@media (max-width:640px){.hh-row{grid-template-columns:repeat(2,100px)}.hh-sent{font-size:1.15rem}.hh-bub i{width:80px;height:72px}}'
    +'</style>';
   /* extra rounds built from the bigger lists */
   try{ ['hp','hg'].forEach(function(t){ (HH_EXTRA[t]||[]).forEach(function(b){ if(!HH_DATA[t].some(function(x){ return x.id===b.id; })) HH_DATA[t].push(b); }); HH_DATA[t].sort(function(a,b){ return a.id<b.id?-1:(a.id>b.id?1:0); }); }); }catch(e){}
@@ -32283,13 +32282,13 @@ var HH_SETS={"intro":"Which set is “the largest” depends on accent and on ho
     h+='<div class="hh-tabs"><button class="wc-btn sm pri" onclick="hhList(\''+tr+'\')">📋 Full list</button><button class="wc-btn sm" onclick="hhPDF()">📄 Word-list PDF</button><button class="wc-btn sm ghost" onclick="hhTrack(\''+(tr==='hp'?'hg':'hp')+'\')">'+(tr==='hp'?'👀 Go to Homographs':'👂 Go to Homophones')+'</button></div>';
     h+='<div class="wc-lvkey"><span class="wc-chip">10 gap sentences per bubble · 2 attempts · 10 points first try, 5 points second try</span></div>';
     ['A','B','C'].forEach(function(L){ var v=LVN[L], bs=HH_DATA[tr].filter(function(b){ return b.id[0]===L; });
-      h+='<div class="hh-lv"><div class="hh-grp"><span class="hh-badge '+v[2]+'">'+L+'</span></div><div class="hh-row">'+bs.map(function(b,i){ var best=P.r[key(tr,b.id)];
+      h+='<div class="hh-lv"><div class="hh-grp"><span class="hh-badge '+v[2]+'">'+L+'</span><button class="wcrl-btn" onclick="hhListPop(\''+tr+'\')" title="View the word list, or download it">📋 list</button></div><div class="hh-row">'+bs.map(function(b,i){ var best=P.r[key(tr,b.id)];
         return '<button class="hh-bub '+v[2]+'" onclick="hhStart(\''+tr+'\',\''+b.id+'\')" title="'+esc(b.t)+'"><i>'+(i+1)+'<small>'+(best!=null?best+'%':'Round')+'</small></i><b>'+esc(b.t)+'</b><em>'+(best!=null?wcStars(best):'')+'</em></button>'; }).join('')+'</div></div>'; });
     wcShell(h,'<a onclick="wcHome()">Word Club</a> › '+T.ico+' '+T.n); };
   /* ---------- full lists ---------- */
   function sayBtn(t){ return '<button class="wcl-say" onclick="wcSpeak('+JSON.stringify(t).replace(/"/g,'&quot;')+',.85)" title="Hear it">🔊</button>'; }
   function setRow(n,set,note){ var parts=set.replace(/\s*†\s*$/,'').split(/\s*·\s*/), dag=/†/.test(set); return '<tr><td class="n">'+n+'</td><td>'+sayBtn(parts[0])+'</td><td class="w">'+parts.map(esc).join(' · ')+(dag?' <span title="Same sound only in some accents" style="color:#b07a00">†</span>':'')+'</td><td>'+esc(note||'')+'</td></tr>'; }
-  window.hhList=function(tr){ css(); wcStop(); var h='', n=0;
+  function hhTableHTML(tr){ var h='', n=0;
     if(tr==='hp'){ var S=HH_SETS, seen={}, pairs=[];
       HH_DATA.hp.forEach(function(b){ b.r.forEach(function(r){ var all=[r[1]].concat(String(r[4]||'').split(/\s*,\s*/).filter(Boolean)); if(all.length!==2) return; var k=all.map(function(x){ return x.toLowerCase(); }).sort().join('|'); if(seen[k]) return; seen[k]=1; pairs.push(all.slice().sort(function(a,b){ return a.toLowerCase()<b.toLowerCase()?-1:1; }).join(' · ')); }); }); pairs.sort();
       h+='<p class="wc-secsub" style="font-size:.92rem">'+esc(S.intro)+'</p><div class="wcl-scroll" style="max-height:none"><table class="wcl hh-tbl"><thead><tr><th>#</th><th>🔊</th><th>Words that sound the same</th><th>Notes</th></tr></thead><tbody>'
@@ -32304,20 +32303,31 @@ var HH_SETS={"intro":"Which set is “the largest” depends on accent and on ho
       var last=''; order.forEach(function(k){ var w=W[k], L=w.lv[0]; if(L!==last){ last=L; h+='<tr class="wcl-band"><td colspan="5">'+LVN[L][0]+' <span>'+LVN[L][1]+'</span></td></tr>'; } n++;
         w.rows.forEach(function(r,i){ var p=split(r[0]), full=(p.a+r[1]+p.b).replace(/\s+/g,' '); h+='<tr><td class="n">'+(i?'':n)+'</td><td class="w">'+(i?'':esc(k))+'</td><td style="font-weight:800;color:#a8246a;white-space:nowrap">'+esc(r[4])+'</td><td>'+esc(r[2])+' — '+esc(r[3])+'</td><td class="x">'+sayBtn(full)+' '+esc(full)+'</td></tr>'; }); });
       h+='</tbody></table></div>'; }
-    h='<div class="hh-tabs"><button class="wc-btn sm" onclick="hhTrack(\''+tr+'\')">◀ Back to the rounds</button><button class="wc-btn sm" onclick="hhPDF()">📄 Word-list PDF</button></div>'+h;
+    return h; }
+  window.hhList=function(tr){ css(); wcStop();
+    var h='<div class="hh-tabs"><button class="wc-btn sm" onclick="hhTrack(\''+tr+'\')">◀ Back to the rounds</button><button class="wc-btn sm" onclick="hhPDF()">📄 Word-list PDF</button></div>'+hhTableHTML(tr);
     wcShell(h,'<a onclick="wcHome()">Word Club</a> › <a onclick="hhTrack(\''+tr+'\')">'+TR[tr].n+'</a> › Full list'); };
+  /* pop-up word list: view here or download the PDF (same overlay style as the other bees) */
+  window.hhListPop=function(tr){ css(); if(!TR[tr]) tr='hp'; var o=document.getElementById('wcRlOv');
+    if(!o){ o=document.createElement('div'); o.id='wcRlOv'; o.className='wc-pdf'; o.onclick=function(e){ if(e.target===o){ o.classList.remove('open'); wcStop(); } }; document.body.appendChild(o); }
+    o.innerHTML='<div class="box wcrl-box"><div class="bar">📋 '+TR[tr].ico+' '+esc(TR[tr].n)+' · word list<span class="sp"></span>'
+      +'<button class="wc-btn sm wcrl-pdf" onclick="hhPDF()" title="Download a printable PDF">PDF <b>⬇</b></button>'
+      +'<button class="wc-btn sm" onclick="document.getElementById(\'wcRlOv\').classList.remove(\'open\');wcStop()">✕ Close</button></div>'
+      +'<div style="overflow:auto;max-height:calc(min(92vh,1100px) - 86px);padding:4px 10px 10px">'+hhTableHTML(tr)+'</div></div>';
+    o.classList.add('open'); };
   /* ---------- play ---------- */
   var HS=null;
   function split(s){ var m=s.match(/^([\s\S]*?)_{4,}\s*\[([^\]]*)\]([\s\S]*)$/); return m?{a:m[1],opts:m[2].replace(/,?\s+or\s+/,', ').split(/\s*,\s*/).filter(Boolean),b:m[3]}:{a:s,opts:[],b:''}; }
   window.hhStart=function(tr,id,list){ css(); var b=HH_DATA[tr].filter(function(x){ return x.id===id; })[0]; if(!b) return;
     HS={tr:tr,id:id,b:b,items:(list||b.r).slice(),i:0,att:0,pts:0,res:[],ans:[],open:{},retry:!!list}; hhCard(); };
-  function say(){ var r=HS.items[HS.i], p=split(r[0]), full=(p.a+r[1]+p.b).replace(/\s+/g,' ').trim();
-    var ws=full.split(/\s+/);
-    /* say the whole sentence once, naturally, then repeat it word by word (female voice, normal speed) */
-    wcSpeak(full,.9,function(){ setTimeout(function(){
-      (function step(i){ if(i>=ws.length) return; wcSpeak(ws[i],.9,function(){ setTimeout(function(){ step(i+1); },150); }); })(0);
-    }, 500); }); }
-  window.hhSay=function(){ wcStop(); say(); };
+  function say(){ if(!HS) return; wcStop(); var r=HS.items[HS.i], p=split(r[0]), full=(p.a+r[1]+p.b).replace(/\s+/g,' ').trim(), seq=WC_SEQ;
+    /* First attempt: hear the whole sentence once, naturally (female voice, normal speed).
+       Second attempt (after a wrong first try): read it word by word. Every step is tied to
+       the current speech sequence, so leaving the spelling box / changing page stops it. */
+    if(HS.att){ var ws=full.split(/\s+/);
+      (function step(i){ if(i>=ws.length||seq!==WC_SEQ) return; wcSpeak(ws[i],.9,function(){ if(seq!==WC_SEQ) return; setTimeout(function(){ step(i+1); },160); }); })(0);
+    } else { wcSpeak(full,.9); } }
+  window.hhSay=function(){ say(); };
   function details(){ var r=HS.items[HS.i], n=lvc(r[1]); return '<b>Clues</b> &nbsp; <b>Letters:</b> '+n[0]+' &nbsp;·&nbsp; <b>Word class:</b> '+esc(r[2])+'<br><b>Meaning:</b> '+esc(r[3]); }
   function worth(){ return HS.att?5:10; }
   function hhCard(){ var r=HS.items[HS.i], p=split(r[0]), T=TR[HS.tr]; HS.att=0; HS.open={}; HS.lock=false;
@@ -32711,7 +32721,7 @@ var GR_HARD=[{"q":"By the time the inspectors arrive, the staff ___ every record
    +'#quranBox iframe{position:absolute;inset:0;width:100%;height:100%;border:0}'
    +'#quranBox .qrn-x{position:absolute;top:7px;right:8px;z-index:3;width:30px;height:30px;border-radius:50%;border:0;cursor:pointer;background:rgba(10,8,16,.6);color:#ffe9c2;font-size:1rem;line-height:1;display:flex;align-items:center;justify-content:center}'
    +'#quranBox .qrn-x:hover{background:rgba(10,8,16,.85)}'
-   +'.qstarBtn{position:fixed;z-index:88;display:none;border:0;background:none;cursor:pointer;padding:0}'+'body.has-cinema .qstarBtn{display:block}'+'.qstarBtn .qst{width:100%;height:100%;display:block;border-radius:50%;background:radial-gradient(circle,#fffbe8 0%,#ffe79a 20%,rgba(255,205,90,.55) 42%,rgba(255,180,40,0) 72%);filter:drop-shadow(0 0 5px rgba(255,205,90,.85));animation:qstTwinkle 2.6s ease-in-out infinite}'+'.qstarBtn.w .qst{background:radial-gradient(circle,#ffffff 0%,#eaf3ff 22%,rgba(205,228,255,.5) 45%,rgba(255,255,255,0) 72%);filter:drop-shadow(0 0 5px rgba(235,245,255,.9))}'+'@keyframes qstTwinkle{0%,100%{transform:scale(.72);opacity:.7}50%{transform:scale(1.18);opacity:1}}'+'@media (prefers-reduced-motion:reduce){.qstarBtn .qst{animation:none}}'+'</style>';
+   +'.qstarBtn{position:fixed;z-index:88;display:none;border:0;background:none;cursor:pointer;padding:0}'+'body.has-cinema .qstarBtn{display:block}'+'.qstarBtn .qst{position:relative;width:100%;height:100%;display:block;border-radius:50%;background:radial-gradient(circle,#fffbe8 0%,#ffe79a 20%,rgba(255,205,90,.55) 42%,rgba(255,180,40,0) 72%);filter:drop-shadow(0 0 5px rgba(255,205,90,.85));animation:qstTwinkle 2.6s ease-in-out infinite}'+'.qstarBtn.w .qst{background:radial-gradient(circle,#ffffff 0%,#eaf3ff 22%,rgba(205,228,255,.5) 45%,rgba(255,255,255,0) 72%);filter:drop-shadow(0 0 5px rgba(235,245,255,.9))}'+'.qstarBtn.flare .qst{background:radial-gradient(circle,#ffffff 0%,#fff6df 26%,rgba(255,228,150,.6) 46%,rgba(255,205,90,0) 70%);filter:drop-shadow(0 0 9px #fff) drop-shadow(0 0 22px rgba(255,222,130,.95))}'+'.qstarBtn.flare .qst:before,.qstarBtn.flare .qst:after,.qstarBtn.flare .qst i:before,.qstarBtn.flare .qst i:after{content:"";position:absolute;left:50%;top:50%;pointer-events:none;animation:qstRay 2.1s ease-in-out infinite}'+'.qstarBtn.flare .qst:before{width:3px;height:250%;margin:-125% 0 0 -1.5px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff 50%,rgba(255,255,255,0))}'+'.qstarBtn.flare .qst:after{width:250%;height:3px;margin:-1.5px 0 0 -125%;background:linear-gradient(90deg,rgba(255,255,255,0),#fff 50%,rgba(255,255,255,0))}'+'.qstarBtn.flare .qst i{position:absolute;inset:0;transform:rotate(45deg)}'+'.qstarBtn.flare .qst i:before{width:2px;height:175%;margin:-87.5% 0 0 -1px;background:linear-gradient(180deg,rgba(255,255,255,0),rgba(255,244,205,.95) 50%,rgba(255,255,255,0))}'+'.qstarBtn.flare .qst i:after{width:175%;height:2px;margin:-1px 0 0 -87.5%;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,244,205,.95) 50%,rgba(255,255,255,0))}'+'@keyframes qstRay{0%,100%{opacity:.5;transform:scale(.55)}50%{opacity:1;transform:scale(1.15)}}'+'@keyframes qstTwinkle{0%,100%{transform:scale(.72);opacity:.7}50%{transform:scale(1.18);opacity:1}}'+'@media (prefers-reduced-motion:reduce){.qstarBtn .qst{animation:none}}'+'</style>';
   /* an ornate brass hexagonal lantern with amber glass and a warm candle (original artwork) */
   var LAMP='';
   var Q={open:false,raf:0,ni:0,nt:0};
@@ -32719,12 +32729,12 @@ var GR_HARD=[{"q":"By the time the inspectors arrive, the staff ___ every record
     var btn=document.createElement('button'); btn.id='quranBtn'; btn.type='button'; btn.setAttribute('aria-label','Quran — play recitations over the scene');
     btn.innerHTML='<span class="qrn-lamp">'+LAMP+'<span class="qrn-burst"></span></span><span class="qrn-name" id="qrnName"></span>';
     window.qrnToggle=function(src){ if(Q.open&&Q.src===src){ qrnClose(); } else { qrnOpen(src); } }; btn.onclick=function(){ qrnToggle(QURAN_SRC); }; document.body.appendChild(btn);
-    var STARS=[['39w40XUNegA',3770,130,150,20],['ZK3Cl37SkKc',0,240,94,15],['GNjKXuOdaaM',0,340,158,13],['9E8mc4I9_DA',0,110,200,16],['rVZItywBCqA',0,430,108,17],['MKGftZcXbT4',0,520,172,13],['w6mwOF_w1DA',0,300,208,15],['YT2bhrAnLUs',0,610,98,13],['XRDgiTqnJ8E',0,700,164,18],['9E8mc4I9_DA',25,180,118,12],['2a_M2BB1wP4',0,790,200,16],['SShyIlBeHK4',0,470,214,13],['KJJ2VpkKo_A',0,880,128,17],['Lt_-xl8FyYY',0,640,214,13],['YRPTqH7pgCo',0,960,168,15]];
+    var STARS=[['lshcdb9-5-I',0,128,104,30,'flare'],['39w40XUNegA',3770,130,150,20],['ZK3Cl37SkKc',0,240,94,15],['GNjKXuOdaaM',0,340,158,13],['9E8mc4I9_DA',0,110,200,16],['rVZItywBCqA',0,430,108,17],['MKGftZcXbT4',0,520,172,13],['w6mwOF_w1DA',0,300,208,15],['YT2bhrAnLUs',0,610,98,13],['XRDgiTqnJ8E',0,700,164,18],['9E8mc4I9_DA',25,180,118,12],['2a_M2BB1wP4',0,790,200,16],['SShyIlBeHK4',0,470,214,13],['KJJ2VpkKo_A',0,880,128,17],['Lt_-xl8FyYY',0,640,214,13],['YRPTqH7pgCo',0,960,168,15]];
     STARS.forEach(function(v,i){ var id=v[0],st=v[1],r=v[2],t=v[3],sz=v[4];
       var src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0&modestbranding=1&playsinline=1'+(st?'&start='+st:'');
-      var el=document.createElement('button'); el.className='qstarBtn'+(i%2?' w':''); el.type='button'; el.setAttribute('aria-label','Play video');
+      var el=document.createElement('button'); el.className='qstarBtn'+(v[5]==='flare'?' flare':(i%2?' w':'')); el.type='button'; el.setAttribute('aria-label','Play video');
       el.style.cssText='right:'+r+'px;top:'+t+'px;width:'+sz+'px;height:'+sz+'px';
-      el.innerHTML='<span class="qst" style="animation-delay:'+(-(i*0.37)).toFixed(2)+'s;animation-duration:'+(2.2+(i%5)*0.35).toFixed(2)+'s"></span>';
+      el.innerHTML='<span class="qst" style="animation-delay:'+(-(i*0.37)).toFixed(2)+'s;animation-duration:'+(2.2+(i%5)*0.35).toFixed(2)+'s">'+(v[5]==='flare'?'<i></i>':'')+'</span>';
       el.onclick=(function(u){ return function(){ qrnToggle(u); }; })(src);
       document.body.appendChild(el); });
     var box=document.createElement('div'); box.id='quranBox'; box.setAttribute('aria-hidden','true');
