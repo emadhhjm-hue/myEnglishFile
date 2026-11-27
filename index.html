@@ -7033,6 +7033,7 @@ const ROUTES = {
         <button class="back" onclick="go('home')">← Back</button>
         <h2 style="font-size:1.8rem">Teacher sign-in</h2>
         <p style="color:var(--muted);margin:6px 0 20px;font-size:.92rem">Enter your private teacher code.</p>
+        ${window.__teacherAuthed?'<button class="btn dark" style="width:100%;margin:0 0 10px" onclick="teacherResume()">Already signed in — open dashboard →</button><p style="text-align:center;color:var(--muted);font-size:.82rem;margin:-2px 0 16px">or enter a code below to switch account</p>':''}
         <div class="field"><label>Teacher code</label>
           <div style="position:relative">
             <input id="tCode" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" name="tc-noauto" data-lpignore="true" data-1p-ignore data-form-type="other" placeholder="••••••••" style="padding-right:44px;box-sizing:border-box;-webkit-text-security:disc" onkeydown="if(event.key==='Enter')doTeacherLogin()">
@@ -8730,6 +8731,7 @@ function doStudentLogin(){
 }
 var TEACHER_HASH="e4b77d7d3a75b94becd81bc7a37bee6b1b0c03777a5da0372d93983f964873de";
 function lsSha256(str){ try{ return crypto.subtle.digest('SHA-256', new TextEncoder().encode(String(str))).then(function(buf){ return Array.prototype.map.call(new Uint8Array(buf),function(x){return x.toString(16).padStart(2,'0');}).join(''); }); }catch(e){ return Promise.reject(e); } }
+function teacherResume(){ SESSION={role:"teacher"}; if(typeof cloudUrl==='function'&&cloudUrl()){ pullContent(function(){ refreshCloud(function(){ go('teacher'); }); }); } else go('teacher'); }
 function doTeacherLogin(){
   const code=val('tCode'); const err=document.getElementById('tErr');
   if(!code){ err.textContent="Enter your teacher code."; return; }
@@ -29137,10 +29139,17 @@ go('home');
       .then(function(d){
         if(typeof CURRENT_SCREEN!=='undefined' && CURRENT_SCREEN && CURRENT_SCREEN!=='home' && CURRENT_SCREEN!=='teacherLogin'){ return; }
         if(d&&d.authenticated&&d.role==='teacher'){
-          SESSION={role:'teacher'};
-          if(teacherHint||authErr) cleanUrl();
-          if(typeof cloudUrl==='function'&&cloudUrl()){ pullContent(function(){ refreshCloud(function(){ go('teacher'); }); }); }
-          else go('teacher');
+          /* A teacher cookie is still valid. Only jump straight to the dashboard
+             when the teacher just signed in (returned with ?teacher=1 / auth hint).
+             On a plain visit, stay on the homepage — the teacher opens the
+             dashboard themselves, with one click (no code re-entry needed). */
+          window.__teacherAuthed=true;
+          if(teacherHint||authErr){
+            SESSION={role:'teacher'};
+            cleanUrl();
+            if(typeof cloudUrl==='function'&&cloudUrl()){ pullContent(function(){ refreshCloud(function(){ go('teacher'); }); }); }
+            else go('teacher');
+          }
         } else if(authErr){
           cleanUrl(); window.__teacherAuthError=authErr; go('teacherLogin');
         }
@@ -32269,16 +32278,16 @@ var HH_SETS={"intro":"Which set is “the largest” depends on accent and on ho
    +'.hh-bub i{font-style:normal;width:88px;height:78px;clip-path:polygon(50% 0,100% 22%,100% 78%,50% 100%,0 78%,0 22%);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:1.2rem;color:#123f2c;transition:.15s;position:relative}'
    +'.hh-bub:hover i{transform:scale(1.06)}.hh-bub.l1 i{background:#d9f4e3;color:#0d6b3b}.hh-bub.l2 i{background:#ffefbd;color:#7a4f00}.hh-bub.l3 i{background:#ffd9cf;color:#972a12}'
    +'.hh-bub i small{font-size:.64rem;font-weight:800;color:inherit;opacity:.82}.hh-bub b{font-size:.8rem;color:#123f2c;text-align:center;line-height:1.2}.hh-bub em{font-style:normal;font-size:.7rem;color:#b07a00;min-height:1em}'
-   +'.hh-play{max-width:860px;margin:0 auto}.hh-top{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;font-weight:700;color:#2c5b44;margin-bottom:8px;gap:8px;flex-wrap:wrap}'
+   +'.hh-play{max-width:1060px;margin:0 auto}.hh-top{display:flex;justify-content:space-between;align-items:center;font-size:.82rem;font-weight:700;color:#2c5b44;margin-bottom:8px;gap:8px;flex-wrap:wrap}'
    +'.hh-card{background:#fff;border:1px solid #f0e3b4;border-radius:22px;padding:20px 24px 24px;box-shadow:0 16px 36px rgba(190,140,0,.16),0 3px 9px rgba(190,140,0,.09);position:relative;overflow:hidden}'
-   +'.hh-sent{font-family:Georgia,serif;font-size:1.42rem;line-height:1.7;color:#123f2c;margin:4px 0 10px}.hh-gap{display:inline-block;min-width:110px;border-bottom:3px solid #F5B400;margin:0 4px;text-align:center;color:#0b6b3a;font-weight:800}'
+   +'.hh-sent{font-family:Georgia,serif;font-size:1.34rem;line-height:1.55;color:#123f2c;margin:4px 0 14px}.hh-gap{display:inline-block;min-width:92px;border-bottom:3px solid #F5B400;margin:0 4px;text-align:center;color:#0b6b3a;font-weight:800}'
    +'.hh-opts{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:12px;font-size:.8rem;color:#4d7a64}.hh-opt{background:#fff6d6;border:1px solid #f1d98a;border-radius:999px;padding:3px 11px;font-weight:800;color:#7a4f00;font-size:.9rem}'
    +'.hh-in{flex:1 1 auto;min-width:0;width:100%;font:700 1.2rem "Courier New",monospace;padding:11px 13px;border:2px solid #119a55;border-radius:10px;outline:none}.hh-in.shake{animation:hhShake .3s}@keyframes hhShake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}'
    +'.hh-rowi{display:flex;gap:9px;flex-wrap:nowrap;align-items:center;margin-top:4px}.hh-rowi .wc-btn{flex:0 0 auto;white-space:nowrap}@media (max-width:420px){.hh-rowi{flex-wrap:wrap}.hh-in{order:-1}}'
    +'.hh-det{margin:12px 2px 2px;font-size:.92rem;line-height:1.7;color:#2c5b44;background:#f5fcf7;border:1px dashed #bfe3cf;border-radius:10px;padding:9px 12px}.hh-det b{color:#0b6b3a}.hh-rev{display:block;margin-top:5px;font-weight:600;color:#8a5a00;font-size:.9rem}.hh-grp{margin-bottom:10px;display:flex;align-items:center;gap:10px}.hh-badge{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;font-family:Georgia,serif;font-weight:900;font-size:1.25rem;color:#fff;box-shadow:inset -3px -4px 8px rgba(0,0,0,.18),0 4px 10px rgba(0,0,0,.14)}.hh-badge.l1{background:radial-gradient(circle at 35% 30%,#9ee6b4,#2ea36a)}.hh-badge.l2{background:radial-gradient(circle at 35% 30%,#ffd86b,#e0a21a)}.hh-badge.l3{background:radial-gradient(circle at 35% 30%,#ff9d8a,#e0603f)}.hh-chips{display:none}.hh-chip{border:1.5px dashed #9fd3b3;background:#f5fcf7;border-radius:11px;padding:7px 11px;font:700 .78rem "Segoe UI",sans-serif;color:#2c5b44;cursor:pointer}.hh-chip.open{border-style:solid;background:#e3f3e8;cursor:default}.hh-chip b{color:#0b6b3a}'
    +'.hh-fb{min-height:1.5em;font-weight:800;margin-top:14px}.hh-fb.ok{color:#0b8a48}.hh-fb.mid{color:#b07a00}.hh-fb.no{color:#c0392b}'
    /* ---- vocabulary.com-style three-column stage: clues on the sides, spelling in the middle ---- */
-   +'.hh-stage{display:grid;grid-template-columns:232px minmax(0,1fr) 252px;gap:16px;align-items:start;max-width:1040px;margin:0 auto}'
+   +'.hh-stage{display:grid;grid-template-columns:198px minmax(0,1fr) 220px;gap:16px;align-items:start;max-width:1320px;margin:0 auto}'
    +'.hh-side{background:#fffdf6;border:1px solid #f0e3b4;border-radius:16px;padding:14px 16px;box-shadow:0 8px 20px rgba(190,140,0,.08)}'
    +'.hh-side h5{margin:0 0 8px;font:800 .78rem "Segoe UI",sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#b07a00;border-bottom:2px solid #ffe7a8;padding-bottom:7px}'
    +'.hh-stat{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:.9rem;color:#2c5b44;padding:6px 0;border-bottom:1px dashed #eef2e6}.hh-stat:last-child{border-bottom:0}.hh-stat b{color:#123f2c;font-size:1.02rem}'
